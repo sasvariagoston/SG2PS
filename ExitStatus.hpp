@@ -10,7 +10,8 @@ struct ExitStatus {
         OK = 0,
         RGF_ERROR,
         BUG,
-        UNKNOWN_ERROR
+        UNKNOWN_ERROR,
+        RUNTIME_ERROR
     };
 };
 

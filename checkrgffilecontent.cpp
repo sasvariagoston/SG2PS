@@ -1088,9 +1088,9 @@ vector <string> create_inputfilename_vector (int argc, char *argv[]) {
 	return out;
 }
 
-bool rgffile_correct (string projectname) {
+void rgffile_correct (string projectname) {
 
-	if  (   rgf_file_existence (projectname) &&
+	if  (!( rgf_file_existence (projectname) &&
 			tabcheck (projectname) &&
 			IDcheck (projectname) &&
 			GCcheck (projectname) &&
@@ -1100,9 +1100,9 @@ bool rgffile_correct (string projectname) {
 			DIPDIRcheck (projectname) &&
 			DIPcheck (projectname) &&
 			STRIAE_SC_check	(projectname) &&
-			PALEONcheck (projectname)		)	return true;
+			PALEONcheck (projectname)		))
 
-	else return false;
+		throw rgf_error();
 }
 
 

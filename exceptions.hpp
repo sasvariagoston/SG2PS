@@ -9,4 +9,8 @@ class exit_requested {
 
 };
 
+class rgf_error {
+
+};
+
 #endif
