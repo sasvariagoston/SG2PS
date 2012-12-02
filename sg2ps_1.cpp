@@ -5,7 +5,6 @@
 #include <iostream>
 #include <string>
 #include <ctime>
-#include <stdexcept>
 
 #include "common.h"
 #include "rgf.h"
@@ -14,7 +13,6 @@
 #include "checkrgffilecontent.h"
 #include "checkxycontent.h"
 #include "cluster.h"
-#include "exceptions.hpp"
 
 using namespace std;
 
@@ -72,24 +70,4 @@ void real_main(int argument_number, char *argv[]) {
 	output_elapsed_time (elapsed_time);
 }
 
-int main (int argc, char *argv[]) {
 
-	enum error_codes { SUCCESS, RUNTIME_ERROR };
-
-	try {
-
-		real_main(argc, argv);
-	}
-	catch(exit_requested& ) {
-		// User requested exit
-		// I believe it is the normal behavior so nothing to do
-	}
-	catch(runtime_error& e) {
-
-		cerr << "Runtime error: " << e.what() << endl;
-		return RUNTIME_ERROR;
-	}
-	// TODO In the release build, there will be more to catch
-
-	return SUCCESS;
-}
