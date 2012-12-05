@@ -82,9 +82,11 @@ void PS_header (string DATATYPE, string LOC, ofstream& o, PAPER P) {
 
 	string filename;
 
-	filename = LOC + "_" + DATATYPE + ".PS";
+	filename = LOC + "_" + DATATYPE + ".EPS";
+
+	o << "%!PS-Adobe-3.0 EPSF-3.0" << endl;
+	o << "%%BoundingBox:  0 0 1191 842" << endl;
 	o << "%% Generated as " << filename 									<< endl << endl;
-	o << "<</PageSize [ " << P.X << " " << P.Y << " ]>> setpagedevice " 	<< endl << endl;
 
 	if ((DATATYPE == "STRIAE") || (DATATYPE == "FRACTURE" ) || (DATATYPE == "SC")) {
 
@@ -446,7 +448,7 @@ void PS_net (string DATATYPE, string LOC, ofstream& o, INPSET inset, PAPER P) {
 
 	int angle;
 
-	string filename = LOC + "_" + DATATYPE + ".PS";
+	string filename = LOC + "_" + DATATYPE + ".EPS";
 
 	string nethemisphere = "Schmidt-net,";
 
@@ -711,7 +713,7 @@ void PS_net (string DATATYPE, string LOC, ofstream& o, INPSET inset, PAPER P) {
 	  << "  (" << nethemisphere << ") show" << endl;
 
 	o << 20.0 * P.A << " " << P.A + 5.0 << " moveto"
-	  << "  (Plotted by SG2PS software, version 0.2.0 - for reference see www.kadath.hu/sg2ps webpage.) show" << endl << endl;
+	  << "  (Plotted by SG2PS software, version 0.2.0 - for reference see www.sg2ps.eu webpage.) show" << endl << endl;
 }
 
 void PS_stressdata (ofstream& o, CENTER center, PAPER P, STRESSFIELD sf, string method) {

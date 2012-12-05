@@ -235,29 +235,74 @@ bool createprojectfolders (PFN output, vector <GDB> inGDB) {
 
 bool copyoriginalfile (PFN output) {
 
-	ifstream inrgffile;
-	ofstream outrgffile;
+	ifstream inrgffile, insetfile,  inxyfile;
+	ofstream outrgffile, outsetfile, outxyfile;
 
 	const string bs = path_separator;
 	string buffer;
 
-	string infilename = (output.projectname + ".rgf").c_str();
-	string outfilename = (output.original + bs + output.projectname + ".rgf").c_str();
+	string inrgffilename =  (output.projectname + ".rgf").c_str();
+	string outrgffilename = (output.original + bs + output.projectname + ".rgf").c_str();
 
-	inrgffile.open (infilename.c_str());
-	outrgffile.open (outfilename.c_str());
+	string insetfilename =  (output.projectname + ".set").c_str();
+	string outsetfilename = (output.original + bs + output.projectname + ".set").c_str();
+
+	string inxyfilename =  (output.projectname + ".xy").c_str();
+	string outxyfilename = (output.original + bs + output.projectname + ".xy").c_str();
+
+
+
+	inrgffile.open (inrgffilename.c_str());
+	outrgffile.open (outrgffilename.c_str());
+
+	insetfile.open (insetfilename.c_str());
+	outsetfile.open (outsetfilename.c_str());
+
+	inxyfile.open (inxyfilename.c_str());
+	outxyfile.open (outxyfilename.c_str());
+
+
 
 	if (!(inrgffile.is_open())) {
 
-		cout << "  - ERROR: cannot open input file.";
+		cout << "  - ERROR: cannot open input RGF file.";
 		return false;
 	}
+
+	if (!(insetfile.is_open())) {
+
+		cout << "  - ERROR: cannot open input SET file.";
+		return false;
+	}
+
+	if (!(inxyfile.is_open())) {
+
+		cout << "  - ERROR: cannot open input XY file.";
+		return false;
+	}
+
+
 
 	if (!(outrgffile.is_open())) {
 
-		cout << "  - ERROR: cannot create output file in project destination folder " + output.original + "." << endl;
+		cout << "  - ERROR: cannot create output RGF file in project destination folder " + output.original + "." << endl;
 		return false;
 	}
+
+	if (!(outsetfile.is_open())) {
+
+		cout << "  - ERROR: cannot create output SET file in project destination folder " + output.original + "." << endl;
+		return false;
+	}
+
+	if (!(outxyfile.is_open())) {
+
+		cout << "  - ERROR: cannot create output XY file in project destination folder " + output.original + "." << endl;
+		return false;
+	}
+
+
+
 
 	do {
 
@@ -276,8 +321,56 @@ bool copyoriginalfile (PFN output) {
 
 	while (!(inrgffile.eof()));
 
+	buffer.clear();
+
+	do {
+
+		getline (insetfile, buffer);
+		if (insetfile.eof ()) {
+
+			outsetfile << buffer;
+			break;
+		}
+
+		else {
+
+			outsetfile << buffer << endl;
+		}
+	}
+
+	while (!(insetfile.eof()));
+
+	buffer.clear();
+
+	do {
+
+		getline (inxyfile, buffer);
+		if (inxyfile.eof ()) {
+
+			outxyfile << buffer;
+			break;
+		}
+
+		else {
+
+			outxyfile << buffer << endl;
+		}
+	}
+
+	while (!(inxyfile.eof()));
+
+
+
 	inrgffile.close();
 	outrgffile.close();
+
+	insetfile.close();
+	outsetfile.close();
+
+	inxyfile.close();
+	outxyfile.close();
+
+
 
 	return true;
 }
@@ -580,8 +673,8 @@ void output_to_ps (PFN output, vector <GDB> processGDB, vector <GDB> tiltprocess
 	string bs = path_separator;
 
 
-	if (inset.group == "Y") output_ps_filename = output.pssep +  bs + processGDB.at(0).DATATYPE + bs + processGDB.at(0).LOC + "_" + processGDB.at(0).DATATYPE + "_" + processGDB.at(0).GC + ".ps";
-	else 					output_ps_filename = output.pssep +  bs + processGDB.at(0).DATATYPE + bs + processGDB.at(0).LOC + "_" + processGDB.at(0).DATATYPE + ".ps";
+	if (inset.group == "Y") output_ps_filename = output.pssep +  bs + processGDB.at(0).DATATYPE + bs + processGDB.at(0).LOC + "_" + processGDB.at(0).DATATYPE + "_" + processGDB.at(0).GC + ".eps";
+	else 					output_ps_filename = output.pssep +  bs + processGDB.at(0).DATATYPE + bs + processGDB.at(0).LOC + "_" + processGDB.at(0).DATATYPE + ".eps";
 
 	ofstream output_ps_file(output_ps_filename.c_str());
 // FIXME Do you want to give up on failure?

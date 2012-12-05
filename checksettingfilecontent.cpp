@@ -9,18 +9,23 @@ using namespace std;
 
 void header () {
 
-	cout << endl << endl << endl << endl << endl;
+	cout << endl << endl;
 
-	cout << "+------------------------------------------------------------------+" << endl;
+	cout << " ------------------------------------------------------------------ " << endl;
 	cout << "|                                                                  |" << endl;
 	cout << "|                             SG2PS                                |" << endl;
 	cout << "|       Structural Geological data to PostScript converter         |" << endl;
 	cout << "|                                                                  |" << endl;
-	cout << "|                     Coded by Agoston Sasvari                     |" << endl;
+	cout << "|        Data processing software coded by Agoston Sasvari         |" << endl;
+	cout << "|         Graphical user interfacee coded by Ali Baharev           |" << endl;
+	cout << "|                                                                  |" << endl;
+	cout << "|            For further information check www.sg2ps.eu            |" << endl;
+	cout << "|                                                                  |" << endl;
 	cout << "|                       All rights reserved                        |" << endl;
 	cout << "|                                                                  |" << endl;
 	cout << "|                       version: 0.2.0 beta                        |" << endl;
-	cout << "+------------------------------------------------------------------+" << endl << endl << endl;
+	cout << "|                                                                  |" << endl;
+	cout << " ------------------------------------------------------------------ " << endl << endl;
 }
 
 bool settingfilecorrect (string settingfilename) {

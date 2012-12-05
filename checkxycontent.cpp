@@ -20,8 +20,8 @@ bool needxyfile () {
 
 	do {
 
-		cout << "Do You want to use own coordinates in XY data format....at(Y)," 			<< endl;
-		cout << "or use coordinate data in RGF file......................at(N)........?  " << flush;
+		cout << "Do You want to use own coordinates in XY data format....[Y]," 			<< endl;
+		cout << "or use coordinate data in RGF file......................[N]........?  " << flush;
 
 		cin >> need_xy_file;
 		need_xy_file = capslock(need_xy_file);
