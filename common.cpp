@@ -454,7 +454,6 @@ vector <vector <double> > add_mtrx (vector <vector <double> > in1, vector <vecto
 	return out;
 }
 
-
 int return_second_eigenvalue (vector <vector< double > > in) {
 
 	vector <sort_jacobi> buffer;
@@ -732,7 +731,6 @@ vector <vector <double> > row_addition (vector <vector <double> > in, size_t act
 	return in;
 }
 
-
 vector <vector <double> > row_addition_LU (vector <vector <double> > in, size_t actual_row_number, size_t zero_row_number, double value) {
 
 	size_t i = 0;
@@ -927,7 +925,6 @@ vector < double > unitvector (vector < double > in) {
 	return in;
 }
 
-
 CENTR_VECT unitvector (CENTR_VECT in) {
 
 	double vectorlength = sqrt
@@ -958,7 +955,6 @@ VCTR declare_vector (double a, double b, double c) {
 	return o;
 }
 
-
 CENTR_VECT declare_vector (double a, double b, double c, double d, double e, double f) {
 
 	CENTR_VECT o;
@@ -972,7 +968,6 @@ CENTR_VECT declare_vector (double a, double b, double c, double d, double e, dou
 
 	return o;
 }
-
 
 VCTR flip_D_vector (VCTR in) {
 
@@ -1224,9 +1219,6 @@ bool existence_of_groupcodes (vector <GDB> inGDB) {
 
 	return presence;
 }
-
-
-
 
 vector <double> cubic_solution (double A, double B, double C, double D) {
 
@@ -1693,7 +1685,6 @@ double return_average_misfit (STRESSTENSOR st, vector <GDB> inGDB, bool compress
 
 	return misfit / inGDB.size();
 }
-
 
 STRESSFIELD stress_regime (STRESSFIELD in) {
 

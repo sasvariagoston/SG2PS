@@ -49,7 +49,7 @@ bool rgf_file_existence (string projectname) {
 	if (!(rgffile.is_open())) {
 
 		cout << "    - ERROR, cannot open input datafile." << endl;
-		return false;
+		throw rgf_error ();
 	}
 
 	else {
@@ -59,7 +59,6 @@ bool rgf_file_existence (string projectname) {
 	}
 
 }
-
 
 bool tabcheck (string projectname) {
 
@@ -258,7 +257,6 @@ bool GCcheck (string projectname) {
 	else return false;
 }
 
-
 bool LOCcheck (string projectname) {
 
 	ifstream rgffile;
@@ -434,7 +432,6 @@ bool COLORcheck (string projectname) {
 	else return false;
 }
 
-
 bool DATATYPEcheck (string projectname) {
 
 	ifstream rgffile;
@@ -524,7 +521,6 @@ bool DATATYPEcheck (string projectname) {
 
 	else return false;
 }
-
 
 bool DIPDIRcheck (string projectname) {
 
@@ -1107,5 +1103,3 @@ bool rgffile_correct (string projectname) {
 
 	return true;
 }
-
-

@@ -5,6 +5,7 @@
 #include <algorithm>
 #include <iomanip>
 #include <iostream>
+#include <stdexcept>
 
 #include "ps.h"
 #include "rgf.h"
@@ -12,6 +13,7 @@
 #include "data_io.h"
 #include "cluster.h"
 #include "angelier.h"
+#include "exceptions.hpp"
 
 using namespace std;
 
@@ -186,6 +188,8 @@ vector <GDB> competeRGFcontect (string projectname, string inputxyfilename, INPS
 	IDtemp, GCtemp, COLORtemp, LOCtemp, pLOCtemp, LOCXtemp, pLOCXtemp, LOCYtemp, pLOCYtemp, FORMATIONtemp, pFORMATIONtemp,
 	DATATYPEtemp, pDATATYPEtemp, DIPDIRtemp, DIPtemp, LDIRtemp, LDIPtemp, SENSEtemp, PALEONtemp, COMMENTtemp, temp;
 
+	if (!(rgffile.is_open())) throw runtime_error ();
+
 	getline (rgffile, temp);
 
 	while (!(rgffile.eof())) {
@@ -357,7 +361,6 @@ string cGc_datagroup (string DATATYPE) {
 	else 							return "NULL";
 }
 
-
 vector <GDB> cGc_NDS (vector <GDB> inGDB) {
 
 	vector <GDB> outGDB;
@@ -395,7 +398,6 @@ vector <GDB> cGc_NDS (vector <GDB> inGDB) {
 
 	return outGDB;
 }
-
 
 GDB cGc_NCDCSC_LINEATION_SC (GDB inGDB) {
 
@@ -964,7 +966,6 @@ bool byiID(const GDB& x, const GDB& y) {
 
 	return x.iID < y.iID;
 }
-
 
 bool byeigenvalue(const sort_jacobi& x, const sort_jacobi& y) {
 

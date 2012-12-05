@@ -4,9 +4,11 @@
 
 #include <map>
 #include <iostream>
+#include <stdexcept>
 
 #include "checkxycontent.h"
 #include "exceptions.hpp"
+
 
 using namespace std;
 
@@ -77,28 +79,28 @@ bool xyIDcheck (string xyname)
 
 	map <string, int> record_to_check;
 
-	string filename = xyname + ".xy";
-	xyfile.open (filename.c_str());
+	string filename = xyname + ".xy";	xyfile.open (filename.c_str());
 
-	getline (xyfile, temp); //for header
+	if (!(xyfile.is_open())) throw runtime_error ();
 
-	while (!(xyfile.eof()))
+	getline (xyfile, temp);
 
-		{
-			i++;
+	while (!(xyfile.eof())) {
 
-			getline (xyfile, ID, '\t');
-			getline (xyfile, temp);
+		i++;
 
-			pair<string, int> ID_and_counter(ID, i);
-			pair<map<string, int>::iterator, bool> p = record_to_check.insert(ID_and_counter);
+		getline (xyfile, ID, '\t');
+		getline (xyfile, temp);
 
-			if (!(p.second)) {
+		pair<string, int> ID_and_counter(ID, i);
+		pair<map<string, int>::iterator, bool> p = record_to_check.insert(ID_and_counter);
 
-				cout << "    - ERROR: ID '" << ID << "' used in line " << i << " is already used at line '" << (*(p.first)).second << "' ." <<endl;
-				errorlevel = true;
-			}
+		if (!(p.second)) {
+
+			cout << "    - ERROR: ID '" << ID << "' used in line " << i << " is already used at line '" << (*(p.first)).second << "' ." <<endl;
+			errorlevel = true;
 		}
+	}
 
 	xyfile.close();
 
@@ -124,13 +126,13 @@ bool xyTABcheck (string xyname) {
 	int tabnumber;
 
 	string filename = xyname + ".xy";
-	xyfile.open (filename.c_str());
 
+	xyfile.open (filename.c_str());
 
 	if (!(xyfile.is_open())) {
 
 		cout << "    - ERROR, cannot open input coordinate file." << endl;
-		return false;
+		throw runtime_error ();
 	}
 
 	if (xyfile.eof()) {
@@ -224,10 +226,10 @@ bool xyCOORDcheck (string xyname) {
 	if (!(xyfile.is_open())) {
 
 		cout << "    - ERROR, cannot open input coordinate file." << endl;
-		return false;
+		throw runtime_error ();
 	}
 
-	getline (xyfile, temp); //for header
+	getline (xyfile, temp);
 
 	while (!(xyfile.eof())) {
 
@@ -243,10 +245,7 @@ bool xyCOORDcheck (string xyname) {
 
 			errorcounter++;
 
-			if (errorcounter == 1) {
-
-				cout <<"    - ERROR: incorrect coordinate(s) in following record(s):  " << ID;
-			}
+			if (errorcounter == 1) cout <<"    - ERROR: incorrect coordinate(s) in following record(s):  " << ID;
 
 			if (errorcounter > 1) cout << ", " << ID;
 		}
@@ -278,8 +277,13 @@ GDB insertxy (GDB inGDB, string xyfilename) {
 	vector < LOC_X_Y_FRM > XYDB;
 
 	ifstream xyfile;
+
 	string filename = xyfilename + ".xy";
+
 	xyfile.open (filename.c_str());
+
+	if (!(xyfile.is_open())) throw runtime_error ();
+
 
 	while (!(xyfile.eof())) {
 

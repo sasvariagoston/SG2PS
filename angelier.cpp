@@ -68,7 +68,6 @@ vector <vector < double> > stressvector_parameters (vector <GDB> inGDB) {
 	return o;
 }
 
-
 ANG_PRM angelier_parameters (vector <GDB> inGDB) {
 
 	size_t i = 0;
@@ -126,6 +125,7 @@ ANG_PRM angelier_parameters (vector <GDB> inGDB) {
 
 	return rs;
 }
+
 STRESSTENSOR compute_angelier_stresstensor (ANG_PRM p, vector <GDB> inGDB) {
 
 	vector < vector < double > > temp;
@@ -672,7 +672,6 @@ vector <GDB> generate_virtual_striae (vector <GDB> inGDB) {
 	return outGDB;
 }
 
-
 STRESSFIELD BINGHAM_PROCESS (vector <GDB> inGDB) {
 
 	STRESSTENSOR st = BINGHAM (inGDB);
@@ -691,7 +690,6 @@ STRESSFIELD BINGHAM_PROCESS (vector <GDB> inGDB) {
 
 	return computestressfield_DXDYDZ (sf);
 }
-
 
 vector <GDB> inversion (string method, vector <GDB> inGDB, ofstream& o, INPSET inset, CENTER center, CENTER mohr_center, PAPER P) {
 

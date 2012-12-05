@@ -8,11 +8,12 @@
 #include <iostream>
 #include <ctime>
 #include <iomanip>
+#include <stdexcept>
 
 #include "ps.h"
 #include "common.h"
 #include "rgf.h"
-
+#include "exceptions.hpp"
 
 using namespace std;
 
@@ -83,6 +84,8 @@ void PS_header (string DATATYPE, string LOC, ofstream& o, PAPER P) {
 	string filename;
 
 	filename = LOC + "_" + DATATYPE + ".EPS";
+
+	if (!(o.is_open())) throw runtime_error ();
 
 	o << "%!PS-Adobe-3.0 EPSF-3.0" << endl;
 	o << "%%BoundingBox:  0 0 1191 842" << endl;
@@ -316,6 +319,8 @@ void PS_header (string DATATYPE, string LOC, ofstream& o, PAPER P) {
 
 void PS_border (GDB inGDB, ofstream& o, INPSET inset, PAPER P) {
 
+	if (!(o.is_open())) throw runtime_error ();
+
 	o << "newpath" << endl;
 
 	o << "  " << fixed << setprecision (3) << P.A << " " << fixed << setprecision (3) << P.Y - P.A - 10.0 << " moveto "
@@ -362,6 +367,8 @@ void PS_stress_scale (ofstream& o, PAPER P) {
 	double step = 1.0 / 100.0;
 
 	VCTR color;
+
+	if (!(o.is_open())) throw runtime_error ();
 
 	do {
 
@@ -418,6 +425,7 @@ void PS_stress_scale (ofstream& o, PAPER P) {
 
 void ps_clusteringresult (ofstream& o, INPSET inset, PAPER P, int clusternumber) {
 
+	if (!(o.is_open())) throw runtime_error ();
 
 	o << "/ArialNarrow findfont 8 scalefont setfont" << endl;
 	o
@@ -448,7 +456,7 @@ void PS_net (string DATATYPE, string LOC, ofstream& o, INPSET inset, PAPER P) {
 
 	int angle;
 
-	string filename = LOC + "_" + DATATYPE + ".EPS";
+	//string filename = LOC + "_" + DATATYPE + ".EPS";
 
 	string nethemisphere = "Schmidt-net,";
 
@@ -460,6 +468,7 @@ void PS_net (string DATATYPE, string LOC, ofstream& o, INPSET inset, PAPER P) {
 	if (inset.plot == "H")  nethemisphere = "Hoeppener-plot, " + nethemisphere;
 	else nethemisphere = "Angelier-plot, " + nethemisphere;
 
+	if (!(o.is_open())) throw runtime_error ();
 
 	o << endl;
 	o << "  0.00 0.00 0.00 setrgbcolor 1 setlinewidth" << endl << endl;
@@ -718,6 +727,8 @@ void PS_net (string DATATYPE, string LOC, ofstream& o, INPSET inset, PAPER P) {
 
 void PS_stressdata (ofstream& o, CENTER center, PAPER P, STRESSFIELD sf, string method) {
 
+	if (!(o.is_open())) throw runtime_error ();
+
 	o
 	<< "/ArialNarrow findfont 8 scalefont setfont" << endl;
 	o
@@ -793,6 +804,8 @@ void PS_stressdata (ofstream& o, CENTER center, PAPER P, STRESSFIELD sf, string 
 
 void PS_stressarrows (ofstream& o, CENTER center, PAPER P, STRESSFIELD sf) {
 
+	if (!(o.is_open())) throw runtime_error ();
+
 	if ((sf.regime == "COMPRESSIONAL") || (sf.regime == "STRIKE-SLIP")) {
 
 		o << fixed << setprecision (3) << center.X << " "
@@ -863,6 +876,8 @@ void PS_mohr_circle (vector <GDB> inGDB, ofstream& o, CENTER mohr_center, PAPER 
 	VCTR color;
 
 	color = generarte_stress_colors (sf.delvaux_str);
+
+	if (!(o.is_open())) throw runtime_error ();
 
 	o << "newpath" << endl;
 	o
@@ -984,6 +999,8 @@ void PS_RUP_distribution (vector <GDB>  inGDB, ofstream& o, CENTER center, PAPER
 	step = RUP_max / 10.0;
 	counter = 0.0;
 	i = 0;
+
+	if (!(o.is_open())) throw runtime_error ();
 
 	o << "/ArialNarrow-Bold findfont 8 scalefont setfont" << endl;
 
@@ -1125,6 +1142,8 @@ void PS_ANG_distribution (vector <GDB>  inGDB, ofstream& o, CENTER center, PAPER
 	counter = 0.0;
 	i = 0;
 
+	if (!(o.is_open())) throw runtime_error ();
+
 	o << "/ArialNarrow-Bold findfont 8 scalefont setfont" << endl;
 
 		o
@@ -1247,6 +1266,8 @@ void PS_stress_state (ofstream& o, PAPER P, CENTER center, STRESSFIELD sf) {
 
 	double value = sf.delvaux_str;
 
+	if (!(o.is_open())) throw runtime_error ();
+
 	o << " 1 1 1 setrgbcolor 5 setlinewidth" << endl;
 
 	o
@@ -1257,6 +1278,8 @@ void PS_stress_state (ofstream& o, PAPER P, CENTER center, STRESSFIELD sf) {
 }
 
 void PS_folddata (GDB in, ofstream& o, CENTER center) {
+
+	if (!(o.is_open())) throw runtime_error ();
 
 	o << "/ArialNarrow-Bold findfont 8 scalefont setfont" << endl;
 
@@ -1282,6 +1305,8 @@ void PS_lineation (GDB i, ofstream& o, INPSET inset, CENTER center, STRESSFIELD 
 
 	VCTR temp;
 	DIPDIR_DIP dd;
+
+	if (!(o.is_open())) throw runtime_error ();
 
 	if		((type == "S1") || (type == "S1_ITER")) temp = sf.EIGENVECTOR1;
 
@@ -1457,6 +1482,8 @@ void PS_plane (GDB i, ofstream& o, INPSET inset, CENTER center, bool label, stri
 
 	vector <VCTR> PP;
 	VCTR temp, torotate, axis;
+
+	if (!(o.is_open())) throw runtime_error ();
 
 	if (inset.plottype == "S") steps = 120;
 
@@ -1684,6 +1711,8 @@ void PS_polepoint (GDB i, ofstream& o, INPSET inset, CENTER center, bool label, 
 	VCTR in;
 	DIPDIR_DIP dd;
 
+	if (!(o.is_open())) throw runtime_error ();
+
 	if (type == "FOLD") {
 
 		dd = i.corr;
@@ -1787,6 +1816,8 @@ void PS_sc_arrow (GDB i, ofstream& o, INPSET inset, CENTER center, VCTR d) {
 
 	VCTR temp1, temp2;
 
+	if (!(o.is_open())) throw runtime_error ();
+
 	temp1 = i.DC;
 	temp2 = i.N;
 
@@ -1843,6 +1874,8 @@ void PS_sc_arrow (GDB i, ofstream& o, INPSET inset, CENTER center, VCTR d) {
 }
 
 void PS_striaearrow (GDB i, ofstream& o, INPSET inset, CENTER center, bool label) {
+
+	if (!(o.is_open())) throw runtime_error ();
 
 	double DIPDIR = i.corrL.DIPDIR;
 
@@ -1978,6 +2011,8 @@ void PS_striaearrow (GDB i, ofstream& o, INPSET inset, CENTER center, bool label
 
 void PS_getstereonet (ofstream& o, INPSET inset, CENTER center) {
 
+	if (!(o.is_open())) throw runtime_error ();
+
 	o << "newpath " << center.X << " " << center.Y << " " << center.radius << " " << " 0 360 arc stroke" << endl;
 
 	o << "newpath " << center.X + center.radius	<< " " << center.Y << " moveto " << center.X + center.radius + 10.0	<< " " << center.Y << " lineto stroke" << endl;
@@ -2015,6 +2050,8 @@ void PS_getstereonet (ofstream& o, INPSET inset, CENTER center) {
 }
 
 void PS_datanumber_averagebedding (GDB i, ofstream& o, INPSET inset, PAPER P, CENTER center, size_t datanumber) {
+
+	if (!(o.is_open())) throw runtime_error ();
 
 	o << endl;
 
@@ -2156,6 +2193,8 @@ void PS_rosesegment (ofstream& o, INPSET inset, CENTER center, double percentage
 
 	double step_angle = 2.5;
 
+	if (!(o.is_open())) throw runtime_error ();
+
 	if (inset.rosebinning == "B") step_angle =  5.0;
 	if (inset.rosebinning == "C") step_angle = 10.0;
 	if (inset.rosebinning == "D") step_angle = 22.5;
@@ -2190,6 +2229,8 @@ void PS_rosesegment (ofstream& o, INPSET inset, CENTER center, double percentage
 void PS_draw_rose_circle_horizontal (ofstream& o, CENTER center, ROSENUMBER percent) {
 
 	double i, step;
+
+	if (!(o.is_open())) throw runtime_error ();
 
 	if (percent.PLN_NUM < 0.01) return;
 
@@ -2227,6 +2268,8 @@ void PS_draw_rose_circle_vertical (ofstream& o, CENTER center, ROSENUMBER percen
 
 	double i, step;
 
+	if (!(o.is_open())) throw runtime_error ();
+
 	if (percent.PLN_NUM < 0.01) return;
 
 	if (percent.PLN_NUM < 0.2) 	i = 0.05;
@@ -2260,6 +2303,8 @@ void PS_draw_rose_circle_vertical (ofstream& o, CENTER center, ROSENUMBER percen
 
 void PS_DRAW_PTN (GDB i, ofstream& o, INPSET inset, CENTER center) {
 
+	if (!(o.good())) throw runtime_error ();
+
 	STRESSFIELD empty_sf;
 
 	PS_lineation (i, o, inset, center, empty_sf, false, "P");
@@ -2268,6 +2313,8 @@ void PS_DRAW_PTN (GDB i, ofstream& o, INPSET inset, CENTER center) {
 }
 
 void PS_DRAW_plane (GDB i, ofstream& o, INPSET inset, CENTER center) {
+
+	if (!(o.good())) throw runtime_error ();
 
 	if (inset.plot =="H") {
 
@@ -2284,6 +2331,8 @@ void PS_DRAW_plane (GDB i, ofstream& o, INPSET inset, CENTER center) {
 
 void PS_DRAW_lineation (GDB i, ofstream& o, INPSET inset, CENTER center) {
 
+	if (!(o.good())) throw runtime_error ();
+
 	STRESSFIELD empty_sf;
 
 	if (inset.labeling == "Y") 		PS_lineation 	(i, o, inset, center, empty_sf, true, "");
@@ -2291,6 +2340,8 @@ void PS_DRAW_lineation (GDB i, ofstream& o, INPSET inset, CENTER center) {
 }
 
 void PS_DRAW_striae (GDB i, ofstream& o, INPSET inset, CENTER center) {
+
+	if (!(o.good())) throw runtime_error ();
 
 	string offset = i.corrOFFSET;
 
@@ -2319,9 +2370,9 @@ void PS_DRAW_striae (GDB i, ofstream& o, INPSET inset, CENTER center) {
 
 void PS_DRAW_sc (GDB i, ofstream& o, INPSET inset, CENTER center) {
 
-	VCTR d;
+	VCTR d = compute_d_for_SC (i);
 
-	d = compute_d_for_SC (i);
+	if (!(o.good())) throw runtime_error ();
 
 	if (inset.plot =="H") {
 
@@ -2348,8 +2399,9 @@ void PS_DRAW_sc (GDB i, ofstream& o, INPSET inset, CENTER center) {
 	}
 }
 
-
 void PS_idealmovement (vector <GDB > inGDB, ofstream& o, INPSET inset, CENTER center) {
+
+	if (!(o.good())) throw runtime_error ();
 
 	size_t i = 0;
 	VCTR shear_vector;
@@ -2372,6 +2424,8 @@ void PS_idealmovement (vector <GDB > inGDB, ofstream& o, INPSET inset, CENTER ce
 
 void PS_DRAW_record (GDB i, ofstream& o, INPSET inset, CENTER center) {
 
+	if (!(o.good())) throw runtime_error ();
+
 	if (i.DATAGROUP == "LINEATION") PS_DRAW_lineation	(i, o, inset, center);
 	if (i.DATAGROUP == "PLANE") 	PS_DRAW_plane		(i, o, inset, center);
 	if (i.DATAGROUP == "STRIAE") 	PS_DRAW_striae 		(i, o, inset, center);
@@ -2379,6 +2433,8 @@ void PS_DRAW_record (GDB i, ofstream& o, INPSET inset, CENTER center) {
 }
 
 void PS_SYMBOLS_border (ofstream& o, PAPER P) {
+
+	if (!(o.is_open())) throw runtime_error ();
 
 	o << "newpath" << endl;
 
@@ -2437,6 +2493,8 @@ void PS_SYMBOL_draw_plane (double X, double Y, ofstream& o, PAPER P, string type
 
 	string color = "0.00 0.00 0.00";
 
+	if (!(o.is_open())) throw runtime_error ();
+
 	o <<  "   newpath " << P.S1X + 1.2 * X << " " << P.S1Y - 3.5 * Y << " " << 3.0 * P.A << " 80 110 arc" << endl;
 
 	if (group == "A") color = "0.00 0.00 1.00";
@@ -2462,12 +2520,12 @@ void PS_SYMBOL_draw_plane (double X, double Y, ofstream& o, PAPER P, string type
 	else 							o << "stroke" << endl << endl;
 }
 
-
-
 void PS_SYMBOLS_STRIAE (ofstream& o, PAPER P) {
 
 	double arrow_X, arrow_Y;
 	double step = 0.30;
+
+	if (!(o.is_open())) throw runtime_error ();
 
 	arrow_X = P.S1X + 0.6 * P.A;
 	arrow_Y = P.S1Y - 3.355 * P.A;
@@ -2545,6 +2603,8 @@ void PS_SYMBOLS_SC (ofstream& o, PAPER P) {
 	arrow_X = P.S1X + 0.6 * P.A;
 	arrow_Y = P.S1Y - 3.355 * P.A;
 
+	if (!(o.is_open())) throw runtime_error ();
+
 	o  << "  " << arrow_X  + 5.0 << " " << arrow_Y + (2.5 * P.A) << " moveto (Schistosity plane) 0 0 0 setrgbcolor show"  << endl;
 	o  << "  " << arrow_X  + 5.0 << " " << arrow_Y + (2.32 * P.A) << " moveto (Group 'X') 0 0 0 setrgbcolor show"  << endl;
 
@@ -2573,6 +2633,8 @@ void PS_SYMBOLS_PLANE (vector <GDB> inGDB, ofstream& o, PAPER P) {
 	double arrow_Y = P.S1Y - 3.355 * P.A;
 
 	string type = "";
+
+	if (!(o.is_open())) throw runtime_error ();
 
 	if 		(inGDB.at(0).DATATYPE == "CONTACT") 		type = "Contact plane";
 	else if (inGDB.at(0).DATATYPE == "FOLDPLANE") 		type = "Fold plane";
@@ -2612,6 +2674,8 @@ void PS_SYMBOLS_PLANE (vector <GDB> inGDB, ofstream& o, PAPER P) {
 
 void PS_SYMBOLS_LINEATION (vector <GDB> inGDB, ofstream& o, PAPER P) {
 
+	if (!(o.is_open())) throw runtime_error ();
+
 	double arrow_X = P.S1X + 0.6 * P.A;
 	double arrow_Y = P.S1Y - 3.355 * P.A;
 
@@ -2639,6 +2703,8 @@ void PS_SYMBOLS_LINEATION (vector <GDB> inGDB, ofstream& o, PAPER P) {
 }
 
 void PS_SYMBOLS_HOEPPNER (ofstream& o, PAPER P) {
+
+	if (!(o.is_open())) throw runtime_error ();
 
 	double arrow_X = P.S1X + 0.6 * P.A;
 	double arrow_Y = P.S1Y - 3.355 * P.A;
@@ -2673,6 +2739,8 @@ void PS_SYMBOLS_HOEPPNER (ofstream& o, PAPER P) {
 
 void PS_SYMBOLS_GROUPS (ofstream& o, PAPER P) {
 
+	if (!(o.is_open())) throw runtime_error ();
+
 	double arrow_X = P.S1X + 0.6 * P.A + 6.0 * P.A;;
 	double arrow_Y = P.S1Y - 3.355 * P.A;
 
@@ -2698,6 +2766,8 @@ void PS_SYMBOLS_GROUPS (ofstream& o, PAPER P) {
 }
 
 void PS_SYMBOLS_INVERSION (ofstream& o, PAPER P) {
+
+	if (!(o.is_open())) throw runtime_error ();
 
 	double arrow_X = P.S1X + (0.6 * P.A) + 2.8 * P.A;
 	double arrow_Y = P.S1Y - (3.355 * P.A) + 2.5 * P.A - 0.4 * P.A;
@@ -2747,6 +2817,8 @@ void PS_SYMBOLS_INVERSION (ofstream& o, PAPER P) {
 
 void PS_SYMBOLS_BINGHAM (ofstream& o, PAPER P) {
 
+	if (!(o.is_open())) throw runtime_error ();
+
 	double arrow_X = P.S1X + (0.6 * P.A) + 2.8 * P.A;
 	double arrow_Y = P.S1Y - (3.355 * P.A) + 2.5 * P.A - 0.4 * P.A;
 
@@ -2772,6 +2844,8 @@ void PS_SYMBOLS_BINGHAM (ofstream& o, PAPER P) {
 }
 
 void PS_SYMBOLS_ROSE (vector <GDB> inGDB, ofstream& o, PAPER P) {
+
+	if (!(o.is_open())) throw runtime_error ();
 
 	double angle = 80.0;
 	double radius = 80.0;
@@ -2838,6 +2912,8 @@ void PS_SYMBOLS_ROSE (vector <GDB> inGDB, ofstream& o, PAPER P) {
 
 void PS_SYMBOLS_LABEL (ofstream& o, INPSET inset, PAPER P) {
 
+	if (!(o.is_open())) throw runtime_error ();
+
 	double arrow_X = P.S1X + 0.3 * P.A;
 	double arrow_Y = P.S1Y - 1.55 * P.A;
 
@@ -2868,12 +2944,12 @@ void PS_SYMBOLS_LABEL (ofstream& o, INPSET inset, PAPER P) {
 
 void PS_SYMBOLS (vector <GDB> inGDB, ofstream& o, INPSET inset, PAPER P) {
 
+	if (!(o.is_open())) throw runtime_error ();
+
 	PS_SYMBOLS_border (o, P);
 	PS_SYMBOLS_LABEL (o, inset, P);
 
 	o << "/ArialNarrow findfont 8 scalefont setfont" 					<< endl;
-
-
 
 	o << "  " << P.S1X + 5.2 * P.A << " " << P.S1Y - 0.3 * P.A  << " moveto " << endl;
 	o << "  (ROSE PLOT) 0 0 0 setrgbcolor show"  << endl;

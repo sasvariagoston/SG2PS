@@ -6,8 +6,10 @@
 
 #include <string>
 #include <vector>
+#include <stdexcept>
 
 #include "common.h"
+
 
 using namespace std;
 

@@ -5,6 +5,7 @@
 #include <iomanip>
 #include <iostream>
 #include <algorithm>
+#include <stdexcept>
 
 #include "data_io.h"
 #include "ps.h"
@@ -13,6 +14,7 @@
 #include "angelier.h"
 #include "cluster.h"
 #include "platform_dep.hpp"
+#include "exceptions.hpp"
 
 using namespace std;
 
@@ -227,7 +229,7 @@ bool createprojectfolders (PFN output, vector <GDB> inGDB) {
 
 		cout << "Cannot create project folder." << endl;
 
-		return false;
+		throw runtime_error ();
 	}
 
 	return true;
@@ -266,19 +268,19 @@ bool copyoriginalfile (PFN output) {
 	if (!(inrgffile.is_open())) {
 
 		cout << "  - ERROR: cannot open input RGF file.";
-		return false;
+		throw runtime_error ();
 	}
 
 	if (!(insetfile.is_open())) {
 
 		cout << "  - ERROR: cannot open input SET file.";
-		return false;
+		throw runtime_error ();
 	}
 
 	if (!(inxyfile.is_open())) {
 
 		cout << "  - ERROR: cannot open input XY file.";
-		return false;
+		throw runtime_error ();
 	}
 
 
@@ -286,19 +288,19 @@ bool copyoriginalfile (PFN output) {
 	if (!(outrgffile.is_open())) {
 
 		cout << "  - ERROR: cannot create output RGF file in project destination folder " + output.original + "." << endl;
-		return false;
+		throw runtime_error ();
 	}
 
 	if (!(outsetfile.is_open())) {
 
 		cout << "  - ERROR: cannot create output SET file in project destination folder " + output.original + "." << endl;
-		return false;
+		throw runtime_error ();
 	}
 
 	if (!(outxyfile.is_open())) {
 
 		cout << "  - ERROR: cannot create output XY file in project destination folder " + output.original + "." << endl;
-		return false;
+		throw runtime_error ();
 	}
 
 
@@ -371,11 +373,12 @@ bool copyoriginalfile (PFN output) {
 	outxyfile.close();
 
 
-
 	return true;
 }
 
 void outputrgfheader (ofstream& o, INPSET inset) {
+
+	if (!(o.is_open())) throw runtime_error ();
 
 	o
 	<< "ID" 		<< '\t'
@@ -403,6 +406,8 @@ void outputrgfheader (ofstream& o, INPSET inset) {
 
 void outputaverageheader (ofstream& o) {
 
+	if (!(o.is_open())) throw runtime_error ();
+
 	o
 	<< "ID" << '\t'
 	<< "GC" << '\t'
@@ -422,6 +427,8 @@ void outputaverageheader (ofstream& o) {
 }
 
 void outputrecord (GDB i, ofstream& o, INPSET inpset) {
+
+	if (!(o.is_open())) throw runtime_error ();
 
 	o
 	<< i.ID << '\t'
@@ -472,6 +479,8 @@ void outputrecord (GDB i, ofstream& o, INPSET inpset) {
 
 void outputveragerecord (GDB i, ofstream& o) {
 
+	if (!(o.is_open())) throw runtime_error ();
+
 	o
 	<< i.ID << '\t'
 	<< i.GC << '\t'
@@ -509,6 +518,8 @@ void outputresultrgf (PFN output, vector <GDB> outGDB, bool tilted, INPSET inset
 
 	outputfile.open (outputfilename.c_str());
 
+	if (!(outputfile.is_open())) throw runtime_error ();
+
 	outputrgfheader (outputfile, inset);
 
 	while (i < outGDB.size()) {
@@ -536,6 +547,9 @@ void outputaveragergf (PFN output, vector <GDB> outGDB) {
 	size_t independentrecordcounter = 0;
 
 	outputfile.open (outputfilename.c_str());
+
+	if (!(outputfile.is_open())) throw runtime_error ();
+
 	outputaverageheader (outputfile);
 
 	if ((outGDB.size() == 1) && (!((outGDB.at(0).DATATYPE == "STRIAE") || (outGDB.at(0).DATATYPE == "SC")))) {
@@ -652,6 +666,8 @@ void output_to_rgf (PFN output, vector <GDB> processGDB, INPSET inset, bool tilt
 
 	output_rgf_file.open (output_rgf_filename.c_str());
 
+	if (!(output_rgf_file.is_open())) throw runtime_error ();
+
 	sort(processGDB.begin(), processGDB.end(), byiID);
 
 	outputrgfheader (output_rgf_file, inset);
@@ -677,10 +693,9 @@ void output_to_ps (PFN output, vector <GDB> processGDB, vector <GDB> tiltprocess
 	else 					output_ps_filename = output.pssep +  bs + processGDB.at(0).DATATYPE + bs + processGDB.at(0).LOC + "_" + processGDB.at(0).DATATYPE + ".eps";
 
 	ofstream output_ps_file(output_ps_filename.c_str());
-// FIXME Do you want to give up on failure?
-//	if (!output_ps_file.good()) {
-//		throw runtime_error("failed to create "+output_ps_filename);
-//	}
+
+	if (!(output_ps_file.good())) throw runtime_error();
+
 
 	PS_header (processGDB.at(0).DATATYPE, processGDB.at(0).LOC, output_ps_file, P);
 	PS_SYMBOLS(processGDB, output_ps_file, inset, P);
@@ -951,7 +966,6 @@ void process_one_by_one (GDB processGDB, GDB tiltprocessGDB, ofstream& o, INPSET
 	center.Y = P.O2Y;
 	PS_DRAW_record (tiltprocessGDB, o, inset, center);
 }
-
 
 void output_elapsed_time (double elapsed_time) {
 

@@ -2,6 +2,8 @@
 // All rights reserved.
 // This code is published under the GNU Lesser General Public License.
 
+#include <stdexcept>
+
 #include "checksettingfilecontent.h"
 #include "exceptions.hpp"
 
@@ -232,6 +234,8 @@ INPSET loadsettingsfromsettingfile (string settingfilename) {
 	string filename = settingfilename + ".set";
 	settingfile.open (filename.c_str());
 
+	if (!(settingfile.is_open())) throw runtime_error ();
+
 	getline (settingfile, b, '\t');
 	getline (settingfile, c);
 	settings.datarule = capslock (c);
@@ -287,16 +291,16 @@ INPSET loadsettingsfromsettingfile (string settingfilename) {
 	getline (settingfile, b, '\t');
 	getline (settingfile, settings.linewidthst);
 
-	if (settings.linewidthst == "0.1") {settings.linewidth = 0.1;}
-	if (settings.linewidthst == "0.2") {settings.linewidth = 0.2;}
-	if (settings.linewidthst == "0.3") {settings.linewidth = 0.3;}
-	if (settings.linewidthst == "0.4") {settings.linewidth = 0.4;}
-	if (settings.linewidthst == "0.5") {settings.linewidth = 0.5;}
-	if (settings.linewidthst == "0.6") {settings.linewidth = 0.6;}
-	if (settings.linewidthst == "0.7") {settings.linewidth = 0.7;}
-	if (settings.linewidthst == "0.8") {settings.linewidth = 0.8;}
-	if (settings.linewidthst == "0.9") {settings.linewidth = 0.9;}
-	if (settings.linewidthst == "1.0") {settings.linewidth = 1.0;}
+	if (settings.linewidthst == "0.1") 		settings.linewidth = 0.1;
+	else if (settings.linewidthst == "0.2") settings.linewidth = 0.2;
+	else if (settings.linewidthst == "0.3") settings.linewidth = 0.3;
+	else if (settings.linewidthst == "0.4") settings.linewidth = 0.4;
+	else if (settings.linewidthst == "0.5") settings.linewidth = 0.5;
+	else if (settings.linewidthst == "0.6") settings.linewidth = 0.6;
+	else if (settings.linewidthst == "0.7") settings.linewidth = 0.7;
+	else if (settings.linewidthst == "0.8") settings.linewidth = 0.8;
+	else if (settings.linewidthst == "0.9") settings.linewidth = 0.9;
+	else 									settings.linewidth = 1.0;
 
 	getline (settingfile, b, '\t');
 	getline (settingfile, c);
@@ -376,7 +380,6 @@ void printsettingsonscreen (INPSET settings) {
 	if (settings.rosebinning=="D")	cout<<"  - Data bin size on rose plot..................: 22.5 deg"							<< endl;
 
 }
-
 
 INPSET inputsettings_manually (string projectname) {
 
@@ -676,7 +679,7 @@ bool outputsettingfile (INPSET outputsettingfile, string projectname) {
 		return true;
 	}
 
-	else return false;
+	throw runtime_error ();
 }
 
 INPSET input_hardcoded () {
@@ -703,8 +706,6 @@ INPSET input_hardcoded () {
 
 	return input_hardcoded;
 }
-
-
 
 INPSET decide_setting_status (string projectname) {
 
