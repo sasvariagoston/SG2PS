@@ -188,8 +188,6 @@ vector <GDB> competeRGFcontect (string projectname, string inputxyfilename, INPS
 	IDtemp, GCtemp, COLORtemp, LOCtemp, pLOCtemp, LOCXtemp, pLOCXtemp, LOCYtemp, pLOCYtemp, FORMATIONtemp, pFORMATIONtemp,
 	DATATYPEtemp, pDATATYPEtemp, DIPDIRtemp, DIPtemp, LDIRtemp, LDIPtemp, SENSEtemp, PALEONtemp, COMMENTtemp, temp;
 
-	if (!(rgffile.is_open())) throw runtime_error ();
-
 	getline (rgffile, temp);
 
 	while (!(rgffile.eof())) {

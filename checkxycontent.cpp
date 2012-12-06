@@ -81,8 +81,6 @@ bool xyIDcheck (string xyname)
 
 	string filename = xyname + ".xy";	xyfile.open (filename.c_str());
 
-	if (!(xyfile.is_open())) throw runtime_error ();
-
 	getline (xyfile, temp);
 
 	while (!(xyfile.eof())) {
@@ -132,7 +130,7 @@ bool xyTABcheck (string xyname) {
 	if (!(xyfile.is_open())) {
 
 		cout << "    - ERROR, cannot open input coordinate file." << endl;
-		throw runtime_error ();
+		return false;
 	}
 
 	if (xyfile.eof()) {
@@ -226,7 +224,7 @@ bool xyCOORDcheck (string xyname) {
 	if (!(xyfile.is_open())) {
 
 		cout << "    - ERROR, cannot open input coordinate file." << endl;
-		throw runtime_error ();
+		return false;
 	}
 
 	getline (xyfile, temp);
@@ -281,9 +279,6 @@ GDB insertxy (GDB inGDB, string xyfilename) {
 	string filename = xyfilename + ".xy";
 
 	xyfile.open (filename.c_str());
-
-	if (!(xyfile.is_open())) throw runtime_error ();
-
 
 	while (!(xyfile.eof())) {
 

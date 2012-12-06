@@ -49,7 +49,7 @@ bool rgf_file_existence (string projectname) {
 	if (!(rgffile.is_open())) {
 
 		cout << "    - ERROR, cannot open input datafile." << endl;
-		throw rgf_error ();
+		return false;
 	}
 
 	else {

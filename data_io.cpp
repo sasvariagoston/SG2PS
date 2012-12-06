@@ -229,7 +229,7 @@ bool createprojectfolders (PFN output, vector <GDB> inGDB) {
 
 		cout << "Cannot create project folder." << endl;
 
-		throw runtime_error ();
+		return false;
 	}
 
 	return true;
@@ -265,44 +265,19 @@ bool copyoriginalfile (PFN output) {
 
 
 
-	if (!(inrgffile.is_open())) {
+	if (!(inrgffile.is_open())) cout << "  - ERROR: cannot open input RGF file.";
 
-		cout << "  - ERROR: cannot open input RGF file.";
-		throw runtime_error ();
-	}
+	if (!(insetfile.is_open())) cout << "  - ERROR: cannot open input SET file.";
 
-	if (!(insetfile.is_open())) {
-
-		cout << "  - ERROR: cannot open input SET file.";
-		throw runtime_error ();
-	}
-
-	if (!(inxyfile.is_open())) {
-
-		cout << "  - ERROR: cannot open input XY file.";
-		throw runtime_error ();
-	}
+	if (!(inxyfile.is_open())) 	cout << "  - ERROR: cannot open input XY file.";
 
 
 
-	if (!(outrgffile.is_open())) {
+	if (!(outrgffile.is_open())) 	cout << "  - ERROR: cannot create output RGF file in project destination folder " + output.original + "." << endl;
 
-		cout << "  - ERROR: cannot create output RGF file in project destination folder " + output.original + "." << endl;
-		throw runtime_error ();
-	}
+	if (!(outsetfile.is_open())) 	cout << "  - ERROR: cannot create output SET file in project destination folder " + output.original + "." << endl;
 
-	if (!(outsetfile.is_open())) {
-
-		cout << "  - ERROR: cannot create output SET file in project destination folder " + output.original + "." << endl;
-		throw runtime_error ();
-	}
-
-	if (!(outxyfile.is_open())) {
-
-		cout << "  - ERROR: cannot create output XY file in project destination folder " + output.original + "." << endl;
-		throw runtime_error ();
-	}
-
+	if (!(outxyfile.is_open())) 	cout << "  - ERROR: cannot create output XY file in project destination folder " + output.original + "." << endl;
 
 
 
@@ -378,8 +353,6 @@ bool copyoriginalfile (PFN output) {
 
 void outputrgfheader (ofstream& o, INPSET inset) {
 
-	if (!(o.is_open())) throw runtime_error ();
-
 	o
 	<< "ID" 		<< '\t'
 	<< "GC" 		<< '\t'
@@ -406,8 +379,6 @@ void outputrgfheader (ofstream& o, INPSET inset) {
 
 void outputaverageheader (ofstream& o) {
 
-	if (!(o.is_open())) throw runtime_error ();
-
 	o
 	<< "ID" << '\t'
 	<< "GC" << '\t'
@@ -427,8 +398,6 @@ void outputaverageheader (ofstream& o) {
 }
 
 void outputrecord (GDB i, ofstream& o, INPSET inpset) {
-
-	if (!(o.is_open())) throw runtime_error ();
 
 	o
 	<< i.ID << '\t'
@@ -479,8 +448,6 @@ void outputrecord (GDB i, ofstream& o, INPSET inpset) {
 
 void outputveragerecord (GDB i, ofstream& o) {
 
-	if (!(o.is_open())) throw runtime_error ();
-
 	o
 	<< i.ID << '\t'
 	<< i.GC << '\t'
@@ -518,8 +485,6 @@ void outputresultrgf (PFN output, vector <GDB> outGDB, bool tilted, INPSET inset
 
 	outputfile.open (outputfilename.c_str());
 
-	if (!(outputfile.is_open())) throw runtime_error ();
-
 	outputrgfheader (outputfile, inset);
 
 	while (i < outGDB.size()) {
@@ -547,8 +512,6 @@ void outputaveragergf (PFN output, vector <GDB> outGDB) {
 	size_t independentrecordcounter = 0;
 
 	outputfile.open (outputfilename.c_str());
-
-	if (!(outputfile.is_open())) throw runtime_error ();
 
 	outputaverageheader (outputfile);
 
@@ -666,8 +629,6 @@ void output_to_rgf (PFN output, vector <GDB> processGDB, INPSET inset, bool tilt
 
 	output_rgf_file.open (output_rgf_filename.c_str());
 
-	if (!(output_rgf_file.is_open())) throw runtime_error ();
-
 	sort(processGDB.begin(), processGDB.end(), byiID);
 
 	outputrgfheader (output_rgf_file, inset);
@@ -693,8 +654,6 @@ void output_to_ps (PFN output, vector <GDB> processGDB, vector <GDB> tiltprocess
 	else 					output_ps_filename = output.pssep +  bs + processGDB.at(0).DATATYPE + bs + processGDB.at(0).LOC + "_" + processGDB.at(0).DATATYPE + ".eps";
 
 	ofstream output_ps_file(output_ps_filename.c_str());
-
-	if (!(output_ps_file.good())) throw runtime_error();
 
 
 	PS_header (processGDB.at(0).DATATYPE, processGDB.at(0).LOC, output_ps_file, P);

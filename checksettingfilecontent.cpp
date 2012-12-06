@@ -234,8 +234,6 @@ INPSET loadsettingsfromsettingfile (string settingfilename) {
 	string filename = settingfilename + ".set";
 	settingfile.open (filename.c_str());
 
-	if (!(settingfile.is_open())) throw runtime_error ();
-
 	getline (settingfile, b, '\t');
 	getline (settingfile, c);
 	settings.datarule = capslock (c);
@@ -679,7 +677,7 @@ bool outputsettingfile (INPSET outputsettingfile, string projectname) {
 		return true;
 	}
 
-	throw runtime_error ();
+	return false;
 }
 
 INPSET input_hardcoded () {
