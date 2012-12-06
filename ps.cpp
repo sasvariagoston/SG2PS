@@ -87,7 +87,7 @@ void PS_header (string DATATYPE, string LOC, ofstream& o, PAPER P) {
 
 	filename = LOC + "_" + DATATYPE + ".EPS";
 
-	if (!(o.is_open())) throw runtime_error ();
+	if (!(o.is_open())) throw runtime_error;
 
 	o << "%!PS-Adobe-3.0 EPSF-3.0" << endl;
 	o << "%%BoundingBox:  0 0 1191 842" << endl;
