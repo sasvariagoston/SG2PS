@@ -77,6 +77,8 @@ PAPER PS_dimensions () {
 	P.S6Y = P.S1Y;
 
 	return P;
+
+	//dummy
 }
 
 void PS_header (string DATATYPE, string LOC, ofstream& o, PAPER P) {
