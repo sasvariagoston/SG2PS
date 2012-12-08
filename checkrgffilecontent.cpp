@@ -48,7 +48,7 @@ bool rgf_file_existence (string projectname) {
 
 	if (!(rgffile.is_open())) {
 
-		cout << "    - ERROR, cannot open input datafile." << endl;
+		cout << "    - aERROR, cannot open input datafile." << endl;
 		return false;
 	}
 
@@ -57,7 +57,6 @@ bool rgf_file_existence (string projectname) {
 		cout <<"    - Input file opened successfully." << endl;
 		return true;
 	}
-
 }
 
 bool tabcheck (string projectname) {

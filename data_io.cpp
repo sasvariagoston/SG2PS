@@ -243,6 +243,9 @@ bool copyoriginalfile (PFN output) {
 	const string bs = path_separator;
 	string buffer;
 
+	bool xy_file_exist = true;
+	bool set_file_exist = true;
+
 	string inrgffilename =  (output.projectname + ".rgf").c_str();
 	string outrgffilename = (output.original + bs + output.projectname + ".rgf").c_str();
 
@@ -264,18 +267,12 @@ bool copyoriginalfile (PFN output) {
 	outxyfile.open (outxyfilename.c_str());
 
 
+	if (!(insetfile.is_open())) set_file_exist = false;
 
-	if (!(inrgffile.is_open())) cout << "  - ERROR: cannot open input RGF file.";
-
-	if (!(insetfile.is_open())) cout << "  - ERROR: cannot open input SET file.";
-
-	if (!(inxyfile.is_open())) 	cout << "  - ERROR: cannot open input XY file.";
+	if (!(inxyfile.is_open())) xy_file_exist = false;
 
 
 
-	if (!(outrgffile.is_open())) 	cout << "  - ERROR: cannot create output RGF file in project destination folder " + output.original + "." << endl;
-
-	if (!(outsetfile.is_open())) 	cout << "  - ERROR: cannot create output SET file in project destination folder " + output.original + "." << endl;
 
 	if (!(outxyfile.is_open())) 	cout << "  - ERROR: cannot create output XY file in project destination folder " + output.original + "." << endl;
 
@@ -294,47 +291,59 @@ bool copyoriginalfile (PFN output) {
 
 			outrgffile << buffer << endl;
 		}
-	}
 
-	while (!(inrgffile.eof()));
+	} while (!(inrgffile.eof()));
 
-	buffer.clear();
 
-	do {
-
-		getline (insetfile, buffer);
-		if (insetfile.eof ()) {
-
-			outsetfile << buffer;
-			break;
-		}
-
-		else {
-
-			outsetfile << buffer << endl;
-		}
-	}
-
-	while (!(insetfile.eof()));
 
 	buffer.clear();
 
-	do {
 
-		getline (inxyfile, buffer);
-		if (inxyfile.eof ()) {
 
-			outxyfile << buffer;
-			break;
-		}
+	if (set_file_exist) {
 
-		else {
+		do {
 
-			outxyfile << buffer << endl;
-		}
+			getline (insetfile, buffer);
+			if (insetfile.eof ()) {
+
+				outsetfile << buffer;
+				break;
+			}
+
+			else {
+
+				outsetfile << buffer << endl;
+			}
+
+		}	while (!(insetfile.eof()));
+
 	}
 
-	while (!(inxyfile.eof()));
+
+
+	buffer.clear();
+
+
+
+	if (xy_file_exist) {
+
+		do {
+
+			getline (inxyfile, buffer);
+			if (inxyfile.eof ()) {
+
+				outxyfile << buffer;
+				break;
+			}
+
+			else {
+
+				outxyfile << buffer << endl;
+			}
+
+		}	while (!(inxyfile.eof()));
+	}
 
 
 

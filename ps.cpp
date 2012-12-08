@@ -696,6 +696,8 @@ void PS_net (string DATATYPE, string LOC, ofstream& o, INPSET inset, PAPER P) {
 	 		  <<  fixed << setprecision (3) << P.O4Y + P.R + 14.0 << " moveto "
 	  << "  (N) 0 0 0 setrgbcolor show" << endl;
 
+	o << "%% This is the end of the sg2ps post script # file header" << endl;
+
 
 
 	o << "/ArialNarrow findfont 8 scalefont setfont" << endl;
