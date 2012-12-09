@@ -363,7 +363,7 @@ bool copyoriginalfile (PFN output) {
 void outputrgfheader (ofstream& o, INPSET inset) {
 
 	o
-	<< "ID" 		<< '\t'
+	<< "DATA_ID" 		<< '\t'
 	<< "GC" 		<< '\t'
 	<< "COLOR" 		<< '\t'
 	<< "LOC" 		<< '\t'
