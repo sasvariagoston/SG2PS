@@ -334,7 +334,7 @@ string check_xy_inputs (string inputfilename, bool batch) {
 
 			else {
 
-				cout << "  - Input " << capslock(inputfilename) << ".XY file structure is incorrect, file will be not used." << endl;
+				cout << "  - Input " << capslock(inputfilename) << ".XY file structure is incorrect, file will not be used." << endl;
 
 				return "";
 			}

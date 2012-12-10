@@ -18,28 +18,24 @@ int main (int argc, char *argv[]) {
 	}
 	catch(exit_requested& ) {
 		// User requested exit
-		// I believe it is the normal behavior so nothing to do
+		// Normal behavior, nothing to do
 	}
-
-	catch (logic_error& e) {
-
-		cout << "Logic error: " << e.what() << endl;
-		return ExitStatus::BUG;
-	}
-
-	catch(std::runtime_error& e) {
-
-		cout << "Runtime error: " << e.what() << endl;
-		return ExitStatus::RUNTIME_ERROR;
-	}
-
-	catch(rgf_error&) {
-
+	catch(rgf_error& ) {
 		cout << "RGF error error: " << endl;
 		return ExitStatus::RGF_ERROR;
 	}
-
-	// TODO In the release build, there will be more to catch
+	catch(out_of_range& ) {
+		cout << "This is a bug, please report it!" << endl;
+		return ExitStatus::BUG;
+	}
+	catch(runtime_error& e) {
+		cout << "Runtime error: " << e.what() << endl;
+		return ExitStatus::RUNTIME_ERROR;
+	}
+	catch(...) {
+		cout << "Unknown error, please report it!" << endl;
+		return ExitStatus::UNKNOWN_ERROR;
+	}
 
 	return ExitStatus::OK;
 }
