@@ -19,11 +19,13 @@ void header () {
 	cout << "|       Structural Geological data to PostScript converter         |" << endl;
 	cout << "|                                                                  |" << endl;
 	cout << "|        Data processing software coded by Agoston Sasvari         |" << endl;
-	cout << "|         Graphical user interfacee coded by Ali Baharev           |" << endl;
 	cout << "|                                                                  |" << endl;
 	cout << "|            For further information check www.sg2ps.eu            |" << endl;
 	cout << "|                                                                  |" << endl;
 	cout << "|                       All rights reserved                        |" << endl;
+
+	cout << "Built on " <<__DATE__ << " at " << __TIME__ << endl;
+
 	cout << "|                                                                  |" << endl;
 	cout << "|                       version: 0.2.0 beta                        |" << endl;
 	cout << "|                                                                  |" << endl;

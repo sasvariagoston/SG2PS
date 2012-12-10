@@ -389,7 +389,7 @@ void outputrgfheader (ofstream& o, INPSET inset) {
 void outputaverageheader (ofstream& o) {
 
 	o
-	<< "ID" << '\t'
+	<< "DATA_ID" << '\t'
 	<< "GC" << '\t'
 	<< "COLOR" << '\t'
 	<< "LOC" << '\t'
