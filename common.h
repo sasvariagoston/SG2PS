@@ -22,6 +22,7 @@ string capslock (string input);
 
 const string int_to_string(int i);
 const string char_to_string (char i);
+double string_to_double( const string& s, bool& failed);
 
 double SIGNUM (double in);
 
@@ -112,6 +113,9 @@ bool existence_of_group (int expression, vector <int> whichgroup);
 bool existence_of_group_GDB (string expression, vector <GDB> inGDB);
 bool existence_of_groupcodes (vector <GDB> inGDB);
 
+
+
+
 vector <double> cubic_solution (double A, double B, double C, double D);
 vector <double> quartic_solution (double A, double B, double C, double D, double E);
 
@@ -136,5 +140,8 @@ double return_average_misfit (STRESSTENSOR st, vector <GDB> inGDB, bool compress
 
 vector <double> hyperplane_from_GDB (GDB inGDB);
 vector < vector <double> > shan_matrix_from_GDB (GDB inGDB);
+
+string return_build_date ();
+string return_build_time ();
 
 #endif

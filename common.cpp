@@ -14,6 +14,32 @@
 
 using namespace std;
 
+
+template <typename T>
+T convert(const string& s, bool& failed) {
+
+	istringstream iss(s);
+
+	T value;
+
+	iss >> value;
+
+	failed = (iss.fail() || !iss.eof()) ? true : false;
+
+	return value;
+}
+
+template <typename T>
+bool equals(const string& s, const T& value) {
+
+	bool failed = true;
+
+	T other = convert<T>(s, failed);
+
+	return !failed && (value==other);
+}
+
+
 string capslock (string input) {
 
 	for(unsigned int i = 0; i < input.length(); i++)	input.at(i) = toupper(input.at(i));
@@ -33,6 +59,18 @@ const string char_to_string (char i) {
 	os << i << flush;
 	return os.str();
 }
+
+
+double string_to_double( const string& s, bool& failed) {
+
+	return convert<double>(s, failed);
+}
+
+
+
+
+
+
 
 double SIGNUM (double in) {
 
@@ -1781,4 +1819,91 @@ vector < vector <double> > shan_matrix_from_GDB (GDB inGDB)  {
 	out = outer_product (o);
 
 	return out;
+}
+
+string return_build_date () {
+
+	char build_date [7];
+
+	build_date[0] = __DATE__[4];
+	build_date[1] = __DATE__[5];
+	build_date[2] = '/';
+
+	if (__DATE__[0] == 'J' && __DATE__[1]== 'a') {
+		build_date[3] = '0';
+		build_date[4] = '1';
+	}
+
+	else if (__DATE__[0] == 'F' && __DATE__[1 ]== 'e') {
+		build_date[3] = '0';
+		build_date[4] = '2';
+	}
+
+	else if (__DATE__[0] == 'M' && __DATE__[2]== 'r') {
+		build_date[3] = '0';
+		build_date[4] = '3';
+	}
+
+	else if (__DATE__[0] == 'A' && __DATE__[1]== 'p') {
+		build_date[3] = '0';
+		build_date[4] = '4';
+	}
+
+	else if (__DATE__[0] == 'M' && __DATE__[2]== 'y') {
+		build_date[3] = '0';
+		build_date[4] = '5';
+	}
+
+	else if (__DATE__[0] == 'J' && __DATE__[2]== 'n') {
+		build_date[3] = '0';
+		build_date[4] = '6';
+	}
+
+	else if (__DATE__[0] == 'J' && __DATE__[2]== 'l') {
+		build_date[3] = '0';
+		build_date[4] = '7';
+	}
+
+	else if (__DATE__[0] == 'A' && __DATE__[1]== 'u') {
+		build_date[3] = '1';
+		build_date[4] = '2';
+	}
+
+	else if (__DATE__[0] == 'S' && __DATE__[1]== 'e') {
+		build_date[3] = '0';
+		build_date[4] = '9';
+	}
+
+	else if (__DATE__[0] == 'O' && __DATE__[1 ]== 'c') {
+		build_date[3] = '1';
+		build_date[4] = '0';
+	}
+
+	else if (__DATE__[0] == 'N' && __DATE__[1]== 'o') {
+		build_date[3] = '1';
+		build_date[4] = '1';
+	}
+
+	else  {
+		build_date[3] = '1';
+		build_date[4] = '2';
+	}
+
+	build_date[5] = '/';
+
+	build_date[6] = __DATE__[9];
+	build_date[7] = __DATE__[10];
+
+	return build_date;
+}
+
+string return_build_time () {
+
+	string build_time;
+			//[7] =
+			//__TIME__[0] + __TIME__[1] + __TIME__[2] +
+			//__TIME__[3] + __TIME__[4] + __TIME__[5] +
+			//__TIME__[6] + __TIME__[7];
+
+	return "";
 }

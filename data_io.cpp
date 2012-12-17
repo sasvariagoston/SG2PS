@@ -430,20 +430,18 @@ void outputrecord (GDB i, ofstream& o, INPSET inpset) {
 	if ((i.corr.DIP > 360.0) || (i.DATATYPE == "LITHOLOGY")) o << "" << '\t' << flush;
 	else o << fixed << setprecision (1) << i.corr.DIP << '\t' << flush;
 
-	if (i.corrL.DIPDIR > 360.0) o << "" << '\t' << flush;
-	else {
 
-		if ((inpset.datarule == "R" ) || (i.DATATYPE == "SC"))	o << german_to_right_hand_rule (i.corrL.DIPDIR) << '\t' << flush;
-		else													o << i.corrL.DIPDIR << '\t' << flush;
-	}
+	if (i.corrL.DIPDIR > 360.0) o << "" << '\t' << flush;
+	else o << i.corrL.DIPDIR << '\t' << flush;
+
 
 	if (i.corrL.DIP > 360.0) o << "" << '\t' << flush;
 	else o << i.corrL.DIP << '\t' << flush;
 
 	if ((i.DATATYPE == "STRIAE") || (i.DATATYPE == "BEDDING")) {
 
-		if (((i.DATATYPE == "BEDDING")) && (i.OFFSET == "NONE")) o << '\t' << flush;
-		else o << i.OFFSET << '\t' << flush;
+		if (((i.DATATYPE == "BEDDING")) && (i.corrOFFSET == "NONE")) o << '\t' << flush;
+		else o << i.corrOFFSET << '\t' << flush;
 	}
 
 	else o << "" << '\t' << flush;

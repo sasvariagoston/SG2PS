@@ -4,18 +4,153 @@
 
 #include <map>
 #include <stdexcept>
+#include <sstream>
+#include <iomanip>
 
 #include "checkrgffilecontent.h"
 #include "exceptions.hpp"
 
 using namespace std;
 
+namespace {
+
+vector <vector <string> > rgf_to_check;
+
+const string groupcode_allowed [] = {
+		"A", "B", "C", "D", "E", "F", "G", "H", "I", "X",
+		""
+};
+
+const vector<string> allowed_groupcodes(from_array(groupcode_allowed));
+
+const string colorcode_allowed [] = {
+		"A", "B", "C", "D", "E", "F", "G", "H", "I", "J",
+		"0", "1", "2", "3", "4", "5", "6", "7", "8", "9",
+		""
+};
+
+const vector<string> allowed_colorcodes(from_array(colorcode_allowed));
+
+const string datatype_allowed [] = {
+		"BEDDING",
+		"BOUDAIN",
+		"CONTACT",
+		"CROSSBEDDING",
+		"FOLDAXIS",
+		"FOLDPLANE",
+		"FOLDSURFACE",
+		"KINK",
+		"LINEATION",
+		"LITHOLOGY",
+		"LITHOCLASE",
+		"SC",
+		"S1", "S2", "S3", "S4", "S5",
+		"FRACTURE",
+		"STRIAE",
+		"USERPLANE4", "USERPLANE5",
+		"USERLINEATION1", "USERLINEATION2", "USERLINEATION3", "USERLINEATION4", "USERLINEATION5",
+		"VEIN"
+};
+
+const vector<string> allowed_datatypes(from_array(datatype_allowed));
+
+const string striae_sense_allowed [] = {
+		"+", "THRUST", "UP", "INVERSE", "U", "I",
+		"-", "NORMAL", "FAULT", "DOWN", "DOWNWARD", "N",
+		"DEXTRAL", "DX", "D",
+		"SINISTRAL", "SN", "S",
+		"X", "NONE"
+};
+
+const vector<string> allowed_striae_senses(from_array(striae_sense_allowed));
+
+const string bedding_sense_allowed [] = {
+		"O", "OVERTURNED",
+		"N", "NORMAL",
+		""
+};
+
+const vector<string> allowed_bedding_senses(from_array(bedding_sense_allowed));
+
+const string geodetic_allowed [] = {
+		"N", "NNE", "NE", "ENE",
+		"E", "ESE", "SE", "SSE",
+		"S", "SSW", "SW", "WSW",
+		"W", "WNW", "NW", "NNW"
+};
+
+const vector<string> allowed_geodetics(from_array(geodetic_allowed));
+
+enum record_name {
+	DATA_ID,
+	GROUP,
+	COLOR,
+	LOCATION,
+	LOCX,
+	LOCY,
+	FORMATION,
+	DATATYPE,
+	DIR,
+	DIP,
+	LDIR,
+	LDIP,
+	SENSE,
+	PALEONORTH,
+	COMMENT,
+	SIZE
+};
+
+
+/*int ID_index() {
+
+	return ID;
+}
+
+int NAME_index() {
+
+	return NAME;
+}
+
+int VALUE_index() {
+
+	return VALUE;
+}
+ */
+
+struct record {
+
+	//record() : id(-1), name("default name"), value(-1) { }
+
+	string data_id;
+	string group;
+	string color;
+	string location;
+	string locx;
+	string locy;
+	string formation;
+	string datatype;
+	double dir;
+	double dip;
+	double ldir;
+	double ldip;
+	string sense;
+	double paleonorth;
+	string comment;
+
+};
+
+vector<record> converted_table;
+
+}
+
+
+
 string inputfilename () {
 
 	string filename;
 	string projectname;
 	ifstream rgffile;
-	
+
 	do {
 
 		cout << endl << "Enter RGF file (*.rgf) name without extension........:  " << flush;
@@ -39,995 +174,441 @@ string inputfilename () {
 	return projectname;
 }
 
-bool rgf_file_existence (string projectname) {
+void push_to_table(const string& line) {
 
-	ifstream rgffile;
+	vector<string> row;
 
-	string filename = projectname + ".rgf";
-	rgffile.open (filename.c_str());
+	string cell;
 
-	if (!(rgffile.is_open())) {
+	istringstream iss(line);
 
-		cout << "    - ERROR, cannot open input datafile." << endl;
-		return false;
+	while (getline(iss, cell, '\t')) {
+
+		cell = capslock (cell);
+
+		row.push_back(cell);
 	}
 
-	else {
+	if (row.size() < SIZE) {
 
-		cout <<"    - Input file opened successfully." << endl;
-		return true;
+		row.resize(SIZE);
 	}
+
+	rgf_to_check.push_back(row);
 }
 
-bool tabcheck (string projectname) {
+void input_rgf (const string& projectname) {
 
-	ifstream rgffile;
-	string RECORD;	char  RECORDchar;
-	string temp;
+	rgf_to_check.clear();
 
-	size_t errorcounter = 0;
-	size_t i = 0;
+	int lines_read = 0;
 
-	int j = 1;
-	int tabnumber;
-	
-	string filename = projectname + ".rgf";
-	rgffile.open (filename.c_str());
+	ifstream rgf_file((projectname + ".rgf").c_str()) ;
 
-	if (!(rgffile.is_open())) {
+	string line;
 
-		cout << "    - ERROR, cannot open input datafile." << endl;
-		return false;
+	while (getline(rgf_file, line)) {
+
+		++lines_read;
+
+		push_to_table(line);
 	}
 
-	if (rgffile.eof()) {
+	cout << "    - Input file opened, " << lines_read << " record(s) found." << endl;
 
-		cout << "    - ERROR, missing header line." << endl;
-		return false;
-	}
-
-	getline (rgffile, temp);
-
-	while  (!(rgffile.eof())) {
-
-		j++;
-		i = 0;		
-		tabnumber = 0;
-
-		getline (rgffile, RECORD);
-
-			if (RECORD.length() == 0) {
-
-				errorcounter++;
-
-				if (errorcounter == 1) cout << "    - ERROR: Missing TAB character(s) in following rows:  " << j << flush;
-				
-				if (errorcounter > 1) cout << ", " << j << flush;
-			}
-			
-			if ((RECORD.length() < 15) && (RECORD.length() > 0)) {
-
-				errorcounter++;
-
-				if (errorcounter == 1) cout <<"    - ERROR: Missing TAB character(s) in following record(s):  " << j << flush;
-
-				if (errorcounter > 1)  cout << ", " << j << flush;
-			}
-			
-			while  (i < RECORD.length()) {
-
-				RECORDchar = RECORD.at(i);
-				
-				if (RECORDchar == '\t') tabnumber++;
-				
-				if ((i+1 == RECORD.length()) && (tabnumber < 14) && (RECORD.length() > 14)) {
-
-					errorcounter++;
-					
-					if (errorcounter == 1) cout << "    - ERROR: Missing TAB character(s) in following record(s):  " << j << flush;
-
-					if (errorcounter > 1)  cout << ", " << j << flush;
-			}
-
-			i++;
-		}
-	}
-
-	rgffile.close();
-	
-	if ((errorcounter > 0) && (j > 0)) return false;
-
-	if ((j == 1) && (RECORD.length() == 0)) return false;
-
-	else {
-
-		cout <<"    - Correct file structure in all of "<< j-1 << " records." << endl;
-		return true;
-	}
+	return;
 }
 
-bool IDcheck (string projectname) {
+void complete_rgf_to_check () {
 
-	ifstream rgffile;
-	string ID;
-	string temp;
+	for ( size_t i = 2; i < rgf_to_check.size(); i++) {
 
-	int i=0;
-	bool errorlevel = false;
+		if (rgf_to_check.at(i).at(GROUP) == "") 	rgf_to_check.at(i).at(GROUP) = 		rgf_to_check.at(i-1).at(GROUP);
+		if (rgf_to_check.at(i).at(COLOR) == "") 	rgf_to_check.at(i).at(COLOR) = 		rgf_to_check.at(i-1).at(COLOR);
+		if (rgf_to_check.at(i).at(LOCATION) == "") 	rgf_to_check.at(i).at(LOCATION) = 	rgf_to_check.at(i-1).at(LOCATION);
+		if (rgf_to_check.at(i).at(LOCX) == "") 		rgf_to_check.at(i).at(LOCX) = 		rgf_to_check.at(i-1).at(LOCX);
+		if (rgf_to_check.at(i).at(LOCY) == "") 		rgf_to_check.at(i).at(LOCY) = 		rgf_to_check.at(i-1).at(LOCY);
+		if (rgf_to_check.at(i).at(FORMATION) == "") rgf_to_check.at(i).at(FORMATION) = 	rgf_to_check.at(i-1).at(FORMATION);
+		if (rgf_to_check.at(i).at(DATATYPE) == "") 	rgf_to_check.at(i).at(DATATYPE) = 	rgf_to_check.at(i-1).at(DATATYPE);
+		if (rgf_to_check.at(i).at(PALEONORTH) == "")rgf_to_check.at(i).at(PALEONORTH) = rgf_to_check.at(i-1).at(PALEONORTH);
+	}
+
+	return;
+}
+
+bool IDcheck_duplicate () {
 
 	map <string, int> record_to_check;
-	
-	string filename = projectname+".rgf";
-	rgffile.open (filename.c_str());
 
-	if (!(rgffile.is_open())) {
+	bool error = false;
 
-		cout << "    - ERROR, cannot open input datafile." << endl;
-		return false;
-	}
+	size_t i = 0;
 
-	getline (rgffile, temp);
+	for (i = 0; i < rgf_to_check.size(); i++) {
 
-	while (!(rgffile.eof())) {
-
-		i++;
-
-		getline (rgffile, ID, '\t');
-		getline (rgffile, temp);
+		string ID = rgf_to_check.at(i).at(DATA_ID);
 
 		pair<string, int> ID_and_counter(ID, i);
 
-		pair<map<string, int>::iterator, bool> p = record_to_check.insert(ID_and_counter);
+		pair <map <string, int>::iterator, bool> p = record_to_check.insert(ID_and_counter);
+
 
 		if (!(p.second)) {
 
-			cout << "    - ERROR: ID '" << ID << "' used in line " << i << " is already used at line '" << (*(p.first)).second << "' ." <<endl;
-			errorlevel = true;
+			cout << "    - ERROR: DATA_ID '" << ID << "' used in line " << i << " is already used at line '" << (*(p.first)).second << "' ." <<endl;
+
+			error = true;
 		}
 	}
 
-	rgffile.close();
+	if (error) return false;
 
-	if (!(errorlevel)) {
-
-		cout << "    - Correct ID's in all of " << i << " records." << endl;
-		return true;
-	}
-
-	else return false;
-}
-
-bool GCcheck (string projectname) {
-
-	ifstream rgffile;
-	string GC;
-	string temp;
-
-	int i = 0;
-	int errorcounter = 0;
-	string ID;
-
-	string filename = projectname+".rgf";
-	rgffile.open (filename.c_str());
-
-	if (!(rgffile.is_open())) {
-
-		cout << "    - ERROR, cannot open input datafile." << endl;
-		return false;
-	}
-
-	getline (rgffile, temp);
-
-	while (!(rgffile.eof())) {
-
-		getline (rgffile, ID, '\t');
-		getline (rgffile, GC, '\t');
-		getline (rgffile, temp);
-
-		GC = capslock (GC);
-
-		if  (!(
-			(GC=="A") || (GC=="B") || (GC=="C") || (GC=="D") || (GC=="E") ||
-			(GC=="F") || (GC=="G") || (GC=="H") || (GC=="I") || (GC=="X") ||
-			(GC=="")
-			 ))
-		
-		{
-			errorcounter++;
-
-			if (errorcounter == 1) cout <<"    - ERROR: incorrect group codes(s) in following record(s):  " << ID << flush;
-			
-			if (errorcounter > 1)  cout << ", " << ID << flush;
-		}
-
-		i++;
-	}
-	
-	rgffile.close();
-
-	if ((errorcounter > 0) && (i>0)) cout << "." <<endl;
-
-	if (errorcounter==0) {
-
-		cout <<"    - Correct group codes in all of " << i << " records." << endl;
-		return true;
-	}
-
-	else return false;
-}
-
-bool LOCcheck (string projectname) {
-
-	ifstream rgffile;
-	string LOC;
-	string temp;
-
-	string filename = projectname+".rgf";
-	rgffile.open (filename.c_str());
-
-	if (!(rgffile.is_open())) {
-
-		cout << "    - ERROR, cannot open input datafile." << endl;
-		return false;
-	}
-
-	getline (rgffile, temp);
-
-	getline (rgffile, temp, '\t');
-	getline (rgffile, temp, '\t');
-	getline (rgffile, temp, '\t');
-	getline (rgffile, LOC, '\t');
-	getline (rgffile, temp);
-
-	if  (LOC == "") {
-		
-		cout << "    - ERROR: no location ID in the first record. Please try again." << endl;
-		return false;
-	}
-	
-	else {
-
-		cout << "    - Correct location data in the first record." << endl;
-		return true;
-	}
-}
-
-bool XYcheck (string projectname) {
-
-	ifstream rgffile;
-
-	string ID;
-	string coordX;
-	string coordY;
-	string temp;
-
-	int i=0;
-	int errorcounter=0;
-
-	string filename = projectname+".rgf";
-	rgffile.open (filename.c_str());
-
-	if (!(rgffile.is_open())) {
-
-		cout << "    - ERROR, cannot open input datafile." << endl;
-		return false;
-	}
-
-	getline (rgffile, temp);
-
-	while (!(rgffile.eof())) {
-
-		i++;
-
-		getline (rgffile, ID, '\t');
-		getline (rgffile, temp, '\t');
-		getline (rgffile, temp, '\t');
-		getline (rgffile, temp, '\t');
-		getline (rgffile, coordX, '\t');
-		getline (rgffile, coordX, '\t');
-		getline (rgffile, temp);
-
-		if 	(((coordX != "") && (coordX != "0") && (coordX != "0.0") && (coordX != "0.0") && (atof(coordX.c_str()) <= 0.0)) ||
-			 ((coordY != "") && (coordY != "0") && (coordY != "0.0") && (coordY != "0.0") && (atof(coordY.c_str()) <= 0.0))) {
-
-			errorcounter++;
-
-			if (errorcounter == 1) {
-
-				cout <<"    - ERROR: incorrect coordinate(s) in the following record(s):  " << ID << flush;
-			}
-
-			if (errorcounter > 1) {
-
-				cout << ", " << ID << flush;
-			}
-		}
-	}
-
-	rgffile.close();
-
-	if ((errorcounter > 0) && (i > 0)) {
-
-		cout << "." <<endl;
-	}
-
-	if (errorcounter == 0) {
-
-		cout <<"    - Correct X and Y coordinates in all of " << i << " records." << endl;
-
-		return true;
-	}
-
-	else return false;
-}
-
-bool COLORcheck (string projectname) {
-
-	ifstream rgffile;
-
-	string ID;
-	string COLOR;
-	string temp;
-	int i = 0;
-	int errorcounter = 0;
-
-	string filename = projectname+".rgf";
-	rgffile.open (filename.c_str());
-
-	if (!(rgffile.is_open())) {
-
-		cout << "    - ERROR, cannot open input datafile." << endl;
-		return false;
-	}
-
-	getline (rgffile, temp);
-
-	while (!(rgffile.eof())) {
-
-		i++;
-
-		getline (rgffile, ID, '\t');
-		getline (rgffile, temp, '\t');
-		getline (rgffile, COLOR, '\t');
-		getline (rgffile, temp);
-
-
-		COLOR = capslock (COLOR);
-
-		if  (!(
-			(COLOR=="0") || (COLOR=="1") || (COLOR=="2") || (COLOR=="3") || (COLOR=="4") ||
-			(COLOR=="5") || (COLOR=="6") || (COLOR=="7") || (COLOR=="8") || (COLOR=="9") ||
-			(COLOR=="A") || (COLOR=="B") || (COLOR=="C") || (COLOR=="D") || (COLOR=="E") ||
-			(COLOR=="F") || (COLOR=="G") || (COLOR=="H") || (COLOR=="I") || (COLOR=="J") ||
-			(COLOR=="")
-			))
-		
-		{
-			errorcounter++;
-
-			if (errorcounter == 1) {
-
-				cout <<"    - ERROR: incorrect color code(s) in following record(s):  " << ID;
-			}
-
-			if (errorcounter > 1) cout << ", " << ID  << flush;
-
-		}
-	}
-	
-	rgffile.close();
-
-	if ((errorcounter > 0) && (i>0)) {
-
-		cout << "." <<endl;
-	}
-
-	if (errorcounter==0) {
-
-		cout <<"    - Correct color codes in all of " << i << " records." << endl;
-		return true;
-	}
-
-	else return false;
-}
-
-bool DATATYPEcheck (string projectname) {
-
-	ifstream rgffile;
-
-	string ID;
-	string DATATYPE;
-	string temp;
-	string previous = "";
-
-	int i = 0;
-	int errorcounter = 0;
-
-	string filename = projectname+".rgf";
-	rgffile.open (filename.c_str());
-
-	if (!(rgffile.is_open())) {
-
-		cout << "    - ERROR, cannot open input datafile." << endl;
-		return false;
-	}
-
-	getline (rgffile, temp);
-
-	while (!(rgffile.eof())) {
-
-		i++;
-
-		getline (rgffile, ID, '\t');
-		getline (rgffile, temp, '\t');
-		getline (rgffile, temp, '\t');
-		getline (rgffile, temp, '\t');
-		getline (rgffile, temp, '\t');
-		getline (rgffile, temp, '\t');
-		getline (rgffile, temp, '\t');
-		getline (rgffile, DATATYPE, '\t');
-		getline (rgffile, temp);
-
-		DATATYPE = capslock (DATATYPE);
-
-		if ((i==1) && (DATATYPE == "")) {
-
-			cout << "    - ERROR: incorrect or missing data type in first record." << ID << endl;
-
-		}
-
-		if  (!(		
-			(DATATYPE == "BOUDAIN") ||			(DATATYPE == "CONTACT") ||			(DATATYPE == "FOLDAXIS") ||
-			(DATATYPE == "FOLDPLANE") || 		(DATATYPE == "KINK") || 			(DATATYPE == "LINEATION") ||
-			(DATATYPE == "LITHOLOGY") || 		(DATATYPE == "LITHOCLASE") ||		(DATATYPE == "SC") ||
-			(DATATYPE == "BEDDING") ||			(DATATYPE == "S1") ||				(DATATYPE == "S2") ||
-			(DATATYPE == "S3") ||				(DATATYPE == "S4") ||				(DATATYPE == "S5") ||
-			(DATATYPE == "FRACTURE") ||			(DATATYPE == "STRIAE") ||			(DATATYPE == "CROSSBEDDING") ||
-			(DATATYPE == "VEIN") ||				(DATATYPE == "FOLDSURFACE") ||		(DATATYPE == "USERPLANE4") ||
-			(DATATYPE == "USERPLANE5") ||		(DATATYPE == "USERLINEATION1") ||	(DATATYPE == "USERLINEATION2") ||
-			(DATATYPE == "USERLINEATION3") ||	(DATATYPE == "USERLINEATION4") ||	(DATATYPE == "USERLINEATION5") ||
-			(DATATYPE == "")
-			))
-		
-		{
-			errorcounter++;
-
-			if (errorcounter == 1) {
-
-				cout <<"    - ERROR: incorrect data type(s) in following record(s):  " << ID << flush;
-			}
-			if (errorcounter > 1) {
-
-				cout<<", " << ID << flush;
-			}
-		}
-
-		previous = DATATYPE;
-	}
-
-	rgffile.close();
-
-	if ((errorcounter > 0) && (i > 0)) {
-
-		cout << "." <<endl;
-	}
-	
-	if (errorcounter == 0) {
-
-		cout <<"    - Correct data types in all of " << i << " records." << endl;
-		return true;
-	}
-
-	else return false;
-}
-
-bool DIPDIRcheck (string projectname) {
-
-	ifstream rgffile;
-
-	string ID;
-	string DIPDIR;	double numDIPDIR;
-	string DATATYPE;
-	bool LITHOLOGY = false;
-	string temp;
-	string previous;
-
-	int i=0;
-	int errorcounter=0;
-
-	string filename = projectname+".rgf";
-	rgffile.open (filename.c_str());
-	
-	if (!(rgffile.is_open())) {
-
-		cout << "    - ERROR, cannot open input datafile." << endl;
-		return false;
-	}
-
-	getline (rgffile, temp);
-
-	while (!(rgffile.eof())) {
-
-		i++;
-
-		getline (rgffile, ID, '\t');
-		getline (rgffile, temp, '\t');
-		getline (rgffile, temp, '\t');
-		getline (rgffile, temp, '\t');
-		getline (rgffile, temp, '\t');
-		getline (rgffile, temp, '\t');
-		getline (rgffile, temp, '\t');
-		getline (rgffile, DATATYPE, '\t');
-		getline (rgffile, DIPDIR, '\t');
-		getline (rgffile, temp);
-
-		
-		if ((DATATYPE == "LITHOLOGY") || ((DATATYPE == "") && (previous == "LITHOLOGY"))) LITHOLOGY = true;
-
-		else LITHOLOGY = false;
-
-		if ((DIPDIR != "") && (LITHOLOGY)) {
-
-			errorcounter++;	
-
-			if (errorcounter == 1) 	cout <<"    - ERROR: incorrect dip direction(s) in following record(s):  " << ID << flush;
-
-			if (errorcounter > 1) 	cout << ", " << ID << flush;
-		}
-
-
-		if ((DIPDIR == "") && (!(LITHOLOGY))) {
-
-			errorcounter++;	
-
-			if (errorcounter == 1) 	cout <<"    - ERROR: incorrect dip direction(s) in following record(s):  " << ID << flush;
-
-			if (errorcounter > 1) 	cout << ", " << ID << flush;
-		}
-
-
-		if (!((DIPDIR == "0") || (DIPDIR == "0.0") || (DIPDIR == "00")|| (DIPDIR == "000") || (DIPDIR == "0.00")  || (DIPDIR == ""))) {
-
-			numDIPDIR = atof(DIPDIR.c_str());
-
-			if (numDIPDIR == 0.0) {
-
-				errorcounter++;
-
-				if (errorcounter == 1) 	cout <<"    - ERROR: incorrect dip direction(s) in following record(s):  " << ID << flush;
-
-				if (errorcounter > 1) 	cout << ", " << ID << flush;
-			}
-
-			if ((numDIPDIR < 0.0) || (numDIPDIR > 360.0)) {
-
-				errorcounter++;	
-
-				if (errorcounter == 1) 	cout <<"    - ERROR: incorrect dip direction(s) in following record(s):  " << ID << flush;
-
-				if (errorcounter > 1)  	cout << ", " << ID << flush;
-
-			}
-		}
-
-		previous = DATATYPE;
-	}
-
-	rgffile.close();
-	
-	if ((errorcounter > 0) && (i > 0)) 	cout << "." <<endl;
-
-	if (errorcounter == 0) {
-
-		cout <<"    - Correct dip directions in all of " << i << " records." << endl;
-		return true;
-	}	
-
-	else return false;
-}
-
-bool DIPcheck (string projectname) {
-
-	ifstream rgffile;
-
-	string ID;
-	string DIP;		double numDIP;
-	string DATATYPE;
-	string temp;
-	string previous;
-
-	bool LITHOLOGY = false;
-
-	int i=0;
-	int errorcounter=0;
-
-	string filename = projectname+".rgf";
-	rgffile.open (filename.c_str());
-	
-	if (!(rgffile.is_open())) {
-
-		cout << "    - ERROR, cannot open input datafile." << endl;
-		return false;
-	}
-
-	getline (rgffile, temp);
-
-	while (!(rgffile.eof())) {
-
-		i++;
-
-		getline (rgffile, ID, '\t');
-		getline (rgffile, temp, '\t');
-		getline (rgffile, temp, '\t');
-		getline (rgffile, temp, '\t');
-		getline (rgffile, temp, '\t');
-		getline (rgffile, temp, '\t');
-		getline (rgffile, temp, '\t');
-		getline (rgffile, DATATYPE, '\t');
-		getline (rgffile, temp, '\t');
-		getline (rgffile, DIP, '\t');
-		getline (rgffile, temp);
-
-		LITHOLOGY = false;
-
-		if ((DATATYPE == "LITHOLOGY") || ((DATATYPE == "") && (previous == "LITHOLOGY"))) LITHOLOGY = true;
-
-		if ((DIP != "") && (LITHOLOGY))	{
-
-			errorcounter++;	
-
-				if (errorcounter == 1) 	cout <<"    - ERROR: incorrect dip(s) in following record(s):  " << ID << flush;
-
-				if (errorcounter > 1) 	cout << ", " << ID;
-		}
-
-
-		if ((DIP == "") && (!(LITHOLOGY))) {
-
-			errorcounter++;	
-
-				if (errorcounter == 1) {
-
-					cout <<"    - bERROR: incorrect dip(s) in following record(s):  " << ID << flush;
-				}	
-
-				if (errorcounter > 1) {
-
-					cout<<", "<<ID;
-				}
-		}
-
-		if (!((DIP == "0") || (DIP == "0.0")|| (DIP == "000") || (DIP == "00") || (DIP == "0.00") || (DIP == "") )) {
-
-			numDIP = atof(DIP.c_str());
-
-			if (numDIP == 0.0) {
-
-				errorcounter++;
-				
-				if (errorcounter == 1) {
-
-					cout << "    - ERROR: incorrect dip(s) in following record(s):  " << ID << flush;
-				}
-
-				if (errorcounter > 1) {
-
-					cout << ", " << ID;
-				}
-			}
-
-			if ((numDIP < 0.0) || (numDIP > 90.0)) {
-
-				errorcounter++;
-
-				if (errorcounter == 1) {
-
-					cout << "    - ERROR: incorrect dip(s) in following record(s):  " << ID << flush;
-				}
-
-				if (errorcounter > 1) {
-
-					cout << ", " << ID;
-				}
-			}
-		}
-
-		previous = DATATYPE;
-	}
-
-	rgffile.close();
-	
-	if ((errorcounter > 0) && (i>0)) {
-
-		cout << "." <<endl;
-	}
-
-	if (errorcounter==0) {
-
-		cout << "    - Correct dips in all of " << i << " records." << endl;
-		return true;
-	}
-
-	else return false;
-}
-
-bool STRIAE_MISFIT_check (string dipdir, string dip, string ldir, string ldip) {
-
-	DIPDIR_DIP plane, lineation;
-	VCTR PN, SN;
-
-	double misfit = 0.0;
-
-	if (ldip != "") {
-
-		plane.DIPDIR = atof(dipdir.c_str());
-		plane.DIP = atof(dip.c_str());
-		lineation.DIPDIR = atof(ldir.c_str());
-		lineation.DIP = atof(ldip.c_str());
-
-		PN = DXDYDZ_from_dipdir_dip (plane);
-		SN = DXDYDZ_from_dipdir_dip (lineation);
-
-		misfit = ASIN (dotproduct(PN, SN, false));
-	}
-
-	if (misfit > 90.0) return false;
+	cout << "    - Correct DATA_ID's in all of " << i << " records." << endl;
 
 	return true;
 }
 
-bool STRIAE_SC_check (string projectname) {
+bool IDcheck () {
 
-	ifstream rgffile;
+	size_t errorcounter = 0;
 
-	string ID;
-	string DATATYPE;	
-	string previous;
-	string DIPDIR;
-	string DIP;
-	string LDIR;
-	string LDIP;
-	string SENSE;
+	size_t i = 0;
 
-	bool SCcorrect = false;
-	bool LINEATIONcorrect = false;
-	bool PITCHcorrect = false;
-	bool OTHERcorrect = false;
-	bool BEDDINGcorrect = false;
+	for (i = 1; i < rgf_to_check.size(); i++) {
 
-	bool STRIAE = false;
-	bool SC = false;
-	bool BEDDING = false;
+		string ID = rgf_to_check.at(i).at(DATA_ID);
 
-	string temp;
-	int i = 0;
-	int errorcounter = 0;
+		if (ID == "") errorcounter++;
 
-	string filename = projectname+".rgf";
-	rgffile.open (filename.c_str());
-	
-	if (!(rgffile.is_open())) {
+		if (errorcounter == 1) cout <<"    - ERROR: empty DATA_ID(s) in following record(s):  " << ID << flush;
 
-		cout << "    - ERROR, cannot open input datafile." << endl;
-		return false;
+		if (errorcounter > 1) cout << ", " << ID << flush;
 	}
 
-	getline (rgffile, temp);
-
-	while (!(rgffile.eof())) {
-
-		i++;
-
-		SCcorrect = false;
-		LINEATIONcorrect = false;
-		PITCHcorrect = false;
-		OTHERcorrect = false;
-		BEDDINGcorrect = false;
-
-		STRIAE = false;
-		SC = false;
-		BEDDING = false;
-
-
-		getline (rgffile, ID, '\t');
-		getline (rgffile, temp, '\t');
-		getline (rgffile, temp, '\t');
-		getline (rgffile, temp, '\t');
-		getline (rgffile, temp, '\t');
-		getline (rgffile, temp, '\t');
-		getline (rgffile, temp, '\t');
-		getline (rgffile, DATATYPE, '\t');
-		getline (rgffile, DIPDIR, '\t');
-		getline (rgffile, DIP, '\t');
-		getline (rgffile, LDIR, '\t');
-		getline (rgffile, LDIP, '\t');
-		getline (rgffile, SENSE, '\t');
-		getline (rgffile, temp);
-
-		DATATYPE = capslock (DATATYPE);
-		SENSE = capslock (SENSE);
-
-		if ((DATATYPE=="STRIAE") || ((DATATYPE=="") && (previous == "STRIAE"))) STRIAE = true;
-
-		else if ((DATATYPE=="BEDDING") || ((DATATYPE=="") && (previous == "BEDDING"))) BEDDING = true;
-
-		else if ((DATATYPE=="SC") || ((DATATYPE=="") && (previous == "SC"))) 		SC = true;
-
-		else {};
-
-
-
-		if (
-				((!SC) && (!STRIAE ) && (!BEDDING)) &&
-				(LDIP == "") &&
-				(LDIR == "") &&
-				(SENSE == "")
-		) {
-			OTHERcorrect = true;
-		}
-
-		else if (
-				(SC) &&
-				((LDIR == "0") || (LDIR == "0.0")|| (LDIR == "000")|| (LDIR == "00") || (LDIR == "0.00") || ((atof(LDIR.c_str()) > 0.0) && (atof(LDIR.c_str()) <= 360.0))) &&
-				((LDIP == "0") || (LDIP == "0.0")|| (LDIP == "000")|| (LDIP == "00") || (LDIP == "0.00") || ((atof(LDIP.c_str()) > 0.0) && (atof(LDIP.c_str()) <= 90.0))) &&
-				(SENSE == "")
-		) {
-			SCcorrect = true;
-		}
-
-		else if (
-				(STRIAE) &&
-				((LDIR == "0") || (LDIR == "0.0")|| (LDIR == "00")|| (LDIR == "000") || (LDIR == "0.00") || ((atof(LDIR.c_str()) > 0.0) && (atof(LDIR.c_str()) <= 360.0))) &&
-				((LDIP == "0") || (LDIP == "0.0")|| (LDIP == "00")|| (LDIP == "000") || (LDIP == "0.00") || ((atof(LDIP.c_str()) > 0.0) && (atof(LDIP.c_str()) <= 90.0))) &&
-				((SENSE == "+") 		|| (SENSE == "THRUST")	|| (SENSE == "UP") 		|| (SENSE == "INVERSE")	|| (SENSE == "U") 		|| (SENSE == "I") ||
-				 (SENSE == "-")   		|| (SENSE == "NORMAL")	|| (SENSE == "FAULT") 	|| (SENSE == "DOWN")	|| (SENSE == "DOWNWARD")|| (SENSE == "N")  ||
-				 (SENSE == "DEXTRAL")  	|| 	(SENSE == "DX")  	|| (SENSE == "D")  		||
-				 (SENSE == "SINISTRAL") || 	(SENSE == "SN")		|| 	(SENSE == "S")		||
-				 (SENSE == "X")	||	(SENSE == "NONE"))
-				 &&
-				(STRIAE_MISFIT_check (DIPDIR, DIP, LDIR, LDIP) )
-		) {
-			LINEATIONcorrect = true;
-		}
-
-		else if (
-				(BEDDING) &&
-				((DIPDIR == "0") || (DIPDIR == "0.0")|| (DIPDIR == "00")|| (DIPDIR == "000") || (DIPDIR == "0.00") || ((atof(DIPDIR.c_str()) > 0.0) && (atof(DIPDIR.c_str()) <= 360.0))) &&
-				((DIP == "0") || (DIP == "0.0")|| (DIP == "00")|| (DIP == "000") || (DIP == "0.00") || ((atof(DIP.c_str()) > 0.0) && (atof(DIP.c_str()) <= 90.0))) &&
-				((SENSE == "O") 		|| (SENSE == "N")	||  (SENSE == "") ||
-				 (SENSE == "OVERTURNED")|| (SENSE == "NORMAL")
-						)
-
-		) {
-			BEDDINGcorrect = true;
-		}
-
-		else if (
-				(STRIAE) &&
-				((LDIR == "0") || (LDIR == "0.0")|| (LDIR == "00")|| (LDIR == "000") || (LDIR == "0.00") || ((atof(LDIR.c_str()) > 0.0) && (atof(LDIR.c_str()) <= 90.0))) &&
-				((capslock(LDIP) == "N") || (capslock(LDIP) == "NNE") || (capslock(LDIP) == "NE") || (capslock(LDIP) == "ENE") ||
-				 (capslock(LDIP) == "E") || (capslock(LDIP) == "ESE") || (capslock(LDIP) == "SE") || (capslock(LDIP) == "SSE") ||
-				 (capslock(LDIP) == "S") || (capslock(LDIP) == "SSW") || (capslock(LDIP) == "SW") || (capslock(LDIP) == "WSW") ||
-				 (capslock(LDIP) == "W") || (capslock(LDIP) == "WNW") || (capslock(LDIP) == "NW") || (capslock(LDIP) == "NNW")) &&
-				((SENSE == "+") 			|| (SENSE == "THRUST")	|| (SENSE == "UP") 		|| (SENSE == "INVERSE") 	|| (SENSE == "U") 			|| (SENSE == "I") ||
-				 (SENSE == "-")   			|| (SENSE == "NORMAL")	|| (SENSE == "FAULT") 	|| (SENSE == "DOWN")	|| (SENSE == "DOWNWARD")	|| (SENSE == "N") ||
-				 (SENSE == "DEXTRAL")  		|| 	(SENSE == "DX")  	|| (SENSE == "D")  		||
-				 (SENSE == "SINISTRAL")  	|| 	(SENSE == "SN")		|| 	(SENSE == "S")		||
-				 (SENSE == "X")			||	(SENSE == "NONE"))
-		) {
-			PITCHcorrect = true;
-		}
-
-		else {}
-
-		if((!(SCcorrect)) && (!(LINEATIONcorrect)) && (!(PITCHcorrect)) && (!(BEDDINGcorrect)) && (!(OTHERcorrect))) {
-
-			errorcounter++;
-			if (errorcounter == 1) cout <<"  ERROR: incorrect striae/SC data in following record(s): " << ID;
-			if (errorcounter > 1) cout << ", " << ID;
-			
-		}
-
-		if ((DATATYPE=="STRIAE") || ((DATATYPE=="") && (previous == "STRIAE"))) previous = "STRIAE";
-		else if  ((DATATYPE=="SC") || ((DATATYPE=="") && (previous == "SC"))) 	previous = "SC";
-		else if  ((DATATYPE=="BEDDING") || ((DATATYPE=="") && (previous == "BEDDING"))) 	previous = "BEDDING";
-
-		else previous = "";
-	}
-	
-	rgffile.close();
-	
-	if ((errorcounter > 0) && (i > 0)) cout << "." <<endl;
 	if (errorcounter == 0) {
 
-		cout <<"    - Correct striae/SC data in all of " << i << " records." << endl;
+		cout << "    - Existing DATA_ID's in all of " << i << " records." << endl;
+
 		return true;
 	}
 
-	else return false;
+	cout << "." <<endl;
+
+	return false;
 }
 
-bool PALEONcheck (string projectname) {
+bool GCcheck () {
 
-	ifstream rgffile;
+	size_t errorcounter = 0;
 
-	string ID;
-	string PALEON;
-	double numPALEON;
-	string temp;
-	int i=0;
-	int errorcounter=0;
+	size_t i = 0;
 
-	string filename = projectname+".rgf";
-	rgffile.open (filename.c_str());
-	
-	if (!(rgffile.is_open())) {
+	for (i = 1; i < rgf_to_check.size(); i++) {
 
-		cout << "    - ERROR, cannot open input datafile." << endl;
-		return false;
+		string groupcode = rgf_to_check.at(i).at(GROUP);
+
+		string ID = rgf_to_check.at(i).at(DATA_ID);
+
+		if (!is_allowed_groupcode (groupcode)) errorcounter++;
+
+		if (errorcounter == 1) cout <<"    - ERROR: incorrect group codes(s) in following record(s):  " << ID << flush;
+
+		if (errorcounter > 1) cout << ", " << ID << flush;
 	}
 
-	getline (rgffile, temp);
+	if (errorcounter == 0) {
 
-	while (!(rgffile.eof())) {
+		cout << "    - Correct group codes in all of " << i << " records." << endl;
+		
+		return true;
+	}
+	
+	cout << "." <<endl;
 
-		i++;
+	return false;
+}
 
-		getline (rgffile, ID, '\t');
-		getline (rgffile, temp, '\t');
-		getline (rgffile, temp, '\t');
-		getline (rgffile, temp, '\t');
-		getline (rgffile, temp, '\t');
-		getline (rgffile, temp, '\t');
-		getline (rgffile, temp, '\t');
-		getline (rgffile, temp, '\t');
-		getline (rgffile, temp, '\t');
-		getline (rgffile, temp, '\t');
-		getline (rgffile, temp, '\t');
-		getline (rgffile, temp, '\t');
-		getline (rgffile, temp, '\t');
-		getline (rgffile, PALEON, '\t');
-		getline (rgffile, temp);
+bool COLORcheck () {
 
+	size_t errorcounter = 0;
 
-		if (!((PALEON == "0") || (PALEON == "0.0") || (PALEON == "0.00")  || (PALEON == ""))) {
+	size_t i = 0;
 
-			numPALEON=atof(PALEON.c_str());
+	for (i = 1; i < rgf_to_check.size(); i++) {
 
-			if (numPALEON == 0.0) {
+		string colorcode = rgf_to_check.at(i).at(COLOR);
 
-				errorcounter++;
-				
-				if (errorcounter == 1) 	cout << "    - ERROR: incorrect paleo North data in following record(s):  " << ID << flush;
+		string ID = rgf_to_check.at(i).at(DATA_ID);
 
-				if (errorcounter > 1) 	cout << ", " << ID;
+		if (!is_allowed_colorcode (colorcode)) errorcounter++;
 
-			}
+		if (errorcounter == 1) cout <<"    - ERROR: incorrect color codes(s) in following record(s):  " << ID << flush;
 
-			if ((numPALEON < 0.0) || (numPALEON > 360.0)) {
-
-				errorcounter++;	
-
-				if (errorcounter == 1) 	cout << "    - ERROR: incorrect paleo North data in following record(s):  " << ID << flush;
-
-				if (errorcounter > 1) 	cout << ", " << ID;
-
-			}
-		}
+		if (errorcounter > 1) cout << ", " << ID << flush;
 	}
 
-	rgffile.close();
-	
-	if ((errorcounter > 0) && (i > 0)) 	cout << "." <<endl;
+	if (errorcounter == 0) {
 
-	if (errorcounter==0) {
+		cout << "    - Correct color codes in all of " << i << " records." << endl;
 
-		cout <<"    - Correct paleo North data in all of " << i << " records." << endl;
 		return true;
 	}
 
-	else return false;
+	cout << "." <<endl;
 
+	return false;
+}
+
+bool LOCcheck () {
+
+	bool correct = (rgf_to_check.at(0).at(LOCATION) != "");
+
+	if (!correct) cout <<"    - ERROR: LOCALITY must be indicated at least in the 1st record." << endl;
+
+	return correct;
+}
+
+bool XYcheck () {
+
+	size_t errorcounter = 0;
+
+	size_t i = 0;
+
+	for (i = 1; i < rgf_to_check.size(); i++) {
+
+		string COORD_X = rgf_to_check.at(i).at(LOCX);
+
+		string COORD_Y = rgf_to_check.at(i).at(LOCY);
+
+		string ID = rgf_to_check.at(i).at(DATA_ID);
+
+		if (!is_allowed_coordinate (COORD_X)) errorcounter++;
+
+		if (!is_allowed_coordinate (COORD_Y)) errorcounter++;
+
+		if (errorcounter == 1) cout <<"    - ERROR: incorrect coordinate(s) in following record(s):  " << ID << flush;
+
+		if (errorcounter > 1) cout << ", " << ID << flush;
+	}
+
+	if (errorcounter == 0) {
+
+		cout << "    - Correct coordinate(s) in all of " << i << " records." << endl;
+
+		return true;
+	}
+
+	cout << "." <<endl;
+
+	return false;
+}
+
+bool DATATYPEcheck () {
+
+	size_t errorcounter = 0;
+
+	size_t i = 0;
+
+	for (i = 1; i < rgf_to_check.size(); i++) {
+
+		string TYPE_OF_DATA = rgf_to_check.at(i).at(DATATYPE);
+
+		string ID = rgf_to_check.at(i).at(DATA_ID);
+
+		if (!is_allowed_datatype (TYPE_OF_DATA)) errorcounter++;
+
+		if (errorcounter == 1) cout <<"    - ERROR: incorrect data type(s) in following record(s):  " << ID << flush;
+
+		if (errorcounter > 1) cout << ", " << ID << flush;
+	}
+
+	if (errorcounter == 0) {
+
+		cout << "    - Correct data type(s) in all of " << i << " records." << endl;
+
+		return true;
+	}
+
+	cout << "." <<endl;
+
+	return false;
+}
+
+bool DIPDIRcheck () {
+
+	size_t errorcounter = 0;
+
+	size_t i = 0;
+
+	for (i = 1; i < rgf_to_check.size(); i++) {
+
+		string PLANE_DIR = rgf_to_check.at(i).at(DIR);
+
+		string ID = rgf_to_check.at(i).at(DATA_ID);
+
+		string TYPE_OF_DATA = rgf_to_check.at(i).at(DATATYPE);
+
+		if ((PLANE_DIR != "") && (TYPE_OF_DATA == "LITHOLOGY")) errorcounter++;
+
+		if ((PLANE_DIR != "") && (!is_allowed_dir (PLANE_DIR))) errorcounter++;
+
+		if (errorcounter == 1) cout <<"    - ERROR: incorrect strike/dip direction(s) in following record(s):  " << ID << flush;
+
+		if (errorcounter > 1) cout << ", " << ID << flush;
+	}
+
+	if (errorcounter == 0) {
+
+		cout << "    - Correct strike/dip direction(s) in all of " << i << " records." << endl;
+
+		return true;
+	}
+
+	cout << "." <<endl;
+
+	return false;
+}
+
+bool DIPcheck () {
+
+	size_t errorcounter = 0;
+
+	size_t i = 0;
+
+	for (i = 1; i < rgf_to_check.size(); i++) {
+
+		string PLANE_DIP = rgf_to_check.at(i).at(DIP);
+
+		string ID = rgf_to_check.at(i).at(DATA_ID);
+
+		string TYPE_OF_DATA = rgf_to_check.at(i).at(DATATYPE);
+
+		if ((PLANE_DIP != "") && (TYPE_OF_DATA == "LITHOLOGY")) errorcounter++;
+
+		if ((PLANE_DIP != "") &&  (!is_allowed_dip (PLANE_DIP))) errorcounter++;
+
+		if (errorcounter == 1) cout <<"    - ERROR: incorrect dip angle(s) in following record(s):  " << ID << flush;
+
+		if (errorcounter > 1) cout << ", " << ID << flush;
+	}
+
+	if (errorcounter == 0) {
+
+		cout << "    - Correct dip angle(s) in all of " << i << " records." << endl;
+
+		return true;
+	}
+
+	cout << "." <<endl;
+
+	return false;
+}
+
+bool STRIAE_SC_check () {
+
+	size_t i = 0;
+
+	size_t errorcounter = 0;
+
+	for (i = 1; i < rgf_to_check.size(); i++) {
+
+		bool STRIAE = 	rgf_to_check.at(i).at(DATATYPE) == "STRIAE";
+		bool SC = 		rgf_to_check.at(i).at(DATATYPE) == "SC";
+		bool BEDDING = 	rgf_to_check.at(i).at(DATATYPE) == "BEDDING";
+
+		string ID = 				rgf_to_check.at(i).at(DATA_ID);
+		string PLANE_DIR = 			rgf_to_check.at(i).at(DIR);
+		string PLANE_DIP = 			rgf_to_check.at(i).at(DIP);
+		string LINEATION_DIR = 		rgf_to_check.at(i).at(LDIR);
+		string LINEATION_DIP = 		rgf_to_check.at(i).at(LDIP);
+		string LINEATION_SENSE = 	rgf_to_check.at(i).at(SENSE);
+
+		bool OTHERcorrect = (
+				((!SC) && (!STRIAE ) && (!BEDDING)) &&
+				(LINEATION_DIR == "") &&
+				(LINEATION_DIP == "") &&
+				(LINEATION_SENSE == ""));
+
+		bool BEDDINGcorrect = (
+				(BEDDING) &&
+				(is_allowed_dir (PLANE_DIR)) &&
+				(is_allowed_dip (PLANE_DIP)) &&
+				(LINEATION_DIR == "") &&
+				(LINEATION_DIP == "") &&
+				is_allowed_bedding_sense (LINEATION_SENSE));
+
+		bool SCcorrect = (
+				(SC) &&
+				(is_allowed_dir (PLANE_DIR)) &&
+				(is_allowed_dip (PLANE_DIP)) &&
+				(is_allowed_dir (LINEATION_DIR)) &&
+				(is_allowed_dip (LINEATION_DIP)) &&
+				(LINEATION_SENSE == ""));
+
+		bool LINEATIONcorrect = (
+				(STRIAE) &&
+				(is_allowed_dir (PLANE_DIR)) &&
+				(is_allowed_dip (PLANE_DIP)) &&
+				(is_allowed_dir (LINEATION_DIR)) &&
+				(is_allowed_dip (LINEATION_DIP)) &&
+				is_allowed_striae_sense (LINEATION_SENSE));
+
+		bool PITCHcorrect = (
+				STRIAE &&
+				is_allowed_dir (PLANE_DIR) &&
+				is_allowed_dip (PLANE_DIP) &&
+				is_allowed_dip (LINEATION_DIR) &&
+				is_allowed_geodetic (LINEATION_DIP) &&
+				is_allowed_striae_sense (LINEATION_SENSE));
+
+		if (!(OTHERcorrect || BEDDINGcorrect || SCcorrect ||  LINEATIONcorrect || PITCHcorrect)) errorcounter++;
+
+		if (errorcounter == 1) cout <<"    - ERROR: incorrect striae/SC data in following record(s):  " << ID << flush;
+
+		if (errorcounter > 1) cout << ", " << ID << flush;
+	}
+
+	if (errorcounter == 0) {
+
+		cout << "    - Correct striae/SC in all of " << i << " records." << endl;
+
+		return true;
+	}
+
+	cout << "." <<endl;
+
+	return false;
+}
+
+bool PALEONcheck () {
+
+	size_t errorcounter = 0;
+
+	size_t i = 0;
+
+	for (i = 1; i < rgf_to_check.size(); i++) {
+
+		string P_NORTH = rgf_to_check.at(i).at(PALEONORTH);
+
+		string ID = rgf_to_check.at(i).at(DATA_ID);
+
+		if (!is_allowed_dir (P_NORTH) && P_NORTH != "") errorcounter++;
+
+		if (errorcounter == 1) cout <<"    - ERROR: incorrect paleo north data in following record(s):  " << ID << flush;
+
+		if (errorcounter > 1) cout << ", " << ID << flush;
+	}
+
+	if (errorcounter == 0) {
+
+		cout << "    - Correct paleo north data in all of " << i << " records." << endl;
+
+		return true;
+	}
+
+	cout << "." <<endl;
+
+	return false;
 }
 
 vector <string> check_rgf_inputs (vector <string> inputfilename_vector, bool batch) {
@@ -1085,20 +666,86 @@ vector <string> create_inputfilename_vector (int argc, char *argv[]) {
 
 bool rgffile_correct (string projectname) {
 
-	if  (!( rgf_file_existence (projectname) &&
-			tabcheck (projectname) &&
-			IDcheck (projectname) &&
-			GCcheck (projectname) &&
-			COLORcheck (projectname) &&
-			LOCcheck (projectname) &&
-			DATATYPEcheck (projectname) &&
-			DIPDIRcheck (projectname) &&
-			DIPcheck (projectname) &&
-			STRIAE_SC_check	(projectname) &&
-			PALEONcheck (projectname)		))
+	input_rgf (projectname);
+
+	complete_rgf_to_check ();
+
+	if  (!(
+			IDcheck () &&
+			IDcheck_duplicate () &&
+			GCcheck () &&
+			COLORcheck () &&
+			LOCcheck () &&
+			DATATYPEcheck () &&
+			DIPDIRcheck () &&
+			DIPcheck () &&
+			STRIAE_SC_check	() &&
+			PALEONcheck ()		))
 
 
 	throw rgf_error();
 
 	return true;
+}
+
+bool is_allowed_groupcode(const string& groupcode) {
+
+	return contains(allowed_groupcodes, groupcode);
+}
+
+bool is_allowed_colorcode(const string& colorcode) {
+
+	return contains(allowed_colorcodes, colorcode);
+}
+
+bool is_allowed_coordinate(const string& coordinate){
+
+	return (is_double (coordinate));
+}
+
+bool is_allowed_datatype(const string& datatype) {
+
+	return contains(allowed_datatypes, datatype);
+}
+
+bool is_allowed_dir(const string& s){
+
+	bool failed = true;
+
+	double value = string_to_double (s, failed);
+
+	return ((value >= 0.0) && (value <= 360.0) && !failed);
+}
+
+bool is_allowed_dip(const string& s) {
+
+	bool failed = true;
+
+	double value = string_to_double (s, failed);
+
+	return ((value >= 0.0) && (value <= 90.0) && !failed);
+}
+
+bool is_allowed_striae_sense(const string& sense) {
+
+	return contains(allowed_striae_senses, sense);
+}
+
+bool is_allowed_bedding_sense(const string& sense) {
+
+	return contains(allowed_bedding_senses, sense);
+}
+
+bool is_allowed_geodetic (const string& geodetic) {
+
+	return contains(allowed_geodetics, geodetic);
+}
+
+bool is_double (const string& s) {
+
+	bool failed = true;
+
+	double value = string_to_double (s, failed);
+
+	return (!failed);
 }

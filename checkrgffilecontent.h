@@ -5,34 +5,60 @@
 #define CHECKRGFFILECONTENT_HPP_
 
 #include <string>
+#include <algorithm>
 
 #include "structs.h"
 #include "common.h"
 
 using namespace std;
 
+template <typename T, size_t n>
+std::vector<T> from_array(const T (&array)[n]) {
+
+	return std::vector<T>(array, array+n);
+}
+
+template <typename T>
+bool contains(const std::vector<T>& vec, const T& elem) {
+
+	return std::find(vec.begin(), vec.end(), elem) != vec.end();
+}
+
 string inputfilename ();
 
-bool linenumbercheck (string projectname);
-bool rgf_file_existence (string projectname);
-bool tabcheck (string projectname);
-bool IDcheck (string projectname);
-bool GCcheck (string projectname);
-bool COLORcheck (string projectname);
-bool LOCcheck (string projectname);
-bool XYcheck (string projectname);
-bool DATATYPEcheck (string projectname);
-bool DIPDIRcheck (string projectname);
-bool DIPcheck (string projectname);
-string SENSEcheck (string SENSE);
-bool STRIAE_MISFIT_check (string dipdir, string dip, string ldir, string ldip);
-bool STRIAE_SC_check (string projectname);
-bool PALEONcheck (string projectname);
+void push_to_table(const string& line);
+void input_rgf (const string& projectname);
+
+void complete_rgf_to_check();
+
+bool IDcheck_duplicate ();
+bool IDcheck ();
+bool GCcheck ();
+bool COLORcheck ();
+bool LOCcheck ();
+bool XYcheck ();
+bool DATATYPEcheck ();
+bool DIPDIRcheck ( );
+bool DIPcheck ();
+bool STRIAE_SC_check ();
+bool PALEONcheck ();
 
 vector <string> check_rgf_inputs (vector <string> inputfilename_vector, bool batch);
 
 vector <string> create_inputfilename_vector (int argc, char *argv[]);
 
 bool rgffile_correct (string projectname);
+
+bool is_allowed_groupcode(const string& groupcode);
+bool is_allowed_colorcode(const string& colorcode);
+bool is_allowed_coordinate(const string& coordinate);
+bool is_allowed_datatype(const string& datatype);
+bool is_allowed_dip(const string& dip);
+bool is_allowed_dir(const string& dir);
+bool is_allowed_striae_sense(const string& sense);
+bool is_allowed_bedding_sense(const string& sense);
+bool is_allowed_geodetic (const string& geodetic) ;
+
+bool is_double (const string& coordinate);
 
 #endif

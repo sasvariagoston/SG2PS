@@ -16,22 +16,27 @@ int main (int argc, char *argv[]) {
 
 		real_main(argc, argv);
 	}
+
 	catch(exit_requested& ) {
 		// User requested exit
 		// Normal behavior, nothing to do
 	}
+
 	catch(rgf_error& ) {
 		cout << "RGF error error: " << endl;
 		return ExitStatus::RGF_ERROR;
 	}
+
 	catch(out_of_range& ) {
 		cout << "This is a bug, please report it!" << endl;
 		return ExitStatus::BUG;
 	}
+
 	catch(runtime_error& e) {
 		cout << "Runtime error: " << e.what() << endl;
 		return ExitStatus::RUNTIME_ERROR;
 	}
+
 	catch(...) {
 		cout << "Unknown error, please report it!" << endl;
 		return ExitStatus::UNKNOWN_ERROR;

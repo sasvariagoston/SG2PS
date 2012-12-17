@@ -23,9 +23,7 @@ void header () {
 	cout << "|            For further information check www.sg2ps.eu            |" << endl;
 	cout << "|                                                                  |" << endl;
 	cout << "|                       All rights reserved                        |" << endl;
-
-	cout << "Built on " <<__DATE__ << " at " << __TIME__ << endl;
-
+	//cout << "|    Built on   " << return_build_date() << "        | "<< endl;
 	cout << "|                                                                  |" << endl;
 	cout << "|                       version: 0.2.0 beta                        |" << endl;
 	cout << "|                                                                  |" << endl;
@@ -712,7 +710,7 @@ INPSET decide_setting_status (string projectname) {
 	INPSET currect_settings;
 
 	cout << endl << endl;
-	cout << "CHECKING OF SETTINGS OF '" << capslock (projectname) << "' PROJECT"<< endl;
+	cout << "CHECKING OF SETTINGS OF '" <<  (projectname) << "' PROJECT"<< endl;
 
 	if (settingfilecorrect (projectname)) {
 

@@ -89,6 +89,7 @@ void PS_header (string DATATYPE, string LOC, ofstream& o, PAPER P) {
 
 	o << "%!PS-Adobe-3.0 EPSF-3.0" << endl;
 	o << "%%BoundingBox:  0 0 1191 842" << endl;
+	o << "<</PageSize [ 1190.55 841.888 ]>> setpagedevice " << endl;
 	o << "%% Generated as " << filename 									<< endl << endl;
 
 	if ((DATATYPE == "STRIAE") || (DATATYPE == "FRACTURE" ) || (DATATYPE == "SC")) {
@@ -696,7 +697,9 @@ void PS_net (string DATATYPE, string LOC, ofstream& o, INPSET inset, PAPER P) {
 	 		  <<  fixed << setprecision (3) << P.O4Y + P.R + 14.0 << " moveto "
 	  << "  (N) 0 0 0 setrgbcolor show" << endl;
 
-	o << "%% This is the end of the sg2ps post script # file header" << endl;
+
+
+	o << "%% This is thee end of the sg2ps demo data post script file header" << endl;
 
 
 
