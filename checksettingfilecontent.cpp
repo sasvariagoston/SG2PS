@@ -23,7 +23,10 @@ void header () {
 	cout << "|            For further information check www.sg2ps.eu            |" << endl;
 	cout << "|                                                                  |" << endl;
 	cout << "|                       All rights reserved                        |" << endl;
-	//cout << "|    Built on   " << return_build_date() << "        | "<< endl;
+	cout << "|                                                                  |" << endl;
+	cout << " ------------------------------------------------------------------ " << endl;
+	cout << "|                                                                  |" << endl;
+	cout << "|                  Built on: " << return_build_date() << ", " << return_build_time() << "                    | "<< endl;
 	cout << "|                                                                  |" << endl;
 	cout << "|                       version: 0.2.0 beta                        |" << endl;
 	cout << "|                                                                  |" << endl;

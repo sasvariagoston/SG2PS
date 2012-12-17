@@ -100,7 +100,6 @@ enum record_name {
 	SIZE
 };
 
-
 /*int ID_index() {
 
 	return ID;
@@ -142,8 +141,6 @@ struct record {
 vector<record> converted_table;
 
 }
-
-
 
 string inputfilename () {
 
@@ -223,14 +220,11 @@ void complete_rgf_to_check () {
 
 	for ( size_t i = 2; i < rgf_to_check.size(); i++) {
 
-		if (rgf_to_check.at(i).at(GROUP) == "") 	rgf_to_check.at(i).at(GROUP) = 		rgf_to_check.at(i-1).at(GROUP);
-		if (rgf_to_check.at(i).at(COLOR) == "") 	rgf_to_check.at(i).at(COLOR) = 		rgf_to_check.at(i-1).at(COLOR);
 		if (rgf_to_check.at(i).at(LOCATION) == "") 	rgf_to_check.at(i).at(LOCATION) = 	rgf_to_check.at(i-1).at(LOCATION);
 		if (rgf_to_check.at(i).at(LOCX) == "") 		rgf_to_check.at(i).at(LOCX) = 		rgf_to_check.at(i-1).at(LOCX);
 		if (rgf_to_check.at(i).at(LOCY) == "") 		rgf_to_check.at(i).at(LOCY) = 		rgf_to_check.at(i-1).at(LOCY);
 		if (rgf_to_check.at(i).at(FORMATION) == "") rgf_to_check.at(i).at(FORMATION) = 	rgf_to_check.at(i-1).at(FORMATION);
 		if (rgf_to_check.at(i).at(DATATYPE) == "") 	rgf_to_check.at(i).at(DATATYPE) = 	rgf_to_check.at(i-1).at(DATATYPE);
-		if (rgf_to_check.at(i).at(PALEONORTH) == "")rgf_to_check.at(i).at(PALEONORTH) = rgf_to_check.at(i-1).at(PALEONORTH);
 	}
 
 	return;
@@ -255,7 +249,7 @@ bool IDcheck_duplicate () {
 
 		if (!(p.second)) {
 
-			cout << "    - ERROR: DATA_ID '" << ID << "' used in line " << i << " is already used at line '" << (*(p.first)).second << "' ." <<endl;
+			cout << "    - ERROR: DATA_ID " << ID << " used in line " << i << " is already used at line " << (*(p.first)).second << "." <<endl;
 
 			error = true;
 		}
@@ -263,14 +257,14 @@ bool IDcheck_duplicate () {
 
 	if (error) return false;
 
-	cout << "    - Correct DATA_ID's in all of " << i << " records." << endl;
+	cout << "    - Correct DATA_ID's in all records." << endl;
 
 	return true;
 }
 
 bool IDcheck () {
 
-	size_t errorcounter = 0;
+	vector <size_t> bad_records;
 
 	size_t i = 0;
 
@@ -278,28 +272,36 @@ bool IDcheck () {
 
 		string ID = rgf_to_check.at(i).at(DATA_ID);
 
-		if (ID == "") errorcounter++;
+		if (ID == "") bad_records.push_back (i);
 
-		if (errorcounter == 1) cout <<"    - ERROR: empty DATA_ID(s) in following record(s):  " << ID << flush;
-
-		if (errorcounter > 1) cout << ", " << ID << flush;
 	}
 
-	if (errorcounter == 0) {
+	if (bad_records.size() == 0) {
 
-		cout << "    - Existing DATA_ID's in all of " << i << " records." << endl;
+		cout << "    - Existing DATA_ID's in all records." << endl;
 
 		return true;
+
 	}
 
-	cout << "." <<endl;
+	else {
 
-	return false;
+		cout <<"    - ERROR: empty DATA_ID(s) in the following record(s):  " << flush;
+
+		for (size_t j = 0; j < bad_records.size() - 1; j++) {
+
+			cout << bad_records.at(j) << ", " << flush;
+		}
+
+		cout << bad_records.at(bad_records.size()-1) << "." << endl;
+
+		return false;
+	}
 }
 
 bool GCcheck () {
 
-	size_t errorcounter = 0;
+	vector <string> bad_records;
 
 	size_t i = 0;
 
@@ -309,28 +311,15 @@ bool GCcheck () {
 
 		string ID = rgf_to_check.at(i).at(DATA_ID);
 
-		if (!is_allowed_groupcode (groupcode)) errorcounter++;
-
-		if (errorcounter == 1) cout <<"    - ERROR: incorrect group codes(s) in following record(s):  " << ID << flush;
-
-		if (errorcounter > 1) cout << ", " << ID << flush;
+		if (!is_allowed_groupcode (groupcode)) bad_records.push_back(ID);
 	}
 
-	if (errorcounter == 0) {
-
-		cout << "    - Correct group codes in all of " << i << " records." << endl;
-		
-		return true;
-	}
-	
-	cout << "." <<endl;
-
-	return false;
+	return error_cout (bad_records, "group code");
 }
 
 bool COLORcheck () {
 
-	size_t errorcounter = 0;
+	vector <string> bad_records;
 
 	size_t i = 0;
 
@@ -340,28 +329,15 @@ bool COLORcheck () {
 
 		string ID = rgf_to_check.at(i).at(DATA_ID);
 
-		if (!is_allowed_colorcode (colorcode)) errorcounter++;
-
-		if (errorcounter == 1) cout <<"    - ERROR: incorrect color codes(s) in following record(s):  " << ID << flush;
-
-		if (errorcounter > 1) cout << ", " << ID << flush;
+		if (!is_allowed_colorcode (colorcode)) bad_records.push_back(ID);
 	}
 
-	if (errorcounter == 0) {
-
-		cout << "    - Correct color codes in all of " << i << " records." << endl;
-
-		return true;
-	}
-
-	cout << "." <<endl;
-
-	return false;
+	return error_cout (bad_records, "color code");
 }
 
 bool LOCcheck () {
 
-	bool correct = (rgf_to_check.at(0).at(LOCATION) != "");
+	bool correct = (rgf_to_check.at(1).at(LOCATION) != "");
 
 	if (!correct) cout <<"    - ERROR: LOCALITY must be indicated at least in the 1st record." << endl;
 
@@ -370,7 +346,7 @@ bool LOCcheck () {
 
 bool XYcheck () {
 
-	size_t errorcounter = 0;
+	vector <string> bad_records;
 
 	size_t i = 0;
 
@@ -382,30 +358,17 @@ bool XYcheck () {
 
 		string ID = rgf_to_check.at(i).at(DATA_ID);
 
-		if (!is_allowed_coordinate (COORD_X)) errorcounter++;
-
-		if (!is_allowed_coordinate (COORD_Y)) errorcounter++;
-
-		if (errorcounter == 1) cout <<"    - ERROR: incorrect coordinate(s) in following record(s):  " << ID << flush;
-
-		if (errorcounter > 1) cout << ", " << ID << flush;
+		if (
+				((!is_allowed_coordinate (COORD_X)) && (COORD_X != "")) ||
+				((!is_allowed_coordinate (COORD_Y)) && (COORD_Y != ""))) bad_records.push_back(ID);
 	}
 
-	if (errorcounter == 0) {
-
-		cout << "    - Correct coordinate(s) in all of " << i << " records." << endl;
-
-		return true;
-	}
-
-	cout << "." <<endl;
-
-	return false;
+	return error_cout (bad_records, "coordinate");
 }
 
 bool DATATYPEcheck () {
 
-	size_t errorcounter = 0;
+	vector <string> bad_records;
 
 	size_t i = 0;
 
@@ -415,28 +378,15 @@ bool DATATYPEcheck () {
 
 		string ID = rgf_to_check.at(i).at(DATA_ID);
 
-		if (!is_allowed_datatype (TYPE_OF_DATA)) errorcounter++;
-
-		if (errorcounter == 1) cout <<"    - ERROR: incorrect data type(s) in following record(s):  " << ID << flush;
-
-		if (errorcounter > 1) cout << ", " << ID << flush;
+		if (!is_allowed_datatype (TYPE_OF_DATA)) bad_records.push_back(ID);
 	}
 
-	if (errorcounter == 0) {
-
-		cout << "    - Correct data type(s) in all of " << i << " records." << endl;
-
-		return true;
-	}
-
-	cout << "." <<endl;
-
-	return false;
+	return error_cout (bad_records, "datatype");
 }
 
 bool DIPDIRcheck () {
 
-	size_t errorcounter = 0;
+	vector <string> bad_records;
 
 	size_t i = 0;
 
@@ -448,30 +398,21 @@ bool DIPDIRcheck () {
 
 		string TYPE_OF_DATA = rgf_to_check.at(i).at(DATATYPE);
 
-		if ((PLANE_DIR != "") && (TYPE_OF_DATA == "LITHOLOGY")) errorcounter++;
+		if (
+				((PLANE_DIR != "") && (TYPE_OF_DATA == "LITHOLOGY")) ||
+				((PLANE_DIR == "") && (TYPE_OF_DATA != "LITHOLOGY")) ||
+				((PLANE_DIR != "") && (!is_allowed_dir (PLANE_DIR)))) {
 
-		if ((PLANE_DIR != "") && (!is_allowed_dir (PLANE_DIR))) errorcounter++;
-
-		if (errorcounter == 1) cout <<"    - ERROR: incorrect strike/dip direction(s) in following record(s):  " << ID << flush;
-
-		if (errorcounter > 1) cout << ", " << ID << flush;
+			bad_records.push_back(ID);
+		}
 	}
 
-	if (errorcounter == 0) {
-
-		cout << "    - Correct strike/dip direction(s) in all of " << i << " records." << endl;
-
-		return true;
-	}
-
-	cout << "." <<endl;
-
-	return false;
+	return error_cout (bad_records, "strike/dip direction");
 }
 
 bool DIPcheck () {
 
-	size_t errorcounter = 0;
+	vector <string> bad_records;
 
 	size_t i = 0;
 
@@ -483,32 +424,23 @@ bool DIPcheck () {
 
 		string TYPE_OF_DATA = rgf_to_check.at(i).at(DATATYPE);
 
-		if ((PLANE_DIP != "") && (TYPE_OF_DATA == "LITHOLOGY")) errorcounter++;
+		if (
+				((PLANE_DIP != "") && (TYPE_OF_DATA == "LITHOLOGY")) ||
+				((PLANE_DIP == "") && (TYPE_OF_DATA != "LITHOLOGY")) ||
+				((PLANE_DIP != "") && (!is_allowed_dip (PLANE_DIP)))) {
 
-		if ((PLANE_DIP != "") &&  (!is_allowed_dip (PLANE_DIP))) errorcounter++;
-
-		if (errorcounter == 1) cout <<"    - ERROR: incorrect dip angle(s) in following record(s):  " << ID << flush;
-
-		if (errorcounter > 1) cout << ", " << ID << flush;
+			bad_records.push_back(ID);
+		}
 	}
 
-	if (errorcounter == 0) {
-
-		cout << "    - Correct dip angle(s) in all of " << i << " records." << endl;
-
-		return true;
-	}
-
-	cout << "." <<endl;
-
-	return false;
+	return error_cout (bad_records, "dip angle");
 }
 
 bool STRIAE_SC_check () {
 
-	size_t i = 0;
+	vector <string> bad_records;
 
-	size_t errorcounter = 0;
+	size_t i = 0;
 
 	for (i = 1; i < rgf_to_check.size(); i++) {
 
@@ -561,28 +493,16 @@ bool STRIAE_SC_check () {
 				is_allowed_geodetic (LINEATION_DIP) &&
 				is_allowed_striae_sense (LINEATION_SENSE));
 
-		if (!(OTHERcorrect || BEDDINGcorrect || SCcorrect ||  LINEATIONcorrect || PITCHcorrect)) errorcounter++;
+		if (!(OTHERcorrect || BEDDINGcorrect || SCcorrect ||  LINEATIONcorrect || PITCHcorrect)) bad_records.push_back(ID);
 
-		if (errorcounter == 1) cout <<"    - ERROR: incorrect striae/SC data in following record(s):  " << ID << flush;
-
-		if (errorcounter > 1) cout << ", " << ID << flush;
 	}
 
-	if (errorcounter == 0) {
-
-		cout << "    - Correct striae/SC in all of " << i << " records." << endl;
-
-		return true;
-	}
-
-	cout << "." <<endl;
-
-	return false;
+	return error_cout (bad_records, "CS/striae");
 }
 
 bool PALEONcheck () {
 
-	size_t errorcounter = 0;
+	vector <string> bad_records;
 
 	size_t i = 0;
 
@@ -592,23 +512,11 @@ bool PALEONcheck () {
 
 		string ID = rgf_to_check.at(i).at(DATA_ID);
 
-		if (!is_allowed_dir (P_NORTH) && P_NORTH != "") errorcounter++;
-
-		if (errorcounter == 1) cout <<"    - ERROR: incorrect paleo north data in following record(s):  " << ID << flush;
-
-		if (errorcounter > 1) cout << ", " << ID << flush;
+		if (!is_allowed_dir (P_NORTH) && P_NORTH != "") bad_records.push_back(ID);
 	}
 
-	if (errorcounter == 0) {
+	return error_cout (bad_records, "paleo north direction");
 
-		cout << "    - Correct paleo north data in all of " << i << " records." << endl;
-
-		return true;
-	}
-
-	cout << "." <<endl;
-
-	return false;
 }
 
 vector <string> check_rgf_inputs (vector <string> inputfilename_vector, bool batch) {
@@ -676,6 +584,7 @@ bool rgffile_correct (string projectname) {
 			GCcheck () &&
 			COLORcheck () &&
 			LOCcheck () &&
+			XYcheck () &&
 			DATATYPEcheck () &&
 			DIPDIRcheck () &&
 			DIPcheck () &&
@@ -748,4 +657,28 @@ bool is_double (const string& s) {
 	double value = string_to_double (s, failed);
 
 	return (!failed);
+}
+
+bool error_cout (vector <string> bad_records, string recordtype) {
+
+	if (bad_records.size() == 0) {
+
+		cout << "    - Correct " << recordtype << "(s) in all records." << endl;
+
+		return true;
+	}
+
+	else {
+
+		cout <<"    - ERROR: incorrect " << recordtype << "(s) in the following record(s):  " << flush;
+
+		for (size_t j = 0; j < bad_records.size() - 1; j++) {
+
+			cout << bad_records.at(j) << ", " << flush;
+		}
+
+		cout << bad_records.at(bad_records.size()-1) << "." << endl;
+
+		return false;
+	}
 }

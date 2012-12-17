@@ -61,4 +61,6 @@ bool is_allowed_geodetic (const string& geodetic) ;
 
 bool is_double (const string& coordinate);
 
+bool error_cout (vector <string> bad_records, string recordtype);
+
 #endif

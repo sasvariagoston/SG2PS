@@ -1899,11 +1899,5 @@ string return_build_date () {
 
 string return_build_time () {
 
-	string build_time;
-			//[7] =
-			//__TIME__[0] + __TIME__[1] + __TIME__[2] +
-			//__TIME__[3] + __TIME__[4] + __TIME__[5] +
-			//__TIME__[6] + __TIME__[7];
-
-	return "";
+	return __TIME__;
 }
