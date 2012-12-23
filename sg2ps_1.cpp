@@ -5,6 +5,10 @@
 #include <iostream>
 #include <string>
 #include <ctime>
+#include <map>
+#include <stdexcept>
+#include <sstream>
+#include <iomanip>
 
 #include "common.h"
 #include "rgf.h"
@@ -13,6 +17,7 @@
 #include "checkrgffilecontent.h"
 #include "checkxycontent.h"
 #include "cluster.h"
+#include "platform_dep.hpp"
 
 using namespace std;
 
@@ -21,8 +26,10 @@ void real_main(int argument_number, char *argv[]) {
 	string inputrgfname, xy_filename, inputrgfname_only, temp;
 	vector <GDB> geodatabase, tiltgeodatabase;
 	INPSET inset;
+
 	size_t j = 1;
-	bool batch = false;
+	string run_mode = "COMMANDLINE";
+
 	bool using_xy_files = false;
 	vector <string> inputfilename_vector;
 
@@ -30,7 +37,14 @@ void real_main(int argument_number, char *argv[]) {
 
 	inputfilename_vector = create_inputfilename_vector (argument_number, argv);
 
-	if (argument_number > 1) batch = true;
+	if (inputfilename_vector.size() > 1) {
+
+		if (inputfilename_vector.at(1) == "-gui_calls") {
+
+			run_mode = "GUI";
+			inputfilename_vector.erase(inputfilename_vector.begin() + 1);
+		}
+	}
 
 	else {
 
@@ -38,12 +52,15 @@ void real_main(int argument_number, char *argv[]) {
 		inputfilename_vector.push_back(inputrgfname);
 	}
 
-	inputfilename_vector = check_rgf_inputs (inputfilename_vector, batch);
+	cout << "RUNNING SG2PS IN " << run_mode << " MODE." << endl;
 
-	if (batch) using_xy_files = true;
+
+	inputfilename_vector = check_rgf_inputs (inputfilename_vector, run_mode);
+
+	if (run_mode != "COMMANDLINE") using_xy_files = true;
 	else using_xy_files = needxyfile ();
 
-	if (!batch) manage_settings_nobatch (inputfilename_vector.at(1));
+	if (run_mode == "COMMANDLINE") manage_settings_nobatch (inputfilename_vector.at(1));
 
 	clock_t starttime = clock ();
 
@@ -51,7 +68,7 @@ void real_main(int argument_number, char *argv[]) {
 
 		inset = manage_settings_batch (inputfilename_vector.at(j));
 
-		if (using_xy_files) xy_filename = check_xy_inputs (inputfilename_vector.at(j), batch);
+		if (using_xy_files) xy_filename = check_xy_inputs (inputfilename_vector.at(j), run_mode);
 
 		process_rgf (inputfilename_vector.at(j), xy_filename, inset);
 

@@ -194,26 +194,42 @@ void push_to_table(const string& line) {
 	rgf_to_check.push_back(row);
 }
 
-void input_rgf (const string& projectname) {
+bool input_rgf (const string& projectname) {
 
 	rgf_to_check.clear();
 
+	int lines_existing = 0;
 	int lines_read = 0;
 
 	ifstream rgf_file((projectname + ".rgf").c_str()) ;
 
+	if (!(rgf_file.is_open())) {
+
+		cout << "    - Cannot process " << capslock(projectname + ".rgf") << " file." << endl;
+		return false;
+	}
+
 	string line;
+
+	getline(rgf_file, line);
 
 	while (getline(rgf_file, line)) {
 
-		++lines_read;
+		lines_existing++;
 
-		push_to_table(line);
+		if (line.size() > 6) {
+
+			lines_read++;
+
+			push_to_table(line);
+		}
 	}
 
-	cout << "    - Input file opened, " << lines_read << " record(s) found." << endl;
+	cout << "    - Input " << capslock(projectname + ".rgf") << " file opened, " << lines_existing << " record(s) found, " << lines_read << " record(s) imported." << endl;
 
-	return;
+	if (lines_read <= 1) return false;
+
+	return true;
 }
 
 void complete_rgf_to_check () {
@@ -273,7 +289,6 @@ bool IDcheck () {
 		string ID = rgf_to_check.at(i).at(DATA_ID);
 
 		if (ID == "") bad_records.push_back (i);
-
 	}
 
 	if (bad_records.size() == 0) {
@@ -281,7 +296,6 @@ bool IDcheck () {
 		cout << "    - Existing DATA_ID's in all records." << endl;
 
 		return true;
-
 	}
 
 	else {
@@ -519,7 +533,7 @@ bool PALEONcheck () {
 
 }
 
-vector <string> check_rgf_inputs (vector <string> inputfilename_vector, bool batch) {
+vector <string> check_rgf_inputs (vector <string> inputfilename_vector, string run_mode) {
 
 	size_t j = 1;
 
@@ -527,7 +541,7 @@ vector <string> check_rgf_inputs (vector <string> inputfilename_vector, bool bat
 
 	do {
 
-		if (batch) {
+		if (run_mode != "COMMANDLINE") {
 
 			if (rgffile_correct(inputfilename_vector.at(j))) cout << "  - Input " << capslock(inputfilename_vector.at(j)) << ".RGF file structure is correct." << endl;
 
@@ -574,7 +588,7 @@ vector <string> create_inputfilename_vector (int argc, char *argv[]) {
 
 bool rgffile_correct (string projectname) {
 
-	input_rgf (projectname);
+	if (!(input_rgf (projectname))) return false;
 
 	complete_rgf_to_check ();
 

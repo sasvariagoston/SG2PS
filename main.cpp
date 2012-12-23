@@ -5,6 +5,7 @@
 #include <stdexcept>
 #include "exceptions.hpp"
 #include "ExitStatus.hpp"
+#include "platform_dep.hpp"
 
 using namespace std;
 
@@ -23,7 +24,7 @@ int main (int argc, char *argv[]) {
 	}
 
 	catch(rgf_error& ) {
-		cout << "RGF error error: " << endl;
+		cout << "RGF error: " << endl;
 		return ExitStatus::RGF_ERROR;
 	}
 

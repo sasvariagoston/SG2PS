@@ -713,7 +713,7 @@ INPSET decide_setting_status (string projectname) {
 	INPSET currect_settings;
 
 	cout << endl << endl;
-	cout << "CHECKING OF SETTINGS OF '" <<  (projectname) << "' PROJECT"<< endl;
+	cout << "CHECKING OF SETTINGS OF '" <<  capslock(projectname) << "' PROJECT"<< endl;
 
 	if (settingfilecorrect (projectname)) {
 
@@ -731,7 +731,7 @@ INPSET decide_setting_status (string projectname) {
 
 		else {
 
-			cout << "  - No any setting files, using hard coded settings." << endl;
+			cout << "  - No setting file present, hard coded settings were used." << endl;
 			currect_settings = input_hardcoded ();
 		}
 	}

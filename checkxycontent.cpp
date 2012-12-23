@@ -324,11 +324,11 @@ bool xyfile_correct (string projectname) {
 
 }
 
-string check_xy_inputs (string inputfilename, bool batch) {
+string check_xy_inputs (string inputfilename, string run_mode) {
 
 	cout << "CHECKING OF '" << capslock (inputfilename) << ".XY' FILE INTEGRITY" << endl;
 
-		if (batch)
+		if (run_mode != "COMMANDLINE")
 
 			if (xyfile_correct(inputfilename)) cout << "  - Input " << capslock(inputfilename) << ".XY file structure is correct." << endl;
 

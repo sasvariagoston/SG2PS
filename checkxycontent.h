@@ -24,6 +24,6 @@ bool xyCOORDcheck (string xyname);
 GDB insertxy (GDB inGDB, string xyfilename);
 
 bool xyfile_correct (string projectname);
-string check_xy_inputs (string inputfilename, bool batch);
+string check_xy_inputs (string inputfilename, string run_mode);
 
 #endif

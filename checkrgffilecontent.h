@@ -27,7 +27,7 @@ bool contains(const std::vector<T>& vec, const T& elem) {
 string inputfilename ();
 
 void push_to_table(const string& line);
-void input_rgf (const string& projectname);
+bool input_rgf (const string& projectname);
 
 void complete_rgf_to_check();
 
@@ -43,7 +43,7 @@ bool DIPcheck ();
 bool STRIAE_SC_check ();
 bool PALEONcheck ();
 
-vector <string> check_rgf_inputs (vector <string> inputfilename_vector, bool batch);
+vector <string> check_rgf_inputs (vector <string> inputfilename_vector, string run_mode);
 
 vector <string> create_inputfilename_vector (int argc, char *argv[]);
 

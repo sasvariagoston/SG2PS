@@ -14,7 +14,6 @@
 
 using namespace std;
 
-
 template <typename T>
 T convert(const string& s, bool& failed) {
 
@@ -65,12 +64,6 @@ double string_to_double( const string& s, bool& failed) {
 
 	return convert<double>(s, failed);
 }
-
-
-
-
-
-
 
 double SIGNUM (double in) {
 
