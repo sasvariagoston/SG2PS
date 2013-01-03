@@ -7,11 +7,20 @@
 struct ExitStatus {
 
     enum Code {
-        OK = 0,
-        RGF_ERROR,
-        BUG,
-        UNKNOWN_ERROR,
-        RUNTIME_ERROR
+    	//OK = 0,
+    	//RGF_ERROR,
+    	//BUG,
+    	//UNKNOWN_ERROR,
+    	//RUNTIME_ERROR
+
+
+    	OK = 0,
+    	RGF_ERROR,
+    	SET_ERROR,
+    	XY_ERROR,
+    	RUNTIME_ERROR,
+    	BUG,
+    	UNKNOWN_ERROR
     };
 };
 

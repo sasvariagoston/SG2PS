@@ -351,7 +351,7 @@ bool COLORcheck () {
 
 bool LOCcheck () {
 
-	bool correct = (rgf_to_check.at(1).at(LOCATION) != "");
+	bool correct = (rgf_to_check.at(0).at(LOCATION) != "");
 
 	if (!correct) cout <<"    - ERROR: LOCALITY must be indicated at least in the 1st record." << endl;
 
