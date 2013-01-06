@@ -31,46 +31,100 @@ const string colorcode_allowed [] = {
 
 const vector<string> allowed_colorcodes(from_array(colorcode_allowed));
 
-const string datatype_allowed [] = {
-		"BEDDING",
+const string datatype_lithology_allowed [] = {
+		"LITHOLOGY"
+};
+
+const string datatype_lineation_allowed [] = {
 		"BOUDAIN",
-		"CONTACT",
-		"CROSSBEDDING",
 		"FOLDAXIS",
-		"FOLDPLANE",
-		"FOLDSURFACE",
 		"KINK",
 		"LINEATION",
-		"LITHOLOGY",
-		"LITHOCLASE",
-		"SC",
-		"S1", "S2", "S3", "S4", "S5",
+		"USERLINEATION1",
+		"USERLINEATION2",
+		"USERLINEATION3",
+		"USERLINEATION4",
+		"USERLINEATION5"
+};
+
+const string datatype_plane_allowed [] = {
+		"BEDDING",
+		"CONTACT",
+		"CROSSBEDDING",
+		"FOLDPLANE",
+		"FOLDSURFACE",
 		"FRACTURE",
+		"LITHOCLASE",
+		"PLANE"
+		"S1",
+		"S2",
+		"S3",
+		"S4",
+		"S5",
 		"STRIAE",
-		"USERPLANE4", "USERPLANE5",
-		"USERLINEATION1", "USERLINEATION2", "USERLINEATION3", "USERLINEATION4", "USERLINEATION5",
+		"USERPLANE1",
+		"USERPLANE2",
+		"USERPLANE3",
+		"USERPLANE4",
+		"USERPLANE5",
 		"VEIN"
 };
 
-const vector<string> allowed_datatypes(from_array(datatype_allowed));
+const string datatype_striae_allowed [] = {
+		"STRIAE"
+};
 
-const string striae_sense_allowed [] = {
-		"+", "THRUST", "UP", "INVERSE", "U", "I",
-		"-", "NORMAL", "FAULT", "DOWN", "DOWNWARD", "N",
-		"DEXTRAL", "DX", "D",
-		"SINISTRAL", "SN", "S",
+const string datatype_SC_allowed [] = {
+		"SC"
+};
+
+const vector<string> allowed_lithology_datatypes(from_array(datatype_lithology_allowed));
+const vector<string> allowed_lineation_datatypes(from_array(datatype_lineation_allowed));
+const vector<string> allowed_plane_datatypes(from_array(datatype_plane_allowed));
+const vector<string> allowed_striae_datatypes(from_array(datatype_striae_allowed));
+const vector<string> allowed_SC_datatypes(from_array(datatype_SC_allowed));
+
+const string striae_inverse_sense_allowed [] = {
+		"+", "THRUST", "UP", "INVERSE", "U", "I"
+};
+
+const string striae_normal_sense_allowed [] = {
+		"-", "NORMAL", "FAULT", "DOWN", "DOWNWARD", "N"
+};
+
+const string striae_dextral_sense_allowed [] = {
+		"DEXTRAL", "DX", "D"
+};
+
+const string striae_sinistral_sense_allowed [] = {
+		"SINISTRAL", "SN", "S"
+};
+
+const string striae_none_sense_allowed [] = {
 		"X", "NONE"
 };
 
-const vector<string> allowed_striae_senses(from_array(striae_sense_allowed));
+const vector<string> allowed_striae_inverse_senses(from_array(striae_inverse_sense_allowed));
+const vector<string> allowed_striae_normal_senses(from_array(striae_normal_sense_allowed));
+const vector<string> allowed_striae_dextral_senses(from_array(striae_dextral_sense_allowed));
+const vector<string> allowed_striae_sinistral_senses(from_array(striae_sinistral_sense_allowed));
+const vector<string> allowed_striae_none_senses(from_array(striae_none_sense_allowed));
 
-const string bedding_sense_allowed [] = {
-		"O", "OVERTURNED",
-		"N", "NORMAL",
+const string bedding_overturned_sense_allowed [] = {
+		"O", "OVERTURNED"
+};
+
+const string bedding_normal_sense_allowed [] = {
+		"N", "NORMAL"
+};
+
+const string bedding_none_sense_allowed [] = {
 		""
 };
 
-const vector<string> allowed_bedding_senses(from_array(bedding_sense_allowed));
+const vector<string> allowed_bedding_overturned_senses(from_array(bedding_overturned_sense_allowed));
+const vector<string> allowed_bedding_normal_senses(from_array(bedding_normal_sense_allowed));
+const vector<string> allowed_bedding_none_senses(from_array(bedding_none_sense_allowed));
 
 const string geodetic_allowed [] = {
 		"N", "NNE", "NE", "ENE",
@@ -100,25 +154,7 @@ enum record_name {
 	SIZE
 };
 
-/*int ID_index() {
-
-	return ID;
-}
-
-int NAME_index() {
-
-	return NAME;
-}
-
-int VALUE_index() {
-
-	return VALUE;
-}
- */
-
 struct record {
-
-	//record() : id(-1), name("default name"), value(-1) { }
 
 	string data_id;
 	string group;
@@ -234,7 +270,7 @@ bool input_rgf (const string& projectname) {
 
 void complete_rgf_to_check () {
 
-	for ( size_t i = 2; i < rgf_to_check.size(); i++) {
+	for ( size_t i = 1; i < rgf_to_check.size(); i++) {
 
 		if (rgf_to_check.at(i).at(LOCATION) == "") 	rgf_to_check.at(i).at(LOCATION) = 	rgf_to_check.at(i-1).at(LOCATION);
 		if (rgf_to_check.at(i).at(LOCX) == "") 		rgf_to_check.at(i).at(LOCX) = 		rgf_to_check.at(i-1).at(LOCX);
@@ -321,11 +357,7 @@ bool GCcheck () {
 
 	for (i = 1; i < rgf_to_check.size(); i++) {
 
-		string groupcode = rgf_to_check.at(i).at(GROUP);
-
-		string ID = rgf_to_check.at(i).at(DATA_ID);
-
-		if (!is_allowed_groupcode (groupcode)) bad_records.push_back(ID);
+		if (!is_allowed_groupcode (rgf_to_check.at(i).at(GROUP))) bad_records.push_back(rgf_to_check.at(i).at(DATA_ID));
 	}
 
 	return error_cout (bad_records, "group code");
@@ -339,11 +371,7 @@ bool COLORcheck () {
 
 	for (i = 1; i < rgf_to_check.size(); i++) {
 
-		string colorcode = rgf_to_check.at(i).at(COLOR);
-
-		string ID = rgf_to_check.at(i).at(DATA_ID);
-
-		if (!is_allowed_colorcode (colorcode)) bad_records.push_back(ID);
+		if (!is_allowed_colorcode (rgf_to_check.at(i).at(COLOR))) bad_records.push_back(rgf_to_check.at(i).at(DATA_ID));
 	}
 
 	return error_cout (bad_records, "color code");
@@ -366,15 +394,9 @@ bool XYcheck () {
 
 	for (i = 1; i < rgf_to_check.size(); i++) {
 
-		string COORD_X = rgf_to_check.at(i).at(LOCX);
-
-		string COORD_Y = rgf_to_check.at(i).at(LOCY);
-
-		string ID = rgf_to_check.at(i).at(DATA_ID);
-
 		if (
-				((!is_allowed_coordinate (COORD_X)) && (COORD_X != "")) ||
-				((!is_allowed_coordinate (COORD_Y)) && (COORD_Y != ""))) bad_records.push_back(ID);
+				((!is_allowed_coordinate (rgf_to_check.at(i).at(LOCX))) && (rgf_to_check.at(i).at(LOCX) != "")) ||
+				((!is_allowed_coordinate (rgf_to_check.at(i).at(LOCY))) && (rgf_to_check.at(i).at(LOCY) != ""))) bad_records.push_back(rgf_to_check.at(i).at(DATA_ID));
 	}
 
 	return error_cout (bad_records, "coordinate");
@@ -388,11 +410,15 @@ bool DATATYPEcheck () {
 
 	for (i = 1; i < rgf_to_check.size(); i++) {
 
-		string TYPE_OF_DATA = rgf_to_check.at(i).at(DATATYPE);
+		if
+			(	(!is_allowed_lithology_datatype (rgf_to_check.at(i).at(DATATYPE))) &&
+				(!is_allowed_lineation_datatype (rgf_to_check.at(i).at(DATATYPE))) &&
+				(!is_allowed_plane_datatype (rgf_to_check.at(i).at(DATATYPE))) &&
+				(!is_allowed_striae_datatype (rgf_to_check.at(i).at(DATATYPE))) &&
+				(!is_allowed_SC_datatype (rgf_to_check.at(i).at(DATATYPE)))) {
 
-		string ID = rgf_to_check.at(i).at(DATA_ID);
-
-		if (!is_allowed_datatype (TYPE_OF_DATA)) bad_records.push_back(ID);
+			bad_records.push_back(rgf_to_check.at(i).at(DATA_ID));
+		}
 	}
 
 	return error_cout (bad_records, "datatype");
@@ -406,18 +432,12 @@ bool DIPDIRcheck () {
 
 	for (i = 1; i < rgf_to_check.size(); i++) {
 
-		string PLANE_DIR = rgf_to_check.at(i).at(DIR);
-
-		string ID = rgf_to_check.at(i).at(DATA_ID);
-
-		string TYPE_OF_DATA = rgf_to_check.at(i).at(DATATYPE);
-
 		if (
-				((PLANE_DIR != "") && (TYPE_OF_DATA == "LITHOLOGY")) ||
-				((PLANE_DIR == "") && (TYPE_OF_DATA != "LITHOLOGY")) ||
-				((PLANE_DIR != "") && (!is_allowed_dir (PLANE_DIR)))) {
+				((rgf_to_check.at(i).at(DIR) != "") && (rgf_to_check.at(i).at(DATATYPE) == "LITHOLOGY")) ||
+				((rgf_to_check.at(i).at(DIR) == "") && (rgf_to_check.at(i).at(DATATYPE) != "LITHOLOGY")) ||
+				((rgf_to_check.at(i).at(DIR) != "") && (!is_allowed_dir (rgf_to_check.at(i).at(DIR))))) {
 
-			bad_records.push_back(ID);
+			bad_records.push_back(rgf_to_check.at(i).at(DATA_ID));
 		}
 	}
 
@@ -432,18 +452,12 @@ bool DIPcheck () {
 
 	for (i = 1; i < rgf_to_check.size(); i++) {
 
-		string PLANE_DIP = rgf_to_check.at(i).at(DIP);
-
-		string ID = rgf_to_check.at(i).at(DATA_ID);
-
-		string TYPE_OF_DATA = rgf_to_check.at(i).at(DATATYPE);
-
 		if (
-				((PLANE_DIP != "") && (TYPE_OF_DATA == "LITHOLOGY")) ||
-				((PLANE_DIP == "") && (TYPE_OF_DATA != "LITHOLOGY")) ||
-				((PLANE_DIP != "") && (!is_allowed_dip (PLANE_DIP)))) {
+				((rgf_to_check.at(i).at(DIP) != "") && (rgf_to_check.at(i).at(DATATYPE) == "LITHOLOGY")) ||
+				((rgf_to_check.at(i).at(DIP) == "") && (rgf_to_check.at(i).at(DATATYPE) != "LITHOLOGY")) ||
+				((rgf_to_check.at(i).at(DIP) != "") && (!is_allowed_dip (rgf_to_check.at(i).at(DIP))))) {
 
-			bad_records.push_back(ID);
+			bad_records.push_back(rgf_to_check.at(i).at(DATA_ID));
 		}
 	}
 
@@ -458,57 +472,17 @@ bool STRIAE_SC_check () {
 
 	for (i = 1; i < rgf_to_check.size(); i++) {
 
-		bool STRIAE = 	rgf_to_check.at(i).at(DATATYPE) == "STRIAE";
-		bool SC = 		rgf_to_check.at(i).at(DATATYPE) == "SC";
-		bool BEDDING = 	rgf_to_check.at(i).at(DATATYPE) == "BEDDING";
+		if (
+				(!is_OTHERcorrect (rgf_to_check.at(i))) &&
+				(!is_BEDDINGcorrect (rgf_to_check.at(i))) &&
+				(!is_SCcorrect (rgf_to_check.at(i))) &&
+				(!is_LINEATIONcorrect (rgf_to_check.at(i))) &&
+				(!is_PITCHcorrect(rgf_to_check.at(i)))
 
-		string ID = 				rgf_to_check.at(i).at(DATA_ID);
-		string PLANE_DIR = 			rgf_to_check.at(i).at(DIR);
-		string PLANE_DIP = 			rgf_to_check.at(i).at(DIP);
-		string LINEATION_DIR = 		rgf_to_check.at(i).at(LDIR);
-		string LINEATION_DIP = 		rgf_to_check.at(i).at(LDIP);
-		string LINEATION_SENSE = 	rgf_to_check.at(i).at(SENSE);
+		) {
 
-		bool OTHERcorrect = (
-				((!SC) && (!STRIAE ) && (!BEDDING)) &&
-				(LINEATION_DIR == "") &&
-				(LINEATION_DIP == "") &&
-				(LINEATION_SENSE == ""));
-
-		bool BEDDINGcorrect = (
-				(BEDDING) &&
-				(is_allowed_dir (PLANE_DIR)) &&
-				(is_allowed_dip (PLANE_DIP)) &&
-				(LINEATION_DIR == "") &&
-				(LINEATION_DIP == "") &&
-				is_allowed_bedding_sense (LINEATION_SENSE));
-
-		bool SCcorrect = (
-				(SC) &&
-				(is_allowed_dir (PLANE_DIR)) &&
-				(is_allowed_dip (PLANE_DIP)) &&
-				(is_allowed_dir (LINEATION_DIR)) &&
-				(is_allowed_dip (LINEATION_DIP)) &&
-				(LINEATION_SENSE == ""));
-
-		bool LINEATIONcorrect = (
-				(STRIAE) &&
-				(is_allowed_dir (PLANE_DIR)) &&
-				(is_allowed_dip (PLANE_DIP)) &&
-				(is_allowed_dir (LINEATION_DIR)) &&
-				(is_allowed_dip (LINEATION_DIP)) &&
-				is_allowed_striae_sense (LINEATION_SENSE));
-
-		bool PITCHcorrect = (
-				STRIAE &&
-				is_allowed_dir (PLANE_DIR) &&
-				is_allowed_dip (PLANE_DIP) &&
-				is_allowed_dip (LINEATION_DIR) &&
-				is_allowed_geodetic (LINEATION_DIP) &&
-				is_allowed_striae_sense (LINEATION_SENSE));
-
-		if (!(OTHERcorrect || BEDDINGcorrect || SCcorrect ||  LINEATIONcorrect || PITCHcorrect)) bad_records.push_back(ID);
-
+			bad_records.push_back(rgf_to_check.at(i).at(DATA_ID));
+		}
 	}
 
 	return error_cout (bad_records, "CS/striae");
@@ -522,11 +496,7 @@ bool PALEONcheck () {
 
 	for (i = 1; i < rgf_to_check.size(); i++) {
 
-		string P_NORTH = rgf_to_check.at(i).at(PALEONORTH);
-
-		string ID = rgf_to_check.at(i).at(DATA_ID);
-
-		if (!is_allowed_dir (P_NORTH) && P_NORTH != "") bad_records.push_back(ID);
+		if (!is_allowed_dir (rgf_to_check.at(i).at(PALEONORTH)) && rgf_to_check.at(i).at(PALEONORTH) != "") bad_records.push_back(rgf_to_check.at(i).at(DATA_ID));
 	}
 
 	return error_cout (bad_records, "paleo north direction");
@@ -611,6 +581,82 @@ bool rgffile_correct (string projectname) {
 	return true;
 }
 
+
+
+bool is_STRIAE (const string DATATYPE) {
+
+	return DATATYPE == "STRIAE";
+}
+
+bool is_SC (const string DATATYPE) {
+
+	return DATATYPE == "SC";
+}
+
+bool is_BEDDING (const string DATATYPE) {
+
+	return DATATYPE == "BEDDING";
+}
+
+bool is_OTHERcorrect (vector <string> in) {
+
+	return (
+			!is_SC (in.at(DATATYPE)) &&
+			!is_STRIAE (in.at(DATATYPE)) &&
+			!is_BEDDING (in.at(DATATYPE)) &&
+			in.at(LDIR) == "" &&
+			in.at(LDIP) == "" &&
+			in.at(SENSE) == ""
+	);
+}
+
+bool is_BEDDINGcorrect (vector <string> in) {
+
+	return (
+			is_BEDDING (in.at(DATATYPE)) &&
+			is_allowed_dir (in.at(DIR)) &&
+			is_allowed_dip (in.at(DIP)) &&
+			in.at(LDIR) == "" &&
+			in.at(LDIP) == "" &&
+			is_allowed_bedding_sense (in.at(SENSE))
+	);
+}
+
+bool is_SCcorrect (vector <string> in) {
+
+	return (
+			is_SC (in.at(DATATYPE)) &&
+			is_allowed_dir (in.at(DIR)) &&
+			is_allowed_dip (in.at(DIP)) &&
+			is_allowed_dir (in.at(LDIR)) &&
+			is_allowed_dip (in.at(LDIP)) &&
+			(in.at(SENSE) == "")
+	);
+}
+
+bool is_LINEATIONcorrect (vector <string> in) {
+
+	return (
+			is_STRIAE (in.at(DATATYPE)) &&
+			is_allowed_dir (in.at(DIR)) &&
+			is_allowed_dip (in.at(DIP)) &&
+			is_allowed_dir (in.at(LDIR)) &&
+			is_allowed_dip (in.at(LDIP)) &&
+			is_allowed_striae_sense (in.at(SENSE)));
+}
+
+bool is_PITCHcorrect (vector <string> in) {
+
+	return (
+			is_STRIAE (in.at(DATATYPE)) &&
+			is_allowed_dir (in.at(DIR)) &&
+			is_allowed_dip (in.at(DIP)) &&
+			is_allowed_dip (in.at(LDIR)) &&
+			is_allowed_geodetic (in.at(LDIP)) &&
+			is_allowed_striae_sense (in.at(SENSE))
+	);
+}
+
 bool is_allowed_groupcode(const string& groupcode) {
 
 	return contains(allowed_groupcodes, groupcode);
@@ -626,9 +672,29 @@ bool is_allowed_coordinate(const string& coordinate){
 	return (is_double (coordinate));
 }
 
-bool is_allowed_datatype(const string& datatype) {
+bool is_allowed_lithology_datatype(const string& datatype) {
 
-	return contains(allowed_datatypes, datatype);
+	return (contains(allowed_lithology_datatypes, datatype));
+}
+
+bool is_allowed_lineation_datatype(const string& datatype) {
+
+	return (contains(allowed_lineation_datatypes, datatype));
+}
+
+bool is_allowed_plane_datatype(const string& datatype) {
+
+	return (contains(allowed_plane_datatypes, datatype));
+}
+
+bool is_allowed_striae_datatype(const string& datatype) {
+
+	return (contains(allowed_striae_datatypes, datatype));
+}
+
+bool is_allowed_SC_datatype(const string& datatype) {
+
+	return (contains(allowed_SC_datatypes, datatype));
 }
 
 bool is_allowed_dir(const string& s){
@@ -649,14 +715,60 @@ bool is_allowed_dip(const string& s) {
 	return ((value >= 0.0) && (value <= 90.0) && !failed);
 }
 
+bool is_allowed_striae_inverse_sense(const string& sense) {
+
+	return (contains(allowed_striae_inverse_senses, sense));
+}
+
+bool is_allowed_striae_normal_sense(const string& sense) {
+
+	return (contains(allowed_striae_normal_senses, sense));
+}
+
+bool is_allowed_striae_dextral_sense(const string& sense) {
+
+	return (contains(allowed_striae_dextral_senses, sense));
+}
+
+bool is_allowed_striae_sinistral_sense(const string& sense) {
+
+	return (contains(allowed_striae_sinistral_senses, sense));
+}
+
+bool is_allowed_striae_none_sense(const string& sense) {
+
+	return (contains(allowed_striae_none_senses, sense));
+}
+
 bool is_allowed_striae_sense(const string& sense) {
 
-	return contains(allowed_striae_senses, sense);
+	return ((is_allowed_striae_inverse_sense (sense)) ||
+			(is_allowed_striae_normal_sense (sense)) ||
+			(is_allowed_striae_dextral_sense (sense)) ||
+			(is_allowed_striae_sinistral_sense (sense)) ||
+			(is_allowed_striae_none_sense (sense)));
+}
+
+bool is_allowed_bedding_overturned_sense(const string& sense) {
+
+	return (contains(allowed_bedding_overturned_senses, sense));
+}
+
+bool is_allowed_bedding_normal_sense(const string& sense) {
+
+	return (contains(allowed_bedding_normal_senses, sense));
+}
+
+bool is_allowed_bedding_none_sense(const string& sense) {
+
+	return (contains(allowed_bedding_none_senses, sense));
 }
 
 bool is_allowed_bedding_sense(const string& sense) {
 
-	return contains(allowed_bedding_senses, sense);
+	return ((is_allowed_bedding_overturned_sense (sense)) ||
+			(is_allowed_bedding_normal_sense (sense)) ||
+			(is_allowed_bedding_none_sense (sense)));
 }
 
 bool is_allowed_geodetic (const string& geodetic) {
@@ -695,4 +807,112 @@ bool error_cout (vector <string> bad_records, string recordtype) {
 
 		return false;
 	}
+}
+
+vector <GDB> create_GDB_from_rgf () {
+
+	vector <GDB> outGDB;
+
+	size_t i = 0;
+
+	cout << rgf_to_check.size() << endl;
+
+	for (i = 1; i < rgf_to_check.size(); i++) {
+
+		bool failed;
+
+		GDB buffer;
+
+		buffer.DIPDIR = 999.99;
+		buffer.DIP = 	999.99;
+		buffer.LDIR = 	999.99;
+		buffer.LDIP = 	999.99;
+
+		buffer.corr.DIPDIR = 	999.99;
+		buffer.corr.DIP = 		999.99;
+		buffer.corrL.DIPDIR =	999.99;
+		buffer.corrL.DIP = 		999.99;
+
+		buffer.LPITCH = 999.99;
+
+		buffer.OFFSET = 	"NONE";
+		buffer.LINEATION =	"NONE";
+		buffer.LPITCHSENSE = "NONE";
+
+		buffer.ID = 		rgf_to_check.at(i).at(DATA_ID);
+		buffer.GC = 		rgf_to_check.at(i).at(GROUP);
+		buffer.COLOR = 		rgf_to_check.at(i).at(COLOR);
+		buffer.LOC = 		rgf_to_check.at(i).at(LOCATION);
+		buffer.LOCX = 		string_to_double(rgf_to_check.at(i).at(LOCX), failed);
+		buffer.LOCY = 		string_to_double(rgf_to_check.at(i).at(LOCY), failed);
+		buffer.FORMATION = 	rgf_to_check.at(i).at(FORMATION);
+		buffer.DATATYPE = 	rgf_to_check.at(i).at(DATATYPE);
+
+		if (	(is_allowed_lineation_datatype (rgf_to_check.at(i).at(DATATYPE))) ||
+				(is_allowed_plane_datatype (rgf_to_check.at(i).at(DATATYPE)))) {
+
+			buffer.DIPDIR = 		string_to_double(rgf_to_check.at(i).at(DIR), failed);
+			buffer.DIP = 			string_to_double(rgf_to_check.at(i).at(DIP), failed);
+			buffer.corr.DIPDIR = 	string_to_double(rgf_to_check.at(i).at(DIR), failed);
+			buffer.corr.DIP = 		string_to_double(rgf_to_check.at(i).at(DIP), failed);
+		}
+
+		if (	(is_allowed_striae_datatype (rgf_to_check.at(i).at(DATATYPE))) ||
+				(is_allowed_SC_datatype (rgf_to_check.at(i).at(DATATYPE)))) {
+
+			buffer.DIPDIR = 		string_to_double(rgf_to_check.at(i).at(DIR), failed);
+			buffer.DIP = 			string_to_double(rgf_to_check.at(i).at(DIP), failed);
+			buffer.corr.DIPDIR = 	string_to_double(rgf_to_check.at(i).at(DIR), failed);
+			buffer.corr.DIP = 		string_to_double(rgf_to_check.at(i).at(DIP), failed);
+			buffer.LDIR = 			string_to_double(rgf_to_check.at(i).at(LDIR), failed);
+			buffer.corrL.DIPDIR =	string_to_double(rgf_to_check.at(i).at(LDIR), failed);
+
+			if (buffer.LINEATION != "PITCH" ) {
+
+
+				buffer.corrL.DIP = 		string_to_double(rgf_to_check.at(i).at(LDIP), failed);
+				buffer.LDIP = 			string_to_double(rgf_to_check.at(i).at(LDIP), failed);
+			}
+
+			else {
+
+				buffer.LPITCH = buffer.LDIR;
+				buffer.LPITCHSENSE = rgf_to_check.at(i).at(LDIP);
+			}
+		}
+
+		if (is_allowed_lithology_datatype (rgf_to_check.at(i).at(DATATYPE)))	buffer.DATAGROUP = "LITHOLOGY";
+		if (is_allowed_plane_datatype (rgf_to_check.at(i).at(DATATYPE))) 		buffer.DATAGROUP = "PLANE";
+		if (is_allowed_lineation_datatype (rgf_to_check.at(i).at(DATATYPE))) 	buffer.DATAGROUP = "LINEATION";
+		if (is_allowed_striae_datatype (rgf_to_check.at(i).at(DATATYPE))) 		buffer.DATAGROUP = "STRIAE";
+		if (is_allowed_SC_datatype (rgf_to_check.at(i).at(DATATYPE))) 			buffer.DATAGROUP = "SC";
+
+		if (rgf_to_check.at(i).at(DATATYPE) == "BEDDING") {
+
+			if (is_allowed_bedding_overturned_sense(rgf_to_check.at(i).at(SENSE))) 	buffer.OFFSET = "OVERTURNED";
+			if (is_allowed_bedding_normal_sense(rgf_to_check.at(i).at(SENSE))) 		buffer.OFFSET = "NORMAL";
+		}
+
+		if (rgf_to_check.at(i).at(DATATYPE) == "STRIAE") {
+
+			if (is_allowed_striae_inverse_sense(rgf_to_check.at(i).at(SENSE)))		buffer.OFFSET = "INVERSE";
+			if (is_allowed_striae_normal_sense(rgf_to_check.at(i).at(SENSE))) 		buffer.OFFSET = "NORMAL";
+			if (is_allowed_striae_dextral_sense(rgf_to_check.at(i).at(SENSE))) 		buffer.OFFSET = "DEXTRAL";
+			if (is_allowed_striae_sinistral_sense(rgf_to_check.at(i).at(SENSE)))	buffer.OFFSET = "SINISTRAL";
+		}
+
+		if (is_LINEATIONcorrect (rgf_to_check.at(i)))	buffer.LINEATION = "LINEATION";
+		if (is_PITCHcorrect (rgf_to_check.at(i))) 		buffer.LINEATION = "PITCH";
+		if (is_SCcorrect (rgf_to_check.at(i))) 			buffer.LINEATION = "SC";
+
+		buffer.PALEON = 	string_to_double(rgf_to_check.at(i).at(PALEONORTH), failed);
+
+		buffer.COMMENT = 	rgf_to_check.at(i).at(COMMENT);
+
+		outGDB.push_back(buffer);
+	}
+
+	cout << "  - Geodatabase completed for " << i << " records." << endl;
+
+	return outGDB;
 }

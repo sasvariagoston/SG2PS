@@ -141,6 +141,9 @@ double return_average_misfit (STRESSTENSOR st, vector <GDB> inGDB, bool compress
 vector <double> hyperplane_from_GDB (GDB inGDB);
 vector < vector <double> > shan_matrix_from_GDB (GDB inGDB);
 
+double right_hand_rule_to_german (double corrDIPDIR);
+double german_to_right_hand_rule (double corrDIPDIR);
+
 string return_build_date ();
 string return_build_time ();
 

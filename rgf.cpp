@@ -14,123 +14,63 @@
 #include "cluster.h"
 #include "angelier.h"
 #include "exceptions.hpp"
+#include "checkrgffilecontent.h"
 
 using namespace std;
 
-string GC_from_tempGC (string GCtemp) {
 
-	if (GCtemp == "") return "X";
-	else return capslock (GCtemp);
-}
+vector <GDB> competeRGFcontect (string projectname, string inputxyfilename, INPSET inset) {
 
-double DIPDIR_from_DIPDIRtemp (string DIPDIRtemp, INPSET inset, string DATAGROUP) {
+	vector <GDB> outGDB = create_GDB_from_rgf ();
 
-	double DIPDIR = 999.99;
 
-	if (DATAGROUP != "NULL") DIPDIR = atof(DIPDIRtemp.c_str());
 
-	if ((DIPDIR == 0.0) || (DIPDIR == 90.0) || (DIPDIR == 180.0) || (DIPDIR == 270.0)) DIPDIR = DIPDIR + 10e-8;
-	else if (DIPDIR == 360.0) DIPDIR = DIPDIR - 10e-8;
 
-	if (inset.datarule == "R") DIPDIR = right_hand_rule_to_german (DIPDIR);
 
-	return DIPDIR;
-}
 
-double DIP_from_DIPtemp (string DIPtemp, string DATAGROUP) {
+	for (size_t i = 0; i < outGDB.size(); i++) {
 
-	double DIP = 999.99;
+		if (outGDB.at(i).GC == "") outGDB.at(i).GC = "X";
 
-	if (DATAGROUP != "NULL") DIP = atof(DIPtemp.c_str());
+		outGDB.at(i).PSCOLOR = complete_colorcode (outGDB.at(i).COLOR);
 
-	if (DIP ==  0.0) DIP = DIP + 10e-8;
-	if (DIP == 90.0) DIP = DIP - 10e-8;
+		cout << outGDB.at(i).ID << '\t'
+				<< outGDB.at(i).GC << '\t'
+				<< outGDB.at(i).COLOR << '\t'
+				<< outGDB.at(i).LOC << '\t'
+				<< outGDB.at(i).LOCX << '\t'
+				<< outGDB.at(i).LOCY << '\t'
+				<< outGDB.at(i).FORMATION << '\t'
+				<< outGDB.at(i).DATATYPE << '\t'
+				<< outGDB.at(i).corr.DIPDIR << '\t'
+				<< outGDB.at(i).corr.DIP << '\t'
+				<< outGDB.at(i).corrL.DIPDIR << '\t'
+				<< outGDB.at(i).corrL.DIP << '\t'
+				<< outGDB.at(i).OFFSET << '\t'
+				<< outGDB.at(i).DATAGROUP << endl;
 
-	return DIP;
-}
+		if (inset.datarule == "R") outGDB.at(i).corr.DIPDIR = right_hand_rule_to_german (outGDB.at(i).corr.DIPDIR);
 
-double LDIR_from_LDIRtemp (string LDIRtemp, string DATAGROUP) {
-
-	double LDIR = 999.99;
-
-	if (DATAGROUP != "NULL") LDIR = atof(LDIRtemp.c_str());
-
-	if ((LDIR == 0.0) || (LDIR == 90.0) || (LDIR == 180.0) || (LDIR == 270.0)) LDIR = LDIR + 10e-8;
-	else if (LDIR == 360.0) LDIR = LDIR - 10e-8;
-
-	return LDIR;
-}
-
-string produce_LINEATION (string LDIRtemp, string LDIPtemp) {
-
-	if (	(	(LDIRtemp == "0") ||
-			(LDIRtemp == "0.0") ||
-			(LDIRtemp == "0.00") ||
-			((atof(LDIRtemp.c_str()) >= 0.0) && (atof(LDIRtemp.c_str()) <= 360.0))) &&
-
-			(	(LDIPtemp == "0") ||
-					(LDIPtemp == "0.0") ||
-					(LDIPtemp == "0.00") ||
-					((atof(LDIPtemp.c_str()) > 0.0) && (atof(LDIPtemp.c_str()) <= 90.0))
-
-			))  return "LINEATION";
-
-	else return "PITCH";
-}
-
-string produce_OFFSET (string SENSEtemp) {
-
-	if (	(SENSEtemp == "+") ||
-			(SENSEtemp == "THRUST") ||
-			(SENSEtemp == "UP") ||
-			(SENSEtemp == "INVERSE") ||
-			(SENSEtemp == "U") ||
-			(SENSEtemp == "I")) return "INVERSE";
-
-	else if (	(SENSEtemp == "-") ||
-			(SENSEtemp == "NORMAL") ||
-			(SENSEtemp == "FAULT") ||
-			(SENSEtemp == "DOWN") ||
-			(SENSEtemp == "DOWNWARD") ||
-			(SENSEtemp == "N")) return "NORMAL";
-
-	else if (	(SENSEtemp == "DEXTRAL") ||
-			(SENSEtemp == "DX")	||
-			(SENSEtemp == "D")) return "DEXTRAL";
-
-	else if (	(SENSEtemp == "SINISTRAL") ||
-			(SENSEtemp == "SN") ||
-			(SENSEtemp == "S")) return "SINISTRAL";
-
-	else if (	(SENSEtemp == "OVERTURNED") ||
-				(SENSEtemp == "O") ) return "OVERTURNED";
-
-	else return "NONE";
-}
-
-vector <GDB> compete_colorcode (vector <GDB> inGDB) {
-
-	vector <GDB> outGDB = inGDB;
-	size_t j = 0;
-
-	do {
-
-		if ((inGDB.at(j).COLOR == "A") || (inGDB.at(j).COLOR == "")  || (inGDB.at(j).COLOR == "0")) {inGDB.at(j).PSCOLOR="0"; outGDB.at(j).PSCOLOR = "0.00 0.00 0.00";}
-		if ((inGDB.at(j).COLOR == "B") || (inGDB.at(j).COLOR == "1")){inGDB.at(j).PSCOLOR="1"; outGDB.at(j).PSCOLOR = "0.00 0.00 1.00";}
-		if ((inGDB.at(j).COLOR == "C") || (inGDB.at(j).COLOR == "2")){inGDB.at(j).PSCOLOR="2"; outGDB.at(j).PSCOLOR = "1.00 0.00 0.67";}
-		if ((inGDB.at(j).COLOR == "D") || (inGDB.at(j).COLOR == "3")){inGDB.at(j).PSCOLOR="3"; outGDB.at(j).PSCOLOR = "1.00 0.00 0.00";}
-		if ((inGDB.at(j).COLOR == "E") || (inGDB.at(j).COLOR == "4")){inGDB.at(j).PSCOLOR="4"; outGDB.at(j).PSCOLOR = "1.00 0.50 0.00";}
-		if ((inGDB.at(j).COLOR == "F") || (inGDB.at(j).COLOR == "5")){inGDB.at(j).PSCOLOR="5"; outGDB.at(j).PSCOLOR = "1.00 1.00 0.00";}
-		if ((inGDB.at(j).COLOR == "G") || (inGDB.at(j).COLOR == "6")){inGDB.at(j).PSCOLOR="6"; outGDB.at(j).PSCOLOR = "0.00 1.00 0.00";}
-		if ((inGDB.at(j).COLOR == "H") || (inGDB.at(j).COLOR == "7")){inGDB.at(j).PSCOLOR="7"; outGDB.at(j).PSCOLOR = "0.67 0.00 0.67";}
-		if ((inGDB.at(j).COLOR == "I") || (inGDB.at(j).COLOR == "8")){inGDB.at(j).PSCOLOR="8"; outGDB.at(j).PSCOLOR = "0.50 1.00 1.00";}
-		if ((inGDB.at(j).COLOR == "J") || (inGDB.at(j).COLOR == "9")){inGDB.at(j).PSCOLOR="9"; outGDB.at(j).PSCOLOR = "0.50 0.50 0.50";}
-
-		j++;
-
-	} while (j < outGDB.size());
+		//xy coordinates!
+	}
 
 	return outGDB;
+}
+
+
+
+string complete_colorcode (string in) {
+
+	if 		(in == "B" || in == "1") 	return "0.00 0.00 1.00";
+	else if (in == "C" || in == "2")	return "1.00 0.00 0.67";
+	else if (in == "D" || in == "3")	return "1.00 0.00 0.00";
+	else if (in == "E" || in == "4")	return "1.00 0.50 0.00";
+	else if (in == "F" || in == "5")	return "1.00 1.00 0.00";
+	else if (in == "G" || in == "6")	return "0.00 1.00 0.00";
+	else if (in == "H" || in == "7")	return "0.67 0.00 0.67";
+	else if (in == "I" || in == "8")	return "0.50 1.00 1.00";
+	else if (in == "J" || in == "9")	return "0.50 0.50 0.50";
+	else 								return "0.00 0.00 0.00";
 }
 
 vector <GDB> colorcode_grom_groupcode (vector <GDB> inGDB) {
@@ -173,191 +113,10 @@ vector <GDB> black_colorcode (vector <GDB> inGDB) {
 	return outGDB;
 }
 
-vector <GDB> competeRGFcontect (string projectname, string inputxyfilename, INPSET inSET) {
 
-	GDB buffer;
-	vector <GDB> GDB;
 
-	ifstream rgffile;	
-	string filename = projectname + ".rgf";
-	rgffile.open (filename.c_str());
 
-	size_t i = 0;
 
-	string
-	IDtemp, GCtemp, COLORtemp, LOCtemp, pLOCtemp, LOCXtemp, pLOCXtemp, LOCYtemp, pLOCYtemp, FORMATIONtemp, pFORMATIONtemp,
-	DATATYPEtemp, pDATATYPEtemp, DIPDIRtemp, DIPtemp, LDIRtemp, LDIPtemp, SENSEtemp, PALEONtemp, COMMENTtemp, temp;
-
-	getline (rgffile, temp);
-
-	while (!(rgffile.eof())) {
-
-		buffer.iID = i + 1;
-
-		getline (rgffile, IDtemp, '\t');
-		buffer.ID = IDtemp;
-
-		getline (rgffile, GCtemp, '\t');
-		buffer.GC = GC_from_tempGC (GCtemp);
-
-		getline (rgffile, COLORtemp, '\t');
-		buffer.COLOR = capslock (COLORtemp);
-
-		getline (rgffile, LOCtemp, '\t');
-		LOCtemp = capslock(LOCtemp);
-		if (LOCtemp == "")LOCtemp = pLOCtemp;
-		buffer.LOC = LOCtemp;
-
-		getline (rgffile, LOCXtemp, '\t');
-		getline (rgffile, LOCYtemp, '\t');
-
-		getline (rgffile, FORMATIONtemp, '\t');
-		//if (FORMATIONtemp == "") FORMATIONtemp = pFORMATIONtemp;
-		//buffer.FORMATION = FORMATIONtemp;
-
-		if (capslock(inputxyfilename) == "") {
-
-			if (LOCXtemp == "") LOCXtemp = pLOCXtemp;
-			buffer.LOCX = atof(LOCXtemp.c_str());
-
-			if (LOCYtemp == "") LOCYtemp = pLOCYtemp;
-			buffer.LOCY = atof(LOCYtemp.c_str());
-
-			if (FORMATIONtemp == "") FORMATIONtemp = pFORMATIONtemp;
-		}
-
-		else buffer = insertxy (buffer, inputxyfilename);
-
-		getline (rgffile, DATATYPEtemp, '\t');
-		DATATYPEtemp = capslock (DATATYPEtemp);
-		if (DATATYPEtemp == "") DATATYPEtemp=pDATATYPEtemp;
-		buffer.DATATYPE = DATATYPEtemp;
-
-		buffer.DATAGROUP = cGc_datagroup (buffer.DATATYPE);
-
-		getline (rgffile, DIPDIRtemp, '\t');
-		buffer.DIPDIR = DIPDIR_from_DIPDIRtemp (DIPDIRtemp, inSET, buffer.DATAGROUP);
-		buffer.corr.DIPDIR = buffer.DIPDIR;
-
-		getline (rgffile, DIPtemp, '\t');
-		buffer.DIP = DIP_from_DIPtemp (DIPtemp, buffer.DATAGROUP);
-		buffer.corr.DIP = buffer.DIP;
-
-		getline (rgffile, LDIRtemp, '\t');
-		getline (rgffile, LDIPtemp, '\t');
-		getline (rgffile, SENSEtemp, '\t');
-
-		SENSEtemp = capslock(SENSEtemp);
-		buffer.OFFSET = produce_OFFSET (SENSEtemp);
-
-		if (buffer.DATAGROUP == "SC") 		buffer.LINEATION = "SC";
-		else if (buffer.DATAGROUP == "STRIAE") 	buffer.LINEATION = produce_LINEATION (LDIRtemp, LDIPtemp);
-		else buffer.LINEATION = "NONE";
-
-		if ((buffer.LINEATION == "SC") || (buffer.LINEATION == "LINEATION")) {
-
-			buffer.LDIR = LDIR_from_LDIRtemp (LDIRtemp, buffer.DATAGROUP);
-			buffer.corrL.DIPDIR = buffer.LDIR;
-			buffer.LDIP = DIP_from_DIPtemp (LDIPtemp, buffer.DATAGROUP);
-			buffer.corrL.DIP = buffer.LDIP;
-		}
-
-		else if (buffer.LINEATION == "PITCH") {
-
-			buffer.LDIR = DIP_from_DIPtemp (LDIRtemp, buffer.DATAGROUP);
-			buffer.corrL.DIPDIR = buffer.LDIR;
-			buffer.LDIP = 999.99;
-			buffer.corrL.DIP = 999.99;
-
-			buffer.LPITCH = atof(LDIRtemp.c_str());
-			buffer.LPITCHSENSE = capslock(LDIPtemp);
-		}
-
-		else {
-
-			buffer.LDIR = 999.99;
-			buffer.corrL.DIPDIR = 999.99;
-			buffer.LDIP = 999.99;
-			buffer.corrL.DIP = 999.99;
-
-			buffer.LPITCH = 999.99;
-			buffer.LPITCHSENSE = "NONE";
-		}
-
-		getline (rgffile, PALEONtemp, '\t');
-		buffer.PALEON = atof(PALEONtemp.c_str());
-
-		getline (rgffile, COMMENTtemp, '\n');
-		buffer.COMMENT = COMMENTtemp;
-
-		pLOCtemp  = buffer.LOC;
-		pLOCXtemp = buffer.LOCX;
-		pLOCYtemp = buffer.LOCY;
-		pFORMATIONtemp = buffer.FORMATION;
-		pDATATYPEtemp = buffer.DATATYPE;
-
-		GDB.push_back(buffer);
-
-		i++;
-	}
-
-	rgffile.close();
-
-	cout << "  - Geodatabase completed for " << i << " records." << endl;
-
-	return GDB;
-}
-
-double right_hand_rule_to_german (double corrDIPDIR) {
-
-	if ((corrDIPDIR >= 0.0) && (corrDIPDIR < 270.0)) 	return corrDIPDIR + 90.0;
-	else 												return corrDIPDIR - 270.0;
-}
-
-double german_to_right_hand_rule (double corrDIPDIR) {
-
-	if ((corrDIPDIR > 90.0) && (corrDIPDIR <= 360.0)) 	return corrDIPDIR - 90.0;
-	else 												return corrDIPDIR + 270.0;
-}
-
-string cGc_datagroup (string DATATYPE) {
-
-	if (
-			(DATATYPE == "CONTACT") ||
-			(DATATYPE == "FOLDPLANE") ||
-			(DATATYPE == "LITHOCLASE") ||
-			(DATATYPE == "FRACTURE") ||
-			(DATATYPE == "BEDDING") ||
-			(DATATYPE == "S1") ||
-			(DATATYPE == "S2") ||
-			(DATATYPE == "S3") ||
-			(DATATYPE == "S4") ||
-			(DATATYPE == "S5") ||
-			(DATATYPE == "CROSSBEDDING") ||
-			(DATATYPE == "VEIN") ||
-			(DATATYPE == "FOLDSURFACE") ||
-			(DATATYPE == "USERPLANE4") ||
-			(DATATYPE == "USERPLANE5"))
-
-		return "PLANE";
-
-	else if (
-			(DATATYPE == "BOUDAIN") ||
-			(DATATYPE == "FOLDAXIS") ||
-			(DATATYPE == "KINK") ||
-			(DATATYPE == "LINEATION") ||
-			(DATATYPE == "USERLINEATION1") ||
-			(DATATYPE == "USERLINEATION2") ||
-			(DATATYPE == "USERLINEATION3") ||
-			(DATATYPE == "USERLINEATION4") ||
-			(DATATYPE == "USERLINEATION5"))
-
-		return "LINEATION";
-
-	else if (DATATYPE == "SC") 		return "SC";
-	else if (DATATYPE == "STRIAE") 	return "STRIAE";
-	else 							return "NULL";
-}
 
 vector <GDB> cGc_NDS (vector <GDB> inGDB) {
 
@@ -428,20 +187,29 @@ vector <GDB> manipulate_N (vector <GDB> inGDB) {
 
 		if (a <= 0.33333) {
 
-			if (outGDB.at(i).N.X > 0.5) outGDB.at(i).N.X = outGDB.at(i).N.X - 10e-8;
-			else 						outGDB.at(i).N.X = outGDB.at(i).N.X + 10e-8;
+			if (outGDB.at(i).NC.X > 0.5) 	outGDB.at(i).N.X = outGDB.at(i).N.X - 10e-8;
+			else 							outGDB.at(i).N.X = outGDB.at(i).N.X + 10e-8;
+
+			if (outGDB.at(i).NC.X > 0.5) 	outGDB.at(i).NC.X = outGDB.at(i).NC.X - 10e-8;
+			else 							outGDB.at(i).NC.X = outGDB.at(i).NC.X + 10e-8;
 		}
 
 		else if  (a >= 0.6666) {
 
-			if (outGDB.at(i).N.Z > 0.5) outGDB.at(i).N.Z = outGDB.at(i).N.Z - 10e-8;
-			else 						outGDB.at(i).N.Z = outGDB.at(i).N.Z + 10e-8;
+			if (outGDB.at(i).N.Z > 0.5) 	outGDB.at(i).N.Z = outGDB.at(i).N.Z - 10e-8;
+			else 							outGDB.at(i).N.Z = outGDB.at(i).N.Z + 10e-8;
+
+			if (outGDB.at(i).NC.Z > 0.5) 	outGDB.at(i).NC.Z = outGDB.at(i).NC.Z - 10e-8;
+			else 							outGDB.at(i).NC.Z = outGDB.at(i).NC.Z + 10e-8;
 		}
 
 		else {
 
-			if (outGDB.at(i).N.Y > 0.5) outGDB.at(i).N.Y = outGDB.at(i).N.Y - 10e-8;
-			else 						outGDB.at(i).N.Y = outGDB.at(i).N.Y + 10e-8;
+			if (outGDB.at(i).N.Y > 0.5) 	outGDB.at(i).N.Y = outGDB.at(i).N.Y - 10e-8;
+			else 							outGDB.at(i).N.Y = outGDB.at(i).N.Y + 10e-8;
+
+			if (outGDB.at(i).NC.Y > 0.5) 	outGDB.at(i).NC.Y = outGDB.at(i).NC.Y - 10e-8;
+			else 							outGDB.at(i).NC.Y = outGDB.at(i).NC.Y + 10e-8;
 		}
 
 		i++;
@@ -1683,9 +1451,11 @@ void process_rgf (string inputfilename, string XY_filename, INPSET inset) {
 
 	cout << "GEODATABASE PROCESSING FOR '" << capslock(inputfilename)<< ".RGF' DATABASE FILE" << endl;
 
-	if (XY_filename == "") geodatabase = competeRGFcontect(inputfilename, "", inset);
 
+	if (XY_filename == "") geodatabase = competeRGFcontect(inputfilename, "", inset);
 	else geodatabase = competeRGFcontect(inputfilename, XY_filename, inset);
+
+
 
 	geodatabase = cGc_NDS (geodatabase);
 	geodatabase = manipulate_N (geodatabase);
@@ -1696,7 +1466,7 @@ void process_rgf (string inputfilename, string XY_filename, INPSET inset) {
 	geodatabase = cGc_PITCHANGLE (geodatabase);
 	geodatabase = cGc_OFFSET (geodatabase);
 	geodatabase = cGc_LAMBDA_STRESSVECTOR_ESTIMATORS (geodatabase);
-	geodatabase = compete_colorcode (geodatabase);
+	//geodatabase = compete_colorcode (geodatabase);
 	sort(geodatabase.begin(), geodatabase.end(), byLocTypeGc);
 
 	cout << "K-MEANS CLUSTERING OF '" << capslock(inputfilename)<< ".RGF' DATABASE FILE" << endl;

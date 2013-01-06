@@ -13,19 +13,20 @@
 #include "cluster.h"
 #include "angelier.h"
 
-string GC_from_tempGC (string GCtemp);
-double DIPDIR_from_DIPDIRtemp (string DIPDIRtemp, INPSET inset, string DATAGROUP);
-double corrDIPDIR_from_DIPDIR (double DIPDIR, INPSET inset, string DATAGROUP);
+//string GC_from_tempGC (string GCtemp);
+//double DIPDIR_from_DIPDIRtemp (string DIPDIRtemp, INPSET inset, string DATAGROUP);
+//double corrDIPDIR_from_DIPDIR (double DIPDIR, INPSET inset, string DATAGROUP);
 
-double DIP_from_DIPtemp (string DIPtemp, string DATAGROUP);
-double corrDIP_from_DIP (double DIP, string DATAGROUP);
+//double DIP_from_DIPtemp (string DIPtemp, string DATAGROUP);
+//double corrDIP_from_DIP (double DIP, string DATAGROUP);
 
-double LDIR_from_LDIRtemp (string LDIRtemp, string DATAGROUP);
-double corrLDIR_from_LDIR (double LDIR, string DATAGROUP);
+//double LDIR_from_LDIRtemp (string LDIRtemp, string DATAGROUP);
+//double corrLDIR_from_LDIR (double LDIR, string DATAGROUP);
 
-string produce_LINEATION (string LDIRtemp, string LDIPtemp);
-string produce_OFFSET (string SENSEtemp);
-vector <GDB> compete_colorcode (vector <GDB> inGDB);
+//string produce_LINEATION (string LDIRtemp, string LDIPtemp);
+vector <GDB> produce_OFFSET (vector <GDB> inGDB);
+//string produce_OFFSET (string SENSEtemp);
+string complete_colorcode (string in);
 vector <GDB> black_colorcode (vector <GDB> inGDB);
 vector <GDB> colorcode_grom_groupcode (vector <GDB> inGDB);
 

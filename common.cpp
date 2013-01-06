@@ -1814,6 +1814,18 @@ vector < vector <double> > shan_matrix_from_GDB (GDB inGDB)  {
 	return out;
 }
 
+double right_hand_rule_to_german (double corrDIPDIR) {
+
+	if ((corrDIPDIR >= 0.0) && (corrDIPDIR < 270.0)) 	return corrDIPDIR + 90.0;
+	else 												return corrDIPDIR - 270.0;
+}
+
+double german_to_right_hand_rule (double corrDIPDIR) {
+
+	if ((corrDIPDIR > 90.0) && (corrDIPDIR <= 360.0)) 	return corrDIPDIR - 90.0;
+	else 												return corrDIPDIR + 270.0;
+}
+
 string return_build_date () {
 
 	char build_date [7];

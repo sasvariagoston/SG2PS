@@ -49,14 +49,43 @@ vector <string> create_inputfilename_vector (int argc, char *argv[]);
 
 bool rgffile_correct (string projectname);
 
+bool is_STRIAE (const string DATATYPE);
+bool is_SC (const string DATATYPE);
+bool is_BEDDING (const string DATATYPE);
+
+bool is_OTHERcorrect (vector <string> in);
+bool is_BEDDINGcorrect (vector <string> in);
+bool is_SCcorrect (vector <string> in);
+bool is_LINEATIONcorrect (vector <string> in);
+bool is_PITCHcorrect (vector <string> in);
+
 bool is_allowed_groupcode(const string& groupcode);
 bool is_allowed_colorcode(const string& colorcode);
 bool is_allowed_coordinate(const string& coordinate);
-bool is_allowed_datatype(const string& datatype);
+
+bool is_allowed_lithology_datatype(const string& datatype);
+bool is_allowed_lineation_datatype(const string& datatype);
+bool is_allowed_plane_datatype(const string& datatype);
+bool is_allowed_striae_datatype(const string& datatype);
+bool is_allowed_SC_datatype(const string& datatype);
+
 bool is_allowed_dip(const string& dip);
 bool is_allowed_dir(const string& dir);
+
+bool is_allowed_striae_inverse_sense(const string& sense);
+bool is_allowed_striae_normal_sense(const string& sense);
+bool is_allowed_striae_dextral_sense(const string& sense);
+bool is_allowed_striae_sinistral_sense(const string& sense);
+bool is_allowed_striae_none_sense(const string& sense);
 bool is_allowed_striae_sense(const string& sense);
+
+bool is_allowed_bedding_overturned_sense(const string& sense);
+bool is_allowed_bedding_normal_sense(const string& sense);
+bool is_allowed_bedding_none_sense(const string& sense);
 bool is_allowed_bedding_sense(const string& sense);
+
+vector <GDB> create_GDB_from_rgf ();
+
 bool is_allowed_geodetic (const string& geodetic) ;
 
 bool is_double (const string& coordinate);
