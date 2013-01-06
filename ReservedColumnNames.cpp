@@ -6,7 +6,6 @@ using namespace std;
 
 namespace {
 
-// TODO Agree on the identifiers, then share the code with the GUI
 // TODO If changes -> update the enum of columns appropriately
 const string headers[] = {
 		"DATA_ID",
@@ -19,7 +18,7 @@ const string headers[] = {
 		"DATATYPE",
 		"DIP_DIR",
 		"DIP",
-		"L_DIR",
+		"L_DIP_DIR",
 		"L_DIP",
 		"SENSE",
 		"PALEONORTH",

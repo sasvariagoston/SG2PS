@@ -2351,6 +2351,8 @@ void PS_idealmovement (vector <GDB > inGDB, ofstream& o, INPSET inset, CENTER ce
 	VCTR shear_vector;
 	STRESSFIELD empty_sf;
 
+	if (inset.idealmovement == "N") return;
+
 	do {
 
 		shear_vector = unitvector (inGDB.at(i).SHEAR_S);

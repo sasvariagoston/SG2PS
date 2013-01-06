@@ -82,7 +82,7 @@ void real_main(int argument_number, char *argv[]) {
 
 	double elapsed_time = (static_cast<double>(finishtime - starttime))/CLOCKS_PER_SEC;
 
-	elapsed_time *= 1000; // FIXME Assumes it in ms
+	elapsed_time *= 1000;
 
 	output_elapsed_time (elapsed_time);
 }

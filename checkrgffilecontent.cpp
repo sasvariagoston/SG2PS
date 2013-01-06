@@ -282,10 +282,8 @@ bool input_rgf (const string& projectname) {
 	}
 	catch (rgf_error& ) {
 
-		return false; // TODO false means failed?
+		return false;
 	}
-
-	// TODO Why the "if (line.size() > 6) {" check? Where is the else branch?
 
 	size_t n_records = rgf_to_check.size();
 
@@ -832,7 +830,7 @@ bool error_cout (vector <string> bad_records, string recordtype) {
 
 	else {
 
-		cout <<"    - ERROR: incorrect " << recordtype << "(s) in the following record(s):  " << flush;
+		cout << "    - ERROR: incorrect " << recordtype << "(s) in the following record(s):  " << flush;
 
 		for (size_t j = 0; j < bad_records.size() - 1; j++) {
 
@@ -871,9 +869,9 @@ vector <GDB> create_GDB_from_rgf () {
 
 		buffer.LPITCH = 999.99;
 
-		buffer.OFFSET = 	"NONE";
-		buffer.LINEATION =	"NONE";
-		buffer.LPITCHSENSE = "NONE";
+		buffer.OFFSET = 		"NONE";
+		buffer.LINEATION =		"NONE";
+		buffer.LPITCHSENSE = 	"NONE";
 
 		buffer.ID = 		rgf_to_check.at(i).at(DATA_ID);
 		buffer.GC = 		rgf_to_check.at(i).at(GROUP);
@@ -941,9 +939,9 @@ vector <GDB> create_GDB_from_rgf () {
 		if (is_PITCHcorrect (rgf_to_check.at(i))) 		buffer.LINEATION = "PITCH";
 		if (is_SCcorrect (rgf_to_check.at(i))) 			buffer.LINEATION = "SC";
 
-		buffer.PALEON = 	string_to_double(rgf_to_check.at(i).at(PALEONORTH), failed);
+		buffer.PALEON = string_to_double(rgf_to_check.at(i).at(PALEONORTH), failed);
 
-		buffer.COMMENT = 	rgf_to_check.at(i).at(COMMENT);
+		buffer.COMMENT = rgf_to_check.at(i).at(COMMENT);
 
 		outGDB.push_back(buffer);
 	}
@@ -1076,7 +1074,7 @@ void build_column_map() {
 
 		const string& col_name = header.at(i);
 
-		size_t index = find_index(reserved_column_names(), col_name); // TODO to_uppercase(col_name) if case insensitive
+		size_t index = find_index(reserved_column_names(), to_uppercase(col_name));
 
 		if (index==NOT_FOUND) {
 
@@ -1109,8 +1107,8 @@ void convert_row(const vector<string>& orig_row, size_t index) {
 
 		if (index!=NOT_FOUND) {
 
-			//row.at(index) = to_uppercase( orig_row.at(i) ); // TODO Convert to uppercase?
-			row.at(index) = orig_row.at(i);
+			row.at(index) = to_uppercase( orig_row.at(i) ); // TODO Convert to uppercase?
+			//row.at(index) = orig_row.at(i);
 		}
 	}
 

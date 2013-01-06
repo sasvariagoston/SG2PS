@@ -765,7 +765,7 @@ vector <GDB> inversion (string method, vector <GDB> inGDB, ofstream& o, INPSET i
 			PS_lineation (inGDB.at(0), o, inset, center, sf, false, "S1_ITER");
 			PS_lineation (inGDB.at(0), o, inset, center, sf, false, "S2_ITER");
 			PS_lineation (inGDB.at(0), o, inset, center, sf, false, "S3_ITER");
-			PS_idealmovement (inGDB, o, inset, center);
+			//PS_idealmovement (inGDB, o, inset, center);
 
 			i++;
 
