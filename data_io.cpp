@@ -363,27 +363,21 @@ bool copyoriginalfile (PFN output) {
 void outputrgfheader (ofstream& o, INPSET inset) {
 
 	o
-	<< "DATA_ID" 		<< '\t'
-	<< "GC" 		<< '\t'
-	<< "COLOR" 		<< '\t'
-	<< "LOC" 		<< '\t'
-	<< "LOCX" 		<< '\t'
-	<< "LOCY" 		<< '\t'
-	<< "FORMATION" 	<< '\t'
-	<< "DATATYPE"	<< '\t' << flush;
-
-	if (inset.datarule == "R") 	o << "corrSTRIKEDIR" 	<< '\t' << flush;
-	else 						o << "corrDIPDIR" 		<< '\t' << flush;
-
-	o
-	<< "corrDIP" 	<< '\t'
-	<< "corrLDIR" 	<< '\t'
-	<< "corrLDIP" 	<< '\t'
-	<< "SENSE" 		<< '\t'
+	<< "DATA_ID" << '\t'
+	<< "GROUP_CODE" << '\t'
+	<< "COLOR_CODE" << '\t'
+	<< "LOCATION" << '\t'
+	<< "LOC_X" << '\t'
+	<< "LOC_Y" << '\t'
+	<< "FORMATION" << '\t'
+	<< "DATATYPE" << '\t'
+	<< "DIP_DIR" << '\t'
+	<< "DIP" << '\t'
+	<< "L_DIP_DIR" << '\t'
+	<< "L_DIP" << '\t'
+	<< "SENSE" << '\t'
 	<< "PALEONORTH"	<< '\t'
-	<< "COMMENT"
-
-	<< endl;
+	<< "COMMENT" << endl;
 }
 
 void outputaverageheader (ofstream& o) {

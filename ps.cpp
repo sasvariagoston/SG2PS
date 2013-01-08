@@ -1121,6 +1121,7 @@ void PS_ANG_distribution (vector <GDB>  inGDB, ofstream& o, CENTER center, PAPER
 	} while (i < inGDB.size());
 
 	step = ANG_max / 10.0;
+
 	counter = 0.0;
 	i = 0;
 

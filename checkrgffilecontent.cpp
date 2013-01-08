@@ -10,6 +10,7 @@
 
 
 #include "checkrgffilecontent.h"
+#include "run_mode.h"
 #include "exceptions.hpp"
 #include "ReservedColumnNames.hpp"
 
@@ -550,9 +551,14 @@ vector <string> check_rgf_inputs (vector <string> inputfilename_vector, string r
 			else {
 
 				inputfilename_vector.erase(inputfilename_vector.begin() + j);
+
+				if (is_BATCH()) cout << "  - Input " << capslock(inputfilename_vector.at(j)) << ".RGF file structure is incorrect, file will be not evaluated." << endl; //new line
+
 			}
 
-			if (inputfilename_vector.size() < 2) throw runtime_error ("No file to process");
+			if ((inputfilename_vector.size() < 2) && is_GUI()) throw runtime_error ("No file to process"); //is_GUI new
+
+
 		}
 
 		else {
@@ -605,10 +611,17 @@ bool rgffile_correct (string projectname) {
 			DIPDIRcheck () &&
 			DIPcheck () &&
 			STRIAE_SC_check	() &&
-			PALEONcheck ()		))
+			PALEONcheck ()		)) {
 
+		if (is_GUI()) {
 
-	throw rgf_error();
+			cout << "THROW ERROR" << endl;
+
+			throw rgf_error();
+		}
+
+		else return false;
+	}
 
 	return true;
 }
@@ -848,8 +861,6 @@ vector <GDB> create_GDB_from_rgf () {
 	vector <GDB> outGDB;
 
 	size_t i = 0;
-
-	cout << rgf_to_check.size() << endl;
 
 	for (i = 1; i < rgf_to_check.size(); i++) {
 

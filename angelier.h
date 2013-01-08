@@ -31,7 +31,6 @@ vector <vector <double> > SHAN (vector <GDB> inGDB, INPSET inset);
 STRESSTENSOR ANGELIER (vector <GDB> inGDB, INPSET inset);
 
 STRESSTENSOR MICHAEL (vector <GDB> inGDB, INPSET inset);
-STRESSFIELD MICHAEL_PROCESS (vector <GDB> inGDB, INPSET inset);
 
 STRESSTENSOR NDA (vector <GDB> inGDB, INPSET inset);
 STRESSFIELD NDA_PROCESS (vector <GDB> inGDB, INPSET inset);

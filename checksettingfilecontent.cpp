@@ -26,7 +26,7 @@ void header () {
 	cout << "|                                                                  |" << endl;
 	cout << " ------------------------------------------------------------------ " << endl;
 	cout << "|                                                                  |" << endl;
-	cout << "|                  Built on: " << return_build_date() << ", " << return_build_time() << "                    | "<< endl;
+	cout << "|                 Built on: " << return_build_date() << ", " << return_build_time() << "                  | "<< endl;
 	cout << "|                                                                  |" << endl;
 	cout << "|                       version: 0.2.0 beta                        |" << endl;
 	cout << "|                                                                  |" << endl;
@@ -195,10 +195,10 @@ bool settingfilecorrect (string settingfilename) {
 		b = capslock (b);
 
 	}
-	if (!((	(c == "0.0") || (c == "0.1") || (c == "0.2") ||
-			(c == "0.3") || (c == "0.4") || (c == "0.5") ||
-			(c == "0.6") || (c == "0.7") || (c == "0.8") ||
-			(c == "0.9") || (c == "1.0")) && (b == "LINEWIDTH:"))) settingfilecorrect = false;
+	if (!((	(c == "0") || (c == "1") || (c == "2") ||
+			(c == "3") || (c == "4") || (c == "5") ||
+			(c == "6") || (c == "7") || (c == "8") ||
+			(c == "9") || (c == "0")) && (b == "LINEWIDTH:"))) settingfilecorrect = false;
 
 
 	if (settingfile.eof()) settingfilecorrect=false;
@@ -292,16 +292,10 @@ INPSET loadsettingsfromsettingfile (string settingfilename) {
 	getline (settingfile, b, '\t');
 	getline (settingfile, settings.linewidthst);
 
-	if (settings.linewidthst == "0.1") 		settings.linewidth = 0.1;
-	else if (settings.linewidthst == "0.2") settings.linewidth = 0.2;
-	else if (settings.linewidthst == "0.3") settings.linewidth = 0.3;
-	else if (settings.linewidthst == "0.4") settings.linewidth = 0.4;
-	else if (settings.linewidthst == "0.5") settings.linewidth = 0.5;
-	else if (settings.linewidthst == "0.6") settings.linewidth = 0.6;
-	else if (settings.linewidthst == "0.7") settings.linewidth = 0.7;
-	else if (settings.linewidthst == "0.8") settings.linewidth = 0.8;
-	else if (settings.linewidthst == "0.9") settings.linewidth = 0.9;
-	else 									settings.linewidth = 1.0;
+	bool failed;
+
+	if (settings.linewidthst == "1") settings.linewidth = 1.0;
+	else settings.linewidth = string_to_double (settings.linewidthst, failed) / 10.0;
 
 	getline (settingfile, b, '\t');
 	getline (settingfile, c);
@@ -587,6 +581,7 @@ INPSET inputsettings_manually (string projectname) {
 	if (c == "9") inputsettingsonscreen.linewidth = 0.9;
 	if (c == "0") inputsettingsonscreen.linewidth = 1.0;
 
+	inputsettingsonscreen.linewidthst = c;
 
 	do {
 		cout << "  - Rose plot for data sets:" << endl;
@@ -669,7 +664,7 @@ bool outputsettingfile (INPSET outputsettingfile, string projectname) {
 		settingfile << outputsettingfile.fracture << endl;
 
 		settingfile << "LINEWIDTH:" << '\t' << flush;
-		settingfile << outputsettingfile.linewidth << endl;
+		settingfile << outputsettingfile.linewidthst << endl;
 
 		settingfile << "ROSETYPE:" << '\t' << flush;
 		settingfile << outputsettingfile.rosetype << endl;

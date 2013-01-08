@@ -35,7 +35,7 @@ vector <vector < double> > michael_parameters (vector <GDB> inGDB) {
 		out.at( (i * 3) + 1 ).at(4) =     N.Z -               (2.0 * N.Z * N.Y * N.Y);
 
 		out.at( (i * 3) + 2 ).at(0) =   - N.Z - (N.Z * N.X * N.X) + (N.Z * N.Z * N.Z);
-		out.at( (i * 3) + 2 ).at(1) =         -	            (2.0 * N.X * N.Y * N.Z);
+		out.at( (i * 3) + 2 ).at(1) =         -	              (2.0 * N.X * N.Y * N.Z);
 		out.at( (i * 3) + 2 ).at(2) =     N.X -               (2.0 * N.X * N.Z * N.Z);
 		out.at( (i * 3) + 2 ).at(3) =   - N.Z - (N.Y * N.Y * N.Z) + (N.Z * N.Z * N.Z);
 		out.at( (i * 3) + 2 ).at(4) =     N.Y -               (2.0 * N.Y * N.Z * N.Z);
@@ -54,8 +54,6 @@ vector <vector < double> > stressvector_parameters (vector <GDB> inGDB) {
 	size_t i = 0;
 
 	do {
-
-		cout << inGDB.at(i).SV.X << endl;
 
 		o.at( (i * 3) + 0 ).at(0) =  inGDB.at(i).SV.X;
 		o.at( (i * 3) + 1 ).at(0) =  inGDB.at(i).SV.Y;
@@ -462,17 +460,6 @@ STRESSTENSOR MICHAEL (vector <GDB> inGDB, INPSET inset) {
 	return st;
 }
 
-STRESSFIELD  MICHAEL_PROCESS (vector <GDB> inGDB, INPSET inset) {
-
-	STRESSTENSOR st = MICHAEL (inGDB, inset);
-
-	STRESSFIELD sf = eigenvalue_eigenvector (st);
-
-	sf = computestressfield_DXDYDZ (sf);
-
-	return stress_regime (sf);
-}
-
 STRESSTENSOR NDA (vector <GDB> inGDB, INPSET inset) {
 
 	double r = inset.angle / 90.0;
@@ -785,11 +772,17 @@ vector <GDB> inversion (string method, vector <GDB> inGDB, ofstream& o, INPSET i
 
 	else if (method == "MICHAEL") {
 
-		sf = MICHAEL_PROCESS (inGDB, inset);
+		st = MICHAEL (inGDB, inset);
 
-		successfull = check_correct_stressfield (sf);
+		sf = eigenvalue_eigenvector (st);
+
+		sf = computestressfield_DXDYDZ (sf);
+
+		sf = stress_regime (sf);
 
 		inGDB = return_stressvector_estimators (st, inGDB, "ANGELIER", false);
+
+		successfull = check_correct_stressfield (sf);
 	}
 
 	else if (method == "FRY") {

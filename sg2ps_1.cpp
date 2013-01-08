@@ -18,18 +18,37 @@
 #include "checkxycontent.h"
 #include "cluster.h"
 #include "platform_dep.hpp"
+#include "run_mode.h"
 
 using namespace std;
+
+namespace {
+
+string run_mode = "COMMANDLINE";
+
+}
+
+bool is_GUI() {
+
+  return (run_mode == "GUI");
+}
+
+bool is_BATCH() {
+
+  return (run_mode == "BATCH");
+}
+
+bool is_COMMANDLINE() {
+
+  return (run_mode == "COMMANDLINE");
+}
 
 void real_main(int argument_number, char *argv[]) {
 
 	string inputrgfname, xy_filename, inputrgfname_only, temp;
 	vector <GDB> geodatabase, tiltgeodatabase;
 	INPSET inset;
-
 	size_t j = 1;
-	string run_mode = "COMMANDLINE";
-
 	bool using_xy_files = false;
 	vector <string> inputfilename_vector;
 
@@ -44,6 +63,8 @@ void real_main(int argument_number, char *argv[]) {
 			run_mode = "GUI";
 			inputfilename_vector.erase(inputfilename_vector.begin() + 1);
 		}
+
+		else run_mode = "BATCH";
 	}
 
 	else {
@@ -53,7 +74,6 @@ void real_main(int argument_number, char *argv[]) {
 	}
 
 	cout << "RUNNING SG2PS IN " << run_mode << " MODE." << endl;
-
 
 	inputfilename_vector = check_rgf_inputs (inputfilename_vector, run_mode);
 

@@ -23,18 +23,13 @@ vector <GDB> competeRGFcontect (string projectname, string inputxyfilename, INPS
 
 	vector <GDB> outGDB = create_GDB_from_rgf ();
 
-
-
-
-
-
 	for (size_t i = 0; i < outGDB.size(); i++) {
 
 		if (outGDB.at(i).GC == "") outGDB.at(i).GC = "X";
 
 		outGDB.at(i).PSCOLOR = complete_colorcode (outGDB.at(i).COLOR);
 
-		cout << outGDB.at(i).ID << '\t'
+		/*cout << outGDB.at(i).ID << '\t'
 				<< outGDB.at(i).GC << '\t'
 				<< outGDB.at(i).COLOR << '\t'
 				<< outGDB.at(i).LOC << '\t'
@@ -47,11 +42,11 @@ vector <GDB> competeRGFcontect (string projectname, string inputxyfilename, INPS
 				<< outGDB.at(i).corrL.DIPDIR << '\t'
 				<< outGDB.at(i).corrL.DIP << '\t'
 				<< outGDB.at(i).OFFSET << '\t'
-				<< outGDB.at(i).DATAGROUP << endl;
+				<< outGDB.at(i).DATAGROUP << endl;*/
 
 		if (inset.datarule == "R") outGDB.at(i).corr.DIPDIR = right_hand_rule_to_german (outGDB.at(i).corr.DIPDIR);
 
-		//xy coordinates!
+		if (capslock(inputxyfilename) != "")  outGDB.at(i) = insertxy (outGDB.at(i), inputxyfilename);
 	}
 
 	return outGDB;

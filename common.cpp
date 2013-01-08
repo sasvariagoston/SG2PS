@@ -1619,9 +1619,7 @@ VCTR return_stressvector (STRESSTENSOR st, GDB inGDB, bool compression_positive)
 			(st._12 * N.X + st._22 * N.Y + st._23 * N.Z),
 			(st._13 * N.X + st._23 * N.Y + st._33 * N.Z));
 
-	if (! compression_positive)
-
-	out = declare_vector (-out.X, -out.Y, -out.Z);
+	if (! compression_positive)	out = declare_vector (-out.X, -out.Y, -out.Z);
 
 	return out;
 }
@@ -1828,76 +1826,21 @@ double german_to_right_hand_rule (double corrDIPDIR) {
 
 string return_build_date () {
 
-	char build_date [7];
+	char build_date [10];
 
-	build_date[0] = __DATE__[4];
+	if (__DATE__[4] == ' ') 	build_date [0] = '0';
+	else 					build_date [0] = __DATE__[4];
+
 	build_date[1] = __DATE__[5];
-	build_date[2] = '/';
-
-	if (__DATE__[0] == 'J' && __DATE__[1]== 'a') {
-		build_date[3] = '0';
-		build_date[4] = '1';
-	}
-
-	else if (__DATE__[0] == 'F' && __DATE__[1 ]== 'e') {
-		build_date[3] = '0';
-		build_date[4] = '2';
-	}
-
-	else if (__DATE__[0] == 'M' && __DATE__[2]== 'r') {
-		build_date[3] = '0';
-		build_date[4] = '3';
-	}
-
-	else if (__DATE__[0] == 'A' && __DATE__[1]== 'p') {
-		build_date[3] = '0';
-		build_date[4] = '4';
-	}
-
-	else if (__DATE__[0] == 'M' && __DATE__[2]== 'y') {
-		build_date[3] = '0';
-		build_date[4] = '5';
-	}
-
-	else if (__DATE__[0] == 'J' && __DATE__[2]== 'n') {
-		build_date[3] = '0';
-		build_date[4] = '6';
-	}
-
-	else if (__DATE__[0] == 'J' && __DATE__[2]== 'l') {
-		build_date[3] = '0';
-		build_date[4] = '7';
-	}
-
-	else if (__DATE__[0] == 'A' && __DATE__[1]== 'u') {
-		build_date[3] = '1';
-		build_date[4] = '2';
-	}
-
-	else if (__DATE__[0] == 'S' && __DATE__[1]== 'e') {
-		build_date[3] = '0';
-		build_date[4] = '9';
-	}
-
-	else if (__DATE__[0] == 'O' && __DATE__[1 ]== 'c') {
-		build_date[3] = '1';
-		build_date[4] = '0';
-	}
-
-	else if (__DATE__[0] == 'N' && __DATE__[1]== 'o') {
-		build_date[3] = '1';
-		build_date[4] = '1';
-	}
-
-	else  {
-		build_date[3] = '1';
-		build_date[4] = '2';
-	}
-
-	build_date[5] = '/';
-
-	build_date[6] = __DATE__[9];
-	build_date[7] = __DATE__[10];
+	build_date[2] = ' ';
+	build_date[3] = __DATE__[0];
+	build_date[4] = __DATE__[1];
+	build_date[5] = __DATE__[2];
+	build_date[6] = ' ';
+	build_date[7] = __DATE__[7];
+	build_date[8] = __DATE__[8];
+	build_date[9] = __DATE__[9];
+	build_date[10] = __DATE__[10];
 
 	return build_date;
 }
