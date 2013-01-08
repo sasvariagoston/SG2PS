@@ -303,7 +303,7 @@ bool input_rgf (const string& projectname) {
 
 void complete_rgf_to_check () {
 
-	for ( size_t i = 1; i < rgf_to_check.size(); i++) {
+	for (size_t i = 1; i < rgf_to_check.size(); i++) {
 
 		if (rgf_to_check.at(i).at(LOCATION) == "") 	rgf_to_check.at(i).at(LOCATION) = 	rgf_to_check.at(i-1).at(LOCATION);
 		if (rgf_to_check.at(i).at(LOCX) == "") 		rgf_to_check.at(i).at(LOCX) = 		rgf_to_check.at(i-1).at(LOCX);
@@ -351,9 +351,7 @@ bool IDcheck () {
 
 	vector <size_t> bad_records;
 
-	size_t i = 0;
-
-	for (i = 1; i < rgf_to_check.size(); i++) {
+	for (size_t i = 0; i < rgf_to_check.size(); i++) {
 
 		string ID = rgf_to_check.at(i).at(DATA_ID);
 
@@ -386,9 +384,7 @@ bool GCcheck () {
 
 	vector <string> bad_records;
 
-	size_t i = 0;
-
-	for (i = 1; i < rgf_to_check.size(); i++) {
+	for (size_t i = 0; i < rgf_to_check.size(); i++) {
 
 		if (!is_allowed_groupcode (rgf_to_check.at(i).at(GROUP))) bad_records.push_back(rgf_to_check.at(i).at(DATA_ID));
 	}
@@ -400,9 +396,7 @@ bool COLORcheck () {
 
 	vector <string> bad_records;
 
-	size_t i = 0;
-
-	for (i = 1; i < rgf_to_check.size(); i++) {
+	for (size_t i = 0; i < rgf_to_check.size(); i++) {
 
 		if (!is_allowed_colorcode (rgf_to_check.at(i).at(COLOR))) bad_records.push_back(rgf_to_check.at(i).at(DATA_ID));
 	}
@@ -423,9 +417,7 @@ bool XYcheck () {
 
 	vector <string> bad_records;
 
-	size_t i = 0;
-
-	for (i = 1; i < rgf_to_check.size(); i++) {
+	for (size_t i = 0; i < rgf_to_check.size(); i++) {
 
 		if (
 				((!is_allowed_coordinate (rgf_to_check.at(i).at(LOCX))) && (rgf_to_check.at(i).at(LOCX) != "")) ||
@@ -439,9 +431,7 @@ bool DATATYPEcheck () {
 
 	vector <string> bad_records;
 
-	size_t i = 0;
-
-	for (i = 1; i < rgf_to_check.size(); i++) {
+	for (size_t i = 0; i < rgf_to_check.size(); i++) {
 
 		if
 			(	(!is_allowed_lithology_datatype (rgf_to_check.at(i).at(DATATYPE))) &&
@@ -461,9 +451,7 @@ bool DIPDIRcheck () {
 
 	vector <string> bad_records;
 
-	size_t i = 0;
-
-	for (i = 1; i < rgf_to_check.size(); i++) {
+	for (size_t i = 0; i < rgf_to_check.size(); i++) {
 
 		if (
 				((rgf_to_check.at(i).at(DIR) != "") && (rgf_to_check.at(i).at(DATATYPE) == "LITHOLOGY")) ||
@@ -481,9 +469,7 @@ bool DIPcheck () {
 
 	vector <string> bad_records;
 
-	size_t i = 0;
-
-	for (i = 1; i < rgf_to_check.size(); i++) {
+	for (size_t i = 0; i < rgf_to_check.size(); i++) {
 
 		if (
 				((rgf_to_check.at(i).at(DIP) != "") && (rgf_to_check.at(i).at(DATATYPE) == "LITHOLOGY")) ||
@@ -501,9 +487,7 @@ bool STRIAE_SC_check () {
 
 	vector <string> bad_records;
 
-	size_t i = 0;
-
-	for (i = 1; i < rgf_to_check.size(); i++) {
+	for (size_t i = 0; i < rgf_to_check.size(); i++) {
 
 		if (
 				(!is_OTHERcorrect (rgf_to_check.at(i))) &&
@@ -525,9 +509,7 @@ bool PALEONcheck () {
 
 	vector <string> bad_records;
 
-	size_t i = 0;
-
-	for (i = 1; i < rgf_to_check.size(); i++) {
+	for (size_t i = 0; i < rgf_to_check.size(); i++) {
 
 		if (!is_allowed_dir (rgf_to_check.at(i).at(PALEONORTH)) && rgf_to_check.at(i).at(PALEONORTH) != "") bad_records.push_back(rgf_to_check.at(i).at(DATA_ID));
 	}
@@ -582,6 +564,7 @@ vector <string> check_rgf_inputs (vector <string> inputfilename_vector, string r
 vector <string> create_inputfilename_vector (int argc, char *argv[]) {
 
 	int j = 0;
+
 	vector <string> out;
 
 	do  {
@@ -619,10 +602,8 @@ bool rgffile_correct (string projectname) {
 
 			throw rgf_error();
 		}
-
 		else return false;
 	}
-
 	return true;
 }
 
@@ -675,7 +656,7 @@ bool is_SCcorrect (vector <string> in) {
 			is_allowed_dip (in.at(DIP)) &&
 			is_allowed_dir (in.at(LDIR)) &&
 			is_allowed_dip (in.at(LDIP)) &&
-			(in.at(SENSE) == "")
+			in.at(SENSE) == ""
 	);
 }
 
