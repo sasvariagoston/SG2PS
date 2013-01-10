@@ -312,35 +312,35 @@ INPSET loadsettingsfromsettingfile (string settingfilename) {
 
 void printsettingsonscreen (INPSET settings) {
 
-	if (settings.datarule=="R")		cout<<"  - Data convention ............................: right-hand rule"					<< endl;
-	if (settings.datarule=="G")		cout<<"  - Data convention.............................: german dipdir-dip"					<< endl;
+	if (settings.datarule=="R")			cout<<"  - Data convention ............................: right-hand rule"					<< endl;
+	if (settings.datarule=="G")			cout<<"  - Data convention.............................: german dipdir-dip"					<< endl;
 
-	if (settings.plot=="H")			cout<<"  - Plot type ..................................: Hoeppener plot"					<< endl;
-	if (settings.plot=="A")			cout<<"  - Plot type ..................................: Angelier plot"						<< endl;
+	if (settings.plot=="H")				cout<<"  - Plot type ..................................: Hoeppener plot"					<< endl;
+	if (settings.plot=="A")				cout<<"  - Plot type ..................................: Angelier plot"						<< endl;
 
-	if (settings.plottype=="S")		cout<<"  - Net type....................................: Schmidt-net"						<< endl;
-	if (settings.plottype=="W")		cout<<"  - Net type....................................: Wulff-net"							<< endl;
+	if (settings.plottype=="S")			cout<<"  - Net type....................................: Schmidt-net"						<< endl;
+	if (settings.plottype=="W")			cout<<"  - Net type....................................: Wulff-net"							<< endl;
 
-	if (settings.hemisphere=="U")	cout<<"  - Hemisphere..................................: upper hemisphere"					<< endl;
-	if (settings.hemisphere=="L")	cout<<"  - Hemisphere..................................: lower hemisphere"					<< endl;
+	if (settings.hemisphere=="U")		cout<<"  - Hemisphere..................................: upper hemisphere"					<< endl;
+	if (settings.hemisphere=="L")		cout<<"  - Hemisphere..................................: lower hemisphere"					<< endl;
 
-	if (settings.tilting=="B")		cout<<"  - Tilting by..................................: bedding"							<< endl;
-	if (settings.tilting=="P")		cout<<"  - Tilting by..................................: paleo-north direction"				<< endl;
-	if (settings.tilting=="A")		cout<<"  - Tilting by..................................: bedding and paleo-north"			<< endl;
+	if (settings.tilting=="B")			cout<<"  - Tilting by..................................: bedding"							<< endl;
+	if (settings.tilting=="P")			cout<<"  - Tilting by..................................: paleo-north direction"				<< endl;
+	if (settings.tilting=="A")			cout<<"  - Tilting by..................................: bedding and paleo-north"			<< endl;
 
-	if (settings.group=="Y")		cout<<"  - Groupcode...................................: use"								<< endl;
-	if (settings.group=="N")		cout<<"  - Groupcode...................................: do not use"						<< endl;
+	if (settings.group=="Y")			cout<<"  - Groupcode...................................: use"								<< endl;
+	if (settings.group=="N")			cout<<"  - Groupcode...................................: do not use"						<< endl;
 
-	if (settings.clusternumber=="N")cout<<"  - Clustering..................................: do not use"						<< endl;
-	if (settings.clusternumber=="A")cout<<"  - Clustering..................................: iteration for ideal cluster number"<< endl;
-	if (settings.clusternumber=="2")cout<<"  - Clustering..................................: 2 clusters"						<< endl;
-	if (settings.clusternumber=="3")cout<<"  - Clustering..................................: 3 clusters"						<< endl;
-	if (settings.clusternumber=="4")cout<<"  - Clustering..................................: 4 clusters"						<< endl;
-	if (settings.clusternumber=="5")cout<<"  - Clustering..................................: 5 clusters"						<< endl;
-	if (settings.clusternumber=="6")cout<<"  - Clustering..................................: 6 clusters"						<< endl;
-	if (settings.clusternumber=="7")cout<<"  - Clustering..................................: 7 clusters"						<< endl;
-	if (settings.clusternumber=="8")cout<<"  - Clustering..................................: 8 clusters"						<< endl;
-	if (settings.clusternumber=="9")cout<<"  - Clustering..................................: 9 clusters"						<< endl;
+	if (settings.clusternumber=="N")	cout<<"  - Clustering..................................: do not use"						<< endl;
+	if (settings.clusternumber=="A")	cout<<"  - Clustering..................................: iteration for ideal cluster number"<< endl;
+	if (settings.clusternumber=="2")	cout<<"  - Clustering..................................: 2 clusters"						<< endl;
+	if (settings.clusternumber=="3")	cout<<"  - Clustering..................................: 3 clusters"						<< endl;
+	if (settings.clusternumber=="4")	cout<<"  - Clustering..................................: 4 clusters"						<< endl;
+	if (settings.clusternumber=="5")	cout<<"  - Clustering..................................: 5 clusters"						<< endl;
+	if (settings.clusternumber=="6")	cout<<"  - Clustering..................................: 6 clusters"						<< endl;
+	if (settings.clusternumber=="7")	cout<<"  - Clustering..................................: 7 clusters"						<< endl;
+	if (settings.clusternumber=="8")	cout<<"  - Clustering..................................: 8 clusters"						<< endl;
+	if (settings.clusternumber=="9")	cout<<"  - Clustering..................................: 9 clusters"						<< endl;
 
 	if (settings.labeling == "Y")		cout<<"  - Labeling....................................: yes"								<< endl;
 	if (settings.labeling == "N")		cout<<"  - Labeling....................................: no labeling"						<< endl;
@@ -354,11 +354,11 @@ void printsettingsonscreen (INPSET settings) {
 	if (settings.inversion == "M")		cout<<"  - Inversion...................................: using using Michael (1984) method"	<< endl;
 	if (settings.inversion == "N")		cout<<"  - Inversion...................................: none"								<< endl;
 
-	if (settings.virt_striae == "Y")	cout<<"  - Virtual symmetrical striae set..............: use" 							<< endl;
-	if (settings.virt_striae == "N")	cout<<"  - Virtual symmetrical striae set..............: do not use"								<< endl;
+	if (settings.virt_striae == "Y")	cout<<"  - Virtual symmetrical striae set..............: use" 								<< endl;
+	if (settings.virt_striae == "N")	cout<<"  - Virtual symmetrical striae set..............: do not use"						<< endl;
 
 	if (settings.idealmovement == "Y")	cout<<"  - Ideal slickenside movement..................: display" 							<< endl;
-	if (settings.idealmovement == "N")	cout<<"  - Ideal slickenside movement..................: not display"								<< endl;
+	if (settings.idealmovement == "N")	cout<<"  - Ideal slickenside movement..................: not display"						<< endl;
 
 	cout<<"  - Angle between s1 and fault plane (if needed): " << settings.angle << " degs" 	<<endl;
 
@@ -367,12 +367,13 @@ void printsettingsonscreen (INPSET settings) {
 
 	cout<<"  - Linewidth:..................................: "<<settings.linewidth<<" points"	<<endl;
 
-	if (settings.rosetype=="S")		cout<<"  - Rose plot type..............................: symmetrical"						<< endl;
-	if (settings.rosetype=="A")		cout<<"  - Rose plot type..............................: asymmetrical"						<< endl;
-	if (settings.rosebinning=="A")	cout<<"  - Data bin size on rose plot..................: 2.5 deg"							<< endl;
-	if (settings.rosebinning=="B")	cout<<"  - Data bin size on rose plot..................: 5 deg"								<< endl;
-	if (settings.rosebinning=="C")	cout<<"  - Data bin size on rose plot..................: 10 deg"							<< endl;
-	if (settings.rosebinning=="D")	cout<<"  - Data bin size on rose plot..................: 22.5 deg"							<< endl;
+	if (settings.rosetype=="S")		cout<<"  - Rose plot type..............................: symmetrical"							<< endl;
+	if (settings.rosetype=="A")		cout<<"  - Rose plot type..............................: asymmetrical"							<< endl;
+
+	if (settings.rosebinning=="A")	cout<<"  - Data bin size on rose plot..................: 2.5 deg"								<< endl;
+	if (settings.rosebinning=="B")	cout<<"  - Data bin size on rose plot..................: 5 deg"									<< endl;
+	if (settings.rosebinning=="C")	cout<<"  - Data bin size on rose plot..................: 10 deg"								<< endl;
+	if (settings.rosebinning=="D")	cout<<"  - Data bin size on rose plot..................: 22.5 deg"								<< endl;
 
 }
 

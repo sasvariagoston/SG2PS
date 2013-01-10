@@ -1333,11 +1333,17 @@ vector <double>  quartic_solution (double A, double B, double C, double D, doubl
 	double p_c = 0.0;
 	double q_c = 0.0;
 
+
+
+
 	E = E / A;
 	D = D / A;
 	C = C / A;
 	B = B / A;
 	A = 1.0;
+
+
+
 
 	double f = C - ((3.0 * B * B) / 8.0);
 
@@ -1360,7 +1366,7 @@ vector <double>  quartic_solution (double A, double B, double C, double D, doubl
 
 
 
-	if ((fabs(X.at(3) > 0.0)) && (fabs(X.at(4) > 0.0))) {
+	if (fabs(X.at(3)) > 1E-8 && fabs(X.at(4)) > 1E-8) {  //if complex
 
 		double R = sqrt (X.at(2) * X.at(2) + X.at(4) * X.at(4));
 		double Y = sqrt ((R - X.at(2)) / 2.0);
@@ -1371,26 +1377,28 @@ vector <double>  quartic_solution (double A, double B, double C, double D, doubl
 		q = - Z;	q_c = - Y;
 	}
 
-	else {
 
-		if 		((fabs(X.at(0) > 1E-8)) &&  (fabs(X.at(1) > 1E-8))) {
+
+	else { //if not complex
+
+		if 		(fabs(X.at(0)) > 1E-8 &&  fabs(X.at(1)) > 1E-8) {
 
 			p = sqrt (X.at(0));
 			q = sqrt (X.at(1));
 		}
 
-		else if ((fabs(X.at(0) > 1E-8)) &&  (fabs(X.at(2) > 1E-8))) {
+		else if (fabs(X.at(0)) > 1E-8 &&  fabs(X.at(2)) > 1E-8) {
 
 			p = sqrt (X.at(0));
 			q = sqrt (X.at(2));
 		}
 
-		else if ((fabs(X.at(1) > 1E-8)) &&  (fabs(X.at(2) > 1E-8))) {
+		else if (fabs(X.at(1)) > 1E-8 &&  fabs(X.at(2)) > 1E-8) {
 
 			p = sqrt (X.at(1));
 			q = sqrt (X.at(2));
 		}
-		else if ((fabs(X.at(0) > 1E-8)) &&  (fabs(X.at(1) > 1E-8)) &&  (fabs(X.at(2) > 1E-8))) {
+		else if (fabs(X.at(0)) > 1E-8 &&  fabs(X.at(1)) > 1E-8 &&  fabs(X.at(2)) > 1E-8) {
 
 			p = sqrt (X.at(0));
 			q = sqrt (X.at(1));
@@ -1495,7 +1503,6 @@ STRESSFIELD eigenvalue_eigenvector (STRESSTENSOR st) {
 	sf.EIGENVECTOR1.Y = - ((a1 * sf.EIGENVECTOR1.X) + c1) / b1;
 	sf.EIGENVECTOR1 = unitvector (sf.EIGENVECTOR1);
 
-
 	a1 = st._11 - sf.EIGENVALUE.Y;
 	b2 = st._22 - sf.EIGENVALUE.Y;
 
@@ -1503,7 +1510,6 @@ STRESSFIELD eigenvalue_eigenvector (STRESSTENSOR st) {
 	sf.EIGENVECTOR2.X = ((b1 * c2) - (b2 * c1)) / ((b2 * a1) - (a2 * b1));
 	sf.EIGENVECTOR2.Y = - ((a1 * sf.EIGENVECTOR2.X) + c1) / b1;
 	sf.EIGENVECTOR2 = unitvector (sf.EIGENVECTOR2);
-
 
 	a1 = st._11 - sf.EIGENVALUE.Z;
 	b2 = st._22 - sf.EIGENVALUE.Z;
@@ -1829,18 +1835,18 @@ string return_build_date () {
 	char build_date [10];
 
 	if (__DATE__[4] == ' ') 	build_date [0] = '0';
-	else 					build_date [0] = __DATE__[4];
+	else 						build_date [0] = __DATE__[4];
 
-	build_date[1] = __DATE__[5];
-	build_date[2] = ' ';
-	build_date[3] = __DATE__[0];
-	build_date[4] = __DATE__[1];
-	build_date[5] = __DATE__[2];
-	build_date[6] = ' ';
-	build_date[7] = __DATE__[7];
-	build_date[8] = __DATE__[8];
-	build_date[9] = __DATE__[9];
-	build_date[10] = __DATE__[10];
+	build_date[1] = 	__DATE__[5];
+	build_date[2] = 	' ';
+	build_date[3] = 	__DATE__[0];
+	build_date[4] = 	__DATE__[1];
+	build_date[5] = 	__DATE__[2];
+	build_date[6] = 	' ';
+	build_date[7] = 	__DATE__[7];
+	build_date[8] = 	__DATE__[8];
+	build_date[9] = 	__DATE__[9];
+	build_date[10] = 	__DATE__[10];
 
 	return build_date;
 }

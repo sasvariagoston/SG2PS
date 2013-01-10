@@ -18,7 +18,7 @@ using namespace std;
 
 namespace {
 
-vector<vector<string> > orig_table;
+vector <vector<string> > orig_table;
 
 vector <vector <string> > rgf_to_check;
 
@@ -61,13 +61,12 @@ const string datatype_plane_allowed [] = {
 		"FOLDSURFACE",
 		"FRACTURE",
 		"LITHOCLASE",
-		"PLANE"
+		"PLANE",
 		"S1",
 		"S2",
 		"S3",
 		"S4",
 		"S5",
-		"STRIAE",
 		"USERPLANE1",
 		"USERPLANE2",
 		"USERPLANE3",
@@ -334,7 +333,7 @@ bool IDcheck_duplicate () {
 
 		if (!(p.second)) {
 
-			cout << "    - ERROR: DATA_ID " << ID << " used in line " << i << " is already used at line " << (*(p.first)).second << "." <<endl;
+			cout << "    - ERROR: DATA_ID " << ID << " used in line " << i + 1 << " is already used at line " << (*(p.first)).second + 1 << "." <<endl;
 
 			error = true;
 		}
@@ -355,7 +354,7 @@ bool IDcheck () {
 
 		string ID = rgf_to_check.at(i).at(DATA_ID);
 
-		if (ID == "") bad_records.push_back (i);
+		if (ID == "") bad_records.push_back (i + 1);
 	}
 
 	if (bad_records.size() == 0) {
@@ -518,47 +517,60 @@ bool PALEONcheck () {
 
 }
 
-vector <string> check_rgf_inputs (vector <string> inputfilename_vector, string run_mode) {
+vector <string> check_rgf_inputs (vector <string> inputfilename_vector) {
 
-	size_t j = 1;
+	if (is_COMMANDLINE()) {
 
-	cout << "CHECKING INPUT FILE(S) INTEGRITY" << endl;
+		while (!(rgffile_correct (inputfilename_vector.at(0)))) {
 
-	do {
+			cout << "    - Input " << capslock(inputfilename_vector.at(0)) << ".RGF file structure is incorrect; please enter file name again, or press 'X' to exit." << endl;
 
-		if (run_mode != "COMMANDLINE") {
+			inputfilename_vector.at(0) = inputfilename();
+		}
 
-			if (rgffile_correct(inputfilename_vector.at(j))) cout << "  - Input " << capslock(inputfilename_vector.at(j)) << ".RGF file structure is correct." << endl;
+		return inputfilename_vector;
+	}
+
+	else if (is_GUI()) {
+
+		if (rgffile_correct(inputfilename_vector.at(0))) {
+
+			cout << "    - Input " << capslock(inputfilename_vector.at(0)) << ".RGF file structure is correct." << endl;
+
+			return inputfilename_vector;
+		}
+
+		else throw runtime_error ("No file to process.");
+	}
+
+	else {
+
+		for (size_t j = inputfilename_vector.size() - 1; j >= 0; j--) {
+
+			if (rgffile_correct(inputfilename_vector.at(j))) {
+
+				cout << "    - Input " << capslock(inputfilename_vector.at(j)) << ".RGF file structure is correct." << endl;
+
+				if (j == 0) return inputfilename_vector;
+			}
 
 			else {
 
+				cout << "    - Input " << capslock(inputfilename_vector.at(j)) << ".RGF file structure is incorrect, file will be not evaluated." << endl;
+
 				inputfilename_vector.erase(inputfilename_vector.begin() + j);
 
-				if (is_BATCH()) cout << "  - Input " << capslock(inputfilename_vector.at(j)) << ".RGF file structure is incorrect, file will be not evaluated." << endl; //new line
+				if (inputfilename_vector.size() == 0) {
 
+					cout << "    - No input file to process, exiting." << endl;
+
+					throw exit_requested();
+				}
 			}
-
-			if ((inputfilename_vector.size() < 2) && is_GUI()) throw runtime_error ("No file to process"); //is_GUI new
-
-
 		}
 
-		else {
-
-			while (!(rgffile_correct (inputfilename_vector.at(j)))) {
-
-				cout << "  - Input " << capslock(inputfilename_vector.at(j)) << ".RGF file structure is incorrect; please enter file name again, or press 'X' to exit." << endl;
-				inputfilename_vector.at(j) = inputfilename();
-			}
-
-			cout << "  - Input " << capslock(inputfilename_vector.at(j)) << ".RGF file structure is correct." << endl;
-		}
-
-		j++;
-
-	} while (j < inputfilename_vector.size());
-
-	return inputfilename_vector;
+		return inputfilename_vector;
+	}
 }
 
 vector <string> create_inputfilename_vector (int argc, char *argv[]) {
@@ -598,12 +610,11 @@ bool rgffile_correct (string projectname) {
 
 		if (is_GUI()) {
 
-			cout << "THROW ERROR" << endl;
-
 			throw rgf_error();
 		}
 		else return false;
 	}
+
 	return true;
 }
 
@@ -843,7 +854,7 @@ vector <GDB> create_GDB_from_rgf () {
 
 	size_t i = 0;
 
-	for (i = 1; i < rgf_to_check.size(); i++) {
+	for (i = 0; i < rgf_to_check.size(); i++) {
 
 		bool failed;
 

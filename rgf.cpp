@@ -23,6 +23,8 @@ vector <GDB> competeRGFcontect (string projectname, string inputxyfilename, INPS
 
 	vector <GDB> outGDB = create_GDB_from_rgf ();
 
+	cout << outGDB.size() << endl;
+
 	for (size_t i = 0; i < outGDB.size(); i++) {
 
 		if (outGDB.at(i).GC == "") outGDB.at(i).GC = "X";
@@ -46,8 +48,9 @@ vector <GDB> competeRGFcontect (string projectname, string inputxyfilename, INPS
 
 		if (inset.datarule == "R") outGDB.at(i).corr.DIPDIR = right_hand_rule_to_german (outGDB.at(i).corr.DIPDIR);
 
-		if (capslock(inputxyfilename) != "")  outGDB.at(i) = insertxy (outGDB.at(i), inputxyfilename);
+		if (capslock(inputxyfilename) != "")  outGDB.at(i) = insertxy (outGDB.at(i));
 	}
+
 
 	return outGDB;
 }
@@ -115,9 +118,7 @@ vector <GDB> black_colorcode (vector <GDB> inGDB) {
 
 vector <GDB> cGc_NDS (vector <GDB> inGDB) {
 
-	vector <GDB> outGDB;
-
-	outGDB = inGDB;
+	vector <GDB> outGDB = inGDB;
 
 	size_t i = 0;
 
@@ -1450,14 +1451,15 @@ void process_rgf (string inputfilename, string XY_filename, INPSET inset) {
 	if (XY_filename == "") geodatabase = competeRGFcontect(inputfilename, "", inset);
 	else geodatabase = competeRGFcontect(inputfilename, XY_filename, inset);
 
-
-
 	geodatabase = cGc_NDS (geodatabase);
 	geodatabase = manipulate_N (geodatabase);
 	geodatabase = cGc_NDS_DCNCSC (geodatabase);
 	geodatabase = cGc_MISFIT (geodatabase);
 	geodatabase = cGc_striae_correction (geodatabase);
 	geodatabase = cGc_UP (geodatabase);
+
+	cout << geodatabase.at(0).PSCOLOR << endl;
+
 	geodatabase = cGc_PITCHANGLE (geodatabase);
 	geodatabase = cGc_OFFSET (geodatabase);
 	geodatabase = cGc_LAMBDA_STRESSVECTOR_ESTIMATORS (geodatabase);
@@ -1475,6 +1477,9 @@ void process_rgf (string inputfilename, string XY_filename, INPSET inset) {
 	geodatabase = ptn (geodatabase, inset);
 
 	cout << "RETILTING OF '" << capslock(inputfilename)<< ".RGF' DATABASE FILE" << endl;
+
+
+
 	tiltgeodatabase = cGc_RETILT (geodatabase, inset);
 	tiltgeodatabase = cGc_tilted_UP (tiltgeodatabase);
 	tiltgeodatabase = cGc_PITCHANGLE (tiltgeodatabase);
@@ -1482,6 +1487,7 @@ void process_rgf (string inputfilename, string XY_filename, INPSET inset) {
 	tiltgeodatabase = cGc_average (tiltgeodatabase);
 	tiltgeodatabase = cGc_s0_average (tiltgeodatabase);
 	tiltgeodatabase = ptn (tiltgeodatabase, inset);
+
 
 	cout << "DATA EVALUATION AND EXPORT FROM '" << capslock(inputfilename) << ".RGF' DATABASE FILE" << endl;
 	createprojectfolders (projectfoldername, geodatabase);

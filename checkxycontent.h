@@ -16,14 +16,22 @@ using namespace std;
 bool needxyfile ();
 string inputxyfilename ();
 
-bool xyEXISTENCEcheck (string xyname);
-bool xyTABcheck (string xyname);
-bool xyIDcheck (string xyname);
-bool xyCOORDcheck (string xyname);
-
-GDB insertxy (GDB inGDB, string xyfilename);
-
 bool xyfile_correct (string projectname);
-string check_xy_inputs (string inputfilename, string run_mode);
+bool input_xy (const string& projectname);
+void read_in_xy(const string& file_name);
+
+
+
+
+
+//bool xyEXISTENCEcheck (string xyname);
+////bool xyTABcheck (string xyname);
+//bool xyIDcheck (string xyname);
+//bool xyCOORDcheck (string xyname);
+
+GDB insertxy (GDB inGDB);
+
+
+string check_xy_inputs (string inputfilename);
 
 #endif

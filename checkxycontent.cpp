@@ -7,8 +7,22 @@
 #include <stdexcept>
 
 #include "checkxycontent.h"
+#include "run_mode.h"
 #include "exceptions.hpp"
 
+namespace {
+
+vector <vector <string> > xy_to_check;
+
+enum record_name {
+	LOCATION,
+	LOC_X,
+	LOC_Y,
+	FORMATION,
+	SIZE
+};
+
+}
 
 using namespace std;
 
@@ -16,14 +30,14 @@ bool needxyfile () {
 
 	string need_xy_file;
 
-	cout << endl << endl;
+	cout << endl;
 
-	cout << "COORDINATE FILE" << endl << endl;
+	cout << "COORDINATE FILE" << endl;
 
 	do {
 
-		cout << "Do You want to use own coordinates in XY data format....[Y]," 			<< endl;
-		cout << "or use coordinate data in RGF file......................[N]........?  " << flush;
+		cout << "Do You want to use own coordinates in XY data format....[Y]," 				<< endl;
+		cout << "or use coordinate data in RGF file......................[N]........?  "	<< flush;
 
 		cin >> need_xy_file;
 		need_xy_file = capslock(need_xy_file);
@@ -33,7 +47,7 @@ bool needxyfile () {
 	while (!((need_xy_file == "Y") || (need_xy_file == "N")));
 
 	if (need_xy_file == "Y") return true;
-	else return false;
+	return false;
 }
 
 string inputxyfilename () {
@@ -46,6 +60,186 @@ string inputxyfilename () {
 
 	return xyfilename;
 }
+
+bool LOCATIONcheck_duplicate () {
+
+	map <string, int> record_to_check;
+
+	bool error = false;
+
+	size_t i = 0;
+
+	for (i = 0; i < xy_to_check.size(); i++) {
+
+		string ID = xy_to_check.at(i).at(LOCATION);
+
+		pair<string, int> ID_and_counter(ID, i);
+
+		pair <map <string, int>::iterator, bool> p = record_to_check.insert(ID_and_counter);
+
+		if (!(p.second)) {
+
+			cout << "    - XY ERROR: LOCATION " << ID << " used in line " << i + 1 << " is already used at line " << (*(p.first)).second + 1 << "." <<endl;
+
+			error = true;
+		}
+	}
+
+	if (error) return false;
+
+	cout << "    - Correct LOCATION's in all records of XY file." << endl;
+
+	return true;
+}
+
+bool LOCATIONcheck () {
+
+	vector <size_t> bad_records;
+
+	for (size_t i = 0; i < xy_to_check.size(); i++) {
+
+		string ID = xy_to_check.at(i).at(LOCATION);
+
+		if (ID == "") bad_records.push_back (i + 1);
+	}
+
+	if (bad_records.size() == 0) {
+
+		cout << "    - Existing LOCATION's in all records of XY file." << endl;
+
+		return true;
+	}
+
+	else {
+
+		cout <<"    - XY ERROR: empty LOCATION(s) in the following record(s):  " << flush;
+
+		for (size_t j = 0; j < bad_records.size() - 1; j++) {
+
+			cout << bad_records.at(j) << ", " << flush;
+		}
+
+		cout << bad_records.at(bad_records.size()-1) << "." << endl;
+
+		return false;
+	}
+}
+
+/*bool XYcheck () {
+
+	vector <string> bad_records;
+
+	for (size_t i = 0; i < xy_to_check.size(); i++) {
+
+		//if (
+				//((!is_allowed_coordinate (rgf_to_check.at(i).at(LOC_X))) && (rgf_to_check.at(i).at(LOC_X) != "")) ||
+				//((!is_allowed_coordinate (rgf_to_check.at(i).at(LOC_Y))) && (rgf_to_check.at(i).at(LOC_Y) != ""))) bad_records.push_back(rgf_to_check.at(i).at(LOCATION));
+	}
+
+	return false;
+}*/
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+bool xyfile_correct (string projectname) {
+
+	//if (!(input_xy (projectname))) return false;
+
+	if  (!(
+				LOCATIONcheck () &&
+				LOCATIONcheck_duplicate ()// &&
+				//XYcheck ()
+
+	)) return false;
+
+	return true;
+}
+
+GDB insertxy (GDB inGDB) {
+
+	GDB outGDB = inGDB;
+
+	bool failed;
+
+	for (size_t i = 0; i < xy_to_check.size(); i++) {
+
+	if (outGDB.LOC == xy_to_check.at(i).at(LOCATION)) {
+
+			outGDB.LOC = 		xy_to_check.at(i).at(LOCATION);
+			outGDB.LOCX = string_to_double(xy_to_check.at(i).at(LOC_X), failed);
+			outGDB.LOCY = string_to_double(xy_to_check.at(i).at(LOC_Y), failed);
+			outGDB.FORMATION = 	xy_to_check.at(i).at(FORMATION);
+		}
+	}
+
+	return outGDB;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+/*
 
 bool xyEXISTENCEcheck (string xyname) {
 
@@ -67,9 +261,8 @@ bool xyEXISTENCEcheck (string xyname) {
 	}
 }
 
-bool xyIDcheck (string xyname)
+bool xyIDcheck (string xyname){
 
-{
 	ifstream xyfile;
 	string ID;
 	string temp;
@@ -207,7 +400,6 @@ bool xyTABcheck (string xyname) {
 		return true;
 	}
 }
-
 
 bool xyCOORDcheck (string xyname) {
 
@@ -355,3 +547,5 @@ string check_xy_inputs (string inputfilename, string run_mode) {
 
 	return inputfilename;
 }
+
+*/

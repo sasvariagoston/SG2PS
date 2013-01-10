@@ -48,7 +48,7 @@ void real_main(int argument_number, char *argv[]) {
 	string inputrgfname, xy_filename, inputrgfname_only, temp;
 	vector <GDB> geodatabase, tiltgeodatabase;
 	INPSET inset;
-	size_t j = 1;
+	size_t j = 0;
 	bool using_xy_files = false;
 	vector <string> inputfilename_vector;
 
@@ -56,31 +56,30 @@ void real_main(int argument_number, char *argv[]) {
 
 	inputfilename_vector = create_inputfilename_vector (argument_number, argv);
 
-	if (inputfilename_vector.size() > 1) {
+	inputfilename_vector.erase(inputfilename_vector.begin() + 0);
 
-		if (inputfilename_vector.at(1) == "-gui_calls") {
+	if (inputfilename_vector.size() >= 1) {
 
-			run_mode = "GUI";
-			inputfilename_vector.erase(inputfilename_vector.begin() + 1);
-		}
-
+		if (inputfilename_vector.at(0) == "-gui_calls") run_mode = "GUI";
 		else run_mode = "BATCH";
 	}
 
-	else {
+	cout << "RUNNING SG2PS IN " << run_mode << " MODE." << endl;
+
+	if (is_GUI()) inputfilename_vector.erase(inputfilename_vector.begin() + 0);
+
+	if (is_COMMANDLINE()) {
 
 		inputrgfname = inputfilename();
 		inputfilename_vector.push_back(inputrgfname);
 	}
 
-	cout << "RUNNING SG2PS IN " << run_mode << " MODE." << endl;
+	inputfilename_vector = check_rgf_inputs (inputfilename_vector);
 
-	inputfilename_vector = check_rgf_inputs (inputfilename_vector, run_mode);
-
-	if (run_mode != "COMMANDLINE") using_xy_files = true;
+	if (!is_COMMANDLINE()) using_xy_files = true;
 	else using_xy_files = needxyfile ();
 
-	if (run_mode == "COMMANDLINE") manage_settings_nobatch (inputfilename_vector.at(1));
+	if (is_COMMANDLINE()) manage_settings_nobatch (inputfilename_vector.at(1));
 
 	clock_t starttime = clock ();
 
@@ -88,7 +87,7 @@ void real_main(int argument_number, char *argv[]) {
 
 		inset = manage_settings_batch (inputfilename_vector.at(j));
 
-		if (using_xy_files) xy_filename = check_xy_inputs (inputfilename_vector.at(j), run_mode);
+		//if (using_xy_files) xy_filename = check_xy_inputs (inputfilename_vector.at(j));
 
 		process_rgf (inputfilename_vector.at(j), xy_filename, inset);
 

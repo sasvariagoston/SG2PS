@@ -560,7 +560,6 @@ void outputselected_ps_rgf (PFN output, vector <GDB> outGDB, vector <GDB> tiltou
 
 	center.X = P.O1X;
 	center.Y = P.O1Y;
-
 	center.radius = P.R;
 
 	do {
@@ -586,6 +585,8 @@ void outputselected_ps_rgf (PFN output, vector <GDB> outGDB, vector <GDB> tiltou
 			if (inset.group == "N") {
 
 				if (existence_of_groupcodes (processGDB)) {
+
+
 
 					processGDB = 		colorcode_grom_groupcode (processGDB);
 					tiltprocessGDB = 	colorcode_grom_groupcode (tiltprocessGDB);
@@ -650,12 +651,10 @@ void output_to_ps (PFN output, vector <GDB> processGDB, vector <GDB> tiltprocess
 	string output_ps_filename;
 	string bs = path_separator;
 
-
 	if (inset.group == "Y") output_ps_filename = output.pssep +  bs + processGDB.at(0).DATATYPE + bs + processGDB.at(0).LOC + "_" + processGDB.at(0).DATATYPE + "_" + processGDB.at(0).GC + ".eps";
 	else 					output_ps_filename = output.pssep +  bs + processGDB.at(0).DATATYPE + bs + processGDB.at(0).LOC + "_" + processGDB.at(0).DATATYPE + ".eps";
 
 	ofstream output_ps_file(output_ps_filename.c_str());
-
 
 	PS_header (processGDB.at(0).DATATYPE, processGDB.at(0).LOC, output_ps_file, P);
 	PS_SYMBOLS(processGDB, output_ps_file, inset, P);
@@ -916,6 +915,7 @@ void process_group_by_group (vector <GDB> outGDB, vector <GDB> tiltoutGDB, ofstr
 }
 
 void process_one_by_one (GDB processGDB, GDB tiltprocessGDB, ofstream& o, INPSET inset, CENTER center, PAPER P) {
+
 
 	center.X = P.O1X;
 	center.Y = P.O1Y;

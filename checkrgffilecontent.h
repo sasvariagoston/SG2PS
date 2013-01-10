@@ -43,7 +43,7 @@ bool DIPcheck ();
 bool STRIAE_SC_check ();
 bool PALEONcheck ();
 
-vector <string> check_rgf_inputs (vector <string> inputfilename_vector, string run_mode);
+vector <string> check_rgf_inputs (vector <string> inputfilename_vector);
 
 vector <string> create_inputfilename_vector (int argc, char *argv[]);
 
@@ -91,5 +91,9 @@ bool is_allowed_geodetic (const string& geodetic) ;
 bool is_double (const string& coordinate);
 
 bool error_cout (vector <string> bad_records, string recordtype);
+
+int read_csv(const string& file_name);
+void convert_csv_rgf();
+void csv_to_rgf();
 
 #endif

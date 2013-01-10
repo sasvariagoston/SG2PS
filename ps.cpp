@@ -94,21 +94,6 @@ void PS_header (string DATATYPE, string LOC, ofstream& o, PAPER P) {
 
 	if ((DATATYPE == "STRIAE") || (DATATYPE == "FRACTURE" ) || (DATATYPE == "SC")) {
 
-		o << "/normalarrow {" 											<< endl;
-		o << "  newpath  0.0  -6.0 moveto  0.0 6.0 lineto " 			<< endl;
-		o << "    1 setlinewidth stroke"								<< endl;
-		o << "  newpath -2.0  3.0 moveto  2.0 10.0 rlineto " 			<< endl;
-		o << "    2.0  -10.0 rlineto " 									<< endl;
-		o << "    -2.0 3.0 rlineto " 									<< endl;
-		o << "    -2.0 -3.0 rlineto "			 						<< endl;
-		o << "    1 setlinewidth"										<< endl;
-		o << "    fill stroke" 											<< endl;
-		o << "    0.7 setlinewidth" 									<< endl;
-		o << "    0.0 0.0 1.5 0.0 360.0 arc stroke"						<< endl;
-		o << "    1.0 1.0 1.0 setrgbcolor 0.7 setlinewidth" 			<< endl;
-		o << "    0.0 0.0 0.7 0.0 360.0 arc stroke"						<< endl;
-		o << "} def" 													<< endl << endl;
-
 		o << "/extension_arrow {" 										<< endl;
 		o << "  newpath"												<< endl;
 		o << "    -3.0   0.0 moveto "									<< endl;
@@ -220,6 +205,21 @@ void PS_header (string DATATYPE, string LOC, ofstream& o, PAPER P) {
 		o << "    0 0 1 setrgbcolor 1 setlinewidth stroke" 				<< endl;
 		o << "} def" 													<< endl << endl;
 
+		o << "/normalarrow {" 											<< endl;
+		o << "  newpath  0.0  -6.0 moveto  0.0 6.0 lineto " 			<< endl;
+		o << "    1 setlinewidth stroke"								<< endl;
+		o << "  newpath -2.0  3.0 moveto  2.0 10.0 rlineto " 			<< endl;
+		o << "    2.0  -10.0 rlineto " 									<< endl;
+		o << "    -2.0 3.0 rlineto " 									<< endl;
+		o << "    -2.0 -3.0 rlineto "			 						<< endl;
+		o << "    1 setlinewidth"										<< endl;
+		o << "    fill stroke" 											<< endl;
+		o << "    0.7 setlinewidth" 									<< endl;
+		o << "    0.0 0.0 1.5 0.0 360.0 arc stroke"						<< endl;
+		o << "    1.0 1.0 1.0 setrgbcolor 0.7 setlinewidth" 			<< endl;
+		o << "    0.0 0.0 0.7 0.0 360.0 arc stroke"						<< endl;
+		o << "} def" 													<< endl << endl;
+
 
 
 		o << "/dextralarrow {" 											<< endl;
@@ -239,9 +239,8 @@ void PS_header (string DATATYPE, string LOC, ofstream& o, PAPER P) {
 		o << "    6.0 1.2 lineto" 										<< endl;
 		o << "    11.0 1.2 lineto" 										<< endl;
 		o << "    1 setlinewidth"										<< endl;
-		o << "    fill " 												<< endl;
-		o << "    stroke" 												<< endl;
-		o << "    0.0 0.0 0.0 setrgbcolor 0.7 setlinewidth" 			<< endl;
+		o << "    fill stroke" 											<< endl;
+		o << "    0.7 setlinewidth" 									<< endl; // 0.0 0.0 0.0 setrgbcolor  removed
 		o << "    0.0 0.0 1.5 0.0 360.0 arc stroke"						<< endl;
 		o << "    1.0 1.0 1.0 setrgbcolor 0.7 setlinewidth" 			<< endl;
 		o << "    0.0 0.0 0.7 0.0 360.0 arc stroke"						<< endl;
@@ -264,9 +263,9 @@ void PS_header (string DATATYPE, string LOC, ofstream& o, PAPER P) {
 		o << "    6.0 -1.2 lineto" 										<< endl;
 		o << "    11.0 -1.2 lineto" 									<< endl;
 		o << "    1 setlinewidth"										<< endl;
-		o << "   fill " 												<< endl;
-		o << "    stroke" 												<< endl;
-		o << "    0.0 0.0 0.0 setrgbcolor 0.7 setlinewidth" 			<< endl;
+		o << "    fill stroke" 											<< endl;
+
+		o << "    0.7 setlinewidth" 									<< endl; // 0.0 0.0 0.0 setrgbcolor  removed
 		o << "    0.0 0.0 1.5 0.0 360.0 arc stroke"						<< endl;
 		o << "    1.0 1.0 1.0 setrgbcolor 0.7 setlinewidth" 			<< endl;
 		o << "    0.0 0.0 0.7 0.0 360.0 arc stroke"						<< endl;
@@ -1883,8 +1882,8 @@ void PS_striaearrow (GDB i, ofstream& o, INPSET inset, CENTER center, bool label
 		if ((i.UP)) DIPDIR = DIPDIR + 180.0;
 
 		o
-		<< "  " << setw (6) << fixed << setprecision (2) << X
-		<< "  "	<< setw (5) << fixed << setprecision (2) << Y << " translate " << endl;
+		<< "  " << fixed << setprecision (2) << X
+		<< "  "	<< fixed << setprecision (2) << Y << " translate " << endl;
 		o
 		<< "  " << - DIPDIR  << " rotate" << endl;
 		o
@@ -1892,8 +1891,8 @@ void PS_striaearrow (GDB i, ofstream& o, INPSET inset, CENTER center, bool label
 		o
 		<< "  " <<   DIPDIR  << " rotate " << endl;
 		o
-		<< "  " << setw (6) << fixed << setprecision (2) << -X
-		<< "  " << setw (5) << fixed << setprecision (2) << -Y << " translate " << endl;
+		<< "  " << fixed << setprecision (2) << -X
+		<< "  " << fixed << setprecision (2) << -Y << " translate " << endl;
 	}
 
 	else {
@@ -1901,8 +1900,8 @@ void PS_striaearrow (GDB i, ofstream& o, INPSET inset, CENTER center, bool label
 		if (i.corrOFFSET == "INVERSE") {
 
 			o
-			<< "  " << setw (6) << fixed << setprecision (2) << X
-			<< " "	<< setw (5) << fixed << setprecision (2) << Y
+			<< "  " << fixed << setprecision (2) << X
+			<< " "	<< fixed << setprecision (2) << Y
 			<< " translate " << - DIPDIR + 180.0 << " rotate" << endl;
 			o << "  newpath normalarrow" << endl;
 			o << "  " <<   DIPDIR + 180.0 << " rotate "
@@ -1912,8 +1911,9 @@ void PS_striaearrow (GDB i, ofstream& o, INPSET inset, CENTER center, bool label
 
 		if (i.corrOFFSET == "NORMAL") {
 
-			o << "  " << setw (6) << fixed << setprecision (2) << X << " "
-					<< setw (5) << fixed << setprecision (2) << Y << " translate "
+			o
+			<< "  " << fixed << setprecision (2) << X
+			<< " "	<< fixed << setprecision (2) << Y << " translate "
 					<< - DIPDIR + 000.0 << " rotate" << endl;
 			o << "  newpath normalarrow" << endl;
 			o << "  " <<   DIPDIR - 000.0 << " rotate "
@@ -1923,8 +1923,9 @@ void PS_striaearrow (GDB i, ofstream& o, INPSET inset, CENTER center, bool label
 
 		if (i.corrOFFSET == "DEXTRAL") {
 
-			o << "  " << setw (6) << fixed << setprecision (2) << X   << " "
-					<< setw (5) << fixed << setprecision (2) << Y << " translate "
+			o
+			<< "  " << setw (6) << fixed << setprecision (2) << X
+			<< " "	<< setw (5) << fixed << setprecision (2) << Y << " translate "
 					<< - DIPDIR + 90.0 << " rotate" << endl;
 			o << "  newpath dextralarrow" << endl;
 			o << "  " <<   DIPDIR - 90.0 << " rotate "
@@ -1934,8 +1935,9 @@ void PS_striaearrow (GDB i, ofstream& o, INPSET inset, CENTER center, bool label
 
 		if (i.corrOFFSET == "SINISTRAL") {
 
-			o << "  " << setw (6) << fixed << setprecision (2) << X << " "
-					<< setw (5) << fixed << setprecision (2) << Y << " translate "
+			o
+			<< "  " << setw (6) << fixed << setprecision (2) << X
+			<< " "	<< setw (5) << fixed << setprecision (2) << Y << " translate "
 					<< - DIPDIR + 90.0 << " rotate" << endl;
 			o << "  newpath sinistralarrow" << endl;
 			o << "  " <<   DIPDIR - 90.0 << " rotate "
@@ -1945,15 +1947,16 @@ void PS_striaearrow (GDB i, ofstream& o, INPSET inset, CENTER center, bool label
 
 		if (i.OFFSET == "NONE") {
 
-			o << "  " << setw (3) << setprecision (5) << X << " "
-					<< setw (3) << setprecision (5) << Y << " translate "
+			o
+			<< "  " << setprecision (5) << X
+			<< " "	<< setprecision (5) << Y << " translate "
 					<<  - DIPDIR << " rotate" << endl;
 			o << "  newpath nonearrow" << endl;
 			o << "  " <<  DIPDIR << " rotate "
-					<< setw (3) << setprecision (5) << -X << " "
-					<< setw (3) << setprecision (5) << -Y << " translate" << endl;
+					<< setprecision (5) << -X << " "
+					<< setprecision (5) << -Y << " translate" << endl;
 		}
-}
+	}
 
 
 	if (label) {
@@ -2353,6 +2356,7 @@ void PS_idealmovement (vector <GDB > inGDB, ofstream& o, INPSET inset, CENTER ce
 	STRESSFIELD empty_sf;
 
 	if (inset.idealmovement == "N") return;
+	if (inset.plot == "H") return;
 
 	do {
 
