@@ -13,6 +13,7 @@
 #include "run_mode.h"
 #include "exceptions.hpp"
 #include "ReservedColumnNames.hpp"
+#include "read_csv.hpp"
 
 using namespace std;
 
@@ -980,43 +981,6 @@ string to_uppercase(string s) {
 	return s;
 }
 
-void push_to_table(const string& line) {
-
-	vector<string> row;
-
-	istringstream iss(line);
-
-	string cell;
-
-	while (getline(iss, cell, '\t')) {
-
-		row.push_back(cell);
-	}
-
-	orig_table.push_back(row);
-}
-
-int read_csv(const string& file_name) {
-
-	orig_table.clear();
-
-	int lines_read = 0;
-
-	ifstream in(file_name.c_str());
-
-	string line;
-
-	while (getline(in, line)) {
-
-		++lines_read;
-
-		push_to_table(line+'\t'); // so that we don't loose trailing tabs
-
-	}
-
-	return lines_read;
-}
-
 size_t cell_index(size_t i) {
 
 	return (i < index_map.size()) ? index_map.at(i) : NOT_FOUND;
@@ -1142,7 +1106,7 @@ void read_in_rgf(const string& file_name) {
 	index_map.clear();
 	rgf_to_check.clear();
 
-	int lines_read = read_csv(file_name);
+	size_t lines_read = read_csv(file_name, orig_table);
 
 	if (lines_read >= 1) { // At least we got a header
 
