@@ -366,7 +366,7 @@ vector <vector <double> > FRY (vector <GDB> inGDB, INPSET inset) {
 	vector <vector <double> > TNSR6 = init_matrix (6);
 	vector <vector <double> > temp  = init_matrix (6);
 
-	if (inset.virt_striae == "Y" ) inGDB = generate_virtual_striae (inGDB);
+	//if (inset.virt_striae == "Y" ) inGDB = generate_virtual_striae (inGDB);
 
 	do {
 
@@ -390,7 +390,7 @@ vector <vector <double> > SHAN (vector <GDB> inGDB, INPSET inset) {
 	vector <vector <double> > shan_matrix = init_matrix (5);
 	vector <vector <double> > temp = init_matrix (5);
 
-	if (inset.virt_striae == "Y" ) inGDB = generate_virtual_striae (inGDB);
+	//if (inset.virt_striae == "Y" ) inGDB = generate_virtual_striae (inGDB);
 
 	do {
 
@@ -406,7 +406,7 @@ vector <vector <double> > SHAN (vector <GDB> inGDB, INPSET inset) {
 
 STRESSTENSOR ANGELIER (vector <GDB> inGDB, INPSET inset) {
 
-	if (inset.virt_striae == "Y" ) inGDB = generate_virtual_striae (inGDB);
+	//if (inset.virt_striae == "Y" ) inGDB = generate_virtual_striae (inGDB);
 
 	ANG_PRM parameters = angelier_parameters (inGDB);
 
@@ -420,7 +420,7 @@ STRESSTENSOR MICHAEL (vector <GDB> inGDB, INPSET inset) {
 
 	STRESSTENSOR st;
 
-	if (inset.virt_striae == "Y" ) inGDB = generate_virtual_striae (inGDB);
+	//if (inset.virt_striae == "Y" ) inGDB = generate_virtual_striae (inGDB);
 
 	vector < vector <double> > M = michael_parameters (inGDB);
 	vector < vector <double> > M_t = transpose (M);
@@ -469,7 +469,7 @@ STRESSTENSOR NDA (vector <GDB> inGDB, INPSET inset) {
 
 	STRESSTENSOR st;
 
-	if (inset.virt_striae == "Y" ) inGDB = generate_virtual_striae (inGDB);
+	//if (inset.virt_striae == "Y" ) inGDB = generate_virtual_striae (inGDB);
 
 	st._11 = 0.0;
 	st._12 = 0.0;
@@ -616,14 +616,18 @@ vector <GDB> return_stressvector_estimators (STRESSTENSOR st, vector <GDB> inGDB
 vector <GDB> generate_virtual_striae (vector <GDB> inGDB) {
 
 	vector <GDB> outGDB = inGDB;
-	GDB buffer;
-
 	size_t original_set_size = inGDB.size();
 	size_t i = 0;
+cout << "IN" << endl;
+
+	cout << outGDB.at(0).ptnN.X << endl;
 
 	do {
 
-		buffer = inGDB.at(i);
+		GDB buffer = inGDB.at(i);
+
+		cout << inGDB.at(i).ptnN.X << endl;
+
 
 		buffer.N.X = - buffer.N.X;
 		buffer.N.Y = - buffer.N.Y;
@@ -799,6 +803,12 @@ vector <GDB> inversion (string method, vector <GDB> inGDB, ofstream& o, INPSET i
 		second_eigenvalue = return_second_eigenvalue (A);
 
 
+		/*cout << D.at(first_eigenvalue).at(0) << endl;
+		cout << D.at(first_eigenvalue).at(3) << endl;
+		cout << D.at(second_eigenvalue).at(0) << endl;
+		cout << D.at(second_eigenvalue).at(3) << endl;
+*/
+
 		if (check_fry_matrix (first_eigenvalue, D)) {
 
 			st._11 = D.at(second_eigenvalue).at(0);
@@ -807,6 +817,14 @@ vector <GDB> inversion (string method, vector <GDB> inGDB, ofstream& o, INPSET i
 			st._12 = D.at(second_eigenvalue).at(3);
 			st._23 = D.at(second_eigenvalue).at(4);
 			st._13 = D.at(second_eigenvalue).at(5);
+
+			cout << fixed << setprecision (4) << endl;
+
+					cout << st._11 << "  " << st._12 << "  " << st._13 << "  " << endl;
+					cout << st._12 << "  " << st._22 << "  " << st._23 << "  " << endl;
+					cout << st._13 << "  " << st._23 << "  " << st._33 << "  " << endl;
+
+
 
 			misfit1 = return_average_misfit (st, inGDB, false);
 			st = invert_stress_tensor (st);
@@ -863,23 +881,23 @@ vector <GDB> inversion (string method, vector <GDB> inGDB, ofstream& o, INPSET i
 
 	else if (method == "PTN") {
 
-		if (inset.virt_striae == "Y" ) tempGDB = generate_virtual_striae (inGDB);
+		//if (inset.virt_striae == "Y" ) tempGDB = generate_virtual_striae (inGDB);
 
-		st = ptn_P (tempGDB);
+		st = ptn_P (inGDB);
 		sf_ptn = eigenvalue_eigenvector (st);
 		sf_ptn = computestressfield_DXDYDZ (sf_ptn);
 		sf.EIGENVALUE.X = sf_ptn.EIGENVALUE.X;
 		sf.EIGENVECTOR1 = sf_ptn.EIGENVECTOR1;
 		sf.S_1 = sf_ptn.S_1;
 
-		st = ptn_T (tempGDB);
+		st = ptn_T (inGDB);
 		sf_ptn = eigenvalue_eigenvector (st);
 		sf_ptn = computestressfield_DXDYDZ (sf_ptn);
 		sf.EIGENVALUE.Z = sf_ptn.EIGENVALUE.Z;
 		sf.EIGENVECTOR3 = sf_ptn.EIGENVECTOR1;
 		sf.S_3 = sf_ptn.S_1;
 
-		st = ptn_N (tempGDB);
+		st = ptn_N (inGDB);
 		sf_ptn = eigenvalue_eigenvector (st);
 		sf_ptn = computestressfield_DXDYDZ (sf_ptn);
 		sf.EIGENVALUE.Y = sf_ptn.EIGENVALUE.Y;

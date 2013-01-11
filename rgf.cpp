@@ -1451,15 +1451,19 @@ void process_rgf (string inputfilename, string XY_filename, INPSET inset) {
 	if (XY_filename == "") geodatabase = competeRGFcontect(inputfilename, "", inset);
 	else geodatabase = competeRGFcontect(inputfilename, XY_filename, inset);
 
+	for (size_t i = 0; i < geodatabase.size(); i++) {
+
+		cout << geodatabase.at(i).LDIR << " - "<< geodatabase.at(i).LPITCH << " - " << geodatabase.at(i).LPITCHSENSE << endl;
+	}
+
+
+
 	geodatabase = cGc_NDS (geodatabase);
 	geodatabase = manipulate_N (geodatabase);
 	geodatabase = cGc_NDS_DCNCSC (geodatabase);
 	geodatabase = cGc_MISFIT (geodatabase);
 	geodatabase = cGc_striae_correction (geodatabase);
 	geodatabase = cGc_UP (geodatabase);
-
-	cout << geodatabase.at(0).PSCOLOR << endl;
-
 	geodatabase = cGc_PITCHANGLE (geodatabase);
 	geodatabase = cGc_OFFSET (geodatabase);
 	geodatabase = cGc_LAMBDA_STRESSVECTOR_ESTIMATORS (geodatabase);

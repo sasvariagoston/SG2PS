@@ -295,15 +295,12 @@ vector <double> init_vector (int dimension) {
 
 size_t m_from_max_element (size_t max_element, size_t n) {
 
-	int j = 0;
+	size_t j = 0;
 
-	while (max_element > 0)  {
+	for (j = 0; max_element > n; j++) {
 
 		max_element = max_element - n;
-		j++;
 	}
-
-	j = j - 1;
 
 	return j;
 }
@@ -533,6 +530,14 @@ vector <vector <double> > jacobi (vector <vector <double> > in) {
 
 	vector <vector <double> > out;
 
+	/*in = init_matrix (4);
+
+	in[0][0] =  8; in[1][0] = -1; in[2][0] =  3; in[3][0] = -1;
+	in[0][1] = -1; in[1][1] =  6; in[2][1] =  2; in[3][1] =  0;
+	in[0][2] =  3; in[1][2] =  2; in[2][2] =  9; in[3][2] =  1;
+	in[0][3] = -1; in[1][3] =  0; in[2][3] =  1; in[3][3] =  7;
+	*/
+
 	vector <vector <double> > A = in;
 	vector <vector <double> > R1 = init_matrix (in.size());
 	vector <vector <double> > R2 = init_matrix (in.size());
@@ -552,9 +557,9 @@ vector <vector <double> > jacobi (vector <vector <double> > in) {
 
 		if (max_element_in_mtrx > 9000) break;
 
-		m = m_from_max_element (max_element_in_mtrx, A.at(0).size());
+		n = m_from_max_element (max_element_in_mtrx, A.at(0).size());
 
-		n = max_element_in_mtrx - (m * A.at(0).size()) - 1;
+		m = max_element_in_mtrx - (n * A.at(0).size()) - 1;
 
 		teta_angle = teta (A, m, n);
 
@@ -571,6 +576,27 @@ vector <vector <double> > jacobi (vector <vector <double> > in) {
 		i++;
 
 	} while (i < 40);
+
+	cout << fixed << setprecision(3) << endl;
+
+	for (size_t i = 0; i < in.size(); i++){
+
+		for (size_t j = 0; j < in.size(); j++){
+
+			cout << A.at(i).at(j) << " " << flush;
+			}
+		cout << endl;
+	}
+
+
+	for (size_t i = 0; i < in.size(); i++){
+
+			for (size_t j = 0; j < in.size(); j++){
+
+				cout << D.at(i).at(j) << " " << flush;
+				}
+			cout << endl;
+		}
 
 	i = 0;
 
