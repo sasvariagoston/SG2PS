@@ -659,7 +659,8 @@ void output_to_ps (PFN output, vector <GDB> processGDB, vector <GDB> tiltprocess
 	PS_header (processGDB.at(0).DATATYPE, processGDB.at(0).LOC, output_ps_file, P);
 	PS_SYMBOLS(processGDB, output_ps_file, inset, P);
 
-	if (processGDB.at(0).DATATYPE == "STRIAE") PS_stress_scale (output_ps_file, P);
+	if (processGDB.at(0).DATATYPE == "STRIAE" && (inset.inversion != "N")) PS_stress_scale (output_ps_file, P);
+
 
 	PS_border (processGDB.at(0), output_ps_file, inset, P);
 

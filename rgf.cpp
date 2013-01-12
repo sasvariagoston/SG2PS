@@ -23,39 +23,19 @@ vector <GDB> competeRGFcontect (string projectname, string inputxyfilename, INPS
 
 	vector <GDB> outGDB = create_GDB_from_rgf ();
 
-	cout << outGDB.size() << endl;
-
 	for (size_t i = 0; i < outGDB.size(); i++) {
 
 		if (outGDB.at(i).GC == "") outGDB.at(i).GC = "X";
 
 		outGDB.at(i).PSCOLOR = complete_colorcode (outGDB.at(i).COLOR);
 
-		/*cout << outGDB.at(i).ID << '\t'
-				<< outGDB.at(i).GC << '\t'
-				<< outGDB.at(i).COLOR << '\t'
-				<< outGDB.at(i).LOC << '\t'
-				<< outGDB.at(i).LOCX << '\t'
-				<< outGDB.at(i).LOCY << '\t'
-				<< outGDB.at(i).FORMATION << '\t'
-				<< outGDB.at(i).DATATYPE << '\t'
-				<< outGDB.at(i).corr.DIPDIR << '\t'
-				<< outGDB.at(i).corr.DIP << '\t'
-				<< outGDB.at(i).corrL.DIPDIR << '\t'
-				<< outGDB.at(i).corrL.DIP << '\t'
-				<< outGDB.at(i).OFFSET << '\t'
-				<< outGDB.at(i).DATAGROUP << endl;*/
-
 		if (inset.datarule == "R") outGDB.at(i).corr.DIPDIR = right_hand_rule_to_german (outGDB.at(i).corr.DIPDIR);
 
 		if (capslock(inputxyfilename) != "")  outGDB.at(i) = insertxy (outGDB.at(i));
 	}
 
-
 	return outGDB;
 }
-
-
 
 string complete_colorcode (string in) {
 
@@ -1447,15 +1427,8 @@ void process_rgf (string inputfilename, string XY_filename, INPSET inset) {
 
 	cout << "GEODATABASE PROCESSING FOR '" << capslock(inputfilename)<< ".RGF' DATABASE FILE" << endl;
 
-
 	if (XY_filename == "") geodatabase = competeRGFcontect(inputfilename, "", inset);
 	else geodatabase = competeRGFcontect(inputfilename, XY_filename, inset);
-
-	for (size_t i = 0; i < geodatabase.size(); i++) {
-
-		cout << geodatabase.at(i).LDIR << " - "<< geodatabase.at(i).LPITCH << " - " << geodatabase.at(i).LPITCHSENSE << endl;
-	}
-
 
 
 	geodatabase = cGc_NDS (geodatabase);

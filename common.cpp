@@ -1749,8 +1749,7 @@ double return_average_misfit (STRESSTENSOR st, vector <GDB> inGDB, bool compress
 
 STRESSFIELD stress_regime (STRESSFIELD in) {
 
-	STRESSFIELD out;
-	out = in;
+	STRESSFIELD out = in;
 
 	out.stressratio = (out.EIGENVALUE.Y - out.EIGENVALUE.Z) / (out.EIGENVALUE.X - out.EIGENVALUE.Z);
 
@@ -1858,23 +1857,31 @@ double german_to_right_hand_rule (double corrDIPDIR) {
 
 string return_build_date () {
 
-	char build_date [10];
+	vector <char> build_date (11, ' ');
 
-	if (__DATE__[4] == ' ') 	build_date [0] = '0';
-	else 						build_date [0] = __DATE__[4];
+	string DATE  = __DATE__;//TODO finish
 
-	build_date[1] = 	__DATE__[5];
-	build_date[2] = 	' ';
-	build_date[3] = 	__DATE__[0];
-	build_date[4] = 	__DATE__[1];
-	build_date[5] = 	__DATE__[2];
-	build_date[6] = 	' ';
-	build_date[7] = 	__DATE__[7];
-	build_date[8] = 	__DATE__[8];
-	build_date[9] = 	__DATE__[9];
-	build_date[10] = 	__DATE__[10];
+	if (DATE.at(4) == ' ') 		build_date .at(0) = '0';
+	else 						build_date .at(0) = DATE.at(4);
 
-	return build_date;
+	build_date.at(1) = 	DATE.at(5);
+	build_date.at(2) = 	' ';
+	build_date.at(3) = 	DATE.at(0);
+	build_date.at(4) = 	DATE.at(1);
+	build_date.at(5) = 	DATE.at(2);
+	build_date.at(6) = 	' ';
+	build_date.at(7) = 	DATE.at(7);
+	build_date.at(8) = 	DATE.at(8);
+	build_date.at(9) = 	DATE.at(9);
+	build_date.at(10) = DATE.at(10);
+
+
+	for (size_t i = 0; i < 11; i++) {
+
+		DATE.at(i) = build_date.at(i);
+	}
+
+	return DATE;
 }
 
 string return_build_time () {

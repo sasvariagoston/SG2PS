@@ -895,6 +895,11 @@ vector <GDB> create_GDB_from_rgf () {
 			buffer.corr.DIP = 		string_to_double(rgf_to_check.at(i).at(DIP), failed);
 		}
 
+		if (is_PITCHcorrect(rgf_to_check.at(i))) buffer.LINEATION = "PITCH";
+		if (is_LINEATIONcorrect(rgf_to_check.at(i))) buffer.LINEATION = "LINEATION";
+		if (is_SCcorrect(rgf_to_check.at(i))) buffer.LINEATION = "SC";
+
+
 		if (	(is_allowed_striae_datatype (rgf_to_check.at(i).at(DATATYPE))) ||
 				(is_allowed_SC_datatype (rgf_to_check.at(i).at(DATATYPE)))) {
 
@@ -902,20 +907,21 @@ vector <GDB> create_GDB_from_rgf () {
 			buffer.DIP = 			string_to_double(rgf_to_check.at(i).at(DIP), failed);
 			buffer.corr.DIPDIR = 	string_to_double(rgf_to_check.at(i).at(DIR), failed);
 			buffer.corr.DIP = 		string_to_double(rgf_to_check.at(i).at(DIP), failed);
-			buffer.LDIR = 			string_to_double(rgf_to_check.at(i).at(LDIR), failed);
-			buffer.corrL.DIPDIR =	string_to_double(rgf_to_check.at(i).at(LDIR), failed);
+
 
 			if (buffer.LINEATION != "PITCH" ) {
 
-
-				buffer.corrL.DIP = 		string_to_double(rgf_to_check.at(i).at(LDIP), failed);
+				buffer.LDIR = 			string_to_double(rgf_to_check.at(i).at(LDIR), failed);
 				buffer.LDIP = 			string_to_double(rgf_to_check.at(i).at(LDIP), failed);
+				buffer.corrL.DIPDIR =	string_to_double(rgf_to_check.at(i).at(LDIR), failed);
+				buffer.corrL.DIP = 		string_to_double(rgf_to_check.at(i).at(LDIP), failed);
+
 			}
 
 			else {
 
-				buffer.LPITCH = buffer.LDIR;
-				buffer.LPITCHSENSE = rgf_to_check.at(i).at(LDIP);
+				buffer.LPITCH = 		string_to_double(rgf_to_check.at(i).at(LDIR), failed);
+				buffer.LPITCHSENSE = 	rgf_to_check.at(i).at(LDIP);
 			}
 		}
 
@@ -1059,7 +1065,7 @@ void build_column_map() {
 
 	check_duplicates(duplicates);
 
-	dbg_dump_index_map(); // TODO Comment out if ready
+	//dbg_dump_index_map();
 }
 
 void convert_row(const vector<string>& orig_row, size_t index) {

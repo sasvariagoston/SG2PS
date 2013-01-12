@@ -618,16 +618,10 @@ vector <GDB> generate_virtual_striae (vector <GDB> inGDB) {
 	vector <GDB> outGDB = inGDB;
 	size_t original_set_size = inGDB.size();
 	size_t i = 0;
-cout << "IN" << endl;
-
-	cout << outGDB.at(0).ptnN.X << endl;
 
 	do {
 
 		GDB buffer = inGDB.at(i);
-
-		cout << inGDB.at(i).ptnN.X << endl;
-
 
 		buffer.N.X = - buffer.N.X;
 		buffer.N.Y = - buffer.N.Y;
@@ -802,13 +796,6 @@ vector <GDB> inversion (string method, vector <GDB> inGDB, ofstream& o, INPSET i
 		first_eigenvalue = return_first_eigenvalue (A);
 		second_eigenvalue = return_second_eigenvalue (A);
 
-
-		/*cout << D.at(first_eigenvalue).at(0) << endl;
-		cout << D.at(first_eigenvalue).at(3) << endl;
-		cout << D.at(second_eigenvalue).at(0) << endl;
-		cout << D.at(second_eigenvalue).at(3) << endl;
-*/
-
 		if (check_fry_matrix (first_eigenvalue, D)) {
 
 			st._11 = D.at(second_eigenvalue).at(0);
@@ -817,14 +804,6 @@ vector <GDB> inversion (string method, vector <GDB> inGDB, ofstream& o, INPSET i
 			st._12 = D.at(second_eigenvalue).at(3);
 			st._23 = D.at(second_eigenvalue).at(4);
 			st._13 = D.at(second_eigenvalue).at(5);
-
-			cout << fixed << setprecision (4) << endl;
-
-					cout << st._11 << "  " << st._12 << "  " << st._13 << "  " << endl;
-					cout << st._12 << "  " << st._22 << "  " << st._23 << "  " << endl;
-					cout << st._13 << "  " << st._23 << "  " << st._33 << "  " << endl;
-
-
 
 			misfit1 = return_average_misfit (st, inGDB, false);
 			st = invert_stress_tensor (st);
