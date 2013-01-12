@@ -22,7 +22,8 @@ void header () {
 	cout << "|                                                                  |" << endl;
 	cout << "|            For further information check www.sg2ps.eu            |" << endl;
 	cout << "|                                                                  |" << endl;
-	cout << "|                       All rights reserved                        |" << endl;
+	cout << "|                       All rights reserved.                       |" << endl;
+	cout << "|           This a free software under GNU LGPL licence.           |" << endl;
 	cout << "|                                                                  |" << endl;
 	cout << " ------------------------------------------------------------------ " << endl;
 	cout << "|                                                                  |" << endl;
@@ -772,7 +773,7 @@ string input_setting_decision () {
 
 	while (!((c == "S") || (c == "D") || (c == "N"))) {
 
-		cout << endl << endl;
+		cout << endl;
 		cout << "Do You want to use and save these settings.....[S]," 			<< endl;
 		cout << "use default values.............................[D]," 			<< endl;
 		cout << "input new ones.................................[N]," 			<< endl;

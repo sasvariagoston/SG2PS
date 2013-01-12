@@ -177,7 +177,6 @@ struct record {
 	string sense;
 	double paleonorth;
 	string comment;
-
 };
 
 }
@@ -210,68 +209,6 @@ string inputfilename () {
 
 	return projectname;
 }
-/*
-void push_to_table(const string& line) {
-
-	vector<string> row;
-
-	string cell;
-
-	istringstream iss(line);
-
-	while (getline(iss, cell, '\t')) {
-
-		cell = capslock (cell);
-
-		row.push_back(cell);
-	}
-
-	if (row.size() < SIZE) {
-
-		row.resize(SIZE);
-	}
-
-	rgf_to_check.push_back(row);
-}
-
-bool input_rgf (const string& projectname) {
-
-	rgf_to_check.clear();
-
-	int lines_existing = 0;
-	int lines_read = 0;
-
-	ifstream rgf_file((projectname + ".rgf").c_str()) ;
-
-	if (!(rgf_file.is_open())) {
-
-		cout << "    - Cannot process " << capslock(projectname + ".rgf") << " file." << endl;
-		return false;
-	}
-
-	string line;
-
-	getline(rgf_file, line);
-
-	while (getline(rgf_file, line)) {
-
-		lines_existing++;
-
-		if (line.size() > 6) {
-
-			lines_read++;
-
-			push_to_table(line);
-		}
-	}
-
-	cout << "    - Input " << capslock(projectname + ".rgf") << " file opened, " << lines_existing << " record(s) found, " << lines_read << " record(s) imported." << endl;
-
-	if (lines_read <= 1) return false;
-
-	return true;
-}
-*/
 
 void read_in_rgf(const string& file_name); // throws rgf_error if duplicate col names are found
 
@@ -294,7 +231,9 @@ bool input_rgf (const string& projectname) {
 		return false;
 	}
 	else {
+
 		cout << "    - Input " << capslock(projectname + ".rgf") << " file read, ";
+
 		cout << n_records << " record(s) imported." << endl;
 	}
 
@@ -330,7 +269,6 @@ bool IDcheck_duplicate () {
 		pair<string, int> ID_and_counter(ID, i);
 
 		pair <map <string, int>::iterator, bool> p = record_to_check.insert(ID_and_counter);
-
 
 		if (!(p.second)) {
 
@@ -412,8 +350,6 @@ bool LOCcheck () {
 
 	return correct;
 }
-
-
 
 bool DATATYPEcheck () {
 
@@ -520,7 +456,7 @@ vector <string> check_rgf_inputs (vector <string> inputfilename_vector) {
 		return inputfilename_vector;
 	}
 
-	else if (is_GUI()) {
+	else if (is_GUI() || is_DEBUG()) {
 
 		if (rgffile_correct(inputfilename_vector.at(0))) {
 
@@ -532,7 +468,7 @@ vector <string> check_rgf_inputs (vector <string> inputfilename_vector) {
 		else throw runtime_error ("No file to process.");
 	}
 
-	else {
+	else {  //is_BATCH
 
 		for (size_t j = inputfilename_vector.size() - 1; j >= 0; j--) {
 
@@ -606,8 +542,6 @@ bool rgffile_correct (string projectname) {
 
 	return true;
 }
-
-
 
 bool is_STRIAE (const string DATATYPE) {
 
@@ -903,7 +837,6 @@ vector <GDB> create_GDB_from_rgf () {
 				buffer.LDIP = 			string_to_double(rgf_to_check.at(i).at(LDIP), failed);
 				buffer.corrL.DIPDIR =	string_to_double(rgf_to_check.at(i).at(LDIR), failed);
 				buffer.corrL.DIP = 		string_to_double(rgf_to_check.at(i).at(LDIP), failed);
-
 			}
 
 			else {
@@ -996,6 +929,7 @@ void dbg_dump_index_map() {
 
 			cout << "(none)\n";
 		}
+
 		else {
 
 			cout << reserved_column_names().at(index) << '\n';

@@ -185,15 +185,11 @@ STRESSTENSOR compute_angelier_stresstensor (ANG_PRM p, vector <GDB> inGDB) {
 
 
 
-
 	A =          p.m * d_0 + Y1 - Y3;
 	B = - 2.0 * (p.n * d_0 + Y2 + Y4);
 	C = - 6.0 * (p.m * d_0 + Y1);
 	D =   2.0 * (p.n * d_0 + Y2 - Y4);
 	E =          p.m * d_0 + Y1 + Y3;
-
-
-
 
 	quartic_result = quartic_solution (A, B, C, D, E);
 

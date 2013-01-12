@@ -13,7 +13,6 @@
 #include "ExitStatus.hpp"
 #include "read_csv.hpp"
 
-
 namespace {
 
 vector <vector <string> > xy_to_check;
@@ -76,11 +75,16 @@ void read_in_xy(const string& file_name) {
 
 	size_t lines_read = read_csv(file_name, orig_table);
 
-	//cout << orig_table.size();
+	size_t i = 0;
 
-	//xy_to_check = orig_table;
+	for (i = 1; i < orig_table.size(); i++) {
 
+		vector<string> row(SIZE);
 
+		row = orig_table.at(i);
+
+		xy_to_check.push_back(row);
+	}
 }
 
 bool input_xy (const string& projectname) {
@@ -96,12 +100,13 @@ bool input_xy (const string& projectname) {
 
 	size_t n_records = xy_to_check.size();
 
-	if (n_records == 0) {
+	if (n_records <= 1) {
 		// nothing has been read but we don't know why (empty or read failed)
 		cout << "  - Cannot process " << capslock(projectname + ".xy") << " file." << endl;
 
 		return false;
 	}
+
 	else {
 
 		cout << "  - Input " << capslock(projectname + ".xy") << " file read, " << n_records - 1 << " record(s) imported." << endl;
@@ -190,12 +195,6 @@ bool xyfile_correct (string projectname) {
 
 	if (!(input_xy (projectname))) return false;
 
-	cout << "EEE" << endl;
-
-	//uppercase_xy_to_check ();
-
-	cout << "EEE" << endl;
-
 	if  (!(LOCATIONcheck () && LOCATIONcheck_duplicate () && XYcheck ())) {
 
 		if (is_GUI()) throw xy_error ();
@@ -242,7 +241,7 @@ string check_xy_inputs (string inputfilename) {
 		return inputfilename;
 	}
 
-	else {
+	else { // GUI, BATCH, DEBUG
 
 		if (xyfile_correct(inputfilename)) {
 

@@ -25,7 +25,7 @@ INPSET inputsettings_manually (string projectname);
 bool outputsettingfile (INPSET _outputsettingfile, string projectname);
 INPSET input_hardcoded ();
 INPSET decide_setting_status (string projectname);
-INPSET manage_settings_batch   (string projectname);
+INPSET manage_settings_batch (string projectname);
 INPSET manage_settings_nobatch (string projectname);
 string input_setting_decision ();
 

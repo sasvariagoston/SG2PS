@@ -48,7 +48,6 @@ bool is_DEBUG() {
   return (run_mode == "DEBUG");
 }
 
-
 void real_main(int argument_number, char *argv[]) {
 
 	string inputrgfname, xy_filename, inputrgfname_only, temp;
@@ -57,8 +56,6 @@ void real_main(int argument_number, char *argv[]) {
 	size_t j = 0;
 	bool using_xy_files = false;
 	vector <string> inputfilename_vector;
-
-	header ();
 
 	inputfilename_vector = create_inputfilename_vector (argument_number, argv);
 
@@ -72,6 +69,8 @@ void real_main(int argument_number, char *argv[]) {
 
 		else run_mode = "BATCH";
 	}
+
+	if (!is_DEBUG()) header ();
 
 	cout << "RUNNING SG2PS IN " << run_mode << " MODE." << endl;
 
@@ -112,7 +111,5 @@ void real_main(int argument_number, char *argv[]) {
 
 	elapsed_time *= 1000;
 
-	output_elapsed_time (elapsed_time);
+	if (!is_DEBUG()) output_elapsed_time (elapsed_time);
 }
-
-

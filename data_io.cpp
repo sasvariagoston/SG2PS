@@ -15,6 +15,8 @@
 #include "cluster.h"
 #include "platform_dep.hpp"
 #include "exceptions.hpp"
+#include "run_mode.h"
+
 
 using namespace std;
 
@@ -46,7 +48,9 @@ PFN createprojectfoldernames (string projectname) {
 	if (TM->tm_sec < 10) output.datetime = output.datetime + "0";
 	output.datetime = output.datetime + int_to_string (TM->tm_sec);
 
-	output.projectfolder 	= output.datetime + "_-_" + capslock(projectname);
+	if (!is_DEBUG()) output.projectfolder 	= output.datetime + "_-_" + capslock(projectname);
+	else output.projectfolder = capslock(projectname);
+
 	output.projectname 		= capslock(projectname);
 	output.original			= output.projectfolder +  bs + "1_original";
 	output.completed		= output.projectfolder +  bs + "2_completed";
