@@ -31,7 +31,7 @@ vector <GDB> competeRGFcontect (string projectname, string inputxyfilename, INPS
 
 		if (inset.datarule == "R") outGDB.at(i).corr.DIPDIR = right_hand_rule_to_german (outGDB.at(i).corr.DIPDIR);
 
-		if (capslock(inputxyfilename) != "")  outGDB.at(i) = insertxy (outGDB.at(i));
+		if (capslock(inputxyfilename) != "NONE")  outGDB.at(i) = insertxy (outGDB.at(i));
 	}
 
 	return outGDB;
@@ -1427,7 +1427,9 @@ void process_rgf (string inputfilename, string XY_filename, INPSET inset) {
 
 	cout << "GEODATABASE PROCESSING FOR '" << capslock(inputfilename)<< ".RGF' DATABASE FILE" << endl;
 
-	if (XY_filename == "") geodatabase = competeRGFcontect(inputfilename, "", inset);
+	//exit(1);
+
+	if (XY_filename == "NONE") geodatabase = competeRGFcontect(inputfilename, "NONE", inset);
 	else geodatabase = competeRGFcontect(inputfilename, XY_filename, inset);
 
 

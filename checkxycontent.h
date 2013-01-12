@@ -24,12 +24,11 @@ void read_in_xy(const string& file_name);
 
 
 
-//bool xyEXISTENCEcheck (string xyname);
-////bool xyTABcheck (string xyname);
-//bool xyIDcheck (string xyname);
-//bool xyCOORDcheck (string xyname);
+
 
 GDB insertxy (GDB inGDB);
+
+void uppercase_xy_to_check ();
 
 
 string check_xy_inputs (string inputfilename);

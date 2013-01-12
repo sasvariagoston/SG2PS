@@ -43,6 +43,12 @@ bool is_COMMANDLINE() {
   return (run_mode == "COMMANDLINE");
 }
 
+bool is_DEBUG() {
+
+  return (run_mode == "DEBUG");
+}
+
+
 void real_main(int argument_number, char *argv[]) {
 
 	string inputrgfname, xy_filename, inputrgfname_only, temp;
@@ -61,12 +67,15 @@ void real_main(int argument_number, char *argv[]) {
 	if (inputfilename_vector.size() >= 1) {
 
 		if (inputfilename_vector.at(0) == "-gui_calls") run_mode = "GUI";
+
+		else if (inputfilename_vector.at(0) == "-debug") run_mode = "DEBUG";
+
 		else run_mode = "BATCH";
 	}
 
 	cout << "RUNNING SG2PS IN " << run_mode << " MODE." << endl;
 
-	if (is_GUI()) inputfilename_vector.erase(inputfilename_vector.begin() + 0);
+	if (is_GUI() || is_DEBUG()) inputfilename_vector.erase(inputfilename_vector.begin() + 0);
 
 	if (is_COMMANDLINE()) {
 
@@ -79,7 +88,7 @@ void real_main(int argument_number, char *argv[]) {
 	if (!is_COMMANDLINE()) using_xy_files = true;
 	else using_xy_files = needxyfile ();
 
-	if (is_COMMANDLINE()) manage_settings_nobatch (inputfilename_vector.at(1));
+	if (is_COMMANDLINE()) manage_settings_nobatch (inputfilename_vector.at(0));
 
 	clock_t starttime = clock ();
 
@@ -87,7 +96,7 @@ void real_main(int argument_number, char *argv[]) {
 
 		inset = manage_settings_batch (inputfilename_vector.at(j));
 
-		//if (using_xy_files) xy_filename = check_xy_inputs (inputfilename_vector.at(j));
+		if (using_xy_files) xy_filename = check_xy_inputs (inputfilename_vector.at(j));
 
 		process_rgf (inputfilename_vector.at(j), xy_filename, inset);
 

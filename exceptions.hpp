@@ -13,4 +13,8 @@ class rgf_error {
 
 };
 
+class xy_error {
+
+};
+
 #endif

@@ -92,7 +92,7 @@ bool is_double (const string& coordinate);
 
 bool error_cout (vector <string> bad_records, string recordtype);
 
-int read_csv(const string& file_name);
+//int read_csv(const string& file_name);
 void convert_csv_rgf();
 void csv_to_rgf();
 

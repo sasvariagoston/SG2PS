@@ -7,12 +7,17 @@
 #include <stdexcept>
 
 #include "checkxycontent.h"
+#include "checkrgffilecontent.h"
 #include "run_mode.h"
 #include "exceptions.hpp"
+#include "ExitStatus.hpp"
+#include "read_csv.hpp"
+
 
 namespace {
 
 vector <vector <string> > xy_to_check;
+vector <vector <string> > orig_table;
 
 enum record_name {
 	LOCATION,
@@ -40,13 +45,16 @@ bool needxyfile () {
 		cout << "or use coordinate data in RGF file......................[N]........?  "	<< flush;
 
 		cin >> need_xy_file;
+
 		need_xy_file = capslock(need_xy_file);
+
 		if (need_xy_file == "X") throw exit_requested();
 	}
 
 	while (!((need_xy_file == "Y") || (need_xy_file == "N")));
 
 	if (need_xy_file == "Y") return true;
+
 	return false;
 }
 
@@ -61,46 +69,56 @@ string inputxyfilename () {
 	return xyfilename;
 }
 
-bool LOCATIONcheck_duplicate () {
+void read_in_xy(const string& file_name) {
 
-	map <string, int> record_to_check;
+	orig_table.clear();
+	xy_to_check.clear();
 
-	bool error = false;
+	size_t lines_read = read_csv(file_name, orig_table);
 
-	size_t i = 0;
+	//cout << orig_table.size();
 
-	for (i = 0; i < xy_to_check.size(); i++) {
+	//xy_to_check = orig_table;
 
-		string ID = xy_to_check.at(i).at(LOCATION);
 
-		pair<string, int> ID_and_counter(ID, i);
+}
 
-		pair <map <string, int>::iterator, bool> p = record_to_check.insert(ID_and_counter);
+bool input_xy (const string& projectname) {
 
-		if (!(p.second)) {
+	try {
 
-			cout << "    - XY ERROR: LOCATION " << ID << " used in line " << i + 1 << " is already used at line " << (*(p.first)).second + 1 << "." <<endl;
+		read_in_xy(projectname+".xy");
+	}
+	catch (xy_error& ) {
 
-			error = true;
-		}
+		return false;
 	}
 
-	if (error) return false;
+	size_t n_records = xy_to_check.size();
 
-	cout << "    - Correct LOCATION's in all records of XY file." << endl;
+	if (n_records == 0) {
+		// nothing has been read but we don't know why (empty or read failed)
+		cout << "  - Cannot process " << capslock(projectname + ".xy") << " file." << endl;
 
-	return true;
+		return false;
+	}
+	else {
+
+		cout << "  - Input " << capslock(projectname + ".xy") << " file read, " << n_records - 1 << " record(s) imported." << endl;
+
+		return true;
+	}
 }
 
 bool LOCATIONcheck () {
 
 	vector <size_t> bad_records;
 
-	for (size_t i = 0; i < xy_to_check.size(); i++) {
+	for (size_t i = 1; i < xy_to_check.size(); i++) {
 
-		string ID = xy_to_check.at(i).at(LOCATION);
+		string LOC = xy_to_check.at(i).at(LOCATION);
 
-		if (ID == "") bad_records.push_back (i + 1);
+		if (LOC == "") bad_records.push_back (i + 1);
 	}
 
 	if (bad_records.size() == 0) {
@@ -125,65 +143,123 @@ bool LOCATIONcheck () {
 	}
 }
 
-/*bool XYcheck () {
+bool LOCATIONcheck_duplicate () {
+
+	map <string, int> record_to_check;
+
+	bool error = false;
+
+	size_t i = 0;
+
+	for (i = 1; i < xy_to_check.size(); i++) {
+
+		string LOC = xy_to_check.at(i).at(LOCATION);
+
+		pair<string, int> ID_and_counter(LOC, i);
+
+		pair <map <string, int>::iterator, bool> p = record_to_check.insert(ID_and_counter);
+
+		if (!(p.second)) {
+
+			cout << "    - XY ERROR: LOCATION " << LOC << " used in line " << i + 1 << " is already used at line " << (*(p.first)).second + 1 << "." <<endl;
+
+			error = true;
+		}
+	}
+
+	if (error) return false;
+
+	cout << "    - Correct LOCATION's in all records of XY file." << endl;
+
+	return true;
+}
+
+bool XYcheck () {
 
 	vector <string> bad_records;
 
-	for (size_t i = 0; i < xy_to_check.size(); i++) {
+	for (size_t i = 1; i < xy_to_check.size(); i++) {
 
-		//if (
-				//((!is_allowed_coordinate (rgf_to_check.at(i).at(LOC_X))) && (rgf_to_check.at(i).at(LOC_X) != "")) ||
-				//((!is_allowed_coordinate (rgf_to_check.at(i).at(LOC_Y))) && (rgf_to_check.at(i).at(LOC_Y) != ""))) bad_records.push_back(rgf_to_check.at(i).at(LOCATION));
+		if (!is_allowed_coordinate (xy_to_check.at(i).at(LOC_X)) ||	!is_allowed_coordinate (xy_to_check.at(i).at(LOC_Y))) bad_records.push_back(xy_to_check.at(i).at(LOCATION));
 	}
 
-	return false;
-}*/
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+	return error_cout (bad_records, "coordinate");
+}
 
 bool xyfile_correct (string projectname) {
 
-	//if (!(input_xy (projectname))) return false;
+	if (!(input_xy (projectname))) return false;
 
-	if  (!(
-				LOCATIONcheck () &&
-				LOCATIONcheck_duplicate ()// &&
-				//XYcheck ()
+	cout << "EEE" << endl;
 
-	)) return false;
+	//uppercase_xy_to_check ();
+
+	cout << "EEE" << endl;
+
+	if  (!(LOCATIONcheck () && LOCATIONcheck_duplicate () && XYcheck ())) {
+
+		if (is_GUI()) throw xy_error ();
+
+		else return false;
+	}
 
 	return true;
+}
+
+void uppercase_xy_to_check () {
+
+	size_t i = 0;
+	size_t j = 0;
+
+	for (i = 1; i < xy_to_check.size(); i++) {
+
+		for (j = 0; j < SIZE; j++) {
+
+			cout << i << j << endl;
+
+			if (xy_to_check.at(i).at(j) != "")  xy_to_check.at(i).at(j) = capslock (xy_to_check.at(i).at(j));
+		}
+	}
+}
+
+string check_xy_inputs (string inputfilename) {
+
+	cout << "CHECKING OF '" << capslock (inputfilename) << ".XY' FILE INTEGRITY" << endl;
+
+	if (is_COMMANDLINE()) {
+
+		if (capslock (inputfilename) == "X") return "NONE";
+
+		while (!(xyfile_correct(inputfilename))) {
+
+			cout << "  - Input " << capslock(inputfilename) << ".XY file structure is incorrect." << endl;
+
+			inputfilename = inputxyfilename();
+		}
+
+		cout << "  - Input " << capslock(inputfilename) << ".XY file structure is correct." << endl;
+
+		return inputfilename;
+	}
+
+	else {
+
+		if (xyfile_correct(inputfilename)) {
+
+			cout << "  - Input " << capslock(inputfilename) << ".XY file structure is correct." << endl;
+
+			return inputfilename;
+		}
+
+		else {
+
+			cout << "  - Input " << capslock(inputfilename) << ".XY file structure is incorrect, file will not be used." << endl;
+
+			if (is_GUI()) throw xy_error ();
+
+			else return "NONE";
+		}
+	}
 }
 
 GDB insertxy (GDB inGDB) {
@@ -197,355 +273,11 @@ GDB insertxy (GDB inGDB) {
 	if (outGDB.LOC == xy_to_check.at(i).at(LOCATION)) {
 
 			outGDB.LOC = 		xy_to_check.at(i).at(LOCATION);
-			outGDB.LOCX = string_to_double(xy_to_check.at(i).at(LOC_X), failed);
-			outGDB.LOCY = string_to_double(xy_to_check.at(i).at(LOC_Y), failed);
+			outGDB.LOCX = 		string_to_double(xy_to_check.at(i).at(LOC_X), failed);
+			outGDB.LOCY = 		string_to_double(xy_to_check.at(i).at(LOC_Y), failed);
 			outGDB.FORMATION = 	xy_to_check.at(i).at(FORMATION);
 		}
 	}
 
 	return outGDB;
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-/*
-
-bool xyEXISTENCEcheck (string xyname) {
-
-	ifstream xyfile;
-
-	string filename = xyname + ".xy";
-	xyfile.open (filename.c_str());
-
-	if (!(xyfile.is_open())) {
-
-		cout << "  - ERROR, cannot open " << capslock(xyname)<< ".XY coordinate file." << endl;
-		return false;
-	}
-
-	else {
-
-		cout << "  - " << capslock(xyname)<< ".XY coordinate file opened successfully" << endl;
-		return true;
-	}
-}
-
-bool xyIDcheck (string xyname){
-
-	ifstream xyfile;
-	string ID;
-	string temp;
-
-	int i=0;
-	bool errorlevel = false;
-
-	map <string, int> record_to_check;
-
-	string filename = xyname + ".xy";	xyfile.open (filename.c_str());
-
-	getline (xyfile, temp);
-
-	while (!(xyfile.eof())) {
-
-		i++;
-
-		getline (xyfile, ID, '\t');
-		getline (xyfile, temp);
-
-		pair<string, int> ID_and_counter(ID, i);
-		pair<map<string, int>::iterator, bool> p = record_to_check.insert(ID_and_counter);
-
-		if (!(p.second)) {
-
-			cout << "    - ERROR: ID '" << ID << "' used in line " << i << " is already used at line '" << (*(p.first)).second << "' ." <<endl;
-			errorlevel = true;
-		}
-	}
-
-	xyfile.close();
-
-		if (!(errorlevel)) {
-
-			cout << "    - Correct data point ID's in all of " << i << " records." << endl;
-			return true;
-		}
-
-		else return false;
-}
-
-bool xyTABcheck (string xyname) {
-
-	ifstream xyfile;
-	string ID;
-	string temp;
-	char  IDchar;
-	size_t errorcounter = 0;
-
-	size_t i = 0;
-	int j = 1;
-	int tabnumber;
-
-	string filename = xyname + ".xy";
-
-	xyfile.open (filename.c_str());
-
-	if (!(xyfile.is_open())) {
-
-		cout << "    - ERROR, cannot open input coordinate file." << endl;
-		return false;
-	}
-
-	if (xyfile.eof()) {
-
-		cout << "    - ERROR, missing header line in coordinate file." << endl;
-		return false;
-	}
-
-	getline (xyfile, temp);
-
-	while  (!(xyfile.eof())) {
-
-		j++;
-		i = 0;
-		tabnumber = 0;
-
-		getline (xyfile, ID);
-
-			if (ID.length() == 0) {
-
-				errorcounter++;
-
-				if (errorcounter == 1) {
-
-					cout << "    - ERROR: Missing TAB character(s) in following record(s):  " << j;
-				}
-
-				if (errorcounter > 1) cout << ", " << ID;
-			}
-
-			if ((ID.length() < 4)&& (ID.length() > 0)) {  // 3 VOLT
-
-				errorcounter++;
-
-				if (errorcounter == 1) {
-
-					cout <<"    - ERROR: Missing TAB character(s) in following record(s):  " << j;
-									}
-				if (errorcounter > 1) cout << ", " << ID;
-			}
-
-			while  (i < ID.length()) {
-
-				IDchar = ID.at(i);
-
-				if (IDchar == '\t') tabnumber++;
-
-				if ((i+1 == ID.length()) && (tabnumber < 3) && (ID.length() > 3)) {  // 2 - 2 VOLT
-
-					errorcounter++;
-
-					if (errorcounter == 1) {
-
-						cout << "    - ERROR: Missing TAB character(s) in following record(s):  " << j;
-					}
-
-					if (errorcounter > 1) cout << ", " << j;
-			}
-
-			i++;
-		}
-	}
-
-	xyfile.close();
-
-	if ((errorcounter > 0) && (j > 0)) return false;
-
-	if ((j == 1) && (ID.length() == 0)) return false;
-
-	else {
-
-		cout <<"    - Correct xy coordinate file structure in all of "<< j-1 << " records." << endl;
-
-		return true;
-	}
-}
-
-bool xyCOORDcheck (string xyname) {
-
-	ifstream xyfile;
-
-	string ID, coordX, coordY, temp, formation;
-
-	int i = 0;
-	int errorcounter = 0;
-
-	string filename = xyname + ".xy";
-	xyfile.open (filename.c_str());
-
-	if (!(xyfile.is_open())) {
-
-		cout << "    - ERROR, cannot open input coordinate file." << endl;
-		return false;
-	}
-
-	getline (xyfile, temp);
-
-	while (!(xyfile.eof())) {
-
-		i++;
-
-		getline (xyfile, ID, '\t');
-		getline (xyfile, coordX, '\t');
-		getline (xyfile, coordY, '\t');
-		getline (xyfile, formation);
-
-		if 	(((coordX != "0") && (coordX != "0.0") && (coordX != "0.0") && (atof(coordX.c_str()) == 0.0)) ||
-			 ((coordY != "0") && (coordY != "0.0") && (coordY != "0.0") && (atof(coordY.c_str()) == 0.0))) {
-
-			errorcounter++;
-
-			if (errorcounter == 1) cout <<"    - ERROR: incorrect coordinate(s) in following record(s):  " << ID;
-
-			if (errorcounter > 1) cout << ", " << ID;
-		}
-	}
-
-	xyfile.close();
-
-	if ((errorcounter > 0) && (i > 0)) cout << "." <<endl;
-
-	if (errorcounter == 0) {
-
-		cout <<"    - Correct X and Y coordinates in all of " << i << " records." << endl;
-
-		return true;
-	}
-
-	else return false;
-}
-
-GDB insertxy (GDB inGDB, string xyfilename) {
-
-	GDB outGDB = inGDB;
-
-	string LOC, tempX, tempY, formation;
-
-	size_t i = 0;
-
-	LOC_X_Y_FRM buffer;
-	vector < LOC_X_Y_FRM > XYDB;
-
-	ifstream xyfile;
-
-	string filename = xyfilename + ".xy";
-
-	xyfile.open (filename.c_str());
-
-	while (!(xyfile.eof())) {
-
-		getline (xyfile, LOC, '\t');
-		getline (xyfile, tempX, '\t');
-		getline (xyfile, tempY, '\t');
-		getline (xyfile, formation);
-
-		buffer.LOC = LOC;
-		buffer.X = atof(tempX.c_str());
-		buffer.Y = atof(tempY.c_str());
-		buffer.FORMATION = formation;
-
-		XYDB.push_back(buffer);
-	}
-
-	outGDB.LOCX = 999.99;
-	outGDB.LOCY = 999.99;
-
-	while (i < XYDB.size())  {
-
-		if (outGDB.LOC == XYDB.at(i).LOC) {
-
-			outGDB.LOCX = XYDB.at(i).X;
-			outGDB.LOCY = XYDB.at(i).Y;
-			outGDB.FORMATION = XYDB.at(i).FORMATION;
-		}
-
-		i++;
-	}
-
-	return outGDB;
-}
-
-bool xyfile_correct (string projectname) {
-
-	if (	xyEXISTENCEcheck 	(projectname) &&
-			xyTABcheck 			(projectname) &&
-			xyIDcheck 			(projectname) &&
-			xyCOORDcheck  		(projectname)	) return true;
-
-	else return false;
-
-}
-
-string check_xy_inputs (string inputfilename, string run_mode) {
-
-	cout << "CHECKING OF '" << capslock (inputfilename) << ".XY' FILE INTEGRITY" << endl;
-
-		if (run_mode != "COMMANDLINE")
-
-			if (xyfile_correct(inputfilename)) cout << "  - Input " << capslock(inputfilename) << ".XY file structure is correct." << endl;
-
-			else {
-
-				cout << "  - Input " << capslock(inputfilename) << ".XY file structure is incorrect, file will not be used." << endl;
-
-				return "";
-			}
-
-		else {
-
-
-			while (!(xyfile_correct(inputfilename))  || (inputfilename == "X") || (inputfilename == "x")) {
-
-				cout << "  - Input " << capslock(inputfilename) << ".XY file structure is incorrect." << endl;
-
-				inputfilename = inputxyfilename();
-
-				if (capslock(inputfilename) == "X") return "";
-			}
-			cout << "  - Input " << capslock(inputfilename) << ".RGF file structure is correct." << endl;
-		}
-
-	return inputfilename;
-}
-
-*/

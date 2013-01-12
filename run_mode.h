@@ -11,5 +11,6 @@ using namespace std;
 bool is_GUI();
 bool is_BATCH();
 bool is_COMMANDLINE();
+bool is_DEBUG();
 
 #endif

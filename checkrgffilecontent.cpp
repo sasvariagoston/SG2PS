@@ -19,7 +19,7 @@ using namespace std;
 
 namespace {
 
-vector <vector<string> > orig_table;
+vector <vector <string> > orig_table;
 
 vector <vector <string> > rgf_to_check;
 
@@ -413,19 +413,7 @@ bool LOCcheck () {
 	return correct;
 }
 
-bool XYcheck () {
 
-	vector <string> bad_records;
-
-	for (size_t i = 0; i < rgf_to_check.size(); i++) {
-
-		if (
-				((!is_allowed_coordinate (rgf_to_check.at(i).at(LOCX))) && (rgf_to_check.at(i).at(LOCX) != "")) ||
-				((!is_allowed_coordinate (rgf_to_check.at(i).at(LOCY))) && (rgf_to_check.at(i).at(LOCY) != ""))) bad_records.push_back(rgf_to_check.at(i).at(DATA_ID));
-	}
-
-	return error_cout (bad_records, "coordinate");
-}
 
 bool DATATYPEcheck () {
 
@@ -1022,7 +1010,6 @@ void check_duplicates(const vector<size_t>& dup) {
 		return;
 	}
 
-	// TODO Polish the error message
 	cout << "Error: the following reserved column names were found multiple times:\n";
 
 	for (size_t i=0; i<dup.size(); ++i) {
