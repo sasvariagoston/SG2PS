@@ -47,7 +47,11 @@ bool needxyfile () {
 
 		need_xy_file = capslock(need_xy_file);
 
-		if (need_xy_file == "X") throw exit_requested();
+		if (need_xy_file == "X") {
+
+			if (is_GUI()) throw exit_requested();
+			else return false;
+		}
 	}
 
 	while (!((need_xy_file == "Y") || (need_xy_file == "N")));
@@ -77,7 +81,7 @@ void read_in_xy(const string& file_name) {
 
 	size_t i = 0;
 
-	for (i = 1; i < orig_table.size(); i++) {
+	for (i = 0; i < orig_table.size(); i++) {
 
 		vector<string> row(SIZE);
 
@@ -234,6 +238,8 @@ string check_xy_inputs (string inputfilename) {
 			cout << "  - Input " << capslock(inputfilename) << ".XY file structure is incorrect." << endl;
 
 			inputfilename = inputxyfilename();
+
+			if (capslock (inputfilename) == "X") return "NONE";
 		}
 
 		cout << "  - Input " << capslock(inputfilename) << ".XY file structure is correct." << endl;

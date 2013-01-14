@@ -762,7 +762,7 @@ INPSET manage_settings_nobatch (string projectname) {
 
 	} while (!(c == "S"));
 
-	outputsettingfile (currect_settings, projectname);
+	if (c != "S") outputsettingfile (currect_settings, projectname);
 
 	return currect_settings;
 }
