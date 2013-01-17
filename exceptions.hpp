@@ -17,4 +17,8 @@ class xy_error {
 
 };
 
+class set_error {
+
+};
+
 #endif

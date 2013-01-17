@@ -577,9 +577,9 @@ vector <vector <double> > jacobi (vector <vector <double> > in) {
 
 	} while (i < 40);
 
-	cout << fixed << setprecision(3) << endl;
+	//cout << fixed << setprecision(3) << endl;
 
-	for (size_t i = 0; i < in.size(); i++){
+	/*for (size_t i = 0; i < in.size(); i++){
 
 		for (size_t j = 0; j < in.size(); j++){
 
@@ -597,6 +597,7 @@ vector <vector <double> > jacobi (vector <vector <double> > in) {
 				}
 			cout << endl;
 		}
+		*/
 
 	i = 0;
 
@@ -865,12 +866,12 @@ bool check_fry_matrix (size_t first_eigenvalue, vector <vector <double> > in_eig
 
 bool check_correct_stressfield (STRESSFIELD sf) {
 
-	if ((sf.S_1.DIPDIR > 0.0) && (sf.S_1.DIPDIR < 360.0) &&
-		(sf.S_1.DIP > 0.0) && (sf.S_1.DIP < 90.0) &&
-		(sf.S_2.DIPDIR > 0.0) && (sf.S_2.DIPDIR < 360.0) &&
-		(sf.S_2.DIP > 0.0) && (sf.S_2.DIP < 90.0) &&
-		(sf.S_3.DIPDIR > 0.0) && (sf.S_3.DIPDIR < 360.0) &&
-		(sf.S_3.DIP > 0.0) && (sf.S_3.DIP < 90.0))  return true;
+	if ((sf.S_1.DIPDIR 	> 0.0) && (sf.S_1.DIPDIR 	< 360.0) &&
+		(sf.S_1.DIP 	> 0.0) && (sf.S_1.DIP 		< 90.0) &&
+		(sf.S_2.DIPDIR 	> 0.0) && (sf.S_2.DIPDIR 	< 360.0) &&
+		(sf.S_2.DIP 	> 0.0) && (sf.S_2.DIP 		< 90.0) &&
+		(sf.S_3.DIPDIR 	> 0.0) && (sf.S_3.DIPDIR 	< 360.0) &&
+		(sf.S_3.DIP 	> 0.0) && (sf.S_3.DIP 		< 90.0))  return true;
 
 	else return false;
 }
@@ -1529,6 +1530,11 @@ STRESSFIELD eigenvalue_eigenvector (STRESSTENSOR st) {
 	sf.EIGENVECTOR1.Y = - ((a1 * sf.EIGENVECTOR1.X) + c1) / b1;
 	sf.EIGENVECTOR1 = unitvector (sf.EIGENVECTOR1);
 
+	if ((sf.EIGENVECTOR1.X > 0.9999) &&  (sf.EIGENVECTOR1.X < 1.0001)) sf.EIGENVECTOR1.X = 1.0 - 1E-8;
+	if ((sf.EIGENVECTOR1.Y > 0.9999) &&  (sf.EIGENVECTOR1.Y < 1.0001)) sf.EIGENVECTOR1.Y = 1.0 - 1E-8;
+	if ((sf.EIGENVECTOR1.Z > 0.9999) &&  (sf.EIGENVECTOR1.Z < 1.0001)) sf.EIGENVECTOR1.Z = 1.0 - 1E-8;
+	sf.EIGENVECTOR1 = unitvector (sf.EIGENVECTOR1);
+
 	a1 = st._11 - sf.EIGENVALUE.Y;
 	b2 = st._22 - sf.EIGENVALUE.Y;
 
@@ -1537,12 +1543,22 @@ STRESSFIELD eigenvalue_eigenvector (STRESSTENSOR st) {
 	sf.EIGENVECTOR2.Y = - ((a1 * sf.EIGENVECTOR2.X) + c1) / b1;
 	sf.EIGENVECTOR2 = unitvector (sf.EIGENVECTOR2);
 
+	if ((sf.EIGENVECTOR2.X > 0.9999) &&  (sf.EIGENVECTOR2.X < 1.0001)) sf.EIGENVECTOR2.X = 1.0 - 1E-8;
+	if ((sf.EIGENVECTOR2.Y > 0.9999) &&  (sf.EIGENVECTOR2.Y < 1.0001)) sf.EIGENVECTOR2.Y = 1.0 - 1E-8;
+	if ((sf.EIGENVECTOR2.Z > 0.9999) &&  (sf.EIGENVECTOR2.Z < 1.0001)) sf.EIGENVECTOR2.Z = 1.0 - 1E-8;
+	sf.EIGENVECTOR2 = unitvector (sf.EIGENVECTOR2);
+
 	a1 = st._11 - sf.EIGENVALUE.Z;
 	b2 = st._22 - sf.EIGENVALUE.Z;
 
 	sf.EIGENVECTOR3.Z = 1.0;
 	sf.EIGENVECTOR3.X = ((b1 * c2) - (b2 * c1)) / ((b2 * a1) - (a2 * b1));
 	sf.EIGENVECTOR3.Y = - ((a1 * sf.EIGENVECTOR3.X) + c1) / b1;
+	sf.EIGENVECTOR3 = unitvector (sf.EIGENVECTOR3);
+
+	if ((sf.EIGENVECTOR3.X > 0.9999) &&  (sf.EIGENVECTOR3.X < 1.0001)) sf.EIGENVECTOR3.X = 1.0 - 1E-8;
+	if ((sf.EIGENVECTOR3.Y > 0.9999) &&  (sf.EIGENVECTOR3.Y < 1.0001)) sf.EIGENVECTOR3.Y = 1.0 - 1E-8;
+	if ((sf.EIGENVECTOR3.Z > 0.9999) &&  (sf.EIGENVECTOR3.Z < 1.0001)) sf.EIGENVECTOR3.Z = 1.0 - 1E-8;
 	sf.EIGENVECTOR3 = unitvector (sf.EIGENVECTOR3);
 
 	return sf;

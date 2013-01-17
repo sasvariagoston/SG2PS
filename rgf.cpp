@@ -1426,12 +1426,8 @@ void process_rgf (string inputfilename, string XY_filename, INPSET inset) {
 	PFN	projectfoldername = createprojectfoldernames (inputfilename);
 
 	cout << "GEODATABASE PROCESSING FOR '" << capslock(inputfilename)<< ".RGF' DATABASE FILE" << endl;
-
-	//exit(1);
-
 	if (XY_filename == "NONE") geodatabase = competeRGFcontect(inputfilename, "NONE", inset);
 	else geodatabase = competeRGFcontect(inputfilename, XY_filename, inset);
-
 
 	geodatabase = cGc_NDS (geodatabase);
 	geodatabase = manipulate_N (geodatabase);
@@ -1442,7 +1438,6 @@ void process_rgf (string inputfilename, string XY_filename, INPSET inset) {
 	geodatabase = cGc_PITCHANGLE (geodatabase);
 	geodatabase = cGc_OFFSET (geodatabase);
 	geodatabase = cGc_LAMBDA_STRESSVECTOR_ESTIMATORS (geodatabase);
-	//geodatabase = compete_colorcode (geodatabase);
 	sort(geodatabase.begin(), geodatabase.end(), byLocTypeGc);
 
 	cout << "K-MEANS CLUSTERING OF '" << capslock(inputfilename)<< ".RGF' DATABASE FILE" << endl;
@@ -1456,9 +1451,6 @@ void process_rgf (string inputfilename, string XY_filename, INPSET inset) {
 	geodatabase = ptn (geodatabase, inset);
 
 	cout << "RETILTING OF '" << capslock(inputfilename)<< ".RGF' DATABASE FILE" << endl;
-
-
-
 	tiltgeodatabase = cGc_RETILT (geodatabase, inset);
 	tiltgeodatabase = cGc_tilted_UP (tiltgeodatabase);
 	tiltgeodatabase = cGc_PITCHANGLE (tiltgeodatabase);
@@ -1466,7 +1458,6 @@ void process_rgf (string inputfilename, string XY_filename, INPSET inset) {
 	tiltgeodatabase = cGc_average (tiltgeodatabase);
 	tiltgeodatabase = cGc_s0_average (tiltgeodatabase);
 	tiltgeodatabase = ptn (tiltgeodatabase, inset);
-
 
 	cout << "DATA EVALUATION AND EXPORT FROM '" << capslock(inputfilename) << ".RGF' DATABASE FILE" << endl;
 	createprojectfolders (projectfoldername, geodatabase);

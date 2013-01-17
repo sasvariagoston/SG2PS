@@ -799,6 +799,8 @@ vector <GDB> create_GDB_from_rgf () {
 		buffer.LINEATION =		"NONE";
 		buffer.LPITCHSENSE = 	"NONE";
 
+		buffer.iID = 		i;
+
 		buffer.ID = 		rgf_to_check.at(i).at(DATA_ID);
 		buffer.GC = 		rgf_to_check.at(i).at(GROUP);
 		buffer.COLOR = 		rgf_to_check.at(i).at(COLOR);

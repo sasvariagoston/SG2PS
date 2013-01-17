@@ -17,7 +17,6 @@
 #include "exceptions.hpp"
 #include "run_mode.h"
 
-
 using namespace std;
 
 PFN createprojectfoldernames (string projectname) {
@@ -72,6 +71,7 @@ bool createprojectfolders (PFN output, vector <GDB> inGDB) {
 	returncode = system (("mkdir " + output.average).c_str());
 	returncode = system (("mkdir " + output.rgfsep).c_str());
 	returncode = system (("mkdir " + output.pssep).c_str());
+
 
 	if (existence ("BOUDAIN", inGDB)) {
 
@@ -187,6 +187,24 @@ bool createprojectfolders (PFN output, vector <GDB> inGDB) {
 		returncode = system (("mkdir " + output.pssep + bs + "FOLDSURFACE").c_str());
 	}
 
+	if (existence ("USERPLANE1", inGDB)) {
+
+		returncode = system (("mkdir " + output.rgfsep + bs + "USERPLANE1").c_str());
+		returncode = system (("mkdir " + output.pssep + bs + "USERPLANE1").c_str());
+	}
+
+	if (existence ("USERPLANE2", inGDB)) {
+
+		returncode = system (("mkdir " + output.rgfsep + bs + "USERPLANE2").c_str());
+		returncode = system (("mkdir " + output.pssep + bs + "USERPLANE2").c_str());
+	}
+
+	if (existence ("USERPLANE3", inGDB)) {
+
+		returncode = system (("mkdir " + output.rgfsep + bs + "USERPLANE3").c_str());
+		returncode = system (("mkdir " + output.pssep + bs + "USERPLANE3").c_str());
+	}
+
 	if (existence ("USERPLANE4", inGDB)) {
 
 		returncode = system (("mkdir " + output.rgfsep + bs + "USERPLANE4").c_str());
@@ -239,130 +257,45 @@ bool createprojectfolders (PFN output, vector <GDB> inGDB) {
 	return true;
 }
 
-bool copyoriginalfile (PFN output) {
+void copyoriginalfile (PFN output) {
 
-	ifstream inrgffile, insetfile,  inxyfile;
-	ofstream outrgffile, outsetfile, outxyfile;
+	output.original = output.original + path_separator + output.projectname;
 
-	const string bs = path_separator;
-	string buffer;
+	if (copy_file(output.projectname + ".rgf", output.original + ".rgf")) cout << "  - Original input RGF file copied successfully to the project folder." << endl;
+	else {
 
-	bool xy_file_exist = true;
-	bool set_file_exist = true;
+		cout << "  - Original input RGF file is not copied to the project folder / do not exists." << endl;
 
-	string inrgffilename =  (output.projectname + ".rgf").c_str();
-	string outrgffilename = (output.original + bs + output.projectname + ".rgf").c_str();
-
-	string insetfilename =  (output.projectname + ".set").c_str();
-	string outsetfilename = (output.original + bs + output.projectname + ".set").c_str();
-
-	string inxyfilename =  (output.projectname + ".xy").c_str();
-	string outxyfilename = (output.original + bs + output.projectname + ".xy").c_str();
-
-
-
-	inrgffile.open (inrgffilename.c_str());
-	outrgffile.open (outrgffilename.c_str());
-
-	insetfile.open (insetfilename.c_str());
-	outsetfile.open (outsetfilename.c_str());
-
-	inxyfile.open (inxyfilename.c_str());
-	outxyfile.open (outxyfilename.c_str());
-
-
-	if (!(insetfile.is_open())) set_file_exist = false;
-
-	if (!(inxyfile.is_open())) xy_file_exist = false;
-
-
-
-
-	if (!(outxyfile.is_open())) 	cout << "  - ERROR: cannot create output XY file in project destination folder " + output.original + "." << endl;
-
-
-
-	do {
-
-		getline (inrgffile, buffer);
-		if (inrgffile.eof ()) {
-
-			outrgffile << buffer;
-			break;
-		}
-
-		else {
-
-			outrgffile << buffer << endl;
-		}
-
-	} while (!(inrgffile.eof()));
-
-
-
-	buffer.clear();
-
-
-
-	if (set_file_exist) {
-
-		do {
-
-			getline (insetfile, buffer);
-			if (insetfile.eof ()) {
-
-				outsetfile << buffer;
-				break;
-			}
-
-			else {
-
-				outsetfile << buffer << endl;
-			}
-
-		}	while (!(insetfile.eof()));
-
+		if (is_GUI()) throw rgf_error();
 	}
 
+	if (copy_file(output.projectname + ".set", output.original + ".set")) cout << "  - Original SET file copied successfully to the project folder." << endl;
+	else {
 
+		cout << "  - Original SET file is not copied to the project folder / do not exists." << endl;
 
-	buffer.clear();
-
-
-
-	if (xy_file_exist) {
-
-		do {
-
-			getline (inxyfile, buffer);
-			if (inxyfile.eof ()) {
-
-				outxyfile << buffer;
-				break;
-			}
-
-			else {
-
-				outxyfile << buffer << endl;
-			}
-
-		}	while (!(inxyfile.eof()));
+		if (is_GUI()) throw set_error();
 	}
 
+	if (copy_file(output.projectname + ".xy", output.original + ".xy")) cout << "  - Original XY file copied successfully to the project folder." << endl;
+	else {
 
+		cout << "  - Original XY file is not copied to the project folder / do not exists." << endl;
 
-	inrgffile.close();
-	outrgffile.close();
-
-	insetfile.close();
-	outsetfile.close();
-
-	inxyfile.close();
-	outxyfile.close();
-
-
-	return true;
+		//if (is_GUI()) throw xy_error();
+	}
 }
+
+bool copy_file(const string& source, const string& destination) {
+
+	ifstream in(source.c_str(), ios::binary);
+
+	ofstream out(destination.c_str(), ios::binary);
+
+	out << in.rdbuf();
+
+	return !in.fail() && !out.fail();
+};
 
 void outputrgfheader (ofstream& o, INPSET inset) {
 

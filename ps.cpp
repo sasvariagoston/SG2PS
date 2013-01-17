@@ -90,7 +90,9 @@ void PS_header (string DATATYPE, string LOC, ofstream& o, PAPER P) {
 	o << "%!PS-Adobe-3.0 EPSF-3.0" << endl;
 	o << "%%BoundingBox:  0 0 1191 842" << endl;
 	o << "<</PageSize [ 1190.55 841.888 ]>> setpagedevice " << endl;
-	o << "%% Generated as " << filename 									<< endl << endl;
+	o << "%% Title: " << filename << endl;
+	o << "%% Creator: SG2PS" << endl;
+	o << "%%EndComments" << endl << endl;
 
 	if ((DATATYPE == "STRIAE") || (DATATYPE == "FRACTURE" ) || (DATATYPE == "SC")) {
 
@@ -136,14 +138,14 @@ void PS_header (string DATATYPE, string LOC, ofstream& o, PAPER P) {
 		o << "    fill stroke" 											<< endl;
 		o << "} def" 													<< endl << endl;
 
-		o << "/s1_iter_axis {" 												<< endl;
+		o << "/s1_iter_axis {" 											<< endl;
 		o << "  newpath"												<< endl;
 		o << "    1 1 1 setrgbcolor stroke" 							<< endl;
 		o << "    -2.0   0.0 moveto "									<< endl;
 		o << "     4.0   4.0 rlineto" 									<< endl;
 		o << "    -4.0   4.0 rlineto" 									<< endl;
 		o << "    -4.0  -4.0 rlineto closepath" 						<< endl;
-		o << "    1 0 0 setrgbcolor 1 setlinewidth stroke" 			<< endl;
+		o << "    1 0 0 setrgbcolor 1 setlinewidth stroke" 				<< endl;
 		o << "} def" 													<< endl << endl;
 
 		o << "/s2_axis {" 												<< endl;
@@ -680,8 +682,6 @@ void PS_net (string DATATYPE, string LOC, ofstream& o, INPSET inset, PAPER P) {
 	o << "  "  << fixed << setprecision (3) << - P.O6X
 	  << " "   << fixed << setprecision (3) << - P.O6Y << " translate"  << endl << endl;
 
-
-
 	o << "/ArialNarrow-Bold findfont 12 scalefont setfont" << endl;
 	o << "  " <<  fixed << setprecision (3) << P.O1X - 3.5 << " "
 			  <<  fixed << setprecision (3) << P.O1Y + P.R + 14.0 << " moveto "
@@ -695,12 +695,6 @@ void PS_net (string DATATYPE, string LOC, ofstream& o, INPSET inset, PAPER P) {
 	o << "  " <<  fixed << setprecision (3) << P.O4X - 3.5 << " "
 	 		  <<  fixed << setprecision (3) << P.O4Y + P.R + 14.0 << " moveto "
 	  << "  (N) 0 0 0 setrgbcolor show" << endl;
-
-
-
-	o << "%% This is thee end of the sg2ps demo data post script file header" << endl;
-
-
 
 	o << "/ArialNarrow findfont 8 scalefont setfont" << endl;
 	o << "  " <<  fixed << setprecision (3) << P.O1X - P.R - 0.2 * P.B
@@ -2152,6 +2146,8 @@ void PS_datanumber_averagebedding (GDB i, ofstream& o, INPSET inset, PAPER P, CE
 		<< "  " << fixed << setprecision (3) << P.O4X - P.R - 0.2 * P.B
 		<< "  " << fixed << setprecision (3) << P.O4Y + P.R + 0.8 * P.B
 		<< " moveto (Corrected by palaeo north directions ) show" << endl << endl;
+
+		o << "%% This is thee end of the sg2ps ddemo data post script file header" << endl;
 	}
 }
 
@@ -2211,11 +2207,11 @@ void PS_draw_rose_circle_horizontal (ofstream& o, CENTER center, ROSENUMBER perc
 	do {
 
 		o << "   newpath 0.0 0.0 "
-		  << fixed << setprecision (3) << center.radius *  i / percent.PLN_NUM
-		  << " 0.0 360.0 arc stroke" << endl;
+				<< fixed << setprecision (3) << center.radius *  i / percent.PLN_NUM
+				<< " 0.0 360.0 arc stroke" << endl;
 		o << "  -5.0 "
-		  << fixed << setprecision (3) << (center.radius * i / percent.PLN_NUM) + 2.0 << " moveto"
-		  << " (" << fixed << setprecision (0) << i * 100.0 << " %) show" << endl;
+				<< fixed << setprecision (3) << (center.radius * i / percent.PLN_NUM) + 2.0 << " moveto"
+				<< " (" << fixed << setprecision (0) << i * 100.0 << " %) show" << endl;
 
 		i =  i + step;
 
@@ -2328,7 +2324,6 @@ void PS_DRAW_sc (GDB i, ofstream& o, INPSET inset, CENTER center) {
 
 		if (!(inset.labeling == "N")) PS_sc_arrow	(i, o, inset, center, d);
 		else PS_sc_arrow (i, o, inset, center, d);
-
 	}
 
 	else {
@@ -2555,8 +2550,6 @@ void PS_SYMBOLS_SC (ofstream& o, PAPER P) {
 	PS_SYMBOL_draw_plane (1.0 * P.A, 1.00 * P.A, o, P, "", "");
 	PS_SYMBOL_draw_plane (1.0 * P.A, 1.40 * P.A, o, P, "C", "");
 	PS_SYMBOL_draw_plane (1.0 * P.A, 1.80 * P.A, o, P, "AV", "");
-
-
 
 	o << " 0.00 0.00 0.00 setrgbcolor " << endl;
 	o << "  " << arrow_X  << " " << arrow_Y + 1.4 * P.A << "  translate 20 rotate" << endl;

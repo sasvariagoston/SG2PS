@@ -6,6 +6,7 @@
 
 #include "checksettingfilecontent.h"
 #include "exceptions.hpp"
+#include "run_mode.h"
 
 using namespace std;
 
@@ -142,7 +143,7 @@ bool settingfilecorrect (string settingfilename) {
 		b = capslock (b);
 		c = capslock (c);
 	}
-	if (!(((c == "D") || (c == "A") || (c == "P") || (c == "M") || (c == "O") || (c == "S") || (c == "F") || (c == "N")) && (b == "INVERSION:"))) settingfilecorrect = false; //PTN!!!
+	if (!(((c == "D") || (c == "A") || (c == "P") || (c == "M") || (c == "O") || (c == "S") || (c == "F") || (c == "N")) && (b == "INVERSION:"))) settingfilecorrect = false;
 
 
 	if (settingfile.eof()) settingfilecorrect = false;
@@ -174,7 +175,7 @@ bool settingfilecorrect (string settingfilename) {
 		getline (settingfile, c);
 		b = capslock (b);
 	}
-	if ((atof(c.c_str()) < 10.0) || (atof(c.c_str()) > 80.0) || (b != "STRESSANGLE:")) settingfilecorrect=false; //angle
+	if ((atof(c.c_str()) < 10.0) || (atof(c.c_str()) > 80.0) || (b != "STRESSANGLE:")) settingfilecorrect=false;
 
 
 	if (settingfile.eof()) settingfilecorrect=false;
@@ -226,7 +227,13 @@ bool settingfilecorrect (string settingfilename) {
 
 	settingfile.close();
 
-	return settingfilecorrect;	
+	if (!settingfilecorrect) {
+
+		if (is_GUI()) throw set_error();
+		else return false;
+	}
+
+	return true;
 }
 
 INPSET loadsettingsfromsettingfile (string settingfilename) {
@@ -344,7 +351,7 @@ void printsettingsonscreen (INPSET settings) {
 	if (settings.clusternumber=="9")	cout<<"  - Clustering..................................: 9 clusters"						<< endl;
 
 	if (settings.labeling == "Y")		cout<<"  - Labeling....................................: yes"								<< endl;
-	if (settings.labeling == "N")		cout<<"  - Labeling....................................: no labeling"						<< endl;
+	if (settings.labeling == "N")		cout<<"  - Labeling....................................: do no label"						<< endl;
 
 	if (settings.inversion == "D")		cout<<"  - Inversion...................................: using Sprang (1972) method"		<< endl;
 	if (settings.inversion == "A")		cout<<"  - Inversion...................................: using Angelier's method"			<< endl;
@@ -359,7 +366,7 @@ void printsettingsonscreen (INPSET settings) {
 	if (settings.virt_striae == "N")	cout<<"  - Virtual symmetrical striae set..............: do not use"						<< endl;
 
 	if (settings.idealmovement == "Y")	cout<<"  - Ideal slickenside movement..................: display" 							<< endl;
-	if (settings.idealmovement == "N")	cout<<"  - Ideal slickenside movement..................: not display"						<< endl;
+	if (settings.idealmovement == "N")	cout<<"  - Ideal slickenside movement..................: do not display"					<< endl;
 
 	cout<<"  - Angle between s1 and fault plane (if needed): " << settings.angle << " degs" 	<<endl;
 
@@ -371,11 +378,10 @@ void printsettingsonscreen (INPSET settings) {
 	if (settings.rosetype=="S")		cout<<"  - Rose plot type..............................: symmetrical"							<< endl;
 	if (settings.rosetype=="A")		cout<<"  - Rose plot type..............................: asymmetrical"							<< endl;
 
-	if (settings.rosebinning=="A")	cout<<"  - Data bin size on rose plot..................: 2.5 deg"								<< endl;
-	if (settings.rosebinning=="B")	cout<<"  - Data bin size on rose plot..................: 5 deg"									<< endl;
-	if (settings.rosebinning=="C")	cout<<"  - Data bin size on rose plot..................: 10 deg"								<< endl;
+	if (settings.rosebinning=="A")	cout<<"  - Data bin size on rose plot..................:  2.5 deg"								<< endl;
+	if (settings.rosebinning=="B")	cout<<"  - Data bin size on rose plot..................:  5.0 deg"								<< endl;
+	if (settings.rosebinning=="C")	cout<<"  - Data bin size on rose plot..................: 10.0 deg"								<< endl;
 	if (settings.rosebinning=="D")	cout<<"  - Data bin size on rose plot..................: 22.5 deg"								<< endl;
-
 }
 
 INPSET inputsettings_manually (string projectname) {
@@ -394,7 +400,7 @@ INPSET inputsettings_manually (string projectname) {
 		c = capslock(c);
 		if (c == "X") throw exit_requested();
 	}
-	while (!((c=="G") || (c=="R")));
+	while (!((c == "G") || (c == "R")));
 	inputsettingsonscreen.datarule = c;
 
 
@@ -407,7 +413,7 @@ INPSET inputsettings_manually (string projectname) {
 		c = capslock(c);
 		if (c == "X") throw exit_requested();
 	}
-	while (!((c=="A") || (c=="H")));
+	while (!((c == "A") || (c == "H")));
 	inputsettingsonscreen.plot = c;
 
 
@@ -420,7 +426,7 @@ INPSET inputsettings_manually (string projectname) {
 		c = capslock(c);
 		if (c == "X") throw exit_requested();
 	}
-	while (!((c=="S") || (c=="W")));
+	while (!((c == "S") || (c == "W")));
 	inputsettingsonscreen.plottype = c;
 
 
@@ -433,7 +439,7 @@ INPSET inputsettings_manually (string projectname) {
 		c = capslock(c);
 		if (c == "X") throw exit_requested();
 	}
-	while (!((c=="L") || (c=="U")));
+	while (!((c == "L") || (c == "U")));
 	inputsettingsonscreen.hemisphere = c;
 
 

@@ -258,11 +258,13 @@ string check_xy_inputs (string inputfilename) {
 
 		else {
 
-			cout << "  - Input " << capslock(inputfilename) << ".XY file structure is incorrect, file will not be used." << endl;
+			cout << "  - Input " << capslock(inputfilename) << ".XY file do not exists or file structure is incorrect, file will not be used." << endl;
 
-			if (is_GUI()) throw xy_error ();
+			//if (is_GUI()) throw xy_error ()
 
-			else return "NONE";
+			//else;
+
+			 return "NONE";
 		}
 	}
 }
