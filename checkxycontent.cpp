@@ -89,14 +89,7 @@ void read_in_xy(const string& file_name) {
 
 bool input_xy (const string& projectname) {
 
-	try {
-
-		read_in_xy(projectname+".xy");
-	}
-	catch (xy_error& ) { // FIXME Nobody throws this...
-
-		return false;
-	}
+	read_in_xy(projectname+".xy");
 
 	size_t n_records = xy_to_check.size();
 
@@ -253,10 +246,6 @@ string check_xy_inputs (string inputfilename) {
 		else {
 
 			cout << "  - Input " << capslock(inputfilename) << ".XY file does not exist or file structure is incorrect, file will not be used." << endl;
-
-			//if (is_GUI()) throw xy_error () // FIXME Hmm, why shouldn't we throw it?
-
-			//else;
 
 			 return "NONE";
 		}
