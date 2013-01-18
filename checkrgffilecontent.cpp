@@ -2,7 +2,10 @@
 // All rights reserved.
 // This code is published under the GNU Lesser General Public License.
 
+#include <algorithm>
+#include <fstream>
 #include <iomanip>
+#include <iostream>
 #include <limits>
 #include <map>
 
@@ -13,7 +16,17 @@
 #include "ReservedColumnNames.hpp"
 #include "run_mode.h"
 
-using namespace std;
+template <typename T, size_t n>
+vector<T> from_array(const T (&array)[n]) {
+
+	return vector<T>(array, array+n);
+}
+
+template <typename T>
+bool contains(const vector<T>& vec, const T& elem) {
+
+	return find(vec.begin(), vec.end(), elem) != vec.end();
+}
 
 namespace {
 
@@ -924,7 +937,7 @@ void dump_col_status(const vector<string>& found, const vector<string>& ignored)
 
 	cout << "    - The header (column names) of the data file has been processed.\n";
 
-	show_col_names("unused", unused);
+	show_col_names("reserved but unused", unused);
 
 	show_col_names("ignored", ignored);
 }

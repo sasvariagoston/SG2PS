@@ -5,19 +5,11 @@
 #include <iostream>
 #include <string>
 #include <ctime>
-#include <map>
-#include <stdexcept>
-#include <sstream>
-#include <iomanip>
 
-#include "common.h"
 #include "rgf.h"
-#include "data_io.h"
 #include "checksettingfilecontent.h"
 #include "checkrgffilecontent.h"
 #include "checkxycontent.h"
-#include "cluster.h"
-#include "platform_dep.hpp"
 #include "run_mode.h"
 
 using namespace std;
@@ -52,12 +44,7 @@ void print_banner();
 
 void real_main(int argument_number, char *argv[]) {
 
-	string inputrgfname, xy_filename, inputrgfname_only, temp;
-	vector <GDB> geodatabase, tiltgeodatabase;
-	INPSET inset;
-	size_t j = 0;
-	bool using_xy_files = false;
-
+	// Decides on run mode
 	vector <string> inputfilename_vector = vector<string>(argv+1, argv+argument_number);
 
 	if (inputfilename_vector.size() >= 1) {
@@ -69,40 +56,45 @@ void real_main(int argument_number, char *argv[]) {
 		else run_mode = "BATCH";
 	}
 
+	if (is_GUI() || is_DEBUG()) inputfilename_vector.erase(inputfilename_vector.begin());
+
 	if (!is_DEBUG()) print_banner();
 
 	cout << "RUNNING SG2PS IN " << run_mode << " MODE." << endl;
 
-	if (is_GUI() || is_DEBUG()) inputfilename_vector.erase(inputfilename_vector.begin() + 0);
+	//--------------------------------------------------------------------------------------------
 
 	if (is_COMMANDLINE()) {
 
-		inputrgfname = inputfilename();
-		inputfilename_vector.push_back(inputrgfname);
+		inputfilename_vector.push_back( inputfilename() );
 	}
 
-	inputfilename_vector = check_rgf_inputs (inputfilename_vector);
+	inputfilename_vector = check_rgf_inputs (inputfilename_vector); // TODO Ooops, time not measured in GUI, BATCH and DEBUG mode
+
+	bool using_xy_files = false;
 
 	if (!is_COMMANDLINE()) using_xy_files = true;
 	else using_xy_files = needxyfile ();
 
 	if (is_COMMANDLINE()) manage_settings_nobatch (inputfilename_vector.at(0));
 
+	//----------------------------------------------------------------------------------------------
+	// Main processing loop
+
 	clock_t starttime = clock ();
 
-	do {
+	string xy_filename;
 
-		inset = manage_settings_batch (inputfilename_vector.at(j));
+	for (size_t j=0; j<inputfilename_vector.size(); ++j) {
+
+		INPSET inset = manage_settings_batch (inputfilename_vector.at(j));
 
 		if (using_xy_files) xy_filename = check_xy_inputs (inputfilename_vector.at(j));
 
 		process_rgf (inputfilename_vector.at(j), xy_filename, inset);
 
 		cout << "EVALUATION OF " << capslock(inputfilename_vector.at(j)) << ".RGF FILE COMPLETED." << endl;
-
-		j++;
-
-	} while (j < inputfilename_vector.size());
+	}
 
 	clock_t finishtime = clock();
 

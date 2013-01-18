@@ -2,18 +2,14 @@
 // All rights reserved.
 // This code is published under the GNU Lesser General Public License.
 
-#include <string>
-#include <vector>
-#include <sstream>
-#include <iostream>
-#include <ctime>
+#include <cmath>
+#include <fstream>
 #include <iomanip>
-#include <stdexcept>
+#include <iostream>
+#include <sstream>
 
 #include "ps.h"
-#include "common.h"
 #include "rgf.h"
-#include "exceptions.hpp"
 
 using namespace std;
 

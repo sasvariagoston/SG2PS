@@ -2,18 +2,13 @@
 // All rights reserved.
 // This code is published under the GNU Lesser General Public License.
 
-#include <string>
-#include <vector>
-#include <stdio.h>
-#include <stdlib.h>
-#include <time.h>
-#include <sstream>
-#include <map>
+#include <cstdlib>
 #include <iomanip>
+#include <iostream>
 
 #include "common.h"
 #include "cluster.h"
-#include "ps.h"
+
 
 vector <CENTR_VECT>  init_centriod (size_t cluster_number, vector <GDB> inGDB) {
 

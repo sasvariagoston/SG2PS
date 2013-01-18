@@ -4,13 +4,11 @@
 
 #include <map>
 #include <iostream>
-#include <stdexcept>
 
 #include "checkxycontent.h"
-#include "checkrgffilecontent.h"
+#include "checkrgffilecontent.h" // TODO XY related functions in checkrgffilecontent.h
 #include "run_mode.h"
 #include "exceptions.hpp"
-#include "ExitStatus.hpp"
 #include "read_csv.hpp"
 
 namespace {

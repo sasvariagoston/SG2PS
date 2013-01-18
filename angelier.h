@@ -4,11 +4,6 @@
 #ifndef ANGELIER_HPP_
 #define ANGELIER_HPP_
 
-#include <string>
-#include <vector>
-#include <cmath>
-
-#include "structs.h"
 #include "common.h"
 
 using namespace std;

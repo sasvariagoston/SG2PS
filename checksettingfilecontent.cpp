@@ -2,7 +2,9 @@
 // All rights reserved.
 // This code is published under the GNU Lesser General Public License.
 
-#include <stdexcept>
+#include <cstdlib> // TODO Instead of atof, a string_to_int function should be used in common.cpp
+#include <fstream>
+#include <iostream>
 
 #include "checksettingfilecontent.h"
 #include "exceptions.hpp"

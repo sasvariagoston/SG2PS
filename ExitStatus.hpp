@@ -1,4 +1,4 @@
-// Copyright (C) 2012, Ágoston Sasvári
+// Copyright (C) 2012, Ali Baharev
 // All rights reserved.
 // This code is published under the GNU Lesser General Public License.
 #ifndef EXITSTATUS_HPP
@@ -17,6 +17,7 @@ struct ExitStatus {
         STD_EXCEPTION,
         UNKNOWN_ERROR
     };
+
 };
 
 #endif // EXITSTATUS_HPP

@@ -4,9 +4,6 @@
 #ifndef ROSE_HPP_
 #define ROSE_HPP_
 
-#include <vector>
-
-#include "structs.h"
 #include "common.h"
 
 ROSENUMBER compute_data_number_DIPDIR (vector <GDB> inGDB, double strike_begin, double strike_end);

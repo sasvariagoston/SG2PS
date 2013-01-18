@@ -2,17 +2,14 @@
 // All rights reserved.
 // This code is published under the GNU Lesser General Public License.
 
-#include <string>
-#include <sstream>
-#include <map>
-#include <iomanip>
-#include <cmath>
 #include <algorithm>
+#include <cmath>
+#include <iomanip>
+#include <iostream>
+#include <sstream>
 
 #include "common.h"
 #include "rgf.h"
-
-using namespace std;
 
 template <typename T>
 T convert(const string& s, bool& failed) {
@@ -1876,6 +1873,24 @@ double german_to_right_hand_rule (double corrDIPDIR) {
 
 	if ((corrDIPDIR > 90.0) && (corrDIPDIR <= 360.0)) 	return corrDIPDIR - 90.0;
 	else 												return corrDIPDIR + 270.0;
+}
+
+void output_elapsed_time (double elapsed_time) {
+
+	if (elapsed_time < 1 * 1000.0) cout << "  - Elapsed time: " << fixed << setprecision (2) << elapsed_time << " milliseconds." << endl;
+	else {
+		elapsed_time = elapsed_time / 1000.0;
+		if (elapsed_time < 1 * 60.0) cout << "  - Elapsed time: " << fixed << setprecision (2) << elapsed_time << " seconds." << endl;
+		else {
+			elapsed_time = elapsed_time / 60.0;
+			if (elapsed_time < 1 * 60.0) cout << "  - Elapsed time: " << fixed << setprecision (2) << elapsed_time << " minutes." << endl;
+			else {
+				elapsed_time = elapsed_time / 60.0;
+				if (elapsed_time < 1 * 60.0) cout << "  - Elapsed time: " << fixed << setprecision (2) << elapsed_time << " hours." << endl;
+				else cout << "  - Elapsed time: " << fixed << setprecision (1) << elapsed_time / 60.0 << " days." << endl;
+			}
+		}
+	}
 }
 
 string return_build_date () {

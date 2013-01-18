@@ -4,14 +4,9 @@
 #ifndef RGF_HPP_
 #define RGF_HPP_
 
-#include <string>
-#include <vector>
-
-#include "structs.h"
-#include "data_io.h"
-#include "common.h"
-#include "cluster.h"
 #include "angelier.h"
+#include "cluster.h"
+#include "common.h"
 
 //string GC_from_tempGC (string GCtemp);
 //double DIPDIR_from_DIPDIRtemp (string DIPDIRtemp, INPSET inset, string DATAGROUP);

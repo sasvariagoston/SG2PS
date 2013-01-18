@@ -2,8 +2,6 @@
 // All rights reserved.
 // This code is published under the GNU Lesser General Public License.
 
-#include <string>
-#include <vector>
 #include <iomanip>
 
 #include "rose.h"

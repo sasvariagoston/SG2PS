@@ -4,16 +4,7 @@
 #ifndef DATA_IO_HPP_
 #define DATA_IO_HPP_
 
-#include <iostream>
-#include <fstream>
-#include <string>
-#include <cstdio>
-#include <stdio.h>
-#include <stdlib.h>
-#include <time.h>
-#include <vector>
-#include <map>
-#include <cstdlib>
+#include <iosfwd>
 
 #include "common.h"
 
@@ -23,6 +14,7 @@ PFN createprojectfoldernames (string projectname);
 bool createprojectfolders (PFN output, vector <GDB> inGDB);
 
 void copyoriginalfiles (PFN output);
+void copy_log(const PFN& names);
 
 void outputrgfheader (ofstream& o, INPSET inset);
 void outputaverageheader (ofstream& o);
@@ -41,7 +33,5 @@ void output_to_ps (PFN output, vector <GDB> processGDB, vector <GDB> tiltprocess
 
 void process_group_by_group (vector <GDB> outGDB, vector <GDB> tiltoutGDB, ofstream& o, INPSET inset, CENTER center, PAPER P);
 void process_one_by_one (GDB processGDB, GDB tiltprocessGDB, ofstream& o, INPSET inset, CENTER center, PAPER P);
-
-void output_elapsed_time (double elapsed_time);
 
 #endif

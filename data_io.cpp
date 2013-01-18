@@ -2,22 +2,18 @@
 // All rights reserved.
 // This code is published under the GNU Lesser General Public License.
 
+#include <algorithm>
+#include <fstream>
 #include <iomanip>
 #include <iostream>
-#include <algorithm>
 #include <stdexcept>
 
 #include "data_io.h"
-#include "ps.h"
-#include "rose.h"
-#include "rgf.h"
-#include "angelier.h"
-#include "cluster.h"
 #include "platform_dep.hpp"
-#include "exceptions.hpp"
+#include "ps.h"
+#include "rgf.h"
+#include "rose.h"
 #include "run_mode.h"
-
-using namespace std;
 
 PFN createprojectfoldernames (string projectname) {
 
@@ -321,6 +317,20 @@ void copyoriginalfiles (PFN output) {
 	back_up_file(".set", project_name, new_path); // TODO In batch and debug mode, failures were ignored
 	                                              // TODO In batch mode, it should dump a set file?
 	back_up_file(".xy", project_name, new_path);
+}
+
+void copy_log(const PFN& names) {
+
+	if (!is_GUI()) {
+
+		return;
+	}
+
+	cout.flush();
+
+	string log_file = "log.txt";
+
+	copy_file(log_file, names.original + path_separator + log_file);
 }
 
 void outputrgfheader (ofstream& o, INPSET inset) { // FIXME Duplication? Same as reserved_column_names?
@@ -889,22 +899,4 @@ void process_one_by_one (GDB processGDB, GDB tiltprocessGDB, ofstream& o, INPSET
 	center.X = P.O2X;
 	center.Y = P.O2Y;
 	PS_DRAW_record (tiltprocessGDB, o, inset, center);
-}
-
-void output_elapsed_time (double elapsed_time) {
-
-	if (elapsed_time < 1 * 1000.0) cout << "  - Elapsed time: " << fixed << setprecision (2) << elapsed_time << " milliseconds." << endl;
-	else {
-		elapsed_time = elapsed_time / 1000.0;
-		if (elapsed_time < 1 * 60.0) cout << "  - Elapsed time: " << fixed << setprecision (2) << elapsed_time << " seconds." << endl;
-		else {
-			elapsed_time = elapsed_time / 60.0;
-			if (elapsed_time < 1 * 60.0) cout << "  - Elapsed time: " << fixed << setprecision (2) << elapsed_time << " minutes." << endl;
-			else {
-				elapsed_time = elapsed_time / 60.0;
-				if (elapsed_time < 1 * 60.0) cout << "  - Elapsed time: " << fixed << setprecision (2) << elapsed_time << " hours." << endl;
-				else cout << "  - Elapsed time: " << fixed << setprecision (1) << elapsed_time / 60.0 << " days." << endl;
-			}
-		}
-	}
 }

@@ -6,12 +6,6 @@
 
 #include <string>
 #include <vector>
-#include <string>
-#include <cstdio>
-#include <cmath>
-#include <vector>
-#include <cstdlib>
-
 
 #include "structs.h"
 

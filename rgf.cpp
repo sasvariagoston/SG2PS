@@ -3,17 +3,13 @@
 // This code is published under the GNU Lesser General Public License.
 
 #include <algorithm>
-#include <iomanip>
+#include <cmath>
 #include <iostream>
-#include <stdexcept>
-
+#include <iomanip>
 #include "ps.h"
 #include "rgf.h"
 #include "checkxycontent.h"
 #include "data_io.h"
-#include "cluster.h"
-#include "angelier.h"
-#include "exceptions.hpp"
 #include "checkrgffilecontent.h"
 
 using namespace std;
@@ -1467,4 +1463,5 @@ void process_rgf (string inputfilename, string XY_filename, INPSET inset) {
 	geodatabase = sort_by_iID (geodatabase);
 	tiltgeodatabase = sort_by_iID (tiltgeodatabase);
 	outputresultrgf (projectfoldername, geodatabase, false, inset);
+	copy_log(projectfoldername);
 }

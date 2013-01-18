@@ -4,16 +4,7 @@
 #ifndef CHECKSETTINGFILECONTENT_HPP_
 #define CHECKSETTINGFILECONTENT_HPP_
 
-#include <iostream>
-#include <fstream>
-#include <string>
-#include <cstdio>
-#include <cstdlib>
-
-#include "structs.h"
 #include "common.h"
-
-#include "checksettingfilecontent.h"
 
 using namespace std;
 

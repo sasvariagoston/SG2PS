@@ -4,25 +4,9 @@
 #ifndef CHECKRGFFILECONTENT_HPP_
 #define CHECKRGFFILECONTENT_HPP_
 
-#include <string>
-#include <algorithm>
-
-#include "structs.h"
 #include "common.h"
 
 using namespace std;
-
-template <typename T, size_t n>
-std::vector<T> from_array(const T (&array)[n]) {
-
-	return std::vector<T>(array, array+n);
-}
-
-template <typename T>
-bool contains(const std::vector<T>& vec, const T& elem) {
-
-	return std::find(vec.begin(), vec.end(), elem) != vec.end();
-}
 
 string inputfilename ();
 
@@ -89,9 +73,5 @@ bool is_allowed_geodetic (const string& geodetic) ;
 bool is_double (const string& coordinate);
 
 bool error_cout (vector <string> bad_records, string recordtype);
-
-//int read_csv(const string& file_name);
-void convert_csv_rgf();
-void csv_to_rgf();
 
 #endif
