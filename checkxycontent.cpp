@@ -77,15 +77,13 @@ void read_in_xy(const string& file_name) {
 	orig_table.clear();
 	xy_to_check.clear();
 
-	size_t lines_read = read_csv(file_name, orig_table);
+	read_csv(file_name, orig_table);
 
-	size_t i = 0;
-
-	for (i = 0; i < orig_table.size(); i++) {
+	for (size_t i = 0; i < orig_table.size(); i++) {
 
 		vector<string> row(SIZE);
 
-		row = orig_table.at(i);
+		row = orig_table.at(i); // FIXME Bug
 
 		xy_to_check.push_back(row);
 	}
@@ -97,7 +95,7 @@ bool input_xy (const string& projectname) {
 
 		read_in_xy(projectname+".xy");
 	}
-	catch (xy_error& ) {
+	catch (xy_error& ) { // FIXME Nobody throws this...
 
 		return false;
 	}
@@ -105,10 +103,10 @@ bool input_xy (const string& projectname) {
 	size_t n_records = xy_to_check.size();
 
 	if (n_records <= 1) {
-		// nothing has been read but we don't know why (empty or read failed)
+
 		cout << "  - Cannot process " << capslock(projectname + ".xy") << " file." << endl;
 
-		return false;
+		return false; // TODO What should happen with empty / header only files? Is it an error?
 	}
 
 	else {
@@ -209,14 +207,12 @@ bool xyfile_correct (string projectname) {
 	return true;
 }
 
+// FIXME Dead function. Who does the upper case conversion?
 void uppercase_xy_to_check () {
 
-	size_t i = 0;
-	size_t j = 0;
+	for (size_t i = 1; i < xy_to_check.size(); i++) {
 
-	for (i = 1; i < xy_to_check.size(); i++) {
-
-		for (j = 0; j < SIZE; j++) {
+		for (size_t j = 0; j < SIZE; j++) {
 
 			cout << i << j << endl;
 
@@ -260,7 +256,7 @@ string check_xy_inputs (string inputfilename) {
 
 			cout << "  - Input " << capslock(inputfilename) << ".XY file do not exists or file structure is incorrect, file will not be used." << endl;
 
-			//if (is_GUI()) throw xy_error ()
+			//if (is_GUI()) throw xy_error () // FIXME Hmm, why shouldn't we throw it?
 
 			//else;
 
