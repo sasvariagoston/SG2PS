@@ -1461,7 +1461,7 @@ void process_rgf (string inputfilename, string XY_filename, INPSET inset) {
 
 	cout << "DATA EVALUATION AND EXPORT FROM '" << capslock(inputfilename) << ".RGF' DATABASE FILE" << endl;
 	createprojectfolders (projectfoldername, geodatabase);
-	copyoriginalfile (projectfoldername);
+	copyoriginalfiles (projectfoldername);
 	outputselected_ps_rgf (projectfoldername, geodatabase, tiltgeodatabase, inset);
 	outputaveragergf (projectfoldername, geodatabase);
 	geodatabase = sort_by_iID (geodatabase);

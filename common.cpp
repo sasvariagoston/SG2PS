@@ -45,6 +45,13 @@ string capslock (string input) {
 	return input;
 }
 
+string to_uppercase(string s) {
+
+	transform(s.begin(), s.end(), s.begin(), ::toupper);
+
+	return s;
+}
+
 const string int_to_string (int i) {
 
 	ostringstream os;
@@ -1215,7 +1222,7 @@ VCTR ROTATE (VCTR ax, VCTR torotate, double angle) {
 	return unitvector (result);
 }
 
-bool existence (string expression, vector<GDB> inGDB) {
+bool existence (string expression, vector<GDB> inGDB) { // TODO contains? contains datatype?
 
 	bool presence = false;
 

@@ -254,7 +254,7 @@ string check_xy_inputs (string inputfilename) {
 
 		else {
 
-			cout << "  - Input " << capslock(inputfilename) << ".XY file do not exists or file structure is incorrect, file will not be used." << endl;
+			cout << "  - Input " << capslock(inputfilename) << ".XY file does not exist or file structure is incorrect, file will not be used." << endl;
 
 			//if (is_GUI()) throw xy_error () // FIXME Hmm, why shouldn't we throw it?
 

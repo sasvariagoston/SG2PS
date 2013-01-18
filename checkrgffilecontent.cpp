@@ -5,15 +5,13 @@
 #include <iomanip>
 #include <limits>
 #include <map>
-#include <sstream>
-#include <stdexcept>
-
 
 #include "checkrgffilecontent.h"
-#include "run_mode.h"
+#include "assertions.hpp"
 #include "exceptions.hpp"
-#include "ReservedColumnNames.hpp"
 #include "read_csv.hpp"
+#include "ReservedColumnNames.hpp"
+#include "run_mode.h"
 
 using namespace std;
 
@@ -498,22 +496,6 @@ vector <string> check_rgf_inputs (vector <string> inputfilename_vector) {
 	}
 }
 
-vector <string> create_inputfilename_vector (int argc, char *argv[]) {
-
-	int j = 0;
-
-	vector <string> out;
-
-	do  {
-
-		out.push_back(argv[j]);
-		j++;
-
-	} while (j < argc);
-
-	return out;
-}
-
 bool rgffile_correct (string projectname) {
 
 	if (!(input_rgf (projectname))) return false;
@@ -745,8 +727,6 @@ bool is_double (const string& s) {
 	return (!failed);
 }
 
-// TODO Dump the original lines, and bad_records should contain only the indices
-// The original table is off by 1 because it has a header
 bool error_cout (vector <string> bad_records, string recordtype) {
 
 	if (bad_records.size() == 0) {
@@ -903,40 +883,77 @@ size_t find_index(const Container& c, const T& value) {
 	return (pos == c.end()) ? NOT_FOUND : std::distance(c.begin(), pos);
 }
 
-string to_uppercase(string s) {
-
-	transform(s.begin(), s.end(), s.begin(), ::toupper);
-
-	return s;
-}
-
 size_t cell_index(size_t i) {
 
 	return (i < index_map.size()) ? index_map.at(i) : NOT_FOUND;
 }
 
-void dbg_dump_index_map() {
+template <typename T>
+const vector<T> set_difference(vector<T> A, vector<T> B) {
 
-	cout << "Column map: original -> rgf \n";
+	sort(A.begin(), A.end());
+
+	sort(B.begin(), B.end());
+
+	vector<T> C;
+
+	set_difference(A.begin(), A.end(), B.begin(), B.end(), back_inserter(C));
+
+	return C;
+}
+
+void show_col_names(const string& msg, const vector<string>& v) {
+
+	if (v.empty()) {
+
+		return;
+	}
+
+	cout << "      - The following columns are " << msg << ":\n        ";
+
+	for (size_t i=0; i<v.size(); ++i) {
+
+		cout << "\"" << v.at(i) << "\"" << ((i==v.size()-1) ? '\n' : '\t');
+	}
+
+}
+
+void dump_col_status(const vector<string>& found, const vector<string>& ignored) {
+
+	vector<string> unused = set_difference(reserved_column_names(), found);
+
+	cout << "    - The header (column names) of the data file has been processed.\n";
+
+	show_col_names("unused", unused);
+
+	show_col_names("ignored", ignored);
+}
+
+void show_unused_ignored_columns() {	// Column map: original -> rgf
 
 	const vector<string>& header = orig_table.at(0);
 
+	vector<string> found, ignored;
+
 	for (size_t i=0; i<header.size(); ++i) {
 
-		cout << header.at(i) << " -> ";
+		const string& orig_col_name = header.at(i);
 
 		size_t index = cell_index(i);
 
 		if (index==NOT_FOUND) {
 
-			cout << "(none)\n";
+			ignored.push_back(orig_col_name);
 		}
-
 		else {
 
-			cout << reserved_column_names().at(index) << '\n';
+			found.push_back(orig_col_name);
+			// user's name == reserved name, case insensitive
+			ASSERT_EQ(to_uppercase(orig_col_name), reserved_column_names().at(index));
 		}
 	}
+
+	dump_col_status(found, ignored);
 }
 
 void check_duplicates(const vector<size_t>& dup) {
@@ -988,7 +1005,7 @@ void build_column_map() {
 
 	check_duplicates(duplicates);
 
-	//dbg_dump_index_map();
+	show_unused_ignored_columns();
 }
 
 void convert_row(const vector<string>& orig_row, size_t index) {

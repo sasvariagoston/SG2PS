@@ -57,11 +57,8 @@ void real_main(int argument_number, char *argv[]) {
 	INPSET inset;
 	size_t j = 0;
 	bool using_xy_files = false;
-	vector <string> inputfilename_vector;
 
-	inputfilename_vector = create_inputfilename_vector (argument_number, argv);
-
-	inputfilename_vector.erase(inputfilename_vector.begin() + 0);
+	vector <string> inputfilename_vector = vector<string>(argv+1, argv+argument_number);
 
 	if (inputfilename_vector.size() >= 1) {
 
@@ -126,12 +123,13 @@ void print_banner () {
 	cout << "|                             SG2PS                                |" << endl;
 	cout << "|       Structural Geological data to PostScript converter         |" << endl;
 	cout << "|                                                                  |" << endl;
-	cout << "|        Data processing software coded by Agoston Sasvari         |" << endl;
+	cout << "|                       Data processing software                   |" << endl;
+	cout << "|     Copyright (C) 2013 Agoston Sasvari.  All rights reserved.    |" << endl;
+	cout << "|             This a free software, license: GNU LGPL.             |" << endl;
+	cout << "|                                                                  |" << endl;
+	cout << "|              This software comes with NO WARRANTY.               |" << endl;
 	cout << "|                                                                  |" << endl;
 	cout << "|            For further information check www.sg2ps.eu            |" << endl;
-	cout << "|                                                                  |" << endl;
-	cout << "|                       All rights reserved.                       |" << endl;
-	cout << "|              This a free software, licence: GNU LGPL.            |" << endl;
 	cout << "|                                                                  |" << endl;
 	cout << " ------------------------------------------------------------------ " << endl;
 	cout << "|                                                                  |" << endl;

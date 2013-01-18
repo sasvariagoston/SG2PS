@@ -50,7 +50,7 @@ PFN createprojectfoldernames (string projectname) {
 	if (!is_DEBUG()) output.projectfolder 	= output.datetime + "_-_" + capslock(projectname);
 	else output.projectfolder = capslock(projectname);
 
-	output.projectname 		= capslock(projectname);
+	output.projectname 		= projectname; // FIXME converting to uppercase is a bug on Linux
 	output.original			= output.projectfolder +  bs + "1_original";
 	output.completed		= output.projectfolder +  bs + "2_completed";
 	output.average			= output.projectfolder +  bs + "3_average";
@@ -65,7 +65,7 @@ bool createprojectfolders (PFN output, vector <GDB> inGDB) {
 	const string bs = path_separator;
 	int returncode = 0;
 
-	returncode = system (("mkdir " + output.projectfolder).c_str());
+	returncode = system (("mkdir " + output.projectfolder).c_str()); // TODO Duplication, ignored failures
 	returncode = system (("mkdir " + output.original).c_str());
 	returncode = system (("mkdir " + output.completed).c_str());
 	returncode = system (("mkdir " + output.average).c_str());
@@ -257,47 +257,73 @@ bool createprojectfolders (PFN output, vector <GDB> inGDB) {
 	return true;
 }
 
-void copyoriginalfile (PFN output) {
+namespace {
 
-	output.original = output.original + path_separator + output.projectname;
+struct copy_status { enum code { OK, OPENING_INPUT_FAILED, FAILED }; };
 
-	if (copy_file(output.projectname + ".rgf", output.original + ".rgf")) cout << "  - Original input RGF file copied successfully to the project folder." << endl;
-	else {
-
-		cout << "  - Original input RGF file is not copied to the project folder / do not exists." << endl;
-
-		if (is_GUI()) throw rgf_error();
-	}
-
-	if (copy_file(output.projectname + ".set", output.original + ".set")) cout << "  - Original SET file copied successfully to the project folder." << endl;
-	else {
-
-		cout << "  - Original SET file is not copied to the project folder / do not exists." << endl;
-
-		if (is_GUI()) throw set_error();
-	}
-
-	if (copy_file(output.projectname + ".xy", output.original + ".xy")) cout << "  - Original XY file copied successfully to the project folder." << endl;
-	else {
-
-		cout << "  - Original XY file is not copied to the project folder / do not exists." << endl;
-
-		//if (is_GUI()) throw xy_error();
-	}
-}
-
-bool copy_file(const string& source, const string& destination) {
+copy_status::code copy_file(const string& source, const string& destination) {
 
 	ifstream in(source.c_str(), ios::binary);
+
+	if (!in.is_open()) {
+
+		return copy_status::OPENING_INPUT_FAILED;
+	}
 
 	ofstream out(destination.c_str(), ios::binary);
 
 	out << in.rdbuf();
 
-	return !in.fail() && !out.fail();
+	return (in.fail() || out.fail()) ? copy_status::FAILED : copy_status::OK;
 };
 
-void outputrgfheader (ofstream& o, INPSET inset) {
+void dispatch_on_error_code(copy_status::code status, const string& src_name, bool should_exist);
+
+void back_up_file(string extension, const string& project_name, const string& new_path, bool should_exist = false) {
+
+	string src  = project_name+extension;
+
+	dispatch_on_error_code(copy_file(src, new_path+src), src, should_exist);
+}
+
+void dispatch_on_error_code(copy_status::code status, const string& src_name, bool should_exist) {
+
+	const string EXTENSION = to_uppercase(src_name.substr(src_name.size()-3));
+
+	if      (status == copy_status::OK) {
+
+		cout << "  - Original input "+EXTENSION+" file has been successfully copied to the project folder." << endl;
+	}
+	else if (status == copy_status::OPENING_INPUT_FAILED && should_exist) {
+
+		throw runtime_error("opening "+src_name+" failed");
+	}
+	else if (status == copy_status::FAILED) {
+
+		cout << "  - Critical error: failed to copy input "+EXTENSION+" file to the project folder." << endl;
+
+		throw runtime_error("copying "+src_name+" failed");
+	}
+}
+
+}
+
+void copyoriginalfiles (PFN output) {
+
+	const string project_name = output.projectname;
+
+	const string new_path = output.original + path_separator;
+
+	const bool SHOULD_EXIST = true;
+
+	back_up_file(".rgf", project_name, new_path, SHOULD_EXIST);
+
+	back_up_file(".set", project_name, new_path); // TODO In batch and debug mode, failures were ignored
+	                                              // TODO In batch mode, it should dump a set file?
+	back_up_file(".xy", project_name, new_path);
+}
+
+void outputrgfheader (ofstream& o, INPSET inset) { // FIXME Duplication? Same as reserved_column_names?
 
 	o
 	<< "DATA_ID" << '\t'
@@ -317,7 +343,7 @@ void outputrgfheader (ofstream& o, INPSET inset) {
 	<< "COMMENT" << endl;
 }
 
-void outputaverageheader (ofstream& o) {
+void outputaverageheader (ofstream& o) { // FIXME What is the extension? .rgf? How about .csv?
 
 	o
 	<< "DATA_ID" << '\t'
@@ -417,7 +443,7 @@ void outputresultrgf (PFN output, vector <GDB> outGDB, bool tilted, INPSET inset
 
 	size_t i = 0;
 
-	outputfilename = output.completed + bs + output.projectname + "_completed";
+	outputfilename = output.completed + bs + capslock(output.projectname) + "_completed";
 	if (tilted) outputfilename = outputfilename + "_tilted";
 	outputfilename = outputfilename + ".rgf";
 
@@ -444,7 +470,7 @@ void outputaveragergf (PFN output, vector <GDB> outGDB) {
 
 	ofstream outputfile;
 	string bs = path_separator;
-	string outputfilename = output.average + bs + output.projectname + "_average.rgf";
+	string outputfilename = output.average + bs + capslock(output.projectname) + "_average.rgf";
 
 	size_t i = 0;
 	size_t independentrecordcounter = 0;

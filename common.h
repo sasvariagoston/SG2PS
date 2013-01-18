@@ -20,6 +20,8 @@ void header();
 
 string capslock (string input);
 
+string to_uppercase(string s);
+
 const string int_to_string(int i);
 const string char_to_string (char i);
 double string_to_double( const string& s, bool& failed);

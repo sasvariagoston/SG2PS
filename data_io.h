@@ -22,8 +22,7 @@ using namespace std;
 PFN createprojectfoldernames (string projectname);
 bool createprojectfolders (PFN output, vector <GDB> inGDB);
 
-void copyoriginalfile (PFN output);
-bool copy_file(const string& source, const string& destination);
+void copyoriginalfiles (PFN output);
 
 void outputrgfheader (ofstream& o, INPSET inset);
 void outputaverageheader (ofstream& o);

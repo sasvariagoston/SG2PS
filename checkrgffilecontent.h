@@ -45,8 +45,6 @@ bool PALEONcheck ();
 
 vector <string> check_rgf_inputs (vector <string> inputfilename_vector);
 
-vector <string> create_inputfilename_vector (int argc, char *argv[]);
-
 bool rgffile_correct (string projectname);
 
 bool is_STRIAE (const string DATATYPE);
