@@ -89,10 +89,10 @@ void PS_header (string DATATYPE, string LOC, ofstream& o, PAPER P) {
 
 	o << "%!PS-Adobe-3.0 EPSF-3.0" << endl;
 	o << "%%BoundingBox:  0 0 1191 842" << endl;
-	o << "<</PageSize [ 1190.55 841.888 ]>> setpagedevice " << endl;
-	o << "%% Title: " << filename << endl;
-	o << "%% Creator: SG2PS" << endl;
+	o << "%%Title: " << filename << endl;
+	o << "%%Creator: SG2PS" << endl;
 	o << "%%EndComments" << endl << endl;
+	o << "<</PageSize [ 1191 842 ]>> setpagedevice " << endl;
 
 	if ((DATATYPE == "STRIAE") || (DATATYPE == "FRACTURE" ) || (DATATYPE == "SC")) {
 
