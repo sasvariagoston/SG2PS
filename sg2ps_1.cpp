@@ -131,6 +131,6 @@ void print_banner () {
 	cout << "|                                                                  |" << endl;
 	cout << " ------------------------------------------------------------------ " << endl << endl;
 
-	// TODO Why the version number?
+	// FIXME Why the version number?
 }
 

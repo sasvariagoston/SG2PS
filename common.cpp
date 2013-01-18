@@ -1897,7 +1897,7 @@ string return_build_date () {
 
 	vector <char> build_date (11, ' ');
 
-	string DATE  = __DATE__;//TODO finish
+	string DATE  = __DATE__;//TODO What is happening here?
 
 	if (DATE.at(4) == ' ') 		build_date .at(0) = '0';
 	else 						build_date .at(0) = DATE.at(4);

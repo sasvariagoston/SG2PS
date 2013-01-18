@@ -9,6 +9,7 @@
 #include <stdexcept>
 
 #include "data_io.h"
+#include "array_to_vector.hpp"
 #include "platform_dep.hpp"
 #include "ps.h"
 #include "rgf.h"
@@ -56,201 +57,76 @@ PFN createprojectfoldernames (string projectname) {
 	return output;
 }
 
-bool createprojectfolders (PFN output, vector <GDB> inGDB) {
+const string possible_folder_names[] = {
+		"BOUDAIN",
+		"CONTACT",
+		"FOLDAXIS",
+		"FOLDPLANE",
+		"KINK",
+		"LINEATION",
+		"LITHOCLASE",
+		"SC",
+		"BEDDING",
+		"S1",
+		"S2",
+		"S3",
+		"S4",
+		"S5",
+		"FRACTURE",
+		"STRIAE",
+		"CROSSBEDDING",
+		"VEIN",
+		"FOLDSURFACE",
+		"USERPLANE1",
+		"USERPLANE2",
+		"USERPLANE3",
+		"USERPLANE4",
+		"USERPLANE5",
+		"USERLINEATION1",
+		"USERLINEATION2",
+		"USERLINEATION3",
+		"USERLINEATION4",
+		"USERLINEATION5"
+};
 
-	const string bs = path_separator;
-	int returncode = 0;
+const vector<string> possible_folders = from_array(possible_folder_names);
 
-	returncode = system (("mkdir " + output.projectfolder).c_str()); // TODO Duplication, ignored failures
-	returncode = system (("mkdir " + output.original).c_str());
-	returncode = system (("mkdir " + output.completed).c_str());
-	returncode = system (("mkdir " + output.average).c_str());
-	returncode = system (("mkdir " + output.rgfsep).c_str());
-	returncode = system (("mkdir " + output.pssep).c_str());
+void make_dir(const string& dir_name) {
 
+	string command = "mkdir "+dir_name;
 
-	if (existence ("BOUDAIN", inGDB)) {
+	int ret = system(command.c_str());
 
-		returncode = system (("mkdir " + output.rgfsep + bs + "BOUDAIN").c_str());
-		returncode = system (("mkdir " + output.pssep + bs + "BOUDAIN").c_str());
+	if (ret) {
+
+		throw runtime_error("failed to execute command \""+command+"\"");
 	}
+}
 
-	if (existence ("CONTACT", inGDB)) {
+void create_folders(const PFN& output, const string& dir) {
 
-		returncode = system (("mkdir " + output.rgfsep + bs + "CONTACT").c_str());
-		returncode = system (("mkdir " + output.pssep + bs + "CONTACT").c_str());
+	make_dir(output.rgfsep + path_separator + dir);
+	make_dir(output.pssep  + path_separator + dir);
+}
+
+void createprojectfolders (PFN output, vector <GDB> inGDB) {
+
+	make_dir( output.projectfolder );
+	make_dir( output.original      );
+	make_dir( output.completed     );
+	make_dir( output.average       );
+	make_dir( output.rgfsep        );
+	make_dir( output.pssep         );
+
+	for (size_t i=0; i<possible_folders.size(); ++i) {
+
+		const string& dir = possible_folders.at(i);
+
+		if (existence(dir, inGDB)) {
+
+			create_folders(output, dir);
+		}
 	}
-
-	if (existence ("FOLDAXIS", inGDB)) {
-
-		returncode = system (("mkdir " + output.rgfsep + bs + "FOLDAXIS").c_str());
-		returncode = system (("mkdir " + output.pssep + bs + "FOLDAXIS").c_str());
-	}
-
-	if (existence ("FOLDPLANE", inGDB)) {
-
-		returncode = system (("mkdir " + output.rgfsep + bs + "FOLDPLANE").c_str());
-		returncode = system (("mkdir " + output.pssep + bs + "FOLDPLANE").c_str());
-	}
-
-	if (existence ("KINK", inGDB)) {
-
-		returncode = system (("mkdir " + output.rgfsep + bs + "KINK").c_str());
-		returncode = system (("mkdir " + output.pssep + bs + "KINK").c_str());
-	}
-
-	if (existence ("LINEATION", inGDB)) {
-
-		returncode = system (("mkdir " + output.rgfsep + bs + "LINEATION").c_str());
-		returncode = system (("mkdir " + output.pssep + bs + "LINEATION").c_str());
-	}
-
-	if (existence ("LITHOCLASE", inGDB)) {
-
-		returncode = system (("mkdir " + output.rgfsep + bs + "LITHOCLASE").c_str());
-		returncode = system (("mkdir " + output.pssep + bs + "LITHOCLASE").c_str());
-	}
-
-	if (existence ("SC", inGDB)) {
-
-		returncode = system (("mkdir " + output.rgfsep + bs + "SC").c_str());
-		returncode = system (("mkdir " + output.pssep + bs + "SC").c_str());
-	}
-
-	if (existence ("BEDDING", inGDB)) {
-
-		returncode = system (("mkdir " + output.rgfsep + bs + "BEDDING").c_str());
-		returncode = system (("mkdir " + output.pssep + bs + "BEDDING").c_str());
-	}
-
-	if (existence ("S1", inGDB)) {
-
-		returncode = system (("mkdir " + output.rgfsep + bs + "S1").c_str());
-		returncode = system (("mkdir " + output.pssep + bs + "S1").c_str());
-	}
-
-	if (existence ("S2", inGDB)) {
-
-		returncode = system (("mkdir " + output.rgfsep + bs + "S2").c_str());
-		returncode = system (("mkdir " + output.pssep + bs + "S2").c_str());
-	}
-
-	if (existence ("S3", inGDB)) {
-
-		returncode = system (("mkdir " + output.rgfsep + bs + "S3").c_str());
-		returncode = system (("mkdir " + output.pssep + bs + "S3").c_str());
-	}
-
-	if (existence ("S4", inGDB)) {
-
-		returncode = system (("mkdir " + output.rgfsep + bs + "S4").c_str());
-		returncode = system (("mkdir " + output.pssep + bs + "S4").c_str());
-	}
-
-	if (existence ("S5", inGDB)) {
-
-		returncode = system (("mkdir " + output.rgfsep + bs + "S5").c_str());
-		returncode = system (("mkdir " + output.pssep + bs + "S5").c_str());
-	}
-
-	if (existence ("FRACTURE", inGDB)) {
-
-		returncode = system (("mkdir " + output.rgfsep + bs + "FRACTURE").c_str());
-		returncode = system (("mkdir " + output.pssep + bs + "FRACTURE").c_str());
-	}
-
-	if (existence ("STRIAE", inGDB)) {
-
-		returncode = system (("mkdir " + output.rgfsep + bs + "STRIAE").c_str());
-		returncode = system (("mkdir " + output.pssep + bs + "STRIAE").c_str());
-	}
-
-	if (existence ("CROSSBEDDING", inGDB)) {
-
-		returncode = system (("mkdir " + output.rgfsep + bs + "CROSSBEDDING").c_str());
-		returncode = system (("mkdir " + output.pssep + bs + "CROSSBEDDING").c_str());
-	}
-
-	if (existence ("VEIN", inGDB)) {
-
-		returncode = system (("mkdir " + output.rgfsep + bs + "VEIN").c_str());
-		returncode = system (("mkdir " + output.pssep + bs + "VEIN").c_str());
-	}
-
-	if (existence ("FOLDSURFACE", inGDB)) {
-
-		returncode = system (("mkdir " + output.rgfsep + bs + "FOLDSURFACE").c_str());
-		returncode = system (("mkdir " + output.pssep + bs + "FOLDSURFACE").c_str());
-	}
-
-	if (existence ("USERPLANE1", inGDB)) {
-
-		returncode = system (("mkdir " + output.rgfsep + bs + "USERPLANE1").c_str());
-		returncode = system (("mkdir " + output.pssep + bs + "USERPLANE1").c_str());
-	}
-
-	if (existence ("USERPLANE2", inGDB)) {
-
-		returncode = system (("mkdir " + output.rgfsep + bs + "USERPLANE2").c_str());
-		returncode = system (("mkdir " + output.pssep + bs + "USERPLANE2").c_str());
-	}
-
-	if (existence ("USERPLANE3", inGDB)) {
-
-		returncode = system (("mkdir " + output.rgfsep + bs + "USERPLANE3").c_str());
-		returncode = system (("mkdir " + output.pssep + bs + "USERPLANE3").c_str());
-	}
-
-	if (existence ("USERPLANE4", inGDB)) {
-
-		returncode = system (("mkdir " + output.rgfsep + bs + "USERPLANE4").c_str());
-		returncode = system (("mkdir " + output.pssep + bs + "USERPLANE4").c_str());
-	}
-
-	if (existence ("USERPLANE5", inGDB)) {
-
-		returncode = system (("mkdir " + output.rgfsep + bs + "USERPLANE5").c_str());
-		returncode = system (("mkdir " + output.pssep + bs + "USERPLANE5").c_str());
-	}
-
-	if (existence ("USERLINEATION1", inGDB)) {
-
-		returncode = system (("mkdir " + output.rgfsep + bs + "USERLINEATION1").c_str());
-		returncode = system (("mkdir " + output.pssep + bs + "USERLINEATION1").c_str());
-	}
-
-	if (existence ("USERLINEATION2", inGDB)) {
-
-		returncode = system (("mkdir " + output.rgfsep + bs + "USERLINEATION2").c_str());
-		returncode = system (("mkdir " + output.pssep + bs + "USERLINEATION2").c_str());
-	}
-
-	if (existence ("USERLINEATION3", inGDB)) {
-
-		returncode = system (("mkdir " + output.rgfsep + bs + "USERLINEATION3").c_str());
-		returncode = system (("mkdir " + output.pssep + bs + "USERLINEATION3").c_str());
-	}
-
-	if (existence ("USERLINEATION4", inGDB)) {
-
-		returncode = system (("mkdir " + output.rgfsep + bs + "USERLINEATION4").c_str());
-		returncode = system (("mkdir " + output.pssep + bs + "USERLINEATION4").c_str());
-	}
-
-	if (existence ("USERLINEATION5", inGDB)) {
-
-		returncode = system (("mkdir " + output.rgfsep + bs + "USERLINEATION5").c_str());
-		returncode = system (("mkdir " + output.pssep + bs + "USERLINEATION5").c_str());
-	}
-
-	if (returncode != 0) {
-
-		cout << "Cannot create project folder." << endl;
-
-		return false;
-	}
-
-	return true;
 }
 
 namespace {
@@ -315,7 +191,7 @@ void copyoriginalfiles (PFN output) {
 	back_up_file(".rgf", project_name, new_path, SHOULD_EXIST);
 
 	back_up_file(".set", project_name, new_path); // TODO In batch and debug mode, failures were ignored
-	                                              // TODO In batch mode, it should dump a set file?
+	                                              // TODO In batch mode, shouldn't it dump a set file?
 	back_up_file(".xy", project_name, new_path);
 }
 
@@ -353,7 +229,7 @@ void outputrgfheader (ofstream& o, INPSET inset) { // FIXME Duplication? Same as
 	<< "COMMENT" << endl;
 }
 
-void outputaverageheader (ofstream& o) { // FIXME What is the extension? .rgf? How about .csv?
+void outputaverageheader (ofstream& o) { // TODO What is the extension? .rgf? How about .csv?
 
 	o
 	<< "DATA_ID" << '\t'

@@ -10,17 +10,12 @@
 #include <map>
 
 #include "checkrgffilecontent.h"
+#include "array_to_vector.hpp"
 #include "assertions.hpp"
 #include "exceptions.hpp"
 #include "read_csv.hpp"
 #include "ReservedColumnNames.hpp"
 #include "run_mode.h"
-
-template <typename T, size_t n>
-vector<T> from_array(const T (&array)[n]) {
-
-	return vector<T>(array, array+n);
-}
 
 template <typename T>
 bool contains(const vector<T>& vec, const T& elem) {
