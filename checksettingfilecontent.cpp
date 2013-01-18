@@ -10,31 +10,6 @@
 
 using namespace std;
 
-void header () {
-
-	cout << endl << endl;
-
-	cout << " ------------------------------------------------------------------ " << endl;
-	cout << "|                                                                  |" << endl;
-	cout << "|                             SG2PS                                |" << endl;
-	cout << "|       Structural Geological data to PostScript converter         |" << endl;
-	cout << "|                                                                  |" << endl;
-	cout << "|        Data processing software coded by Agoston Sasvari         |" << endl;
-	cout << "|                                                                  |" << endl;
-	cout << "|            For further information check www.sg2ps.eu            |" << endl;
-	cout << "|                                                                  |" << endl;
-	cout << "|                       All rights reserved.                       |" << endl;
-	cout << "|           This a free software under GNU LGPL licence.           |" << endl;
-	cout << "|                                                                  |" << endl;
-	cout << " ------------------------------------------------------------------ " << endl;
-	cout << "|                                                                  |" << endl;
-	cout << "|                 Built on: " << return_build_date() << ", " << return_build_time() << "                  | "<< endl;
-	cout << "|                                                                  |" << endl;
-	cout << "|                       version: 0.2.0 beta                        |" << endl;
-	cout << "|                                                                  |" << endl;
-	cout << " ------------------------------------------------------------------ " << endl << endl;
-}
-
 bool settingfilecorrect (string settingfilename) {
 
 

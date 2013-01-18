@@ -48,6 +48,8 @@ bool is_DEBUG() {
   return (run_mode == "DEBUG");
 }
 
+void print_banner();
+
 void real_main(int argument_number, char *argv[]) {
 
 	string inputrgfname, xy_filename, inputrgfname_only, temp;
@@ -70,7 +72,7 @@ void real_main(int argument_number, char *argv[]) {
 		else run_mode = "BATCH";
 	}
 
-	if (!is_DEBUG()) header ();
+	if (!is_DEBUG()) print_banner();
 
 	cout << "RUNNING SG2PS IN " << run_mode << " MODE." << endl;
 
@@ -113,3 +115,32 @@ void real_main(int argument_number, char *argv[]) {
 
 	if (!is_DEBUG()) output_elapsed_time (elapsed_time);
 }
+
+
+void print_banner () {
+
+	cout << endl << endl;
+
+	cout << " ------------------------------------------------------------------ " << endl;
+	cout << "|                                                                  |" << endl;
+	cout << "|                             SG2PS                                |" << endl;
+	cout << "|       Structural Geological data to PostScript converter         |" << endl;
+	cout << "|                                                                  |" << endl;
+	cout << "|        Data processing software coded by Agoston Sasvari         |" << endl;
+	cout << "|                                                                  |" << endl;
+	cout << "|            For further information check www.sg2ps.eu            |" << endl;
+	cout << "|                                                                  |" << endl;
+	cout << "|                       All rights reserved.                       |" << endl;
+	cout << "|              This a free software, licence: GNU LGPL.            |" << endl;
+	cout << "|                                                                  |" << endl;
+	cout << " ------------------------------------------------------------------ " << endl;
+	cout << "|                                                                  |" << endl;
+	cout << "|                 Built on: " << return_build_date() << ", " << return_build_time() << "                  | "<< endl;
+	cout << "|                                                                  |" << endl;
+	cout << "|                       version: 0.2.0 beta                        |" << endl;
+	cout << "|                                                                  |" << endl;
+	cout << " ------------------------------------------------------------------ " << endl << endl;
+
+	// TODO Why the version number?
+}
+

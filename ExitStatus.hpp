@@ -11,8 +11,10 @@ struct ExitStatus {
         RGF_ERROR,
         SET_ERROR,
         XY_ERROR,
-        RUNTIME_ERROR,
         BUG,
+        LOGIC_ERROR,
+        RUNTIME_ERROR,
+        STD_EXCEPTION,
         UNKNOWN_ERROR
     };
 };

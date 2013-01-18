@@ -5,11 +5,10 @@
 #include <stdexcept>
 #include "exceptions.hpp"
 #include "ExitStatus.hpp"
-#include "platform_dep.hpp"
 
 using namespace std;
 
-void real_main(int argument_number, char *argv[]);
+void real_main(int argc, char *argv[]);
 
 int main (int argc, char *argv[]) {
 
@@ -19,23 +18,46 @@ int main (int argc, char *argv[]) {
 	}
 
 	catch(exit_requested& ) {
-		// User requested exit
-		// Normal behavior, nothing to do
+
+		return ExitStatus::OK;
 	}
 
 	catch(rgf_error& ) {
-		cout << "RGF error: " << endl;
+
 		return ExitStatus::RGF_ERROR;
 	}
 
-	catch(out_of_range& ) {
-		cout << "This is a bug, please report it!" << endl;
+	catch(set_error& ) {
+
+		return ExitStatus::SET_ERROR;
+	}
+
+	catch(xy_error& ) {
+
+		return ExitStatus::XY_ERROR;
+	}
+
+	catch(out_of_range& e) {
+		cout << "This is a bug, please report it together with the input files you used!\n";
+		cout << e.what() << endl;
 		return ExitStatus::BUG;
+	}
+
+	catch(logic_error& e) {
+		cout << "A bug has been detected, please report it!\n";
+		cout << e.what() << endl;
+		return ExitStatus::LOGIC_ERROR;
 	}
 
 	catch(runtime_error& e) {
 		cout << "Runtime error: " << e.what() << endl;
 		return ExitStatus::RUNTIME_ERROR;
+	}
+
+	catch(exception& e) {
+		cout << "Something went wrong, please report it!\n";
+		cout << "std::exception: " << e.what() << endl;
+		return ExitStatus::STD_EXCEPTION;
 	}
 
 	catch(...) {

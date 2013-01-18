@@ -17,7 +17,6 @@
 
 using namespace std;
 
-void header ();
 bool settingfilecorrect (string settingfilename);
 INPSET loadsettingsfromsettingfile (string settingfilename);
 void printsettingsonscreen (INPSET settings);
