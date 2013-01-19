@@ -79,9 +79,14 @@ void read_in_xy(const string& file_name) {
 
 	for (size_t i = 0; i < orig_table.size(); i++) {
 
-		vector<string> row(SIZE);
+		vector<string> row = orig_table.at(i);
 
-		row = orig_table.at(i); // FIXME Bug
+		row.resize(SIZE);
+
+		for (size_t j=0; j<SIZE; ++j) {
+
+			row.at(i) = to_uppercase(row.at(i));
+		}
 
 		xy_to_check.push_back(row);
 	}
@@ -196,20 +201,6 @@ bool xyfile_correct (string projectname) {
 	}
 
 	return true;
-}
-
-// FIXME Dead function. Who does the upper case conversion?
-void uppercase_xy_to_check () {
-
-	for (size_t i = 1; i < xy_to_check.size(); i++) {
-
-		for (size_t j = 0; j < SIZE; j++) {
-
-			cout << i << j << endl;
-
-			if (xy_to_check.at(i).at(j) != "")  xy_to_check.at(i).at(j) = capslock (xy_to_check.at(i).at(j));
-		}
-	}
 }
 
 string check_xy_inputs (string inputfilename) {
