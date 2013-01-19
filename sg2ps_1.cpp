@@ -127,8 +127,6 @@ void print_banner () {
 	cout << "|                                                                  |" << endl;
 	cout << "|                 Built on: " << return_build_date() << ", " << return_build_time() << "                  | "<< endl;
 	cout << "|                                                                  |" << endl;
-	cout << "|                       version: 0.2.0 beta                        |" << endl;
-	cout << "|                                                                  |" << endl;
 	cout << " ------------------------------------------------------------------ " << endl << endl;
 
 	// FIXME Why the version number?

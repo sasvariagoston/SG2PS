@@ -701,7 +701,7 @@ void PS_net (string DATATYPE, string LOC, ofstream& o, INPSET inset, PAPER P) {
 	  << "  (" << nethemisphere << ") show" << endl;
 
 	o << 20.0 * P.A << " " << P.A + 5.0 << " moveto"
-	  << "  (Plotted by SG2PS software, version 0.2.0 - for reference see www.sg2ps.eu webpage.) show" << endl << endl;
+	  << "  (Plotted by SG2PS - for reference see www.sg2ps.eu webpage.) show" << endl << endl;
 }
 
 void PS_stressdata (ofstream& o, CENTER center, PAPER P, STRESSFIELD sf, string method) {
