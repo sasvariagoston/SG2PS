@@ -776,7 +776,6 @@ void PS_stressdata (ofstream& o, CENTER center, PAPER P, STRESSFIELD sf, string 
 	o
 	<< "  " << fixed << setprecision (3) << - center.X - (center.radius / 2.0) + P.A
 	<< " "  << fixed << setprecision (3) << - center.Y + center.radius + 20.0 << " translate" << endl;
-
 }
 
 void PS_stressarrows (ofstream& o, CENTER center, PAPER P, STRESSFIELD sf) {
