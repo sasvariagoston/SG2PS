@@ -142,7 +142,11 @@ double german_to_right_hand_rule (double corrDIPDIR);
 
 void output_elapsed_time (double elapsed_time);
 
-string return_build_date ();
-string return_build_time ();
+string build_date ();
+string build_time ();
+
+string version();
+
+string version_id();
 
 #endif

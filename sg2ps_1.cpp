@@ -42,6 +42,8 @@ bool is_DEBUG() {
 
 void print_banner();
 
+bool just_version_required(const string& arg);
+
 void real_main(int argument_number, char *argv[]) {
 
 	// Decides on run mode
@@ -49,9 +51,14 @@ void real_main(int argument_number, char *argv[]) {
 
 	if (inputfilename_vector.size() >= 1) {
 
-		if (inputfilename_vector.at(0) == "-gui_calls") run_mode = "GUI";
+		const string& arg = inputfilename_vector.at(0);
 
-		else if (inputfilename_vector.at(0) == "-debug") run_mode = "DEBUG";
+		if (just_version_required(arg))
+			return;
+
+		if (arg == "-gui_calls") run_mode = "GUI";
+
+		else if (arg == "-debug") run_mode = "DEBUG";
 
 		else run_mode = "BATCH";
 	}
@@ -125,9 +132,26 @@ void print_banner () {
 	cout << "|                                                                  |" << endl;
 	cout << " ------------------------------------------------------------------ " << endl;
 	cout << "|                                                                  |" << endl;
-	cout << "|                 Built on: " << return_build_date() << ", " << return_build_time() << "                  | "<< endl;
+	cout << "|                 Built on: " << version() <<   "                  | "<< endl;
 	cout << "|                                                                  |" << endl;
 	cout << " ------------------------------------------------------------------ " << endl << endl;
 
 }
 
+bool just_version_required(const string& arg) {
+
+	if (arg=="-v" || arg=="-version" || arg=="--version") {
+
+		cout << version() << endl;
+	}
+	else if (arg=="--version-id") {
+
+		cout << version_id() << endl;
+	}
+	else {
+
+		return false;
+	}
+
+	return true;
+}

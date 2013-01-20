@@ -4,6 +4,7 @@
 
 #include <algorithm>
 #include <cmath>
+#include <ctime>
 #include <iomanip>
 #include <iostream>
 #include <sstream>
@@ -1902,36 +1903,52 @@ void output_elapsed_time (double elapsed_time) {
 	}
 }
 
-string return_build_date () {
+string build_date () {
 
-	vector <char> build_date (11, ' ');
+	vector <char> date (11, ' ');
 
-	string DATE  = __DATE__;//TODO What is happening here?
+	string DATE  = __DATE__; //TODO What is happening here?
 
-	if (DATE.at(4) == ' ') 		build_date .at(0) = '0';
-	else 						build_date .at(0) = DATE.at(4);
+	if (DATE.at(4) == ' ') 		date.at(0) = '0';
+	else 						date.at(0) = DATE.at(4);
 
-	build_date.at(1) = 	DATE.at(5);
-	build_date.at(2) = 	' ';
-	build_date.at(3) = 	DATE.at(0);
-	build_date.at(4) = 	DATE.at(1);
-	build_date.at(5) = 	DATE.at(2);
-	build_date.at(6) = 	' ';
-	build_date.at(7) = 	DATE.at(7);
-	build_date.at(8) = 	DATE.at(8);
-	build_date.at(9) = 	DATE.at(9);
-	build_date.at(10) = DATE.at(10);
+	date.at(1) = 	DATE.at(5);
+	date.at(2) = 	' ';
+	date.at(3) = 	DATE.at(0);
+	date.at(4) = 	DATE.at(1);
+	date.at(5) = 	DATE.at(2);
+	date.at(6) = 	' ';
+	date.at(7) = 	DATE.at(7);
+	date.at(8) = 	DATE.at(8);
+	date.at(9) = 	DATE.at(9);
+	date.at(10) = DATE.at(10);
 
 
 	for (size_t i = 0; i < 11; i++) {
 
-		DATE.at(i) = build_date.at(i);
+		DATE.at(i) = date.at(i);
 	}
 
 	return DATE;
 }
 
-string return_build_time () {
+string build_time () {
 
 	return __TIME__;
+}
+
+string version() {
+
+	return build_date()+", "+build_time();
+}
+
+string version_id() {
+
+	struct tm t = { 0 };
+
+	strptime(__DATE__ " " __TIME__, "%b %e %Y %H:%M:%S", &t);
+
+	char buff[16];
+
+	return strftime(buff, sizeof(buff), "%Y%m%d%H%M%S", &t) ? buff : "(unknown)";
 }
