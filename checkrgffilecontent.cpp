@@ -767,7 +767,7 @@ vector <GDB> create_GDB_from_rgf () {
 
 	for (i = 0; i < rgf_to_check.size(); i++) {
 
-		bool failed;
+		bool failed; // TODO Eliminate
 
 		GDB buffer;
 
@@ -1026,10 +1026,12 @@ void convert_row(const vector<string>& orig_row, size_t index) {
 
 		size_t index = cell_index(i);
 
-		if (index!=NOT_FOUND) {
-
-			row.at(index) = to_uppercase( orig_row.at(i) ); // TODO Convert to uppercase?
-			//row.at(index) = orig_row.at(i);
+		if (index==NOT_FOUND) {
+			// That is OK, ignored column
+		}
+		else {
+			row.at(index) = to_uppercase( orig_row.at(i) );
+			//row.at(index) = orig_row.at(i); // useful for testing
 		}
 	}
 
