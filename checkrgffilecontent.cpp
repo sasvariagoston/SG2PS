@@ -768,6 +768,8 @@ vector <GDB> create_GDB_from_rgf (const string& file_name) {
 
 	read_in_rgf(file_name); // TODO Can throw rgf_error in console, batch and debug mode
 
+	complete_rgf_to_check ();
+
 	for (i = 0; i < rgf_to_check.size(); i++) {
 
 		bool failed; // TODO Eliminate
@@ -796,6 +798,9 @@ vector <GDB> create_GDB_from_rgf (const string& file_name) {
 		buffer.GC = 		rgf_to_check.at(i).at(GROUP);
 		buffer.COLOR = 		rgf_to_check.at(i).at(COLOR);
 		buffer.LOC = 		rgf_to_check.at(i).at(LOCATION);
+
+		cout << rgf_to_check.at(i).at(DATA_ID) << " " << rgf_to_check.at(i).at(GROUP) << " " << rgf_to_check.at(i).at(LOCATION) << endl;
+
 		buffer.LOCX = 		string_to_double(rgf_to_check.at(i).at(LOCX), failed);
 		buffer.LOCY = 		string_to_double(rgf_to_check.at(i).at(LOCY), failed);
 		buffer.FORMATION = 	rgf_to_check.at(i).at(FORMATION);
