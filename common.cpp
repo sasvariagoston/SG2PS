@@ -49,6 +49,15 @@ string to_uppercase(string s) {
 	return s;
 }
 
+vector<string> vec_to_uppercase(const vector<string>& v) {
+
+	vector<string> res;
+
+	transform(v.begin(), v.end(), back_inserter(res), to_uppercase);
+
+	return res;
+}
+
 const string int_to_string (int i) {
 
 	ostringstream os;

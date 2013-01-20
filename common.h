@@ -14,6 +14,7 @@ void header();
 string capslock (string input);
 
 string to_uppercase(string s);
+vector<string> vec_to_uppercase(const vector<string>& v);
 
 const string int_to_string(int i);
 const string char_to_string (char i);

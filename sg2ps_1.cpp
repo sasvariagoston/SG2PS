@@ -129,6 +129,5 @@ void print_banner () {
 	cout << "|                                                                  |" << endl;
 	cout << " ------------------------------------------------------------------ " << endl << endl;
 
-	// FIXME Why the version number?
 }
 

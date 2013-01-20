@@ -2,8 +2,10 @@
 // All rights reserved.
 // This code is published under the GNU Lesser General Public License.
 
-#include <map>
+#include <algorithm>
 #include <iostream>
+#include <iterator>
+#include <map>
 
 #include "checkxycontent.h"
 #include "checkrgffilecontent.h" // TODO XY related functions in checkrgffilecontent.h
@@ -73,20 +75,18 @@ string inputxyfilename () {
 void read_in_xy(const string& file_name) {
 
 	orig_table.clear();
+
 	xy_to_check.clear();
 
 	read_csv(file_name, orig_table);
 
-	for (size_t i = 0; i < orig_table.size(); i++) {
+	for (size_t i=0; i<orig_table.size(); ++i) {
 
 		vector<string> row = orig_table.at(i);
 
 		row.resize(SIZE);
 
-		for (size_t j=0; j<SIZE; ++j) {
-
-			row.at(i) = to_uppercase(row.at(i));
-		}
+		row = vec_to_uppercase(row);
 
 		xy_to_check.push_back(row);
 	}
@@ -152,9 +152,7 @@ bool LOCATIONcheck_duplicate () {
 
 	bool error = false;
 
-	size_t i = 0;
-
-	for (i = 1; i < xy_to_check.size(); i++) {
+	for (size_t i = 1; i < xy_to_check.size(); i++) {
 
 		string LOC = xy_to_check.at(i).at(LOCATION);
 
@@ -245,13 +243,13 @@ string check_xy_inputs (string inputfilename) {
 
 GDB insertxy (GDB inGDB) {
 
-	GDB outGDB = inGDB;
+	GDB outGDB = inGDB; // TODO Not needed
 
-	bool failed;
+	bool failed; // TODO Failures ignored?
 
 	for (size_t i = 0; i < xy_to_check.size(); i++) {
 
-	if (outGDB.LOC == xy_to_check.at(i).at(LOCATION)) {
+		if (outGDB.LOC == xy_to_check.at(i).at(LOCATION)) {
 
 			outGDB.LOC = 		xy_to_check.at(i).at(LOCATION);
 			outGDB.LOCX = 		string_to_double(xy_to_check.at(i).at(LOC_X), failed);
