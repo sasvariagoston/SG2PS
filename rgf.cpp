@@ -87,11 +87,6 @@ vector <GDB> black_colorcode (vector <GDB> inGDB) {
 	return outGDB;
 }
 
-
-
-
-
-
 vector <GDB> cGc_NDS (vector <GDB> inGDB) {
 
 	vector <GDB> outGDB = inGDB;
