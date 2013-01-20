@@ -1959,9 +1959,11 @@ string version() {
 	return build_date()+", "+build_time();
 }
 
+namespace {
+
 const string DATE = __DATE__;
 
-enum DATE_FORMAT { MON1, MON2,	MON3, SPACE1, DAY1, DAY2, SPACE2, YEAR1, YEAR2, YEAR3, YEAR4, SIZE };
+struct date { enum format { MON1, MON2,	MON3, SPACE1, DAY1, DAY2, SPACE2, YEAR1, YEAR2, YEAR3, YEAR4, SIZE }; };
 
 const string month_names[] = {
 		"Jan", "Feb", "Mar", "Apr", "May", "Jun",
@@ -1972,7 +1974,7 @@ const vector<string> months = from_array(month_names);
 
 int month_zero_based() {
 	// TODO Find index to utility class
-	string Mmm = DATE.substr(MON1, 3);
+	string Mmm = DATE.substr(date::MON1, 3);
 
 	size_t month = find(months.begin(), months.end(), Mmm) - months.begin();
 
@@ -1983,7 +1985,7 @@ int month_zero_based() {
 
 int day_of_month() {
 
-	string dd = DATE.substr(DAY1, 2);
+	string dd = DATE.substr(date::DAY1, 2);
 
 	int day = string_to_int(dd);
 
@@ -1996,7 +1998,7 @@ int day_of_month() {
 
 int year_since_1900() {
 
-	string yyyy = DATE.substr(YEAR1, 4);
+	string yyyy = DATE.substr(date::YEAR1, 4);
 
 	int year = string_to_int(yyyy);
 
@@ -2007,26 +2009,91 @@ int year_since_1900() {
 
 const string TIME = __TIME__;
 
-//enum TIME_FORMAT
-//
-//int hour() {
-//
-//}
-//
-//tm build_tm() {
-//
-//	tm t = { 0 };
-//}
+struct tformat { enum format { H1, H2, COLON1, M1, M2, COLON2, S1, S2, SIZE }; };
+
+int hour() {
+
+	string hh = TIME.substr(tformat::H1, 2);
+
+	int h = string_to_int(hh);
+
+	ASSERT_GE(h,  0);
+	ASSERT_LE(h, 23);
+
+	return h;
+}
+
+int minute() {
+
+	string mm = TIME.substr(tformat::M1, 2);
+
+	int min = string_to_int(mm);
+
+	ASSERT_GE(min,  0);
+	ASSERT_LE(min, 59);
+
+	return min;
+}
+
+int second() {
+
+	string s = TIME.substr(tformat::S1, 2);
+
+	int sec = string_to_int(s);
+
+	ASSERT_GE(sec,  0);
+	ASSERT_LE(sec, 60);
+
+	return sec;
+}
+
+tm build_tm() {
+
+	tm t = { 0 };
+
+	try {
+		t.tm_year = year_since_1900();
+		t.tm_mon  = month_zero_based();
+		t.tm_mday = day_of_month();
+		t.tm_hour = hour();
+		t.tm_min  = minute();
+		t.tm_sec  = second();
+	}
+	catch (logic_error& e) {
+		cout << "Date: " << DATE << ", time: " << TIME << endl;
+		throw;
+	}
+
+	return t;
+}
+
+#ifdef __linux__
+
+string version_id_linux() {
+
+	struct tm t = { 0 };
+
+	strptime(__DATE__ " " __TIME__, "%b %e %Y %H:%M:%S", &t);
+
+	char buff[16];
+
+	return strftime(buff, sizeof(buff), "%Y%m%d%H%M%S", &t) ? buff : "(unknown)";
+}
+
+#endif
+
+}
 
 string version_id() {
 
-//	struct tm t = { 0 };
-//
-//	strptime(__DATE__ " " __TIME__, "%b %e %Y %H:%M:%S", &t);
-//
-//	char buff[16];
-//
-//	return strftime(buff, sizeof(buff), "%Y%m%d%H%M%S", &t) ? buff : "(unknown)";
+	struct tm t = build_tm();
 
-	return "(unknown)";
+	char buff[16];
+
+	string id = strftime(buff, sizeof(buff), "%Y%m%d%H%M%S", &t) ? buff : "(unknown)";
+#ifdef __linux__
+	string id2 = ::version_id_linux();
+	ASSERT_EQ(id, id2);
+#endif
+	return id;
 }
