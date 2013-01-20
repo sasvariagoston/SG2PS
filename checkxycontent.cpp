@@ -94,13 +94,13 @@ void read_in_xy(const string& file_name) {
 
 bool input_xy (const string& projectname) {
 
-	read_in_xy(projectname+".xy");
+	read_in_xy(projectname + ".xy");
 
 	size_t n_records = xy_to_check.size();
 
 	if (n_records <= 1) {
 
-		cout << "  - Cannot process " << capslock(projectname + ".xy") << " file." << endl;
+		cout << "  - Cannot process " << capslock(projectname + ".xy") << " file or the file is empty." << endl;
 
 		return false; // TODO What should happen with empty / header only files? Is it an error?
 	}

@@ -92,7 +92,7 @@ void real_main(int argument_number, char *argv[]) {
 
 	string xy_filename;
 
-	for (size_t j=0; j<inputfilename_vector.size(); ++j) {
+	for (size_t j=0; j<inputfilename_vector.size() ; ++j) {
 
 		INPSET inset = manage_settings_batch (inputfilename_vector.at(j));
 

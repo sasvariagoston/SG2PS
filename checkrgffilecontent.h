@@ -66,7 +66,7 @@ bool is_allowed_bedding_normal_sense(const string& sense);
 bool is_allowed_bedding_none_sense(const string& sense);
 bool is_allowed_bedding_sense(const string& sense);
 
-vector <GDB> create_GDB_from_rgf ();
+vector <GDB> create_GDB_from_rgf (const string& file_name);
 
 bool is_allowed_geodetic (const string& geodetic) ;
 

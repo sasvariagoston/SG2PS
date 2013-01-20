@@ -450,6 +450,8 @@ bool PALEONcheck () {
 
 vector <string> check_rgf_inputs (vector <string> inputfilename_vector) {
 
+	vector <string> out_inputfilename_vector;
+
 	if (is_COMMANDLINE()) {
 
 		while (!(rgffile_correct (inputfilename_vector.at(0)))) {
@@ -476,31 +478,30 @@ vector <string> check_rgf_inputs (vector <string> inputfilename_vector) {
 
 	else {  //is_BATCH
 
-		for (size_t j = inputfilename_vector.size() - 1; j >= 0; j--) {
+		for (size_t j = 0; j < inputfilename_vector.size(); j++) {
 
 			if (rgffile_correct(inputfilename_vector.at(j))) {
 
 				cout << "    - Input " << capslock(inputfilename_vector.at(j)) << ".RGF file structure is correct." << endl;
 
-				if (j == 0) return inputfilename_vector;
+				out_inputfilename_vector.push_back(inputfilename_vector.at(j));
 			}
 
 			else {
 
-				cout << "    - Input " << capslock(inputfilename_vector.at(j)) << ".RGF file structure is incorrect, file will be not evaluated." << endl;
+				cout << "  - Input " << capslock(inputfilename_vector.at(j)) << ".RGF file structure is incorrect, file will be not evaluated." << endl;
 
-				inputfilename_vector.erase(inputfilename_vector.begin() + j);
-
-				if (inputfilename_vector.size() == 0) {
-
-					cout << "    - No input file to process, exiting." << endl;
-
-					throw exit_requested();
 				}
 			}
+
+		if (out_inputfilename_vector.size() == 0) {
+
+			cout << "    - No input file to process, exiting." << endl;
+
+			throw exit_requested();
 		}
 
-		return inputfilename_vector;
+		return out_inputfilename_vector;
 	}
 }
 
@@ -759,11 +760,13 @@ bool error_cout (vector <string> bad_records, string recordtype) {
 	}
 }
 
-vector <GDB> create_GDB_from_rgf () {
+vector <GDB> create_GDB_from_rgf (const string& file_name) {
 
 	vector <GDB> outGDB;
 
 	size_t i = 0;
+
+	read_in_rgf(file_name);
 
 	for (i = 0; i < rgf_to_check.size(); i++) {
 

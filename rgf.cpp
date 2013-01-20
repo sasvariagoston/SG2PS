@@ -17,7 +17,7 @@ using namespace std;
 
 vector <GDB> competeRGFcontect (string projectname, string inputxyfilename, INPSET inset) {
 
-	vector <GDB> outGDB = create_GDB_from_rgf ();
+	vector <GDB> outGDB = create_GDB_from_rgf (projectname + ".rgf");
 
 	for (size_t i = 0; i < outGDB.size(); i++) {
 
