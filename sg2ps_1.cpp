@@ -98,7 +98,7 @@ void real_main(int argument_number, char *argv[]) {
 
 		if (using_xy_files) xy_filename = check_xy_inputs (inputfilename_vector.at(j));
 
-		process_rgf (inputfilename_vector.at(j), xy_filename, inset);
+		process_rgf (inputfilename_vector.at(j), xy_filename, inset); // TODO Reads in the rgf file again, was first checked in check_rgf_inputs
 
 		cout << "EVALUATION OF " << capslock(inputfilename_vector.at(j)) << ".RGF FILE COMPLETED." << endl;
 	}

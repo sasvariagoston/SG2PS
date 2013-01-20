@@ -766,7 +766,7 @@ vector <GDB> create_GDB_from_rgf (const string& file_name) {
 
 	size_t i = 0;
 
-	read_in_rgf(file_name);
+	read_in_rgf(file_name); // TODO Can throw rgf_error in console, batch and debug mode
 
 	for (i = 0; i < rgf_to_check.size(); i++) {
 
@@ -1059,6 +1059,7 @@ void csv_to_rgf() {
 }
 
 // Entry point, clear all global mutable state first!
+// throws rgf_error if duplicate col names are found
 void read_in_rgf(const string& file_name) {
 
 	orig_table.clear();
