@@ -20,6 +20,8 @@ const string int_to_string(int i);
 const string char_to_string (char i);
 double string_to_double( const string& s, bool& failed);
 
+int string_to_int(const string& s); // throws logic_error
+
 double SIGNUM (double in);
 
 double SIN  (double in);

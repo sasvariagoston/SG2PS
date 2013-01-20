@@ -9,6 +9,8 @@
 #include <iostream>
 #include <sstream>
 
+#include "array_to_vector.hpp"
+#include "assertions.hpp"
 #include "common.h"
 #include "rgf.h"
 
@@ -77,6 +79,21 @@ const string char_to_string (char i) {
 double string_to_double( const string& s, bool& failed) {
 
 	return convert<double>(s, failed);
+}
+
+// throws logic_error
+int string_to_int(const string& s) {
+
+	bool failed = true;
+
+	int ret = convert<int>(s, failed);
+
+	if (failed) {
+		// it is logic_error because convert<int> should be called if conversion can fail
+		throw logic_error("failed to convert "+s+" to integer value");
+	}
+
+	return ret;
 }
 
 double SIGNUM (double in) {
@@ -1942,13 +1959,74 @@ string version() {
 	return build_date()+", "+build_time();
 }
 
+const string DATE = __DATE__;
+
+enum DATE_FORMAT { MON1, MON2,	MON3, SPACE1, DAY1, DAY2, SPACE2, YEAR1, YEAR2, YEAR3, YEAR4, SIZE };
+
+const string month_names[] = {
+		"Jan", "Feb", "Mar", "Apr", "May", "Jun",
+		"Jul", "Aug", "Sep", "Oct", "Nov", "Dec"
+};
+
+const vector<string> months = from_array(month_names);
+
+int month_zero_based() {
+	// TODO Find index to utility class
+	string Mmm = DATE.substr(MON1, 3);
+
+	size_t month = find(months.begin(), months.end(), Mmm) - months.begin();
+
+	ASSERT_LT(month, 12);
+
+	return month;
+}
+
+int day_of_month() {
+
+	string dd = DATE.substr(DAY1, 2);
+
+	int day = string_to_int(dd);
+
+	ASSERT_GE(day,  1);
+
+	ASSERT_LE(day, 31);
+
+	return day;
+}
+
+int year_since_1900() {
+
+	string yyyy = DATE.substr(YEAR1, 4);
+
+	int year = string_to_int(yyyy);
+
+	ASSERT_GE(year, 2013);
+
+	return year-1900;
+}
+
+const string TIME = __TIME__;
+
+//enum TIME_FORMAT
+//
+//int hour() {
+//
+//}
+//
+//tm build_tm() {
+//
+//	tm t = { 0 };
+//}
+
 string version_id() {
 
-	struct tm t = { 0 };
+//	struct tm t = { 0 };
+//
+//	strptime(__DATE__ " " __TIME__, "%b %e %Y %H:%M:%S", &t);
+//
+//	char buff[16];
+//
+//	return strftime(buff, sizeof(buff), "%Y%m%d%H%M%S", &t) ? buff : "(unknown)";
 
-	strptime(__DATE__ " " __TIME__, "%b %e %Y %H:%M:%S", &t);
-
-	char buff[16];
-
-	return strftime(buff, sizeof(buff), "%Y%m%d%H%M%S", &t) ? buff : "(unknown)";
+	return "(unknown)";
 }
