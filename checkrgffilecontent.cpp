@@ -799,8 +799,6 @@ vector <GDB> create_GDB_from_rgf (const string& file_name) {
 		buffer.COLOR = 		rgf_to_check.at(i).at(COLOR);
 		buffer.LOC = 		rgf_to_check.at(i).at(LOCATION);
 
-		cout << rgf_to_check.at(i).at(DATA_ID) << " " << rgf_to_check.at(i).at(GROUP) << " " << rgf_to_check.at(i).at(LOCATION) << endl;
-
 		buffer.LOCX = 		string_to_double(rgf_to_check.at(i).at(LOCX), failed);
 		buffer.LOCY = 		string_to_double(rgf_to_check.at(i).at(LOCY), failed);
 		buffer.FORMATION = 	rgf_to_check.at(i).at(FORMATION);
@@ -868,7 +866,8 @@ vector <GDB> create_GDB_from_rgf (const string& file_name) {
 		if (is_PITCHcorrect (rgf_to_check.at(i))) 		buffer.LINEATION = "PITCH";
 		if (is_SCcorrect (rgf_to_check.at(i))) 			buffer.LINEATION = "SC";
 
-		buffer.PALEON = string_to_double(rgf_to_check.at(i).at(PALEONORTH), failed);
+		if (rgf_to_check.at(i).at(PALEONORTH) == "") buffer.PALEON = 0.0;
+		else buffer.PALEON = string_to_double(rgf_to_check.at(i).at(PALEONORTH), failed);
 
 		buffer.COMMENT = rgf_to_check.at(i).at(COMMENT);
 

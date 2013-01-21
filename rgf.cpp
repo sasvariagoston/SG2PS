@@ -797,6 +797,8 @@ vector <GDB> cGc_average (vector <GDB> inGDB) {
 	VCTR temp2;
 	VCTR result;
 
+	bool overturned = false;
+
 	if (outGDB.size() == 1) {
 
 		temp = outGDB.at(0).N;
@@ -843,6 +845,8 @@ vector <GDB> cGc_average (vector <GDB> inGDB) {
 		independentrecordcounter++;
 
 		temp = unitvector (temp);
+		if (temp.Z < 0.0) overturned = true;
+		temp = flip_N_vector (temp);
 
 		do {
 
@@ -850,7 +854,7 @@ vector <GDB> cGc_average (vector <GDB> inGDB) {
 
 			if ((outGDB.at(j).DATATYPE != "STRIAE") && (outGDB.at(j).DATATYPE != "SC")) {
 
-				if ((outGDB.at(j).DATATYPE == "BEDDING") && (temp.Z < 0.0)) outGDB.at(j).avS0offset = "OVERTURNED";
+				if ((outGDB.at(j).DATATYPE == "BEDDING") && (overturned)) outGDB.at(j).avS0offset = "OVERTURNED";
 
 				result = DXDYDZ_from_NXNYNZ (temp);
 				result = flip_D_vector (result);
@@ -993,7 +997,7 @@ GDB lineation_tilt (GDB inGDB, bool paleonorht) {
 
 		angle = outGDB.avS0d.DIP;
 
-		if (outGDB.avS0offset == "OVERTURNED") angle = 180.0 - angle;
+		if (outGDB.avS0offset == "OVERTURNED") angle = 180.0 + angle;
 
 		axis.X = SIN (outGDB.avS0d.DIPDIR + 90.0);
 		axis.Y = COS (outGDB.avS0d.DIPDIR + 90.0);
@@ -1052,14 +1056,14 @@ GDB plane_tilt (GDB inGDB, bool paleonorht) {
 
 		angle = outGDB.avS0d.DIP;
 
-		if (outGDB.avS0offset == "OVERTURNED") angle = 180.0 - angle;
+		if (outGDB.avS0offset == "OVERTURNED") angle = 180.0 + angle;
 
 		axis.X = SIN (outGDB.avS0d.DIPDIR + 90.0);
 		axis.Y = COS (outGDB.avS0d.DIPDIR + 90.0);
 		axis.Z = 0.0;
 	}
 
-	if (angle > 0.001) {
+	if (fabs(angle > 0.001))  {
 
 		axis = unitvector (axis);
 
