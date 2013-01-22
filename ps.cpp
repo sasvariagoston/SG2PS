@@ -1,4 +1,4 @@
-// Copyright (C) 2012, Ágoston Sasvári
+// Copyright (C) 2012, 2013 Ágoston Sasvári
 // All rights reserved.
 // This code is published under the GNU Lesser General Public License.
 
@@ -10,6 +10,8 @@
 
 #include "ps.h"
 #include "rgf.h"
+#include "common.h"
+#include "run_mode.h"
 
 using namespace std;
 
@@ -86,7 +88,11 @@ void PS_header (string DATATYPE, string LOC, ofstream& o, PAPER P) {
 	o << "%!PS-Adobe-3.0 EPSF-3.0" << endl;
 	o << "%%BoundingBox:  0 0 1191 842" << endl;
 	o << "%%Title: " << filename << endl;
-	o << "%%Creator: SG2PS" << endl;
+	o << "%%Creator: SG2PS" << flush;
+
+	if (!(is_DEBUG())) o << ": " << version_id() << flush;
+
+	o << endl;
 	o << "%%EndComments" << endl << endl;
 	o << "<</PageSize [ 1191 842 ]>> setpagedevice " << endl;
 

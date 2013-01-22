@@ -1,4 +1,4 @@
-// Copyright (C) 2012, Ágoston Sasvári
+// Copyright (C) 2012, 2013 Ágoston Sasvári
 // All rights reserved.
 // This code is published under the GNU Lesser General Public License.
 
@@ -785,6 +785,91 @@ void fold_from_planes (vector <GDB> inGDB, ofstream& o, INPSET inset, CENTER cen
 vector <GDB> cGc_average (vector <GDB> inGDB) {
 
 	vector <GDB> outGDB = inGDB;
+	vector <GDB> to_process_GDB;
+
+	size_t intervalbegin = 0;
+	size_t independentrecordcounter = 0;
+	size_t i = 0;
+	size_t j = 0;
+
+	DIPDIR_DIP dtemp;
+
+	VCTR temp = declare_vector (0.0, 0.0, 0.0);
+	//VCTR temp2;
+	VCTR result;
+
+	if (outGDB.size() == 1) {
+
+		temp = outGDB.at(0).N;
+		result = DXDYDZ_from_NXNYNZ (temp);
+		result = flip_D_vector (result);
+		result = unitvector(result);
+		outGDB.at(0).avD = result;
+
+		temp = outGDB.at(0).avD;
+		dtemp = dipdir_dip_from_DXDYDZ (temp);
+		outGDB.at(0).avd = dtemp;
+
+		if ((outGDB.at(0).DATATYPE == "BEDDING") && (outGDB.at(0).OFFSET == "OVERTURNED")) outGDB.at(0).avS0offset = "OVERTURNED";
+
+		cout << "  - Data set averages were computed for 1 independent data group in " << i << " records." <<  endl;
+
+		return outGDB;
+	}
+
+
+
+	do {
+
+		to_process_GDB.clear();
+
+		do {
+
+			to_process_GDB.push_back(outGDB.at(i));
+
+			i++;
+
+			if (i == outGDB.size()) break;
+
+		} while ((outGDB.at(i-1).DATATYPE == outGDB.at(i).DATATYPE) && (outGDB.at(i-1).LOC == outGDB.at(i).LOC));
+
+		j = intervalbegin;
+		independentrecordcounter++;
+		STRESSFIELD sf = BINGHAM_PROCESS (to_process_GDB);
+
+		do {
+
+			outGDB.at(j).avD = declare_vector (10e-8, 1.0 - 10e-8, 10e-8);
+
+			if ((outGDB.at(j).DATATYPE != "STRIAE") && (outGDB.at(j).DATATYPE != "SC")) {
+
+				if ((outGDB.at(j).DATATYPE == "BEDDING") && (outGDB.at(j).OFFSET == "OVERTURNED")) outGDB.at(j).avS0offset = "OVERTURNED";
+
+				outGDB.at(j).avD = (sf.EIGENVECTOR2);
+				outGDB.at(j).avd = sf.S_2;
+			}
+
+			j++;
+		}
+
+		while (j < i);
+
+		temp = declare_vector (0.0, 0.0, 0.0);
+
+		intervalbegin = i;
+
+	} while (i < outGDB.size());
+
+	cout << "  - Data set averages were computed for " << independentrecordcounter << " independent data group(s) in " << i << " records." <<  endl;
+
+	return outGDB;
+}
+
+/*
+ *
+ * vector <GDB> cGc_average (vector <GDB> inGDB) {
+
+	vector <GDB> outGDB = inGDB;
 
 	size_t intervalbegin = 0;
 	size_t independentrecordcounter = 0;
@@ -881,6 +966,14 @@ vector <GDB> cGc_average (vector <GDB> inGDB) {
 
 	return outGDB;
 }
+ *
+ */
+
+
+
+
+
+
 
 vector <GDB> cGc_s0_average (vector <GDB> inGDB) {
 
@@ -997,14 +1090,14 @@ GDB lineation_tilt (GDB inGDB, bool paleonorht) {
 
 		angle = outGDB.avS0d.DIP;
 
-		if (outGDB.avS0offset == "OVERTURNED") angle = 180.0 + angle;
+		if (outGDB.avS0offset == "OVERTURNED") angle = 180.0 - angle;
 
 		axis.X = SIN (outGDB.avS0d.DIPDIR + 90.0);
 		axis.Y = COS (outGDB.avS0d.DIPDIR + 90.0);
 		axis.Z = 0.0;
 	}
 
-	if (angle > 0.001) {
+	if (fabs(angle) > 0.001) {
 
 		axis = unitvector (axis);
 
@@ -1056,7 +1149,7 @@ GDB plane_tilt (GDB inGDB, bool paleonorht) {
 
 		angle = outGDB.avS0d.DIP;
 
-		if (outGDB.avS0offset == "OVERTURNED") angle = 180.0 + angle;
+		if (outGDB.avS0offset == "OVERTURNED") angle = 180.0 - angle;
 
 		axis.X = SIN (outGDB.avS0d.DIPDIR + 90.0);
 		axis.Y = COS (outGDB.avS0d.DIPDIR + 90.0);
@@ -1084,6 +1177,11 @@ GDB plane_tilt (GDB inGDB, bool paleonorht) {
 		outGDB.corr = dtemp;
 		result = crossproduct (input, input2);
 		outGDB.S = result;
+
+		if (outGDB.DATATYPE == "BEDDING") {
+			outGDB.OFFSET = "";
+			outGDB.avS0offset = "";
+		}
 	}
 
 	return outGDB;
@@ -1101,7 +1199,6 @@ GDB SC_tilt (GDB inGDB, bool paleonorht) {
 	if (paleonorht) {
 
 		angle = 360.0 - outGDB.PALEON;
-
 		axis = declare_vector (0.0, 0.0, -1.0);
 	}
 
@@ -1116,7 +1213,7 @@ GDB SC_tilt (GDB inGDB, bool paleonorht) {
 		axis.Z = 0.0;
 	}
 
-	if (angle > 0.001) {
+	if (fabs(angle) > 0.001) {
 
 		axis = unitvector (axis);
 		input = outGDB.SV;
@@ -1186,7 +1283,6 @@ GDB striae_tilt (GDB inGDB, bool paleonorht) {
 	if (paleonorht) {
 
 		angle = 360.0 - outGDB.PALEON;
-
 		axis = declare_vector (0.0, 0.0, -1.0);
 	}
 
@@ -1201,7 +1297,7 @@ GDB striae_tilt (GDB inGDB, bool paleonorht) {
 		axis.Z = 0.0;
 	}
 
-	if (angle > 0.001) {
+	if (fabs(angle) > 0.001) {
 
 		axis = unitvector (axis);
 
