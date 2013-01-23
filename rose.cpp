@@ -101,7 +101,7 @@ ROSENUMBER compute_data_number_DIP (vector <GDB> inGDB, double strike_begin, dou
 	return counter;
 }
 
-void PS_draw_rose_LINEATION (GDB inGDB, ofstream& o, INPSET inset, CENTER center, ROSENUMBER percent, double begin_angle, bool vertical) {
+void PS_draw_rose_LINEATION (ofstream& o, INPSET inset, CENTER center, ROSENUMBER percent, double begin_angle, bool vertical) {
 
 	if (vertical) {
 
@@ -119,7 +119,7 @@ void PS_draw_rose_LINEATION (GDB inGDB, ofstream& o, INPSET inset, CENTER center
 	}
 }
 
-void PS_draw_rose_PLANE (GDB inGDB, ofstream& o, INPSET inset, CENTER center, ROSENUMBER percent, double begin_angle, bool vertical) {
+void PS_draw_rose_PLANE (ofstream& o, INPSET inset, CENTER center, ROSENUMBER percent, double begin_angle, bool vertical) {
 
 	if (vertical) {
 
@@ -136,7 +136,7 @@ void PS_draw_rose_PLANE (GDB inGDB, ofstream& o, INPSET inset, CENTER center, RO
 	}
 }
 
-void PS_draw_rose_SC_STRIAE (GDB inGDB, ofstream& o, INPSET inset, CENTER center, ROSENUMBER percent, double begin_angle, bool vertical) {
+void PS_draw_rose_SC_STRIAE (ofstream& o, INPSET inset, CENTER center, ROSENUMBER percent, double begin_angle, bool vertical) {
 
 	if (vertical) {
 
@@ -224,17 +224,17 @@ void PS_draw_rose_DIPDIR (vector <GDB> inGDB, ofstream& o, INPSET inset, CENTER 
 
 		if ((inGDB.at(j).DATAGROUP == "LINEATION") && (datanumber.LIN_NUM >= 0.9))
 
-			PS_draw_rose_LINEATION (inGDB.at(j), o, inset, center, percent, begin_angle, false);
+			PS_draw_rose_LINEATION (o, inset, center, percent, begin_angle, false);
 
 
 		if ((inGDB.at(j).DATAGROUP == "PLANE") && (datanumber.PLN_NUM >= 0.9))
 
-			PS_draw_rose_PLANE (inGDB.at(j), o, inset, center, percent, begin_angle, false);
+			PS_draw_rose_PLANE (o, inset, center, percent, begin_angle, false);
 
 
 		if (((inGDB.at(j).DATAGROUP == "SC") || (inGDB.at(0).DATAGROUP == "STRIAE")) && ((datanumber.LIN_NUM >= 0.9) || (datanumber.PLN_NUM >= 0.9)))
 
-			PS_draw_rose_PLANE (inGDB.at(j), o, inset, center, percent, begin_angle, false);
+			PS_draw_rose_PLANE (o, inset, center, percent, begin_angle, false);
 
 
 		begin_angle = begin_angle + step_angle;
@@ -276,7 +276,7 @@ void PS_draw_rose_DIPDIR (vector <GDB> inGDB, ofstream& o, INPSET inset, CENTER 
 			percent.LIN_NUM = datanumber.LIN_NUM / mx.LIN_NUM;
 			percent.PLN_NUM = datanumber.PLN_NUM / mx.PLN_NUM;
 
-			PS_draw_rose_SC_STRIAE (inGDB.at(j), o, inset, center, percent, begin_angle, false);
+			PS_draw_rose_SC_STRIAE (o, inset, center, percent, begin_angle, false);
 
 			begin_angle = begin_angle + step_angle;
 			if (inset.rosetype == "S") i++;
@@ -335,15 +335,15 @@ void PS_draw_rose_DIP (vector <GDB> inGDB, ofstream& o, INPSET inset, CENTER cen
 
 		if ((inGDB.at(j).DATAGROUP == "LINEATION") && (datanumber.LIN_NUM >= 0.9))
 
-			PS_draw_rose_LINEATION (inGDB.at(j), o, inset, center, percent, begin_angle, true);
+			PS_draw_rose_LINEATION (o, inset, center, percent, begin_angle, true);
 
 		if ((inGDB.at(j).DATAGROUP == "PLANE") && (datanumber.PLN_NUM >= 0.9))
 
-			PS_draw_rose_PLANE (inGDB.at(j), o, inset, center, percent, begin_angle, true);
+			PS_draw_rose_PLANE (o, inset, center, percent, begin_angle, true);
 
 		if (((inGDB.at(j).DATAGROUP == "SC") || (inGDB.at(0).DATAGROUP == "STRIAE")) && ((datanumber.LIN_NUM >= 0.9) || (datanumber.PLN_NUM >= 0.9)))
 
-			PS_draw_rose_PLANE (inGDB.at(j), o, inset, center, percent, begin_angle, true);
+			PS_draw_rose_PLANE (o, inset, center, percent, begin_angle, true);
 
 		begin_angle = begin_angle + step_angle;
 		i++;
@@ -371,7 +371,7 @@ void PS_draw_rose_DIP (vector <GDB> inGDB, ofstream& o, INPSET inset, CENTER cen
 			percent.LIN_NUM = datanumber.LIN_NUM / mx.LIN_NUM;
 			percent.PLN_NUM = datanumber.PLN_NUM / mx.PLN_NUM;
 
-			PS_draw_rose_SC_STRIAE (inGDB.at(j), o, inset, center, percent, begin_angle, true);
+			PS_draw_rose_SC_STRIAE (o, inset, center, percent, begin_angle, true);
 
 			begin_angle = begin_angle + step_angle;
 			i++;

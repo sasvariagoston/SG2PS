@@ -733,7 +733,7 @@ bool stopcriteria (string prevDATATYPE, string DATATYPE, string prevLOC, string 
 	else return false;
 }
 
-void fold_from_planes (vector <GDB> inGDB, ofstream& o, INPSET inset, CENTER center, PAPER P) {
+void fold_from_planes (vector <GDB> inGDB, ofstream& o, INPSET inset, CENTER center) {
 
 	vector <GDB> buffer;
 	GDB tempGDB;
@@ -1161,7 +1161,7 @@ GDB plane_tilt (GDB inGDB, bool paleonorht) {
 		axis.Z = 0.0;
 	}
 
-	if (fabs(angle > 0.001))  {
+	if (fabs(angle) > 0.001)  {
 
 		axis = unitvector (axis);
 

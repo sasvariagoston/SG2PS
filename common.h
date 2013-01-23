@@ -104,7 +104,7 @@ VCTR NXNYNZ_from_DXDYDZ (VCTR i);
 DIPDIR_DIP dipdir_dip_from_DXDYDZ (VCTR i);
 DIPDIR_DIP dipdir_dip_from_NXNYNZ (VCTR i);
 
-VCTR ROTATE (VCTR axis, VCTR torotate, double angle);
+VCTR ROTATE (VCTR axis, VCTR torotate, double A);
 
 bool existence (string expression, vector<GDB> inGDB);
 bool existence_of_group (int expression, vector <int> whichgroup);

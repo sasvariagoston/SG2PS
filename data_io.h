@@ -16,7 +16,7 @@ void createprojectfolders (PFN output, vector <GDB> inGDB);
 void copyoriginalfiles (PFN output);
 void copy_log(const PFN& names);
 
-void outputrgfheader (ofstream& o, INPSET inset);
+void outputrgfheader (ofstream& o);
 void outputaverageheader (ofstream& o);
 
 void outputrecord (GDB i, ofstream& o, INPSET inpset);

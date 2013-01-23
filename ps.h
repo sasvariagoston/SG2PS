@@ -13,12 +13,12 @@ using namespace std;
 
 PAPER PS_dimensions ();
 
-void PS_header (string DATATYPE, string LOC, ofstream& o, PAPER P);
+void PS_header (string DATATYPE, string LOC, ofstream& o);
 void PS_border (GDB inGDB, ofstream& o, INPSET inset, PAPER P);
 void PS_stress_scale (ofstream& o, PAPER P);
 void ps_clusteringresult (ofstream& o, INPSET inset, PAPER P, int clusternumber);
 
-void PS_net (string DATATYPE, string LOC, ofstream& o, INPSET inset, PAPER P);
+void PS_net (ofstream& o, INPSET inset, PAPER P);
 void PS_stressdata (ofstream& o, CENTER center, PAPER P, STRESSFIELD sf, string method);
 void PS_stressarrows (ofstream& o, CENTER center, PAPER P, STRESSFIELD sf);
 

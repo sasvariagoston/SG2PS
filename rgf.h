@@ -62,7 +62,7 @@ vector <GDB> sort_by_iID (vector <GDB> inGDB);
 bool stopcriteria (string prevDATATYPE, string DATATYPE, string prevLOC, string LOC, string prevGC, string GC, INPSET inset);
 bool stopcriteria (string prevDATATYPE, string DATATYPE, string prevLOC, string LOC);
 
-void fold_from_planes (vector <GDB> inGDB, ofstream& o, INPSET inset, CENTER center, PAPER P);
+void fold_from_planes (vector <GDB> inGDB, ofstream& o, INPSET inset, CENTER center);
 
 vector <GDB> cGc_average (vector <GDB> inGDB);
 vector <GDB> cGc_s0_average (vector <GDB> inGDB);

@@ -1220,9 +1220,7 @@ DIPDIR_DIP dipdir_dip_from_NXNYNZ (VCTR i) {
 	return actual;
 }
 
-VCTR ROTATE (VCTR ax, VCTR torotate, double angle) {
-
-	double A = angle;
+VCTR ROTATE (VCTR ax, VCTR torotate, double A) {
 
 	VCTR result;
 	VCTR A_1, A_2, A_3;

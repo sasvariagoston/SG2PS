@@ -148,7 +148,7 @@ copy_status::code copy_file(const string& source, const string& destination) {
 	out << in.rdbuf();
 
 	return (in.fail() || out.fail()) ? copy_status::FAILED : copy_status::OK;
-};
+}
 
 void dispatch_on_error_code(copy_status::code status, const string& src_name, bool should_exist);
 
@@ -210,7 +210,7 @@ void copy_log(const PFN& names) {
 	copy_file(log_file, names.original + path_separator + log_file);
 }
 
-void outputrgfheader (ofstream& o, INPSET inset) { // FIXME Duplication? Same as reserved_column_names?
+void outputrgfheader (ofstream& o) { // FIXME Duplication? Same as reserved_column_names?
 
 	o
 	<< "DATA_ID" << '\t'
@@ -336,7 +336,7 @@ void outputresultrgf (PFN output, vector <GDB> outGDB, bool tilted, INPSET inset
 
 	outputfile.open (outputfilename.c_str());
 
-	outputrgfheader (outputfile, inset);
+	outputrgfheader (outputfile);
 
 	while (i < outGDB.size()) {
 
@@ -483,7 +483,7 @@ void output_to_rgf (PFN output, vector <GDB> processGDB, INPSET inset, bool tilt
 
 	sort(processGDB.begin(), processGDB.end(), byiID);
 
-	outputrgfheader (output_rgf_file, inset);
+	outputrgfheader (output_rgf_file);
 
 	do {
 
@@ -506,7 +506,7 @@ void output_to_ps (PFN output, vector <GDB> processGDB, vector <GDB> tiltprocess
 
 	ofstream output_ps_file(output_ps_filename.c_str());
 
-	PS_header (processGDB.at(0).DATATYPE, processGDB.at(0).LOC, output_ps_file, P);
+	PS_header (processGDB.at(0).DATATYPE, processGDB.at(0).LOC, output_ps_file);
 	PS_SYMBOLS(processGDB, output_ps_file, inset, P);
 
 	if (processGDB.at(0).DATATYPE == "STRIAE" && (inset.inversion != "N")) PS_stress_scale (output_ps_file, P);
@@ -524,7 +524,7 @@ void output_to_ps (PFN output, vector <GDB> processGDB, vector <GDB> tiltprocess
 
 	PS_datanumber_averagebedding (processGDB.at(0), output_ps_file, inset, P, center, processGDB.size());
 
-	PS_net (processGDB.at(0).DATATYPE, processGDB.at(0).LOC, output_ps_file, inset, P);
+	PS_net (output_ps_file, inset, P);
 }
 
 void process_group_by_group (vector <GDB> outGDB, vector <GDB> tiltoutGDB, ofstream& o, INPSET inset, CENTER center, PAPER P) {
@@ -752,12 +752,12 @@ void process_group_by_group (vector <GDB> outGDB, vector <GDB> tiltoutGDB, ofstr
 			cout << "    - Original : " << flush;
 			center.X = P.O1X;
 			center.Y = P.O1Y;
-			fold_from_planes (outGDB, o, inset, center, P);
+			fold_from_planes (outGDB, o, inset, center);
 
 			cout << "    - Corrected: " << flush;
 			center.X = P.O2X;
 			center.Y = P.O2Y;
-			fold_from_planes (tiltoutGDB, o, inset, center, P);
+			fold_from_planes (tiltoutGDB, o, inset, center);
 		}
 
 		else cout << "less data than required to the statistics." << endl;

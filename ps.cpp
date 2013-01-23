@@ -79,7 +79,7 @@ PAPER PS_dimensions () {
 	//dummy
 }
 
-void PS_header (string DATATYPE, string LOC, ofstream& o, PAPER P) {
+void PS_header (string DATATYPE, string LOC, ofstream& o) {
 
 	string filename;
 
@@ -443,7 +443,7 @@ void ps_clusteringresult (ofstream& o, INPSET inset, PAPER P, int clusternumber)
 	<< fixed << setprecision (1) << " % error) show"<< endl;
 }
 
-void PS_net (string DATATYPE, string LOC, ofstream& o, INPSET inset, PAPER P) {
+void PS_net (ofstream& o, INPSET inset, PAPER P) {
 
 	int angle;
 
@@ -1569,22 +1569,22 @@ void PS_plane (GDB i, ofstream& o, INPSET inset, CENTER center, bool label, stri
 	if (type == "AV") {
 
 		o
-		<< "%%____" << setfill ('0') << fixed << setprecision (5) << i.corr.DIPDIR <<
-				"/" << setfill ('0') << fixed << setprecision (5) << i.corr.DIP << endl;
+		<< "%%____" << setfill ('0') << fixed << setprecision (2) << i.corr.DIPDIR <<
+				"/" << setfill ('0') << fixed << setprecision (2) << i.corr.DIP << endl;
 		o << "  1.00 0.00 0.00 setrgbcolor 1 setlinewidth newpath " << endl;
 	}
 
 	else if (type == "FOLD") {
 
-		o << "%%____" << setfill ('0') << fixed << setprecision (5) << i.corr.DIPDIR <<
-				  "/" << setfill ('0') << fixed << setprecision (5) << i.corr.DIP << endl;
+		o << "%%____" << setfill ('0') << fixed << setprecision (2) << i.corr.DIPDIR <<
+				  "/" << setfill ('0') << fixed << setprecision (2) << i.corr.DIP << endl;
 		o << "  0.00 0.00 1.00 setrgbcolor 1 setlinewidth newpath " << endl;
 	}
 
 	else {
 
-		o << "%%____" << setfill ('0') << fixed << setprecision (5) << i.corr.DIPDIR <<
-				"/" << setfill ('0') << fixed << setprecision (5) << i.corr.DIP << endl;
+		o << "%%____" << setfill ('0') << fixed << setprecision (2) << i.corr.DIPDIR <<
+				"/" << setfill ('0') << fixed << setprecision (2) << i.corr.DIP << endl;
 		o << "  " << i.PSCOLOR << " setrgbcolor " << inset.linewidth << " setlinewidth newpath " << endl;
 	}
 
@@ -1600,11 +1600,11 @@ void PS_plane (GDB i, ofstream& o, INPSET inset, CENTER center, bool label, stri
 		double end_arc = begin_arc + (2.0 * alfa);
 
 		o
-		<< "  " << fixed << setprecision (5) << X_O
-		<< " "  << fixed << setprecision (5) << Y_O
-		<< " "  << fixed << setprecision (5) << r
-		<< " "  << fixed << setprecision (5) << begin_arc
-		<< " "  << fixed << setprecision (5) << end_arc << " arc "
+		<< "  " << fixed << setprecision (3) << X_O
+		<< " "  << fixed << setprecision (3) << Y_O
+		<< " "  << fixed << setprecision (3) << r
+		<< " "  << fixed << setprecision (3) << begin_arc
+		<< " "  << fixed << setprecision (3) << end_arc << " arc "
 		<< endl;
 	}
 
@@ -1813,8 +1813,8 @@ void PS_sc_arrow (GDB i, ofstream& o, INPSET inset, CENTER center, VCTR d) {
 
 	o << "  " << inset.linewidth << "  setlinewidth" << endl;
 	o << "  " << i.PSCOLOR << "  setrgbcolor newpath "
-			<< setw (3) << setprecision (5) << X << " "
-			<< setw (3) << setprecision (5) << Y << " 1 0 360 arc 0 " << endl;
+			<< setw (3) << setprecision (3) << X << " "
+			<< setw (3) << setprecision (3) << Y << " 1 0 360 arc 0 " << endl;
 	o << "  closepath fill stroke" << endl;
 	o << "  " << setw (3) << setprecision (5) << X << " "
 			<< setw (3) << setprecision (5) << Y << " translate " << endl;
