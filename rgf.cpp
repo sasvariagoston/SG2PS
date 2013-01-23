@@ -835,7 +835,12 @@ vector <GDB> cGc_average (vector <GDB> inGDB) {
 
 		j = intervalbegin;
 		independentrecordcounter++;
-		STRESSFIELD sf = BINGHAM_PROCESS (to_process_GDB);
+		STRESSFIELD sf;
+		if (to_process_GDB.size() > 1)	sf = BINGHAM_PROCESS (to_process_GDB);
+		else {
+			sf.EIGENVECTOR2 = to_process_GDB.at(0).D;
+			sf.S_2 = to_process_GDB.at(0).corr;
+		}
 
 		do {
 
@@ -845,7 +850,7 @@ vector <GDB> cGc_average (vector <GDB> inGDB) {
 
 				if ((outGDB.at(j).DATATYPE == "BEDDING") && (outGDB.at(j).OFFSET == "OVERTURNED")) outGDB.at(j).avS0offset = "OVERTURNED";
 
-				outGDB.at(j).avD = (sf.EIGENVECTOR2);
+				outGDB.at(j).avD = sf.EIGENVECTOR2;
 				outGDB.at(j).avd = sf.S_2;
 			}
 
