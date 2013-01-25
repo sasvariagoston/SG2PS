@@ -214,7 +214,7 @@ void create_pointer_to_project_folder(const PFN& names) {
 
 		ofstream pointer_to("project_folder_name");
 
-		pointer_to << names.projectfolder;
+		pointer_to << names.projectfolder << '\n';
 	}
 }
 
