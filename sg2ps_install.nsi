@@ -10,7 +10,7 @@ OutFile "setup_sg2ps.exe"
 InstallDir C:\sg2ps
 
 ; The text to prompt the user to enter a directory
-DirText "This will install SG2PS version 0.2.0 on your computer. Please choose a directory."
+DirText "This will install SG2PS on your computer. Please choose a directory."
 
 ; The stuff to install---------------------------------------------------------------------------
 Section "Install"

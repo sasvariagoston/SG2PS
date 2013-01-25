@@ -198,16 +198,24 @@ void copyoriginalfiles (PFN output) {
 
 void copy_log(const PFN& names) {
 
-	if (!is_GUI()) {
+	if (is_GUI()) {
 
-		return;
+		cout.flush();
+
+		string log_file = "log.txt";
+
+		copy_file(log_file, names.original + path_separator + log_file);
 	}
+}
 
-	cout.flush();
+void create_pointer_to_project_folder(const PFN& names) {
 
-	string log_file = "log.txt";
+	if (is_GUI()) {
 
-	copy_file(log_file, names.original + path_separator + log_file);
+		ofstream pointer_to("project_folder_name");
+
+		pointer_to << names.projectfolder;
+	}
 }
 
 void outputrgfheader (ofstream& o) { // FIXME Duplication? Same as reserved_column_names?

@@ -12,6 +12,7 @@ using namespace std;
 
 PFN createprojectfoldernames (string projectname);
 void createprojectfolders (PFN output, vector <GDB> inGDB);
+void create_pointer_to_project_folder(const PFN& names);
 
 void copyoriginalfiles (PFN output);
 void copy_log(const PFN& names);
