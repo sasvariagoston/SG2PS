@@ -90,7 +90,7 @@ void PS_header (string DATATYPE, string LOC, ofstream& o) {
 	o << "%%Title: " << filename << endl;
 	o << "%%Creator: SG2PS" << flush;
 
-	if (!(is_DEBUG())) o << "(" << version_id() << ")" << flush;
+	if (!(is_DEBUG())) o << " (" << version_id() << ")" << flush;
 
 	o << endl;
 	o << "%%EndComments" << endl << endl;
