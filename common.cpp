@@ -88,8 +88,8 @@ T to_type(const string& s) {
 
 	T ret = convert<T>(s, conversion_failed);
 
-	if (conversion_failed) {
-		conversion_failed = true; // TODO Only for debugging, one can set a breakpoint here
+	if (conversion_failed) {// TODO Only for debugging, one can set a breakpoint here
+		conversion_failed = true;
 	}
 
 	ASSERT2(!conversion_failed,"failed to convert \""<<s<<"\"");
