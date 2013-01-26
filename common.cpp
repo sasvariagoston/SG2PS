@@ -41,7 +41,7 @@ bool equals(const string& s, const T& value) {
 
 string capslock (string input) {
 
-	for(unsigned int i = 0; i < input.length(); i++)	input.at(i) = toupper(input.at(i));
+	for(unsigned int i = 0; i < input.length(); i++)	input.at(i) = (char) toupper(input.at(i));
 	return input;
 }
 
@@ -1987,7 +1987,7 @@ int month_zero_based() {
 	// TODO Find index to utility class
 	string Mmm = DATE.substr(date::MON1, 3);
 
-	size_t month = find(months.begin(), months.end(), Mmm) - months.begin();
+	size_t month = static_cast<size_t>( find(months.begin(), months.end(), Mmm) - months.begin() );
 
 	ASSERT_LT(month, 12);
 
@@ -2070,7 +2070,7 @@ tm build_tm() {
 		t.tm_min  = minute();
 		t.tm_sec  = second();
 	}
-	catch (logic_error& e) {
+	catch (logic_error& ) {
 		cout << "Date: " << DATE << ", time: " << TIME << endl;
 		throw;
 	}
@@ -2082,7 +2082,7 @@ tm build_tm() {
 
 string version_id_linux() {
 
-	struct tm t = { 0 };
+	tm t = { 0 };
 
 	strptime(__DATE__ " " __TIME__, "%b %e %Y %H:%M:%S", &t);
 

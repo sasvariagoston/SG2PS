@@ -174,9 +174,9 @@ void PS_draw_rose_DIPDIR (vector <GDB> inGDB, ofstream& o, INPSET inset, CENTER 
 	if (inset.rosebinning == "C") step_angle = 10.0;
 	if (inset.rosebinning == "D") step_angle = 22.5;
 
-	int segmentnumber = 360.0 / step_angle;
+	int segmentnumber = static_cast<int>(360.0 / step_angle);
 
-	int i = 0;;
+	int i = 0;
 	size_t j = 0;
 
 	do {
@@ -305,7 +305,7 @@ void PS_draw_rose_DIP (vector <GDB> inGDB, ofstream& o, INPSET inset, CENTER cen
 	if (inset.rosebinning == "C") step_angle = 10.0;
 	if (inset.rosebinning == "D") step_angle = 22.5;
 
-	int segmentnumber = 90.0 / step_angle;
+	int segmentnumber = static_cast<int>(90.0 / step_angle);
 
 	int i = 0;
 	size_t j = 0;
