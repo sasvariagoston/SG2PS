@@ -561,8 +561,6 @@ STRESSTENSOR BINGHAM (vector <GDB> inGDB) {
 	st._23 = 0.0;
 	st._33 = 0.0;
 
-	// FIXME Undefined are: 21, 31, 32
-
 	VCTR N = declare_vector (0.0, 1.0, 0.0);
 	VCTR E = declare_vector (1.0, 0.0, 0.0);
 	VCTR U = declare_vector (0.0, 0.0, 1.0);
@@ -571,6 +569,13 @@ STRESSTENSOR BINGHAM (vector <GDB> inGDB) {
 	do {
 
 		planenormal = inGDB.at(i).N;
+
+		double norm_sqr = dotproduct(planenormal,planenormal);
+
+		if (fabs(norm_sqr-1.0) > 1.0e-4) {
+			dummy();
+			ASSERT2(false, "Should be unitvector [X, Y, Z] = [ "<<planenormal.X<<", "<<planenormal.Y<<", "<<planenormal.Z<<"]");
+		}
 
 		st._11 = st._11 + (dotproduct (planenormal, E, false) * dotproduct (planenormal, E, false));
 		st._12 = st._12 + (dotproduct (planenormal, E, false) * dotproduct (planenormal, N, false));
@@ -582,6 +587,8 @@ STRESSTENSOR BINGHAM (vector <GDB> inGDB) {
 		i++;
 
 	} while (i < inGDB.size());
+
+	check_stress_tensor_singularity(st);
 
 	return st;
 }

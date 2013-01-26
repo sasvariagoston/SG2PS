@@ -48,7 +48,7 @@ PFN createprojectfoldernames (string projectname) {
 	if (!is_DEBUG()) output.projectfolder 	= output.datetime + "_-_" + capslock(projectname);
 	else output.projectfolder = capslock(projectname);
 
-	output.projectname 		= projectname; // FIXME converting to uppercase is a bug on Linux
+	output.projectname 		= projectname; // Converting to uppercase is a bug on Linux
 	output.original			= output.projectfolder +  bs + "1_original";
 	output.completed		= output.projectfolder +  bs + "2_completed";
 	output.average			= output.projectfolder +  bs + "3_average";
@@ -218,7 +218,7 @@ void create_pointer_to_project_folder(const PFN& names) {
 	}
 }
 
-void outputrgfheader (ofstream& o) { // FIXME Duplication? Same as reserved_column_names?
+void outputrgfheader (ofstream& o) { // TODO Duplication? Same as reserved_column_names?
 
 	o
 	<< "DATA_ID" << '\t'

@@ -1005,21 +1005,21 @@ VCTR unitvector (VCTR in) {
 
 	double vectorlength = sqrt(in.X * in.X + in.Y * in.Y + in.Z * in.Z);
 
-	if (vectorlength > 10e-8) {
+	if ((vectorlength > 10e-8) && (vectorlength < 1.0e+300)) {
 
 		in.X = (in.X / vectorlength);
 		in.Y = (in.Y / vectorlength);
 		in.Z = (in.Z / vectorlength);
 	}
 	else {
-		dummy(); //For debugging only
-		ASSERT2(false,"[X, Y, Z] = [ "<<in.X<<", "<<in.Y<<", "<<in.Z<<"]");
+		dummy();
+		ASSERT2(false,"Problem with vector length, [X, Y, Z] = [ "<<in.X<<", "<<in.Y<<", "<<in.Z<<"]");
 	}
 
 	return in;
 }
 
-// FIXME Dead function!!!
+// TODO Dead function, delete code!
 //vector < double > unitvector (vector < double > in) {
 //
 //	size_t j = 0;
@@ -1527,7 +1527,25 @@ vector <double>  quartic_solution (double A, double B, double C, double D, doubl
 	return result;
 }
 
+void check_stress_tensor_singularity(const STRESSTENSOR& st) {
+
+	double det =
+	(st._11 * st._22 * st._33) +
+	(st._12 * st._23 * st._13) +
+	(st._13 * st._12 * st._23) -
+	(st._13 * st._22 * st._13) -
+	(st._12 * st._12 * st._33) -
+	(st._11 * st._23 * st._23);
+
+	if (fabs(det) < 1.0e-20) {
+		dummy();
+		ASSERT2(false, "Stress tensor nearly singluar, determinant = "<< det);
+	}
+}
+
 STRESSFIELD eigenvalue_eigenvector (STRESSTENSOR st) {
+
+	check_stress_tensor_singularity( st );
 
 	STRESSFIELD sf;
 
@@ -1609,14 +1627,25 @@ STRESSFIELD eigenvalue_eigenvector (STRESSTENSOR st) {
 	b2 = st._22 - sf.EIGENVALUE.Y;
 
 	sf.EIGENVECTOR2.Z = 1.0;
-	sf.EIGENVECTOR2.X = ((b1 * c2) - (b2 * c1)) / ((b2 * a1) - (a2 * b1));
+
+	double denom = (b2 * a1) - (a2 * b1);
+
+	if (fabs(denom) < 1.0e-20) {
+		dummy();
+		ASSERT2(false, "Computing eigenvector, small denom = "<< denom);
+	}
+
+	sf.EIGENVECTOR2.X = ((b1 * c2) - (b2 * c1)) / denom;
 	sf.EIGENVECTOR2.Y = - ((a1 * sf.EIGENVECTOR2.X) + c1) / b1;
+
+	ASSERT2(fabs(b1)>1.0e-20, "Computing eigenvector, b1 = "<< b1);
+
 	sf.EIGENVECTOR2 = unitvector (sf.EIGENVECTOR2);
 
 	if ((sf.EIGENVECTOR2.X > 0.9999) &&  (sf.EIGENVECTOR2.X < 1.0001)) sf.EIGENVECTOR2.X = 1.0 - 1E-8;
 	if ((sf.EIGENVECTOR2.Y > 0.9999) &&  (sf.EIGENVECTOR2.Y < 1.0001)) sf.EIGENVECTOR2.Y = 1.0 - 1E-8;
 	if ((sf.EIGENVECTOR2.Z > 0.9999) &&  (sf.EIGENVECTOR2.Z < 1.0001)) sf.EIGENVECTOR2.Z = 1.0 - 1E-8;
-	sf.EIGENVECTOR2 = unitvector (sf.EIGENVECTOR2); // FIXME NaN detected here
+	sf.EIGENVECTOR2 = unitvector (sf.EIGENVECTOR2);
 
 	a1 = st._11 - sf.EIGENVALUE.Z;
 	b2 = st._22 - sf.EIGENVALUE.Z;

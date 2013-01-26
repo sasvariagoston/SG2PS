@@ -779,7 +779,7 @@ bool error_cout (vector <string> bad_records, string recordtype) {
 
 double to_double(const vector<string>& row, record_name column) {
 
-	return string_to_double(row.at(column)); // FIXME Conversion errors were silently ignored
+	return string_to_double(row.at(column));
 }
 
 vector <GDB> create_GDB_from_rgf (const string& file_name) {

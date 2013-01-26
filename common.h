@@ -35,9 +35,11 @@ double rounding (double in);
 double mm_to_point (int i);
 
 VCTR  crossproduct (VCTR in1, VCTR in2);
-double dotproduct (VCTR in1, VCTR in2, bool normalisation);
+double dotproduct (VCTR in1, VCTR in2, bool normalisation=false);
 
 double det_3 (vector <vector <double> > in);
+
+void check_stress_tensor_singularity(const STRESSTENSOR& st);
 
 vector <vector <double> >  declare_3x3_matrix (double a, double b, double c, double d, double e, double f, double g, double h, double i);
 

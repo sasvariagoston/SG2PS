@@ -1556,7 +1556,7 @@ void process_rgf (string inputfilename, string XY_filename, INPSET inset) {
 	tiltgeodatabase = ptn (tiltgeodatabase, inset);
 
 	cout << "DATA EVALUATION AND EXPORT FROM '" << capslock(inputfilename) << ".RGF' DATABASE FILE" << endl;
-	createprojectfolders (projectfoldername, geodatabase); // FIXME Failures in creating project folders silently ignored
+	createprojectfolders (projectfoldername, geodatabase); // TODO Failures in creating project folders silently ignored
 	create_pointer_to_project_folder(projectfoldername);
 	copyoriginalfiles (projectfoldername);
 	outputselected_ps_rgf (projectfoldername, geodatabase, tiltgeodatabase, inset);
