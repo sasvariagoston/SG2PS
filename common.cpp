@@ -88,14 +88,7 @@ T to_type(const string& s) {
 
 	T ret = convert<T>(s, conversion_failed);
 
-<<<<<<< HEAD
 	dummy();
-=======
-	if (conversion_failed) {// TODO Only for debugging, one can set a breakpoint here
-		conversion_failed = true;
-	}
-
->>>>>>> refs/remotes/origin/master
 	ASSERT2(!conversion_failed,"failed to convert \""<<s<<"\"");
 
 	return ret;
