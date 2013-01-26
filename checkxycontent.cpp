@@ -181,6 +181,8 @@ bool XYcheck () {
 
 	for (size_t i = 1; i < xy_to_check.size(); i++) {
 
+		cout << i << "  " << xy_to_check.at(i).at(LOC_X) << endl;
+
 		if (!is_allowed_coordinate (xy_to_check.at(i).at(LOC_X)) ||	!is_allowed_coordinate (xy_to_check.at(i).at(LOC_Y))) bad_records.push_back(xy_to_check.at(i).at(LOCATION));
 	}
 

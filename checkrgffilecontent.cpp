@@ -357,6 +357,23 @@ bool LOCcheck () {
 	return correct;
 }
 
+bool XY_inrgf_check () {
+
+	vector <string> bad_records;
+
+	for (size_t i = 0; i < rgf_to_check.size(); i++) {
+
+		string LX = rgf_to_check.at(i).at(LOCX);
+		string LY = rgf_to_check.at(i).at(LOCY);
+
+		if ((!is_allowed_coordinate (LX) && (LX != ""))   ||   (!is_allowed_coordinate (LY) && (LY != "")))
+
+			bad_records.push_back(rgf_to_check.at(i).at(DATA_ID));
+	}
+
+	return error_cout (bad_records, "coordinate");
+}
+
 bool DATATYPEcheck () {
 
 	vector <string> bad_records;
@@ -517,7 +534,7 @@ bool rgffile_correct (string projectname) {
 			GCcheck () &&
 			COLORcheck () &&
 			LOCcheck () &&
-			XYcheck () &&
+			XY_inrgf_check () &&
 			DATATYPEcheck () &&
 			DIPDIRcheck () &&
 			DIPcheck () &&
@@ -802,8 +819,12 @@ vector <GDB> create_GDB_from_rgf (const string& file_name) {
 		buffer.COLOR = 		row.at(COLOR);
 		buffer.LOC = 		row.at(LOCATION);
 
-		buffer.LOCX = 	to_double(row, LOCX);
-		buffer.LOCY = 	to_double(row, LOCY);
+		if (row.at(LOCX) == "")	buffer.LOCX = 0.0;
+		else buffer.LOCX = 	to_double(row, LOCX);
+
+		if (row.at(LOCY) == "")	buffer.LOCY = 0.0;
+		else buffer.LOCY = 	to_double(row, LOCY);
+
 		buffer.FORMATION = 	row.at(FORMATION);
 		buffer.DATATYPE = 	row.at(DATATYPE);
 

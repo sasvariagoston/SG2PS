@@ -20,7 +20,7 @@ bool IDcheck ();
 bool GCcheck ();
 bool COLORcheck ();
 bool LOCcheck ();
-bool XYcheck ();
+bool XY_inrgf_check ();
 bool DATATYPEcheck ();
 bool DIPDIRcheck ( );
 bool DIPcheck ();
