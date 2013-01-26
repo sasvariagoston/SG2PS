@@ -4,7 +4,6 @@
 #ifndef ASSERTIONS_HPP
 #define ASSERTIONS_HPP
 
-#include <stdexcept>
 #include <sstream>
 
 // The FORTRAN traditions are followed
@@ -12,7 +11,10 @@
 // LE   <=	Less or Equals
 // LT   <	Less Than
 // GE   >=	Greater or Equals
+// GT   >	Greater Than // FIXME Finish!
+// CC approx. CirCa
 
+void throw_std_logic_error(const std::string& message);
 
 #ifdef __GNUG__
 #define FUNCTION_NAME __PRETTY_FUNCTION__
@@ -24,7 +26,7 @@
 	if (!(condition)) { \
 		std::ostringstream os; \
 		os << #condition << " failed in \'" << FUNCTION_NAME << "\' at "<< __FILE__ << ':' << __LINE__ ; \
-		throw std::logic_error(os.str()); \
+		throw_std_logic_error(os.str()); \
 	} \
 }
 
@@ -33,7 +35,7 @@
 		std::ostringstream os; \
 		os << #condition << " failed in \'" << FUNCTION_NAME << "\' at "<< __FILE__ << ':' << __LINE__ << '\n'; \
 		os << message ; \
-		throw std::logic_error(os.str()); \
+		throw_std_logic_error(os.str()); \
 	} \
 }
 
@@ -43,7 +45,7 @@
 		os << #val_1 << " == " << #val_2 << " failed: "; \
 		os << val_1 << " != " << val_2 << '\n'; \
 		os << "In \'" << FUNCTION_NAME << "\' at "<< __FILE__ << ':' << __LINE__ ; \
-		throw std::logic_error(os.str()); \
+		throw_std_logic_error(os.str()); \
 	} \
 }
 
@@ -53,7 +55,7 @@
 		os << #val_1 << " >= " << #val_2 << " failed: "; \
 		os << val_1 << " < " << val_2 << '\n'; \
 		os << "In \'" << FUNCTION_NAME << "\' at "<< __FILE__ << ':' << __LINE__ ; \
-		throw std::logic_error(os.str()); \
+		throw_std_logic_error(os.str()); \
 	} \
 }
 
@@ -63,7 +65,7 @@
 		os << #val_1 << " <= " << #val_2 << " failed: "; \
 		os << val_1 << " > " << val_2 << '\n'; \
 		os << "In \'" << FUNCTION_NAME << "\' at "<< __FILE__ << ':' << __LINE__ ; \
-		throw std::logic_error(os.str()); \
+		throw_std_logic_error(os.str()); \
 	} \
 }
 
@@ -73,7 +75,7 @@
 		os << #val_1 << " < " << #val_2 << " failed: "; \
 		os << val_1 << " >= " << val_2 << '\n'; \
 		os << "In \'" << FUNCTION_NAME << "\' at "<< __FILE__ << ':' << __LINE__ ; \
-		throw std::logic_error(os.str()); \
+		throw_std_logic_error(os.str()); \
 	} \
 }
 

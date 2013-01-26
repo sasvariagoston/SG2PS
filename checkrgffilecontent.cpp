@@ -8,6 +8,7 @@
 #include <iostream>
 #include <limits>
 #include <map>
+#include <stdexcept>
 
 #include "checkrgffilecontent.h"
 #include "array_to_vector.hpp"
