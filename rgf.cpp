@@ -412,7 +412,7 @@ CORRECTSTRIAE cGc_correct_striae_DIPDIRcor (GDB inGDB) {
 
 	cSTR = flip_D_vector (cSTR);
 
-	cSTR = unitvector (cSTR);
+	cSTR = unitvector (cSTR); // FIXME What if cSTR has approx 0 length?
 
 	misfit = ASIN (dotproduct(cSTR, inGDB.DC, false));
 
@@ -1457,7 +1457,7 @@ vector <GDB> ptn (vector <GDB> inGDB, INPSET inset) {
 			outGDB.at(i).ptnPd = dd;
 
 			temp3 = crossproduct (temp2, temp1);
-			temp3 = unitvector (temp3);
+			temp3 = unitvector (temp3); // FIXME What if temp3 has approximately 0 length?
 			temp3 = flip_D_vector (temp3);
 			dd = dipdir_dip_from_DXDYDZ (temp3);
 			outGDB.at(i).ptnN = temp3;

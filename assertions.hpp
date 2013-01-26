@@ -77,4 +77,6 @@
 	} \
 }
 
+inline void dummy() { };
+
 #endif

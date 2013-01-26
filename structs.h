@@ -5,19 +5,30 @@
 #ifndef STRUCTS_HPP_
 #define STRUCTS_HPP_
 
+#include <limits>
 #include <string>
 
 using namespace std;
 
+inline double NaN() { return numeric_limits<double>::quiet_NaN(); }
+
 struct VCTR {
 
-	double X, Y, Z;};
+	VCTR() { X=Y=Z=NaN(); }
+
+	double X, Y, Z;
+};
 
 struct DIPDIR_DIP {
 
-	double DIPDIR, DIP;};
+	DIPDIR_DIP() { DIPDIR=DIP=NaN(); }
+
+	double DIPDIR, DIP;
+};
 
 struct INPSET  {
+
+	INPSET() { angle=linewidth=NaN(); }
 
 	string datarule;
 	string plot;
@@ -41,6 +52,11 @@ struct INPSET  {
 };
 
 struct GDB  {
+
+	GDB() { LOCX=LOCY=DIPDIR=DIP=LDIR=LDIP=PALEON=LPITCH=PITCHANGLE=MISFIT=lambda=ANG=RUP=NaN();
+			iID=numeric_limits<int>::min();
+			UPWARD=false, UP=false;
+		   }
 
 	string ID;
 	string GC;
@@ -94,6 +110,8 @@ struct GDB  {
 
 struct CORRECTSTRIAE {
 
+	CORRECTSTRIAE() { X=Y=Z=MISFIT=NaN(); }
+
 	double X, Y, Z, MISFIT;
 };
 
@@ -126,6 +144,8 @@ struct CENTER {
 
 struct LOC_X_Y_FRM {
 
+	LOC_X_Y_FRM() { X=Y=NaN(); }
+
 	string LOC;
 	double X, Y;
 	string FORMATION;
@@ -134,15 +154,21 @@ struct LOC_X_Y_FRM {
 
 struct STRESSTENSOR {
 
+	STRESSTENSOR() { _11=_12=_13=_22=_23=_33=NaN(); }
+
 	double _11, _12, _13, _22, _23, _33;
 };
 
 struct ROSENUMBER {
 
+	ROSENUMBER() { PLN_NUM=LIN_NUM=NaN(); }
+
 	double PLN_NUM, LIN_NUM;
 };
 
 struct STRESSFIELD {
+
+	STRESSFIELD() { stressratio=delvaux_str=shmax=shmin=NaN(); }
 
 	VCTR EIGENVECTOR1, EIGENVECTOR2, EIGENVECTOR3, EIGENVALUE;
 	DIPDIR_DIP S_1, S_2, S_3;
@@ -152,17 +178,23 @@ struct STRESSFIELD {
 
 struct CENTR_VECT {
 
+	CENTR_VECT() { U=V=W=X=Y=Z=NaN(); }
+
 	double U, V, W, X, Y, Z;
 };
 
 
 struct sort_jacobi {
 
+	sort_jacobi() { ID=numeric_limits<int>::min(); eigenvalue=NaN(); }
+
 	int ID;
 	double eigenvalue;
 };
 
 struct ANG_PRM {
+
+	ANG_PRM() { a=b=c=d=e=f=g=h=i=j=k=l=m=n=p=q=u=v=w=NaN(); }
 
 	double a, b, c, d, e, f, g, h, i, j, k, l, m, n, p, q, u, v, w;
 };

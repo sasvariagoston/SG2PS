@@ -88,10 +88,7 @@ T to_type(const string& s) {
 
 	T ret = convert<T>(s, conversion_failed);
 
-	if (conversion_failed) {
-		conversion_failed = true; // TODO Only for debugging, one can set a breakpoint here
-	}
-
+	dummy();
 	ASSERT2(!conversion_failed,"failed to convert \""<<s<<"\"");
 
 	return ret;
@@ -120,12 +117,16 @@ double SIN (double in) {
 
 	in = (in * 3.1415926535) / 180.0;
 
+	ASSERT(!isnan(in));
+
 	return sin(in);
 }
 
 double COS (double in) {
 
 	in = (in * 3.1415926535) / 180.0;
+
+	ASSERT(!isnan(in));
 
 	return cos(in);
 }
@@ -137,6 +138,8 @@ double ASIN (double in) {
 
 	in = asin(in);
 
+	ASSERT(!isnan(in));
+
 	return (in * 180.0) / 3.1415926535;
 }
 
@@ -147,6 +150,8 @@ double ACOS (double in) {
 
 	in = acos(in);
 
+	ASSERT(!isnan(in));
+
 	return (in * 180.0) / 3.1415926535;
 }
 
@@ -154,10 +159,12 @@ double ATAN (double in) {
 
 	in = atan(in);
 
+	ASSERT(!isnan(in));
+
 	return (in * 180.0) / 3.1415926535;
 }
 
-double rounding (double in) {
+double rounding (double in) { // TODO What is going on?
 
 	double fract_part, int_part;
 
@@ -201,6 +208,8 @@ double dotproduct (VCTR in1, VCTR in2, bool normalisation) {
 	double out = in1.X * in2.X + in1.Y * in2.Y + in1.Z * in2.Z;
 
 	if (normalisation) out = out / (l_in1 * l_in2);
+
+	ASSERT(!isnan(out));
 
 	return out;
 }
@@ -382,7 +391,11 @@ double teta (vector <vector <double> > in, size_t m, size_t n) {
 
 	double teta = 2.0 * in.at(m).at(n) / (in.at(n).at(n) - in.at(m).at(m));
 
-	return atan(teta) / 2.0;
+	double ret = atan(teta) / 2.0;
+
+	ASSERT(!isnan(ret));
+
+	return ret;
 }
 
 vector <vector <double> > init_rotation_mtrx (double teta, size_t m, size_t n, size_t dimension) {
@@ -985,6 +998,11 @@ VCTR generarte_stress_colors (double value) {
 
 VCTR unitvector (VCTR in) {
 
+	if (isnan(in.X)||isnan(in.Y)||isnan(in.Z)) {
+		dummy();
+		ASSERT2(false,"NaN detected, [X, Y, Z] = [ "<<in.X<<", "<<in.Y<<", "<<in.Z<<"]");
+	}
+
 	double vectorlength = sqrt(in.X * in.X + in.Y * in.Y + in.Z * in.Z);
 
 	if (vectorlength > 10e-8) {
@@ -993,39 +1011,44 @@ VCTR unitvector (VCTR in) {
 		in.Y = (in.Y / vectorlength);
 		in.Z = (in.Z / vectorlength);
 	}
-
-	return in;
-}
-
-vector < double > unitvector (vector < double > in) {
-
-	size_t j = 0;
-	double vectorlength = 0.0;
-
-	do {
-
-		vectorlength = vectorlength + (in.at(j) * in.at(j));
-		j++;
-
-	} while (j < in.size());
-
-	vectorlength = sqrt (vectorlength);
-	j = 0;
-
-	if (vectorlength < 10e-8) return in;
-
 	else {
-
-		do {
-
-			in.at(j) = in.at(j) / vectorlength;
-			j++;
-
-		} while (j < in.size());
+		dummy(); //For debugging only
+		ASSERT2(false,"[X, Y, Z] = [ "<<in.X<<", "<<in.Y<<", "<<in.Z<<"]");
 	}
 
 	return in;
 }
+
+// FIXME Dead function!!!
+//vector < double > unitvector (vector < double > in) {
+//
+//	size_t j = 0;
+//	double vectorlength = 0.0;
+//
+//	do {
+//
+//		vectorlength = vectorlength + (in.at(j) * in.at(j));
+//		j++;
+//
+//	} while (j < in.size());
+//
+//	vectorlength = sqrt (vectorlength);
+//	j = 0;
+//
+//	if (vectorlength < 10e-8) return in;
+//
+//	else {
+//
+//		do {
+//
+//			in.at(j) = in.at(j) / vectorlength;
+//			j++;
+//
+//		} while (j < in.size());
+//	}
+//
+//	return in;
+//}
 
 CENTR_VECT unitvector (CENTR_VECT in) {
 
@@ -1041,6 +1064,9 @@ CENTR_VECT unitvector (CENTR_VECT in) {
 		in.X = (in.X / vectorlength);
 		in.Y = (in.Y / vectorlength);
 		in.Z = (in.Z / vectorlength);
+	}
+	else {
+		ASSERT2(false,"[U, V, W, X, Y, Z] = [ "<<in.U<<", "<<in.V<<", "<<in.W<<", "<<in.X<<", "<<in.Y<<", "<<in.Z<<"]");
 	}
 
 	return in;
@@ -1375,6 +1401,8 @@ vector <double> cubic_solution (double A, double B, double C, double D) {
 
 		double K = acos(-(G / (2.0 * I)));
 
+		ASSERT(!isnan(K));
+
 		double L = -J;
 
 		double M = cos (K / 3.0);
@@ -1588,7 +1616,7 @@ STRESSFIELD eigenvalue_eigenvector (STRESSTENSOR st) {
 	if ((sf.EIGENVECTOR2.X > 0.9999) &&  (sf.EIGENVECTOR2.X < 1.0001)) sf.EIGENVECTOR2.X = 1.0 - 1E-8;
 	if ((sf.EIGENVECTOR2.Y > 0.9999) &&  (sf.EIGENVECTOR2.Y < 1.0001)) sf.EIGENVECTOR2.Y = 1.0 - 1E-8;
 	if ((sf.EIGENVECTOR2.Z > 0.9999) &&  (sf.EIGENVECTOR2.Z < 1.0001)) sf.EIGENVECTOR2.Z = 1.0 - 1E-8;
-	sf.EIGENVECTOR2 = unitvector (sf.EIGENVECTOR2);
+	sf.EIGENVECTOR2 = unitvector (sf.EIGENVECTOR2); // FIXME NaN detected here
 
 	a1 = st._11 - sf.EIGENVALUE.Z;
 	b2 = st._22 - sf.EIGENVALUE.Z;

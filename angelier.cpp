@@ -7,6 +7,7 @@
 #include <iostream>
 
 #include "angelier.h"
+#include "assertions.hpp"
 #include "ps.h"
 #include "common.h"
 #include "rgf.h"
@@ -223,6 +224,8 @@ STRESSTENSOR compute_angelier_stresstensor (ANG_PRM p, vector <GDB> inGDB) {
 	do {
 
 		psi = 2.0 * atan (quartic_roots_for_psi.at(i));
+
+		ASSERT(!isnan(psi));
 
 		alpha = (d_1 * cos (psi) + d_i_1 * sin (psi) + d_ii_1) / d_0;
 		gamma = (d_2 * cos (psi) + d_i_2 * sin (psi) + d_ii_2) / d_0;
@@ -557,6 +560,8 @@ STRESSTENSOR BINGHAM (vector <GDB> inGDB) {
 	st._22 = 0.0;
 	st._23 = 0.0;
 	st._33 = 0.0;
+
+	// FIXME Undefined are: 21, 31, 32
 
 	VCTR N = declare_vector (0.0, 1.0, 0.0);
 	VCTR E = declare_vector (1.0, 0.0, 0.0);
