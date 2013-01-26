@@ -38,13 +38,13 @@ int main (int argc, char *argv[]) {
 	}
 
 	catch(out_of_range& e) {
-		cout << "This is a bug, please report it together with the input files you used!\n";
+		cout << "This is a bug, please report it (sg2ps@sg2ps.eu) together with the input files you used!\n";
 		cout << e.what() << endl;
 		return ExitStatus::BUG;
 	}
 
 	catch(logic_error& e) {
-		cout << "A bug has been detected, please report it!\n";
+		cout << "A bug has been detected, please report it (sg2ps@sg2ps.eu)!\n";
 		cout << e.what() << endl;
 		return ExitStatus::LOGIC_ERROR;
 	}
@@ -55,13 +55,13 @@ int main (int argc, char *argv[]) {
 	}
 
 	catch(exception& e) {
-		cout << "Something went wrong, please report it!\n";
+		cout << "Something went wrong, please report it (sg2ps@sg2ps.eu)!\n";
 		cout << "std::exception: " << e.what() << endl;
 		return ExitStatus::STD_EXCEPTION;
 	}
 
 	catch(...) {
-		cout << "Unknown error, please report it!" << endl;
+		cout << "Unknown error, please report it (sg2ps@sg2ps.eu)!" << endl;
 		return ExitStatus::UNKNOWN_ERROR;
 	}
 

@@ -760,22 +760,23 @@ bool error_cout (vector <string> bad_records, string recordtype) {
 	}
 }
 
+double to_double(const vector<string>& row, record_name column) {
+
+	return string_to_double(row.at(column)); // FIXME Conversion errors were silently ignored
+}
+
 vector <GDB> create_GDB_from_rgf (const string& file_name) {
 
 	vector <GDB> outGDB;
-
-	size_t i = 0;
 
 	read_in_rgf(file_name); // TODO Can throw rgf_error in console, batch and debug mode
 
 	complete_rgf_to_check ();
 
-	for (i = 0; i < rgf_to_check.size(); i++) {
-
-		bool failed; // TODO Eliminate
+	for (size_t i = 0; i < rgf_to_check.size(); ++i) {
 
 		GDB buffer;
-
+		// TODO Should be moved to ctor   -------------------------------------
 		buffer.DIPDIR = 999.99;
 		buffer.DIP = 	999.99;
 		buffer.LDIR = 	999.99;
@@ -793,88 +794,92 @@ vector <GDB> create_GDB_from_rgf (const string& file_name) {
 		buffer.LPITCHSENSE = 	"NONE";
 
 		buffer.iID = 		i;
+		//---------------------------------------------------------------------
+		const vector<string>& row = rgf_to_check.at(i);
 
-		buffer.ID = 		rgf_to_check.at(i).at(DATA_ID);
-		buffer.GC = 		rgf_to_check.at(i).at(GROUP);
-		buffer.COLOR = 		rgf_to_check.at(i).at(COLOR);
-		buffer.LOC = 		rgf_to_check.at(i).at(LOCATION);
+		buffer.ID = 		row.at(DATA_ID);
+		buffer.GC = 		row.at(GROUP);
+		buffer.COLOR = 		row.at(COLOR);
+		buffer.LOC = 		row.at(LOCATION);
 
-		buffer.LOCX = 		string_to_double(rgf_to_check.at(i).at(LOCX), failed);
-		buffer.LOCY = 		string_to_double(rgf_to_check.at(i).at(LOCY), failed);
-		buffer.FORMATION = 	rgf_to_check.at(i).at(FORMATION);
-		buffer.DATATYPE = 	rgf_to_check.at(i).at(DATATYPE);
+		buffer.LOCX = 	to_double(row, LOCX);
+		buffer.LOCY = 	to_double(row, LOCY);
+		buffer.FORMATION = 	row.at(FORMATION);
+		buffer.DATATYPE = 	row.at(DATATYPE);
 
-		if (	(is_allowed_lineation_datatype (rgf_to_check.at(i).at(DATATYPE))) ||
-				(is_allowed_plane_datatype (rgf_to_check.at(i).at(DATATYPE)))) {
+		if (	(is_allowed_lineation_datatype (row.at(DATATYPE))) ||
+				(is_allowed_plane_datatype (row.at(DATATYPE)))) {
 
-			buffer.DIPDIR = 		string_to_double(rgf_to_check.at(i).at(DIR), failed);
-			buffer.DIP = 			string_to_double(rgf_to_check.at(i).at(DIP), failed);
-			buffer.corr.DIPDIR = 	string_to_double(rgf_to_check.at(i).at(DIR), failed);
-			buffer.corr.DIP = 		string_to_double(rgf_to_check.at(i).at(DIP), failed);
+			buffer.DIPDIR = 		to_double(row, DIR);
+			buffer.DIP = 			to_double(row, DIP);
+			buffer.corr.DIPDIR = 	to_double(row, DIR);
+			buffer.corr.DIP = 		to_double(row, DIP);
 		}
 
-		if (is_PITCHcorrect(rgf_to_check.at(i))) buffer.LINEATION = "PITCH";
-		if (is_LINEATIONcorrect(rgf_to_check.at(i))) buffer.LINEATION = "LINEATION";
-		if (is_SCcorrect(rgf_to_check.at(i))) buffer.LINEATION = "SC";
+		if (is_PITCHcorrect(row)) buffer.LINEATION = "PITCH";
+		if (is_LINEATIONcorrect(row)) buffer.LINEATION = "LINEATION";
+		if (is_SCcorrect(row)) buffer.LINEATION = "SC";
 
 
-		if (	(is_allowed_striae_datatype (rgf_to_check.at(i).at(DATATYPE))) ||
-				(is_allowed_SC_datatype (rgf_to_check.at(i).at(DATATYPE)))) {
+		if (	(is_allowed_striae_datatype (row.at(DATATYPE))) ||
+				(is_allowed_SC_datatype (row.at(DATATYPE)))) {
 
-			buffer.DIPDIR = 		string_to_double(rgf_to_check.at(i).at(DIR), failed);
-			buffer.DIP = 			string_to_double(rgf_to_check.at(i).at(DIP), failed);
-			buffer.corr.DIPDIR = 	string_to_double(rgf_to_check.at(i).at(DIR), failed);
-			buffer.corr.DIP = 		string_to_double(rgf_to_check.at(i).at(DIP), failed);
+			buffer.DIPDIR = 		to_double(row, DIR);
+			buffer.DIP = 			to_double(row, DIP);
+			buffer.corr.DIPDIR = 	to_double(row, DIR);
+			buffer.corr.DIP = 		to_double(row, DIP);
 
 
 			if (buffer.LINEATION != "PITCH" ) {
 
-				buffer.LDIR = 			string_to_double(rgf_to_check.at(i).at(LDIR), failed);
-				buffer.LDIP = 			string_to_double(rgf_to_check.at(i).at(LDIP), failed);
-				buffer.corrL.DIPDIR =	string_to_double(rgf_to_check.at(i).at(LDIR), failed);
-				buffer.corrL.DIP = 		string_to_double(rgf_to_check.at(i).at(LDIP), failed);
+				buffer.LDIR = 			to_double(row, LDIR);
+				buffer.LDIP = 			to_double(row, LDIP);
+				buffer.corrL.DIPDIR =	to_double(row, LDIR);
+				buffer.corrL.DIP = 		to_double(row, LDIP);
 			}
 
 			else {
 
-				buffer.LPITCH = 		string_to_double(rgf_to_check.at(i).at(LDIR), failed);
-				buffer.LPITCHSENSE = 	rgf_to_check.at(i).at(LDIP);
+				buffer.LPITCH = 		to_double(row, LDIR);
+				buffer.LPITCHSENSE = 	row.at(LDIP);
 			}
 		}
 
-		if (is_allowed_lithology_datatype (rgf_to_check.at(i).at(DATATYPE)))	buffer.DATAGROUP = "LITHOLOGY";
-		if (is_allowed_plane_datatype (rgf_to_check.at(i).at(DATATYPE))) 		buffer.DATAGROUP = "PLANE";
-		if (is_allowed_lineation_datatype (rgf_to_check.at(i).at(DATATYPE))) 	buffer.DATAGROUP = "LINEATION";
-		if (is_allowed_striae_datatype (rgf_to_check.at(i).at(DATATYPE))) 		buffer.DATAGROUP = "STRIAE";
-		if (is_allowed_SC_datatype (rgf_to_check.at(i).at(DATATYPE))) 			buffer.DATAGROUP = "SC";
+		if (is_allowed_lithology_datatype (row.at(DATATYPE)))	buffer.DATAGROUP = "LITHOLOGY";
+		if (is_allowed_plane_datatype (row.at(DATATYPE))) 		buffer.DATAGROUP = "PLANE";
+		if (is_allowed_lineation_datatype (row.at(DATATYPE))) 	buffer.DATAGROUP = "LINEATION";
+		if (is_allowed_striae_datatype (row.at(DATATYPE))) 		buffer.DATAGROUP = "STRIAE";
+		if (is_allowed_SC_datatype (row.at(DATATYPE))) 			buffer.DATAGROUP = "SC";
 
-		if (rgf_to_check.at(i).at(DATATYPE) == "BEDDING") {
+		if (row.at(DATATYPE) == "BEDDING") {
 
-			if (is_allowed_bedding_overturned_sense(rgf_to_check.at(i).at(SENSE))) 	buffer.OFFSET = "OVERTURNED";
-			if (is_allowed_bedding_normal_sense(rgf_to_check.at(i).at(SENSE))) 		buffer.OFFSET = "NORMAL";
+			if (is_allowed_bedding_overturned_sense(row.at(SENSE))) 	buffer.OFFSET = "OVERTURNED";
+			if (is_allowed_bedding_normal_sense(row.at(SENSE))) 		buffer.OFFSET = "NORMAL";
 		}
 
-		if (rgf_to_check.at(i).at(DATATYPE) == "STRIAE") {
+		if (row.at(DATATYPE) == "STRIAE") {
 
-			if (is_allowed_striae_inverse_sense(rgf_to_check.at(i).at(SENSE)))		buffer.OFFSET = "INVERSE";
-			if (is_allowed_striae_normal_sense(rgf_to_check.at(i).at(SENSE))) 		buffer.OFFSET = "NORMAL";
-			if (is_allowed_striae_dextral_sense(rgf_to_check.at(i).at(SENSE))) 		buffer.OFFSET = "DEXTRAL";
-			if (is_allowed_striae_sinistral_sense(rgf_to_check.at(i).at(SENSE)))	buffer.OFFSET = "SINISTRAL";
+			if (is_allowed_striae_inverse_sense(row.at(SENSE)))		buffer.OFFSET = "INVERSE";
+			if (is_allowed_striae_normal_sense(row.at(SENSE))) 		buffer.OFFSET = "NORMAL";
+			if (is_allowed_striae_dextral_sense(row.at(SENSE))) 	buffer.OFFSET = "DEXTRAL";
+			if (is_allowed_striae_sinistral_sense(row.at(SENSE)))	buffer.OFFSET = "SINISTRAL";
 		}
 
-		if (is_LINEATIONcorrect (rgf_to_check.at(i)))	buffer.LINEATION = "LINEATION";
-		if (is_PITCHcorrect (rgf_to_check.at(i))) 		buffer.LINEATION = "PITCH";
-		if (is_SCcorrect (rgf_to_check.at(i))) 			buffer.LINEATION = "SC";
+		if (is_LINEATIONcorrect (row))	buffer.LINEATION = "LINEATION";
+		if (is_PITCHcorrect (row)) 		buffer.LINEATION = "PITCH";
+		if (is_SCcorrect (row)) 		buffer.LINEATION = "SC";
 
-		if (rgf_to_check.at(i).at(PALEONORTH) == "") buffer.PALEON = 0.0;
-		else buffer.PALEON = string_to_double(rgf_to_check.at(i).at(PALEONORTH), failed);
+		if (row.at(PALEONORTH) == "") buffer.PALEON = 0.0;
+		else buffer.PALEON = to_double(row, PALEONORTH);
 
-		buffer.COMMENT = rgf_to_check.at(i).at(COMMENT);
+		buffer.COMMENT = row.at(COMMENT);
 
 		outGDB.push_back(buffer);
 	}
 
-	cout << "  - Geodatabase completed for " << i << " records." << endl;
+	ASSERT(outGDB.size()==rgf_to_check.size());
+
+	cout << "  - Geodatabase completed for " << outGDB.size() << " records." << endl; // TODO The original message was lying
 
 	return outGDB;
 }
@@ -891,11 +896,11 @@ const size_t NOT_FOUND = numeric_limits<size_t>::max();
 }
 
 template <typename Container, typename T>
-size_t find_index(const Container& c, const T& value) {
+size_t find_index(const Container& c, const T& value) { // assumes vector
 
 	typename Container::const_iterator pos = std::find(c.begin(), c.end(), value);
 
-	return (pos == c.end()) ? NOT_FOUND : std::distance(c.begin(), pos);
+	return (pos == c.end()) ? NOT_FOUND : static_cast<size_t>( distance(c.begin(), pos) );
 }
 
 size_t cell_index(size_t i) {
@@ -1023,7 +1028,7 @@ void build_column_map() {
 	show_unused_ignored_columns();
 }
 
-void convert_row(const vector<string>& orig_row, size_t index) {
+void convert_row(const vector<string>& orig_row) {
 
 	const size_t n_col = reserved_column_names().size();
 
@@ -1051,7 +1056,7 @@ void convert_csv_rgf() {
 
 	for (size_t i=1; i<orig_table.size(); ++i) {
 
-		convert_row(orig_table.at(i), i-1);
+		convert_row(orig_table.at(i));
 	}
 }
 

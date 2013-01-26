@@ -81,19 +81,32 @@ double string_to_double( const string& s, bool& failed) {
 	return convert<double>(s, failed);
 }
 
+template <typename T>
+T to_type(const string& s) {
+
+	bool conversion_failed = true;
+
+	T ret = convert<T>(s, conversion_failed);
+
+	if (conversion_failed) {
+		conversion_failed = true; // TODO Only for debugging, one can set a breakpoint here
+	}
+
+	ASSERT2(!conversion_failed,"failed to convert \""<<s<<"\"");
+
+	return ret;
+}
+
+// throws logic_error
+double string_to_double(const string& s) {
+
+	return to_type<double>(s);
+}
+
 // throws logic_error
 int string_to_int(const string& s) {
 
-	bool failed = true;
-
-	int ret = convert<int>(s, failed);
-
-	if (failed) {
-		// it is logic_error because convert<int> should be called if conversion can fail
-		throw logic_error("failed to convert "+s+" to integer value");
-	}
-
-	return ret;
+	return to_type<int>(s);
 }
 
 double SIGNUM (double in) {

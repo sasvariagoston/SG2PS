@@ -28,6 +28,15 @@
 	} \
 }
 
+#define ASSERT2(condition, message) { \
+	if (!(condition)) { \
+		std::ostringstream os; \
+		os << #condition << " failed in \'" << FUNCTION_NAME << "\' at "<< __FILE__ << ':' << __LINE__ << '\n'; \
+		os << message ; \
+		throw std::logic_error(os.str()); \
+	} \
+}
+
 #define ASSERT_EQ(val_1, val_2) { \
 	if (val_1!=val_2) { \
 		std::ostringstream os; \

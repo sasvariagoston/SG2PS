@@ -18,7 +18,8 @@ vector<string> vec_to_uppercase(const vector<string>& v);
 
 const string int_to_string(int i);
 const string char_to_string (char i);
-double string_to_double( const string& s, bool& failed);
+double string_to_double(const string& s, bool& failed);
+double string_to_double(const string& s); // throws logic_error
 
 int string_to_int(const string& s); // throws logic_error
 
