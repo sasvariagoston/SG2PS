@@ -89,7 +89,6 @@ T to_type(const string& s) {
 
 	T ret = convert<T>(s, conversion_failed);
 
-	dummy();
 	ASSERT2(!conversion_failed,"failed to convert \""<<s<<"\"");
 
 	return ret;
@@ -1000,7 +999,6 @@ VCTR generarte_stress_colors (double value) {
 VCTR unitvector (VCTR in) {
 
 	if (isnan(in.X)||isnan(in.Y)||isnan(in.Z)) {
-		dummy();
 		ASSERT2(false,"NaN detected, [X, Y, Z] = [ "<<in.X<<", "<<in.Y<<", "<<in.Z<<"]");
 	}
 
@@ -1013,7 +1011,6 @@ VCTR unitvector (VCTR in) {
 		in.Z = (in.Z / vectorlength);
 	}
 	else {
-		dummy();
 		ASSERT2(false,"Problem with vector length, [X, Y, Z] = [ "<<in.X<<", "<<in.Y<<", "<<in.Z<<"]");
 	}
 
@@ -1067,7 +1064,6 @@ CENTR_VECT unitvector (CENTR_VECT in) {
 		in.Z = (in.Z / vectorlength);
 	}
 	else {
-		dummy();
 		ASSERT2(false,"[U, V, W, X, Y, Z] = [ "<<in.U<<", "<<in.V<<", "<<in.W<<", "<<in.X<<", "<<in.Y<<", "<<in.Z<<"]");
 	}
 
@@ -1594,7 +1590,6 @@ STRESSFIELD eigenvalue_eigenvector (STRESSTENSOR st, bool bingham) {
 	double denom = (b2 * a1) - (a2 * b1);
 
 	if (fabs(denom) < 1.0e-20) {
-		dummy();
 		ASSERT2(false, "Computing eigenvector, small denom = "<< denom);
 	}
 

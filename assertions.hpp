@@ -79,6 +79,4 @@ void throw_std_logic_error(const std::string& message);
 	} \
 }
 
-inline void dummy() { };
-
 #endif

@@ -615,7 +615,6 @@ STRESSTENSOR BINGHAM (vector <GDB> inGDB) {
 		double norm_sqr = dotproduct(planenormal,planenormal);
 
 		if (fabs(norm_sqr-1.0) > 1.0e-4) {
-			dummy();
 			ASSERT2(false, "Should be unitvector [X, Y, Z] = [ "<<planenormal.X<<", "<<planenormal.Y<<", "<<planenormal.Z<<"]");
 		}
 
