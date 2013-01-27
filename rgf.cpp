@@ -836,7 +836,7 @@ vector <GDB> cGc_average (vector <GDB> inGDB) {
 		j = intervalbegin;
 		independentrecordcounter++;
 		STRESSFIELD sf;
-		if (to_process_GDB.size() > 1)	sf = BINGHAM_PROCESS (to_process_GDB);
+		if ((to_process_GDB.size() >= 4) && ((outGDB.at(j).DATATYPE != "STRIAE") && (outGDB.at(j).DATATYPE != "LITHOLOGY") && (outGDB.at(j).DATATYPE != "SC")))	sf = BINGHAM_PROCESS (to_process_GDB);
 		else {
 			sf.EIGENVECTOR2 = to_process_GDB.at(0).D;
 			sf.S_2 = to_process_GDB.at(0).corr;

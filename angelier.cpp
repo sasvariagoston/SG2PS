@@ -542,7 +542,7 @@ STRESSFIELD NDA_PROCESS (vector <GDB> inGDB, INPSET inset) {
 
 	STRESSTENSOR st = NDA (inGDB, inset);
 
-	STRESSFIELD sf = eigenvalue_eigenvector (st);
+	STRESSFIELD sf = eigenvalue_eigenvector (st, false);
 
 	sf = computestressfield_DXDYDZ (sf);
 
@@ -661,7 +661,7 @@ STRESSFIELD BINGHAM_PROCESS (vector <GDB> inGDB) {
 
 	st = invert_stress_tensor (st);
 
-	STRESSFIELD sf = eigenvalue_eigenvector (st);
+	STRESSFIELD sf = eigenvalue_eigenvector (st, true);
 
 	double total_eigenvalue = sf.EIGENVALUE.X + sf.EIGENVALUE.Y + sf.EIGENVALUE.Z;
 
@@ -708,7 +708,7 @@ vector <GDB> inversion (string method, vector <GDB> inGDB, ofstream& o, INPSET i
 
 		st = NDA (inGDB, inset);
 
-		sf = eigenvalue_eigenvector (st);
+		sf = eigenvalue_eigenvector (st, false);
 
 		sf = computestressfield_DXDYDZ (sf);
 
@@ -723,7 +723,7 @@ vector <GDB> inversion (string method, vector <GDB> inGDB, ofstream& o, INPSET i
 
 		st = ANGELIER (inGDB, inset);
 
-		sf = eigenvalue_eigenvector (st);
+		sf = eigenvalue_eigenvector (st, false);
 
 		sf = computestressfield_DXDYDZ (sf);
 
@@ -742,7 +742,7 @@ vector <GDB> inversion (string method, vector <GDB> inGDB, ofstream& o, INPSET i
 			if (i == 0) inGDB = return_stressvector_estimators (st, inGDB, "ANGELIER", false);
 			else 		inGDB = return_stressvector_estimators (st, inGDB, "MOSTAFA", false);
 
-			sf = eigenvalue_eigenvector (st);
+			sf = eigenvalue_eigenvector (st, false);
 			sf = computestressfield_DXDYDZ (sf);
 			sf = stress_regime (sf);
 			PS_lineation (inGDB.at(0), o, inset, center, sf, false, "S1_ITER");
@@ -755,7 +755,7 @@ vector <GDB> inversion (string method, vector <GDB> inGDB, ofstream& o, INPSET i
 
 		} while (i < iteration_number);
 
-		sf = eigenvalue_eigenvector (st);
+		sf = eigenvalue_eigenvector (st, false);
 
 		sf = computestressfield_DXDYDZ (sf);
 
@@ -771,7 +771,7 @@ vector <GDB> inversion (string method, vector <GDB> inGDB, ofstream& o, INPSET i
 
 		st = MICHAEL (inGDB, inset);
 
-		sf = eigenvalue_eigenvector (st);
+		sf = eigenvalue_eigenvector (st, false);
 
 		sf = computestressfield_DXDYDZ (sf);
 
@@ -810,7 +810,7 @@ vector <GDB> inversion (string method, vector <GDB> inGDB, ofstream& o, INPSET i
 
 			if (misfit1 < misfit2) st = invert_stress_tensor (st);
 
-			sf = eigenvalue_eigenvector (st);
+			sf = eigenvalue_eigenvector (st, false);
 
 			sf = computestressfield_DXDYDZ (sf);
 			sf = stress_regime (sf);
@@ -847,7 +847,7 @@ vector <GDB> inversion (string method, vector <GDB> inGDB, ofstream& o, INPSET i
 
 		if (misfit1 < misfit2) st = invert_stress_tensor (st);
 
-		sf = eigenvalue_eigenvector (st);
+		sf = eigenvalue_eigenvector (st, false);
 
 		sf = computestressfield_DXDYDZ (sf);
 
@@ -864,7 +864,7 @@ vector <GDB> inversion (string method, vector <GDB> inGDB, ofstream& o, INPSET i
 		else tempGDB = inGDB;
 
 		st = ptn_P (tempGDB);
-		sf_ptn = eigenvalue_eigenvector (st);
+		sf_ptn = eigenvalue_eigenvector (st, false);
 		sf_ptn = computestressfield_DXDYDZ (sf_ptn);
 
 		sf.EIGENVALUE.X = sf_ptn.EIGENVALUE.X;
@@ -872,14 +872,14 @@ vector <GDB> inversion (string method, vector <GDB> inGDB, ofstream& o, INPSET i
 		sf.S_1 = sf_ptn.S_1;
 
 		st = ptn_T (tempGDB);
-		sf_ptn = eigenvalue_eigenvector (st);
+		sf_ptn = eigenvalue_eigenvector (st, false);
 		sf_ptn = computestressfield_DXDYDZ (sf_ptn);
 		sf.EIGENVALUE.Z = sf_ptn.EIGENVALUE.Z;
 		sf.EIGENVECTOR3 = sf_ptn.EIGENVECTOR1;
 		sf.S_3 = sf_ptn.S_1;
 
 		st = ptn_N (tempGDB);
-		sf_ptn = eigenvalue_eigenvector (st);
+		sf_ptn = eigenvalue_eigenvector (st, false);
 		sf_ptn = computestressfield_DXDYDZ (sf_ptn);
 		sf.EIGENVALUE.Y = sf_ptn.EIGENVALUE.Y;
 		sf.EIGENVECTOR2 = sf_ptn.EIGENVECTOR1;

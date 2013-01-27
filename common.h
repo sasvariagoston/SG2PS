@@ -120,7 +120,7 @@ bool existence_of_groupcodes (vector <GDB> inGDB);
 vector <double> cubic_solution (double A, double B, double C, double D);
 vector <double> quartic_solution (double A, double B, double C, double D, double E);
 
-STRESSFIELD eigenvalue_eigenvector (STRESSTENSOR st);
+STRESSFIELD eigenvalue_eigenvector (STRESSTENSOR st, bool bingham);
 STRESSTENSOR stresstensor_from_eigenvalue_eigenvector (STRESSFIELD sf);
 
 STRESSFIELD computestressfield_DXDYDZ (STRESSFIELD in);
