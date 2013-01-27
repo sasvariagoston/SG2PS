@@ -593,6 +593,35 @@ STRESSTENSOR BINGHAM (vector <GDB> inGDB) {
 	return st;
 }
 
+
+
+size_t useful_striae_number (vector <GDB> inGDB) {
+
+	size_t useful_striae_number = 0;
+
+	for (size_t i = 0; i < inGDB.size(); i++) {
+
+		if (inGDB.at(i).OFFSET != "NONE") useful_striae_number++;
+	}
+
+	return useful_striae_number;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 vector <GDB> return_stressvector_estimators (STRESSTENSOR st, vector <GDB> inGDB, string method, bool compression_positive) {
 
 	vector <GDB> outGDB = inGDB;

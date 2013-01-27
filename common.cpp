@@ -1066,6 +1066,7 @@ CENTR_VECT unitvector (CENTR_VECT in) {
 		in.Z = (in.Z / vectorlength);
 	}
 	else {
+		dummy();
 		ASSERT2(false,"[U, V, W, X, Y, Z] = [ "<<in.U<<", "<<in.V<<", "<<in.W<<", "<<in.X<<", "<<in.Y<<", "<<in.Z<<"]");
 	}
 
@@ -1566,7 +1567,7 @@ STRESSFIELD eigenvalue_eigenvector (STRESSTENSOR st, bool bingham) {
 
 	sort(X.begin(), X.begin()+3);
 
-	if (bingham) X.at(2) -= 10e-5;
+	if (bingham) X.at(2) -= 10e-1;
 
 	sf.EIGENVALUE.X = X.at(2);
 	sf.EIGENVALUE.Y = X.at(1);

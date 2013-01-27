@@ -28,6 +28,8 @@ STRESSFIELD NDA_PROCESS (vector <GDB> inGDB, INPSET inset);
 STRESSTENSOR BINGHAM (vector <GDB> inGDB);
 STRESSFIELD BINGHAM_PROCESS (vector <GDB> inGDB);
 
+size_t useful_striae_number (vector <GDB> inGDB);
+
 vector <GDB> return_stressvector_estimators (STRESSTENSOR st, vector <GDB> inGDB, string method, bool compression_positive);
 vector <GDB> generate_virtual_striae (vector <GDB> inGDB);
 vector <GDB> inversion (string method, vector <GDB> inGDB, ofstream& o, INPSET inset, CENTER center, CENTER mohr_center, PAPER P);

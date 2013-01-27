@@ -56,11 +56,15 @@ vector <GDB> cGc_striae_correction (vector <GDB> inGDB);
 bool byLocType(const GDB& x, const GDB& y);
 bool byLocTypeGc(const GDB& x, const GDB& y);
 bool byiID(const GDB& x, const GDB& y);
+bool bycorrDIPDIR(const GDB& x, const GDB& y);
+bool bycorrDIP(const GDB& x, const GDB& y);
 bool byeigenvalue(const sort_jacobi& x, const sort_jacobi& y);
 vector <GDB> sort_by_iID (vector <GDB> inGDB);
 
 bool stopcriteria (string prevDATATYPE, string DATATYPE, string prevLOC, string LOC, string prevGC, string GC, INPSET inset);
 bool stopcriteria (string prevDATATYPE, string DATATYPE, string prevLOC, string LOC);
+
+bool check_dataset_homogenity (vector <GDB> inGDB);
 
 void fold_from_planes (vector <GDB> inGDB, ofstream& o, INPSET inset, CENTER center);
 
