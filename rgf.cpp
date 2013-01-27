@@ -377,8 +377,10 @@ CORRECTSTRIAE cGc_correct_striae_DIPcor (GDB inGDB) {
 	VCTR cSTR;
 	double misfit;
 
-	if ((inGDB.N.X == inGDB.NC.X) && (inGDB.N.Y == inGDB.NC.Y) && (inGDB.N.Z == inGDB.NC.Z)) inGDB.N.X = inGDB.N.X + 10e-8;
-	if ((inGDB.S.X == inGDB.SC.X) && (inGDB.S.Y == inGDB.SC.Y) && (inGDB.S.Z == inGDB.SC.Z)) inGDB.S.X = inGDB.S.X + 10e-8;
+	//if ((inGDB.N.X == inGDB.NC.X) && (inGDB.N.Y == inGDB.NC.Y) && (inGDB.N.Z == inGDB.NC.Z)) inGDB.N.X = inGDB.N.X + 10e-8;
+	//if ((inGDB.S.X == inGDB.SC.X) && (inGDB.S.Y == inGDB.SC.Y) && (inGDB.S.Z == inGDB.SC.Z)) inGDB.S.X = inGDB.S.X + 10e-8;
+
+	if ((inGDB.N.X == inGDB.SC.X) && (inGDB.N.Y == inGDB.SC.Y) && (inGDB.N.Z == inGDB.SC.Z)) inGDB.N.X = inGDB.N.X + 10e-8;
 
 	cSTR = crossproduct (inGDB.SC, inGDB.N);
 
@@ -406,7 +408,7 @@ CORRECTSTRIAE cGc_correct_striae_DIPDIRcor (GDB inGDB) {
 	VCTR cSTR;
 	double misfit;
 
-	if ((inGDB.N.X == inGDB.NC.X) && (inGDB.N.Y == inGDB.NC.Y) && (inGDB.N.Z == inGDB.NC.Z)) inGDB.N.X = inGDB.N.X + 10e-8;
+	//if ((inGDB.N.X - inGDB.NC.X < 10e-4) && (inGDB.N.Y == inGDB.NC.Y< 10e-4) && (inGDB.N.Z == inGDB.NC.Z< 10e-4)) inGDB.N.X = inGDB.N.X + 10e-8;
 
 	cSTR = crossproduct (inGDB.N, inGDB.NC);
 
@@ -448,10 +450,18 @@ vector <GDB> cGc_striae_correction (vector <GDB> inGDB) {
 
 		tempGDB = outGDB.at(i);
 
-		if (outGDB.at(i).LINEATION == "LINEATION") {
+		outGDB.at(i).corr.DIPDIR;
+
+		if ((outGDB.at(i).LINEATION == "LINEATION") && (outGDB.at(i).corr.DIPDIR != outGDB.at(i).corrL.DIPDIR) && (outGDB.at(i).corr.DIP != outGDB.at(i).corrL.DIP)) {
 
 			corrSTR_DIPcor 		= cGc_correct_striae_DIPcor 	(tempGDB);
 			corrSTR_DIPDIRcor 	= cGc_correct_striae_DIPDIRcor 	(tempGDB);
+		}
+
+		else {
+
+			corrSTR_DIPcor.MISFIT = 0.1;
+			corrSTR_DIPDIRcor.MISFIT = 0.1;
 		}
 
 		if ((outGDB.at(i).LINEATION == "LINEATION") && ((corrSTR_DIPcor.MISFIT > 0.1) && (corrSTR_DIPDIRcor.MISFIT > 0.1))){

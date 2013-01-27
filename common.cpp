@@ -1545,7 +1545,7 @@ void check_stress_tensor_singularity(const STRESSTENSOR& st) {
 
 STRESSFIELD eigenvalue_eigenvector (STRESSTENSOR st, bool bingham) {
 
-	check_stress_tensor_singularity( st );
+	//check_stress_tensor_singularity( st );
 
 	STRESSFIELD sf;
 

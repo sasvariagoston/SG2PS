@@ -588,7 +588,7 @@ STRESSTENSOR BINGHAM (vector <GDB> inGDB) {
 
 	} while (i < inGDB.size());
 
-	check_stress_tensor_singularity(st);
+	//check_stress_tensor_singularity(st);
 
 	return st;
 }
