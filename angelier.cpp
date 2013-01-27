@@ -549,6 +549,48 @@ STRESSFIELD NDA_PROCESS (vector <GDB> inGDB, INPSET inset) {
 	return stress_regime (sf);
 }
 
+double determinant_of_stress_tensor(const STRESSTENSOR& st) {
+
+	return	(st._11 * st._22 * st._33) +
+			(st._12 * st._23 * st._13) +
+			(st._13 * st._12 * st._23) -
+			(st._13 * st._22 * st._13) -
+			(st._12 * st._12 * st._33) -
+			(st._11 * st._23 * st._23);
+}
+
+void fix_stress_tensor_singularity(STRESSTENSOR& st) {
+
+	const double eps = 1.0e-15;
+
+	cout << setprecision(6);
+
+	if (st._11 <= eps) {
+		cout << "WARNING: st_11 " << st._11 << '\n';
+		st._11 = eps;
+	}
+
+	if (st._22 <= eps) {
+		cout << "WARNING: st_22 " << st._22 << '\n';
+		st._22 = eps;
+	}
+
+	if (st._33 <= eps) {
+		cout << "WARNING: st_33 " << st._33 << '\n';
+		st._33 = eps;
+	}
+
+	const double one_plus_tiny = 1 + 1.0e-8;
+
+	st._11 *= one_plus_tiny;
+	st._22 *= one_plus_tiny;
+	st._33 *= one_plus_tiny;
+
+	double det = determinant_of_stress_tensor(st);
+
+	ASSERT(fabs(det) > 1.0e-20);
+}
+
 STRESSTENSOR BINGHAM (vector <GDB> inGDB) {
 
 	size_t i = 0;
@@ -588,7 +630,7 @@ STRESSTENSOR BINGHAM (vector <GDB> inGDB) {
 
 	} while (i < inGDB.size());
 
-	//check_stress_tensor_singularity(st);
+	fix_stress_tensor_singularity(st);
 
 	return st;
 }

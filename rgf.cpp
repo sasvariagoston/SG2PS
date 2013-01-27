@@ -6,11 +6,12 @@
 #include <cmath>
 #include <iostream>
 #include <iomanip>
-#include "ps.h"
 #include "rgf.h"
+#include "checkrgffilecontent.h"
 #include "checkxycontent.h"
 #include "data_io.h"
-#include "checkrgffilecontent.h"
+#include "ps.h"
+#include "random.hpp"
 
 using namespace std;
 
@@ -145,12 +146,12 @@ vector <GDB> manipulate_N (vector <GDB> inGDB) {
 	size_t i = 0;
 	vector <GDB> outGDB = inGDB;
 	double a = 0;
-	srand(i + 2);
+
+	uniform_generator_reset();
 
 	do {
-		a = rand ();
 
-		a = a / RAND_MAX;
+		a = uniform_0_1();
 
 		if (a <= 0.33333) {
 
@@ -1382,7 +1383,7 @@ GDB striae_tilt (GDB inGDB, bool paleonorht) {
 
 		cout << outGDB.ID << "  " << outGDB.avS0d.DIPDIR << "  " << outGDB.avS0d.DIP << angle << endl;
 
-		input = outGDB.SV;
+		input = outGDB.SV; // FIXME If input is [0,0,0] then after rotation, it won't be a unit vector
 		result = ROTATE (axis, input, angle);
 		result = unitvector(result);
 		outGDB.SV = result;

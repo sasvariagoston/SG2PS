@@ -2,12 +2,12 @@
 // All rights reserved.
 // This code is published under the GNU Lesser General Public License.
 
-#include <cstdlib>
 #include <iomanip>
 #include <iostream>
 
 #include "common.h"
 #include "cluster.h"
+#include "random.hpp"
 
 
 vector <CENTR_VECT>  init_centriod (size_t cluster_number, vector <GDB> inGDB) {
@@ -16,20 +16,18 @@ vector <CENTR_VECT>  init_centriod (size_t cluster_number, vector <GDB> inGDB) {
 	vector <CENTR_VECT> CENTR;
 	size_t j = 0;
 
+	uniform_generator_reset();
+
 	if ((inGDB.at(0).DATAGROUP == "STRIAE") || (inGDB.at(0).DATAGROUP == "SC")) {
 
 		do {
 
-			srand(j + 2);
-
-			CV.U = rand();
-
-			CV.U = rand();		CV.U = (CV.U / RAND_MAX) * 2.0 - 1.0;
-			CV.V = rand(); 		CV.V = (CV.V / RAND_MAX) * 2.0 - 1.0;
-			CV.W = rand(); 		CV.W = (CV.W / RAND_MAX);
-			CV.X = rand(); 		CV.X = (CV.X / RAND_MAX) * 2.0 - 1.0;
-			CV.Y = rand(); 		CV.Y = (CV.Y / RAND_MAX) * 2.0 - 1.0;
-			CV.Z = rand(); 		CV.Z = (CV.Z / RAND_MAX);
+			CV.U = (uniform_0_1()) * 2.0 - 1.0;
+			CV.V = (uniform_0_1()) * 2.0 - 1.0;
+			CV.W = (uniform_0_1());
+			CV.X = (uniform_0_1()) * 2.0 - 1.0;
+			CV.Y = (uniform_0_1()) * 2.0 - 1.0;
+			CV.Z = (uniform_0_1());
 
 			CV = unitvector (CV);
 			CENTR.push_back(CV);
@@ -42,13 +40,9 @@ vector <CENTR_VECT>  init_centriod (size_t cluster_number, vector <GDB> inGDB) {
 
 		do {
 
-			srand(j + 2);
-
-			CV.U = rand();
-
-			CV.U = rand();			CV.U = (CV.U / RAND_MAX) * 2.0 - 1.0;
-			CV.V = rand();			CV.V = (CV.V / RAND_MAX) * 2.0 - 1.0;
-			CV.W = rand();			CV.W = (CV.W / RAND_MAX);
+			CV.U = (uniform_0_1()) * 2.0 - 1.0;
+			CV.V = (uniform_0_1()) * 2.0 - 1.0;
+			CV.W = (uniform_0_1());
 			CV.X = 0.0;
 			CV.Y = 0.0;
 			CV.Z = 0.0;
@@ -114,17 +108,13 @@ vector <vector <double> > init_distance_matrix (size_t cluster_number, vector <G
 
  	vector <int> which_group;
  	size_t k = 0;
- 	double rnd = 0;
  	size_t l = 0;
 
- 	srand (1);
- 	rnd = rand();
- 	rnd = rand();
+ 	uniform_generator_reset();
 
  	do {
 
- 		rnd = rand();
- 		rnd = (rnd / RAND_MAX) * (cluster_number);
+ 		double rnd = uniform_0_1() * cluster_number;
 
  		do {
 

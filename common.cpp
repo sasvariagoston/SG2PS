@@ -1539,15 +1539,12 @@ void check_stress_tensor_singularity(const STRESSTENSOR& st) {
 	(st._12 * st._12 * st._33) -
 	(st._11 * st._23 * st._23);
 
-	if (fabs(det) < 1.0e-20) {
-		dummy();
-		ASSERT2(false, "Stress tensor nearly singluar, determinant = "<< det);
-	}
+	ASSERT2(fabs(det) > 1.0e-20, "Stress tensor nearly singluar, determinant = "<< det);
 }
 
 STRESSFIELD eigenvalue_eigenvector (STRESSTENSOR st, bool bingham) {
 
-	//check_stress_tensor_singularity( st );
+	check_stress_tensor_singularity( st );
 
 	STRESSFIELD sf;
 
@@ -1567,8 +1564,6 @@ STRESSFIELD eigenvalue_eigenvector (STRESSTENSOR st, bool bingham) {
 	X = cubic_solution (A, B, C, D);
 
 	sort(X.begin(), X.begin()+3);
-
-	if (bingham) X.at(2) -= 10e-1;
 
 	sf.EIGENVALUE.X = X.at(2);
 	sf.EIGENVALUE.Y = X.at(1);
