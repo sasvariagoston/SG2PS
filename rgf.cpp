@@ -377,8 +377,10 @@ CORRECTSTRIAE cGc_correct_striae_DIPcor (GDB inGDB) {
 	VCTR cSTR;
 	double misfit;
 
-	if ((inGDB.N.X == inGDB.NC.X) && (inGDB.N.Y == inGDB.NC.Y) && (inGDB.N.Z == inGDB.NC.Z)) inGDB.N.X = inGDB.N.X + 10e-8;
-	if ((inGDB.S.X == inGDB.SC.X) && (inGDB.S.Y == inGDB.SC.Y) && (inGDB.S.Z == inGDB.SC.Z)) inGDB.S.X = inGDB.S.X + 10e-8;
+	//if ((inGDB.N.X == inGDB.NC.X) && (inGDB.N.Y == inGDB.NC.Y) && (inGDB.N.Z == inGDB.NC.Z)) inGDB.N.X = inGDB.N.X + 10e-8;
+	//if ((inGDB.S.X == inGDB.SC.X) && (inGDB.S.Y == inGDB.SC.Y) && (inGDB.S.Z == inGDB.SC.Z)) inGDB.S.X = inGDB.S.X + 10e-8;
+
+	if ((inGDB.N.X == inGDB.SC.X) && (inGDB.N.Y == inGDB.SC.Y) && (inGDB.N.Z == inGDB.SC.Z)) inGDB.N.X = inGDB.N.X + 10e-8;
 
 	cSTR = crossproduct (inGDB.SC, inGDB.N);
 
@@ -406,7 +408,7 @@ CORRECTSTRIAE cGc_correct_striae_DIPDIRcor (GDB inGDB) {
 	VCTR cSTR;
 	double misfit;
 
-	if ((inGDB.N.X == inGDB.NC.X) && (inGDB.N.Y == inGDB.NC.Y) && (inGDB.N.Z == inGDB.NC.Z)) inGDB.N.X = inGDB.N.X + 10e-8;
+	//if ((inGDB.N.X - inGDB.NC.X < 10e-4) && (inGDB.N.Y == inGDB.NC.Y< 10e-4) && (inGDB.N.Z == inGDB.NC.Z< 10e-4)) inGDB.N.X = inGDB.N.X + 10e-8;
 
 	cSTR = crossproduct (inGDB.N, inGDB.NC);
 
@@ -448,11 +450,46 @@ vector <GDB> cGc_striae_correction (vector <GDB> inGDB) {
 
 		tempGDB = outGDB.at(i);
 
-		if (outGDB.at(i).LINEATION == "LINEATION") {
+
+		outGDB.at(i).corr.DIPDIR;
+
+		if (outGDB.at(i).LINEATION != "LINEATION") {
+
+			corrSTR_DIPcor.MISFIT = 0.0;
+			corrSTR_DIPDIRcor.MISFIT = 0.0;
+		}
+
+		else {
+
+			corrSTR_DIPcor.MISFIT = 999.99;
+			corrSTR_DIPDIRcor.MISFIT = 999.99;
+
+			cout << fixed << setprecision (6) << endl;
+			cout << "-----------------" << endl;
+			cout << dotproduct (inGDB.at(i).SC, inGDB.at(i).N) << endl;
+			cout << dotproduct (inGDB.at(i).NC, inGDB.at(i).N) << endl;
+
+			if (
+					(fabs(dotproduct (inGDB.at(i).SC, inGDB.at(i).N)) > 0.9999 && fabs(dotproduct (inGDB.at(i).SC, inGDB.at(i).N)) < 1.0001)
+					||
+					(fabs(dotproduct (inGDB.at(i).NC, inGDB.at(i).N)) > 0.9999 && fabs(dotproduct (inGDB.at(i).NC, inGDB.at(i).N)) < 1.0001)
+					) {
+
+				cout << "bement" << endl;
+
+
+				corrSTR_DIPcor.MISFIT = 0.0;
+				corrSTR_DIPDIRcor.MISFIT = 0.0;
+			}
+		}
+
+		if ((outGDB.at(i).LINEATION == "LINEATION") && ((corrSTR_DIPcor.MISFIT > 0.1) || (corrSTR_DIPDIRcor.MISFIT > 0.1))){
 
 			corrSTR_DIPcor 		= cGc_correct_striae_DIPcor 	(tempGDB);
 			corrSTR_DIPDIRcor 	= cGc_correct_striae_DIPDIRcor 	(tempGDB);
 		}
+
+
 
 		if ((outGDB.at(i).LINEATION == "LINEATION") && ((corrSTR_DIPcor.MISFIT > 0.1) && (corrSTR_DIPDIRcor.MISFIT > 0.1))){
 
@@ -700,6 +737,16 @@ bool byiID(const GDB& x, const GDB& y) {
 	return x.iID < y.iID;
 }
 
+bool bycorrDIPDIR(const GDB& x, const GDB& y) {
+
+	return x.corr.DIPDIR < y.corr.DIPDIR;
+}
+
+bool bycorrDIP(const GDB& x, const GDB& y) {
+
+	return x.corr.DIP < y.corr.DIP;
+}
+
 bool byeigenvalue(const sort_jacobi& x, const sort_jacobi& y) {
 
 	return x.eigenvalue < y.eigenvalue;
@@ -731,6 +778,30 @@ bool stopcriteria (string prevDATATYPE, string DATATYPE, string prevLOC, string 
 
 	if ((prevDATATYPE == DATATYPE) && (prevLOC == LOC)) return true;
 	else return false;
+}
+
+bool check_dataset_homogenity (vector <GDB> inGDB) {
+
+	sort(inGDB.begin(), inGDB.end(), bycorrDIPDIR);
+
+	double minDD = inGDB.at(0).corr.DIPDIR;
+	double maxDD = inGDB.at(inGDB.size() - 1).corr.DIPDIR;
+
+	double var1 = fabs(maxDD - minDD);
+
+
+	sort(inGDB.begin(), inGDB.end(), bycorrDIP);
+
+	double minD = inGDB.at(0).corr.DIP;
+	double maxD = inGDB.at(inGDB.size() - 1).corr.DIP;
+
+	double var2 = fabs(maxD - minD);
+
+	cout << minDD << "  " << maxDD << "  " << minD << "  " << maxD << endl;
+
+	return (var1 > 0.1 || var2 > 0.1);
+
+
 }
 
 void fold_from_planes (vector <GDB> inGDB, ofstream& o, INPSET inset, CENTER center) {
@@ -836,7 +907,8 @@ vector <GDB> cGc_average (vector <GDB> inGDB) {
 		j = intervalbegin;
 		independentrecordcounter++;
 		STRESSFIELD sf;
-		if (to_process_GDB.size() > 1)	sf = BINGHAM_PROCESS (to_process_GDB);
+
+		if ((to_process_GDB.size() >= 2) && ((outGDB.at(j).DATATYPE != "STRIAE") && (outGDB.at(j).DATATYPE != "LITHOLOGY") && (outGDB.at(j).DATATYPE != "SC")) && check_dataset_homogenity (to_process_GDB))	sf = BINGHAM_PROCESS (to_process_GDB);
 		else {
 			sf.EIGENVECTOR2 = to_process_GDB.at(0).D;
 			sf.S_2 = to_process_GDB.at(0).corr;
@@ -853,6 +925,8 @@ vector <GDB> cGc_average (vector <GDB> inGDB) {
 				outGDB.at(j).avD = sf.EIGENVECTOR2;
 				outGDB.at(j).avd = sf.S_2;
 			}
+
+
 
 			j++;
 		}
@@ -1087,7 +1161,7 @@ GDB lineation_tilt (GDB inGDB, bool paleonorht) {
 
 	if (paleonorht) {
 
-		angle = 360.0 - outGDB.PALEON;
+		angle = - outGDB.PALEON;
 		axis = declare_vector (0.0, 0.0, -1.0);
 	}
 
@@ -1102,7 +1176,7 @@ GDB lineation_tilt (GDB inGDB, bool paleonorht) {
 		axis.Z = 0.0;
 	}
 
-	if (fabs(angle) > 0.001) {
+	if (fabs(angle) > 0.1) {
 
 		axis = unitvector (axis);
 
@@ -1146,7 +1220,7 @@ GDB plane_tilt (GDB inGDB, bool paleonorht) {
 
 	if (paleonorht) {
 
-		angle = 360.0 - outGDB.PALEON;
+		angle = - outGDB.PALEON;
 		axis = declare_vector (0.0, 0.0, -1.0);
 	}
 
@@ -1161,7 +1235,7 @@ GDB plane_tilt (GDB inGDB, bool paleonorht) {
 		axis.Z = 0.0;
 	}
 
-	if (fabs(angle) > 0.001)  {
+	if (fabs(angle) > 0.1)  {
 
 		axis = unitvector (axis);
 
@@ -1203,7 +1277,7 @@ GDB SC_tilt (GDB inGDB, bool paleonorht) {
 
 	if (paleonorht) {
 
-		angle = 360.0 - outGDB.PALEON;
+		angle = - outGDB.PALEON;
 		axis = declare_vector (0.0, 0.0, -1.0);
 	}
 
@@ -1218,7 +1292,7 @@ GDB SC_tilt (GDB inGDB, bool paleonorht) {
 		axis.Z = 0.0;
 	}
 
-	if (fabs(angle) > 0.001) {
+	if (fabs(angle) > 0.1) {
 
 		axis = unitvector (axis);
 		input = outGDB.SV;
@@ -1287,7 +1361,7 @@ GDB striae_tilt (GDB inGDB, bool paleonorht) {
 
 	if (paleonorht) {
 
-		angle = 360.0 - outGDB.PALEON;
+		angle = - outGDB.PALEON;
 		axis = declare_vector (0.0, 0.0, -1.0);
 	}
 
@@ -1302,9 +1376,11 @@ GDB striae_tilt (GDB inGDB, bool paleonorht) {
 		axis.Z = 0.0;
 	}
 
-	if (fabs(angle) > 0.001) {
+	if (fabs(angle) > 0.1) {
 
 		axis = unitvector (axis);
+
+		cout << outGDB.ID << "  " << outGDB.avS0d.DIPDIR << "  " << outGDB.avS0d.DIP << angle << endl;
 
 		input = outGDB.SV;
 		result = ROTATE (axis, input, angle);
@@ -1436,7 +1512,7 @@ vector <GDB> ptn (vector <GDB> inGDB, INPSET inset) {
 
 	do {
 
-		if ((inGDB.at(i).DATAGROUP == "SC") || (inGDB.at(i).DATAGROUP == "STRIAE")) {
+		if ((inGDB.at(i).DATAGROUP == "SC") || ((inGDB.at(i).DATAGROUP == "STRIAE") && (inGDB.at(i).OFFSET != "NONE")) ) {
 
 			temp1.X = (q * inGDB.at(i).N.X + r * inGDB.at(i).SV.X);
 			temp1.Y = (q * inGDB.at(i).N.Y + r * inGDB.at(i).SV.Y);

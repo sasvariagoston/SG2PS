@@ -549,10 +549,11 @@ void process_group_by_group (vector <GDB> outGDB, vector <GDB> tiltoutGDB, ofstr
 		cout << "  - For '" << outGDB.at(0).LOC << "' location" << flush;
 		if (inset.group == "Y")	cout << ", '"<< outGDB.at(0).GC << "', " << flush;
 		else 					cout << "," << flush;
-		cout << "fracture statistics after Bingham (1964): " << endl;
+		cout << "fracture statistics after Bingham (1964): " << flush;
 
-		if (outGDB.size() > 1) {
+		if ((outGDB.size() > 1) && check_dataset_homogenity (outGDB) && check_dataset_homogenity (tiltoutGDB)) {
 
+			cout << endl;
 			cout << "    - Original : " << flush;
 			center.X = P.O1X;
 			center.Y = P.O1Y;
@@ -564,7 +565,7 @@ void process_group_by_group (vector <GDB> outGDB, vector <GDB> tiltoutGDB, ofstr
 			tiltoutGDB = inversion ("BINGHAM", tiltoutGDB, o, inset, center, mohr_center, P);
 		}
 
-		else cout << "less data than required to the statistics." << endl;
+		else cout << "less (independent) data than required to the statistics." << endl;
 	}
 
 	else if ((inset.inversion == "F") && ((outGDB.at(0).DATATYPE == "STRIAE"))) {
@@ -572,10 +573,11 @@ void process_group_by_group (vector <GDB> outGDB, vector <GDB> tiltoutGDB, ofstr
 		cout << "  - For '" << outGDB.at(0).LOC << "' location" << flush;
 		if (inset.group == "Y")	cout << ", '"<< outGDB.at(0).GC << "', " << flush;
 		else 					cout << "," << flush;
-		cout << "regression after Fry (1999): " << endl;
+		cout << "regression after Fry (1999): " << flush;
 
-		if (outGDB.size() > 5) {
+		if ((useful_striae_number (outGDB) > 5)  && (check_dataset_homogenity (outGDB) && check_dataset_homogenity (tiltoutGDB))) {
 
+			cout << endl;
 			cout << "    - Original : " << flush;
 			center.X = P.O1X;
 			center.Y = P.O1Y;
@@ -591,7 +593,7 @@ void process_group_by_group (vector <GDB> outGDB, vector <GDB> tiltoutGDB, ofstr
 			tiltoutGDB = inversion ("FRY", tiltoutGDB, o, inset, center, mohr_center, P);
 		}
 
-		else cout << "less data than required to the statistics." << endl;
+		else cout << "less (independent) data than required to the statistics." << endl;
 	}
 
 	else if ((inset.inversion == "M") && ((outGDB.at(0).DATATYPE == "STRIAE"))) {
@@ -599,10 +601,11 @@ void process_group_by_group (vector <GDB> outGDB, vector <GDB> tiltoutGDB, ofstr
 		cout << "  - For '" << outGDB.at(0).LOC << "' location" << flush;
 		if (inset.group == "Y")	cout << ", '"<< outGDB.at(0).GC << "', " << flush;
 		else 					cout << "," << flush;
-		cout << "regression after Michael (1984): " << endl;
+		cout << "regression after Michael (1984): " << flush;
 
-		if (outGDB.size() > 4) {
+		if ((useful_striae_number (outGDB) > 4) && (check_dataset_homogenity (outGDB) && check_dataset_homogenity (tiltoutGDB))) {
 
+			cout << endl;
 			cout << "    - Original : " << flush;
 			center.X = P.O1X;
 			center.Y = P.O1Y;
@@ -618,7 +621,7 @@ void process_group_by_group (vector <GDB> outGDB, vector <GDB> tiltoutGDB, ofstr
 			tiltoutGDB = inversion ("MICHAEL", tiltoutGDB, o, inset, center, mohr_center, P);
 		}
 
-		else cout << "less data than required to the statistics." << endl;
+		else cout << "less (independent) data than required to the statistics." << endl;
 	}
 
 	else if ((inset.inversion == "S") && ((outGDB.at(0).DATATYPE == "STRIAE"))) {
@@ -626,10 +629,11 @@ void process_group_by_group (vector <GDB> outGDB, vector <GDB> tiltoutGDB, ofstr
 		cout << "  - For '" << outGDB.at(0).LOC << "' location" << flush;
 		if (inset.group == "Y")	cout << ", '"<< outGDB.at(0).GC << "', " << flush;
 		else 					cout << "," << flush;
-		cout << "regression after Shan et al. (2003): " << endl;
+		cout << "regression after Shan et al. (2003): " << flush;
 
-		if (outGDB.size() > 4) {
+		if ((useful_striae_number (outGDB) > 4) && (check_dataset_homogenity (outGDB) && check_dataset_homogenity (tiltoutGDB))) {
 
+			cout << endl;
 			cout << "    - Original : " << flush;
 			center.X = P.O1X;
 			center.Y = P.O1Y;
@@ -645,7 +649,7 @@ void process_group_by_group (vector <GDB> outGDB, vector <GDB> tiltoutGDB, ofstr
 			tiltoutGDB = inversion ("SHAN", tiltoutGDB, o, inset, center, mohr_center, P);
 		}
 
-		else cout << "less data than required to the statistics." << endl;
+		else cout << "less (independent) data than required to the statistics." << endl;
 	}
 
 	else if ((inset.inversion == "A") && ((outGDB.at(0).DATATYPE == "STRIAE"))) {
@@ -653,10 +657,11 @@ void process_group_by_group (vector <GDB> outGDB, vector <GDB> tiltoutGDB, ofstr
 		cout << "  - For '" << outGDB.at(0).LOC << "' location" << flush;
 		if (inset.group == "Y")	cout << ", '"<< outGDB.at(0).GC << "', " << flush;
 		else 					cout << "," << flush;
-		cout << "inversion after Angelier (1990): " << endl;
+		cout << "inversion after Angelier (1990): " << flush;
 
-		if (outGDB.size() > 3) {
+		if ((useful_striae_number (outGDB) > 3) && (check_dataset_homogenity (outGDB) && check_dataset_homogenity (tiltoutGDB))) {
 
+			cout << endl;
 			cout << "    - Original : " << flush;
 			center.X = P.O1X;
 			center.Y = P.O1Y;
@@ -672,7 +677,7 @@ void process_group_by_group (vector <GDB> outGDB, vector <GDB> tiltoutGDB, ofstr
 			tiltoutGDB = inversion ("ANGELIER", tiltoutGDB, o, inset, center, mohr_center, P);
 		}
 
-		else cout << "less data than required to the statistics." << endl;
+		else cout << "less (independent) data than required to the statistics." << endl;
 	}
 
 	else if ((inset.inversion == "O") && ((outGDB.at(0).DATATYPE == "STRIAE"))) {
@@ -680,10 +685,11 @@ void process_group_by_group (vector <GDB> outGDB, vector <GDB> tiltoutGDB, ofstr
 		cout << "  - For '" << outGDB.at(0).LOC << "' location" << flush;
 		if (inset.group == "Y")	cout << ", '"<< outGDB.at(0).GC << "', " << flush;
 		else 					cout << "," << flush;
-		cout << "inversion after Mostafa (2005): " << endl;
+		cout << "inversion after Mostafa (2005): " << flush;
 
-		if (outGDB.size() > 3) {
+		if ((useful_striae_number (outGDB) > 3) && (check_dataset_homogenity (outGDB) && check_dataset_homogenity (tiltoutGDB))) {
 
+			cout << endl;
 			cout << "    - Original : " << flush;
 			center.X = P.O1X;
 			center.Y = P.O1Y;
@@ -699,7 +705,7 @@ void process_group_by_group (vector <GDB> outGDB, vector <GDB> tiltoutGDB, ofstr
 			tiltoutGDB = inversion ("MOSTAFA", tiltoutGDB, o, inset, center, mohr_center, P);
 		}
 
-		else cout << "less data than required to the statistics." << endl;
+		else cout << "less (independent) data than required to the statistics." << endl;
 	}
 
 	else if ((inset.inversion == "D") && ((outGDB.at(0).DATATYPE == "STRIAE"))) {
@@ -707,21 +713,28 @@ void process_group_by_group (vector <GDB> outGDB, vector <GDB> tiltoutGDB, ofstr
 		cout << "  - For '" << outGDB.at(0).LOC << "' location" << flush;
 		if (inset.group == "Y")	cout << ", '"<< outGDB.at(0).GC << "', " << flush;
 		else 					cout << "," << flush;
-		cout << "regression after Sprang (1972): " << endl;
+		cout << "regression after Sprang (1972): " << flush;
 
-		cout << "    - Original : " << flush;
-		center.X = P.O1X;
-		center.Y = P.O1Y;
-		mohr_center.X = P.O7X;
-		mohr_center.Y = P.O7Y;
-		outGDB = inversion ("NDA", outGDB, o, inset, center, mohr_center, P);
+		cout << "useful_striae_number: " << useful_striae_number(outGDB) << endl;
 
-		cout << "    - Corrected: " << flush;
-		center.X = P.O2X;
-		center.Y = P.O2Y;
-		mohr_center.X = P.O8X;
-		mohr_center.Y = P.O8Y;
-		tiltoutGDB = inversion ("NDA", tiltoutGDB, o, inset, center, mohr_center, P);
+		if ((useful_striae_number (outGDB) > 1) && (check_dataset_homogenity (outGDB) && check_dataset_homogenity (tiltoutGDB))) {
+
+			cout << endl;
+			cout << "    - Original : " << flush;
+			center.X = P.O1X;
+			center.Y = P.O1Y;
+			mohr_center.X = P.O7X;
+			mohr_center.Y = P.O7Y;
+			outGDB = inversion ("NDA", outGDB, o, inset, center, mohr_center, P);
+
+			cout << "    - Corrected: " << flush;
+			center.X = P.O2X;
+			center.Y = P.O2Y;
+			mohr_center.X = P.O8X;
+			mohr_center.Y = P.O8Y;
+			tiltoutGDB = inversion ("NDA", tiltoutGDB, o, inset, center, mohr_center, P);
+		}
+		else cout << "less (independent) data than required to the statistics." << endl;
 	}
 
 	else if ((inset.inversion == "P") && ((outGDB.at(0).DATATYPE == "STRIAE"))) {
@@ -729,21 +742,26 @@ void process_group_by_group (vector <GDB> outGDB, vector <GDB> tiltoutGDB, ofstr
 		cout << "  - For '" << outGDB.at(0).LOC << "' location" << flush;
 		if (inset.group == "Y")	cout << ", '"<< outGDB.at(0).GC << "', " << flush;
 		else 					cout << "," << flush;
-		cout << " regression after Turner (1953): " << endl;
+		cout << " regression after Turner (1953): " << flush;
 
-		cout << "    - Original : " << flush;
-		center.X = P.O1X;
-		center.Y = P.O1Y;
-		mohr_center.X = P.O7X;
-		mohr_center.Y = P.O7Y;
-		outGDB = inversion ("PTN", outGDB, o, inset, center, mohr_center, P);
+		if ((useful_striae_number (outGDB) > 1) && (check_dataset_homogenity (outGDB) && check_dataset_homogenity (tiltoutGDB))) {
 
-		cout << "    - Corrected: " << flush;
-		center.X = P.O2X;
-		center.Y = P.O2Y;
-		mohr_center.X = P.O8X;
-		mohr_center.Y = P.O8Y;
-		tiltoutGDB = inversion ("PTN", tiltoutGDB, o, inset, center, mohr_center, P);
+			cout << endl;
+			cout << "    - Original : " << flush;
+			center.X = P.O1X;
+			center.Y = P.O1Y;
+			mohr_center.X = P.O7X;
+			mohr_center.Y = P.O7Y;
+			outGDB = inversion ("PTN", outGDB, o, inset, center, mohr_center, P);
+
+			cout << "    - Corrected: " << flush;
+			center.X = P.O2X;
+			center.Y = P.O2Y;
+			mohr_center.X = P.O8X;
+			mohr_center.Y = P.O8Y;
+			tiltoutGDB = inversion ("PTN", tiltoutGDB, o, inset, center, mohr_center, P);
+		}
+		else cout << "less (independent) data than required to the statistics." << endl;
 	}
 
 	else {}
@@ -755,8 +773,9 @@ void process_group_by_group (vector <GDB> outGDB, vector <GDB> tiltoutGDB, ofstr
 		else 					cout << "," << flush;
 		cout << " fold axis calculation: " << endl;
 
-		if (outGDB.size() > 1) {
+		if ((outGDB.size() > 1) && check_dataset_homogenity (outGDB) && check_dataset_homogenity (tiltoutGDB)) {
 
+			cout << endl;
 			cout << "    - Original : " << flush;
 			center.X = P.O1X;
 			center.Y = P.O1Y;
@@ -768,7 +787,7 @@ void process_group_by_group (vector <GDB> outGDB, vector <GDB> tiltoutGDB, ofstr
 			fold_from_planes (tiltoutGDB, o, inset, center);
 		}
 
-		else cout << "less data than required to the statistics." << endl;
+		else cout << "less (independent) data than required to the statistics." << endl;
 	}
 
 }

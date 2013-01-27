@@ -1067,6 +1067,7 @@ CENTR_VECT unitvector (CENTR_VECT in) {
 		in.Z = (in.Z / vectorlength);
 	}
 	else {
+		dummy();
 		ASSERT2(false,"[U, V, W, X, Y, Z] = [ "<<in.U<<", "<<in.V<<", "<<in.W<<", "<<in.X<<", "<<in.Y<<", "<<in.Z<<"]");
 	}
 
@@ -1544,9 +1545,9 @@ void check_stress_tensor_singularity(const STRESSTENSOR& st) {
 	}
 }
 
-STRESSFIELD eigenvalue_eigenvector (STRESSTENSOR st) {
+STRESSFIELD eigenvalue_eigenvector (STRESSTENSOR st, bool bingham) {
 
-	check_stress_tensor_singularity( st );
+	//check_stress_tensor_singularity( st );
 
 	STRESSFIELD sf;
 
@@ -1565,47 +1566,13 @@ STRESSFIELD eigenvalue_eigenvector (STRESSTENSOR st) {
 
 	X = cubic_solution (A, B, C, D);
 
-	if ((X.at(0) >= X.at(1)) && (X.at(1) >= X.at(2))) {
+	sort(X.begin(), X.begin()+3);
 
-		sf.EIGENVALUE.X = X.at(0);
-		sf.EIGENVALUE.Y = X.at(1);
-		sf.EIGENVALUE.Z = X.at(2);
-	}
+	if (bingham) X.at(2) -= 10e-1;
 
-	else if ((X.at(0) >= X.at(2)) && (X.at(2) >= X.at(1))) {
-
-		sf.EIGENVALUE.X = X.at(0);
-		sf.EIGENVALUE.Y = X.at(2);
-		sf.EIGENVALUE.Z = X.at(1);
-	}
-
-	else if ((X.at(1) >= X.at(0)) && (X.at(0) >= X.at(2))) {
-
-		sf.EIGENVALUE.X = X.at(1);
-		sf.EIGENVALUE.Y = X.at(0);
-		sf.EIGENVALUE.Z = X.at(2);
-	}
-
-	else if ((X.at(1) >= X.at(2)) && (X.at(2) >= X.at(0))) {
-
-		sf.EIGENVALUE.X = X.at(1);
-		sf.EIGENVALUE.Y = X.at(2);
-		sf.EIGENVALUE.Z = X.at(0);
-	}
-
-	else if ((X.at(2) >= X.at(0)) && (X.at(0) >= X.at(1))) {
-
-		sf.EIGENVALUE.X = X.at(2);
-		sf.EIGENVALUE.Y = X.at(0);
-		sf.EIGENVALUE.Z = X.at(1);
-	}
-
-	else  {
-
-		sf.EIGENVALUE.X = X.at(2);
-		sf.EIGENVALUE.Y = X.at(1);
-		sf.EIGENVALUE.Z = X.at(0);
-	}
+	sf.EIGENVALUE.X = X.at(2);
+	sf.EIGENVALUE.Y = X.at(1);
+	sf.EIGENVALUE.Z = X.at(0);
 
 	a1 = st._11 - sf.EIGENVALUE.X;
 	b1 = st._12;
