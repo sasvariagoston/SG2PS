@@ -580,7 +580,7 @@ void fix_stress_tensor_singularity(STRESSTENSOR& st) {
 		st._33 = eps;
 	}
 
-	const double one_plus_tiny = 1 + 1.0e-8;
+	const double one_plus_tiny = 1 + 1.0e-4;
 
 	st._11 *= one_plus_tiny;
 	st._22 *= one_plus_tiny;
@@ -608,6 +608,10 @@ STRESSTENSOR BINGHAM (vector <GDB> inGDB) {
 	VCTR U = declare_vector (0.0, 0.0, 1.0);
 	VCTR planenormal;
 
+	cout << inGDB.size() << "  " << inGDB.at(0).LOC << endl;
+	cout << inGDB.at(0).DIPDIR << "/" << inGDB.at(0).DIP << endl;
+	cout << inGDB.at(1).DIPDIR << "/" << inGDB.at(1).DIP << endl;
+
 	do {
 
 		planenormal = inGDB.at(i).N;
@@ -624,6 +628,17 @@ STRESSTENSOR BINGHAM (vector <GDB> inGDB) {
 		st._22 = st._22 + (dotproduct (planenormal, N, false) * dotproduct (planenormal, N, false));
 		st._23 = st._23 + (dotproduct (planenormal, N, false) * dotproduct (planenormal, U, false));
 		st._33 = st._33 + (dotproduct (planenormal, U, false) * dotproduct (planenormal, U, false));
+
+		/*cout << "X: " << planenormal.X << endl;
+		cout << "Y: " << planenormal.Y << endl;
+		cout << "Z: " << planenormal.Z << endl;
+
+		cout << "E*E" << dotproduct (planenormal, E, false) * dotproduct (planenormal, E, false) << endl;
+		cout << "E*N" << dotproduct (planenormal, E, false) * dotproduct (planenormal, N, false) << endl;
+		cout << "E*U" << dotproduct (planenormal, E, false) * dotproduct (planenormal, U, false) << endl;
+		cout << "N*E" << dotproduct (planenormal, N, false) * dotproduct (planenormal, E, false) << endl;
+		cout << "E*N" << dotproduct (planenormal, N, false) * dotproduct (planenormal, N, false) << endl;
+		cout << "U*U" << dotproduct (planenormal, U, false) * dotproduct (planenormal, U, false) << endl;*/
 
 		i++;
 

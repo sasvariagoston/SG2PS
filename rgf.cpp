@@ -465,10 +465,10 @@ vector <GDB> cGc_striae_correction (vector <GDB> inGDB) {
 			corrSTR_DIPcor.MISFIT = 999.99;
 			corrSTR_DIPDIRcor.MISFIT = 999.99;
 
-			cout << fixed << setprecision (6) << endl;
+			/*cout << fixed << setprecision (6) << endl;
 			cout << "-----------------" << endl;
 			cout << dotproduct (inGDB.at(i).SC, inGDB.at(i).N) << endl;
-			cout << dotproduct (inGDB.at(i).NC, inGDB.at(i).N) << endl;
+			cout << dotproduct (inGDB.at(i).NC, inGDB.at(i).N) << endl;*/
 
 			if (
 					(fabs(dotproduct (inGDB.at(i).SC, inGDB.at(i).N)) > 0.9999 && fabs(dotproduct (inGDB.at(i).SC, inGDB.at(i).N)) < 1.0001)
@@ -476,7 +476,7 @@ vector <GDB> cGc_striae_correction (vector <GDB> inGDB) {
 					(fabs(dotproduct (inGDB.at(i).NC, inGDB.at(i).N)) > 0.9999 && fabs(dotproduct (inGDB.at(i).NC, inGDB.at(i).N)) < 1.0001)
 					) {
 
-				cout << "bement" << endl;
+				/*cout << "bement" << endl;*/
 
 
 				corrSTR_DIPcor.MISFIT = 0.0;
@@ -795,6 +795,8 @@ bool check_dataset_homogenity (vector <GDB> inGDB) {
 
 	double minD = inGDB.at(0).corr.DIP;
 	double maxD = inGDB.at(inGDB.size() - 1).corr.DIP;
+
+	if (fabs(maxD) < 10e-4 && fabs(minD) < 10e-4) return false;
 
 	double var2 = fabs(maxD - minD);
 
@@ -1381,7 +1383,7 @@ GDB striae_tilt (GDB inGDB, bool paleonorht) {
 
 		axis = unitvector (axis);
 
-		cout << outGDB.ID << "  " << outGDB.avS0d.DIPDIR << "  " << outGDB.avS0d.DIP << angle << endl;
+		//cout << outGDB.ID << "  " << outGDB.avS0d.DIPDIR << "  " << outGDB.avS0d.DIP << angle << endl;
 
 		input = outGDB.SV; // FIXME If input is [0,0,0] then after rotation, it won't be a unit vector
 		result = ROTATE (axis, input, angle);
