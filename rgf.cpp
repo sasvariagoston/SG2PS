@@ -800,7 +800,9 @@ bool check_dataset_homogenity (vector <GDB> inGDB) {
 
 	double var2 = fabs(maxD - minD);
 
-	cout << minDD << "  " << maxDD << "  " << minD << "  " << maxD << endl;
+	//cout << minDD << "  " << maxDD << "  " << minD << "  " << maxD << endl;
+
+	cout << "homogeneous: " << (var1 > 0.1 || var2 > 0.1) << "  " << inGDB.at(0).ID << "  " << inGDB.size() << endl;
 
 	return (var1 > 0.1 || var2 > 0.1);
 
@@ -856,6 +858,100 @@ void fold_from_planes (vector <GDB> inGDB, ofstream& o, INPSET inset, CENTER cen
 	return;
 }
 
+
+GDB init_average (GDB inGDB) {
+
+	inGDB.avD = declare_vector (0.0, 1.0, 0.0);
+	inGDB.avS0D = declare_vector (0.0, 1.0, 0.0);
+
+	inGDB.avd.DIPDIR = 0.0;
+	inGDB.avd.DIP = 0.0;
+	inGDB.avS0d.DIPDIR = 0.0;
+	inGDB.avS0d.DIP = 0.0;
+
+	return inGDB;
+}
+
+bool is_datatype_processable_for_average (vector <GDB> inGDB) {
+
+	string DT = inGDB.at(0).DATATYPE;
+
+	return ((DT != "STRIAE") && (DT != "LITHOLOGY") && (DT != "SC"));
+}
+
+bool is_processable_for_average_MT2 (vector <GDB> inGDB) {
+
+	return ((inGDB.size() > 2) && is_datatype_processable_for_average (inGDB) && check_dataset_homogenity (inGDB));
+}
+
+bool is_processable_for_average_EQ2 (vector <GDB> inGDB) {
+
+	return ((inGDB.size() == 2) && is_datatype_processable_for_average (inGDB) && check_dataset_homogenity (inGDB));
+}
+
+bool is_processable_for_average_EQ1 (vector <GDB> inGDB) {
+
+	return ((inGDB.size() == 1) && is_datatype_processable_for_average (inGDB) && check_dataset_homogenity (inGDB));
+}
+
+bool is_processable_for_average_HOMOG (vector <GDB> inGDB) {
+
+	return (is_datatype_processable_for_average (inGDB) &&  !check_dataset_homogenity (inGDB));
+}
+
+STRESSFIELD process_for_average_MT2 (vector <GDB> inGDB) {
+
+	//cout << "bingham data" << endl;
+	return BINGHAM_PROCESS (inGDB);
+}
+
+STRESSFIELD process_for_average_EQ2 (vector <GDB> inGDB) {
+
+	//cout << "2 data " << inGDB.at(0).LOC << endl;
+
+	STRESSFIELD sf;
+
+	sf.EIGENVECTOR2 = declare_vector (
+			inGDB.at(0).D.X + inGDB.at(1).D.X,
+			inGDB.at(0).D.Y + inGDB.at(1).D.Y,
+			inGDB.at(0).D.Z + inGDB.at(1).D.Z);
+
+	sf.EIGENVECTOR2 = unitvector (sf.EIGENVECTOR2);
+
+	sf.S_2 = dipdir_dip_from_DXDYDZ(sf.EIGENVECTOR2);
+
+	return sf;
+}
+
+STRESSFIELD process_for_average_EQ1 (vector <GDB> inGDB) {
+
+	//cout << "1 data" << endl;
+
+	STRESSFIELD sf;
+
+	sf.EIGENVECTOR2 = inGDB.at(0).D;
+	sf.S_2 = inGDB.at(0).corr;
+
+	return sf;
+}
+
+
+
+vector <GDB> calculate_average_for_1 (vector <GDB> inGDB) {
+
+	VCTR N = inGDB.at(0).N;
+
+	inGDB.at(0) = init_average (inGDB.at(0));
+
+	inGDB.at(0).avD = unitvector(flip_D_vector (DXDYDZ_from_NXNYNZ (N)));
+
+	inGDB.at(0).avd = dipdir_dip_from_DXDYDZ (inGDB.at(0).avD);
+
+	if ((inGDB.at(0).DATATYPE == "BEDDING") && (inGDB.at(0).OFFSET == "OVERTURNED")) inGDB.at(0).avS0offset = "OVERTURNED";
+
+	return inGDB;
+}
+
 vector <GDB> cGc_average (vector <GDB> inGDB) {
 
 	vector <GDB> outGDB = inGDB;
@@ -867,31 +963,17 @@ vector <GDB> cGc_average (vector <GDB> inGDB) {
 	size_t j = 0;
 
 	DIPDIR_DIP dtemp;
+	STRESSFIELD sf;
 
 	VCTR temp = declare_vector (0.0, 0.0, 0.0);
-	//VCTR temp2;
 	VCTR result;
 
-	if (outGDB.size() == 1) {
-
-		temp = outGDB.at(0).N;
-		result = DXDYDZ_from_NXNYNZ (temp);
-		result = flip_D_vector (result);
-		result = unitvector(result);
-		outGDB.at(0).avD = result;
-
-		temp = outGDB.at(0).avD;
-		dtemp = dipdir_dip_from_DXDYDZ (temp);
-		outGDB.at(0).avd = dtemp;
-
-		if ((outGDB.at(0).DATATYPE == "BEDDING") && (outGDB.at(0).OFFSET == "OVERTURNED")) outGDB.at(0).avS0offset = "OVERTURNED";
+	if (outGDB.size() == 1)  {
 
 		cout << "  - Data set averages were computed for 1 independent data group in " << i << " records." <<  endl;
 
-		return outGDB;
+		return calculate_average_for_1 (inGDB);
 	}
-
-
 
 	do {
 
@@ -900,6 +982,7 @@ vector <GDB> cGc_average (vector <GDB> inGDB) {
 		do {
 
 			to_process_GDB.push_back(outGDB.at(i));
+			outGDB.at(i) = init_average (outGDB.at(i));
 
 			i++;
 
@@ -909,17 +992,16 @@ vector <GDB> cGc_average (vector <GDB> inGDB) {
 
 		j = intervalbegin;
 		independentrecordcounter++;
-		STRESSFIELD sf;
 
-		if ((to_process_GDB.size() >= 2) && ((outGDB.at(j).DATATYPE != "STRIAE") && (outGDB.at(j).DATATYPE != "LITHOLOGY") && (outGDB.at(j).DATATYPE != "SC")) && check_dataset_homogenity (to_process_GDB))	sf = BINGHAM_PROCESS (to_process_GDB);
-		else {
-			sf.EIGENVECTOR2 = to_process_GDB.at(0).D;
-			sf.S_2 = to_process_GDB.at(0).corr;
-		}
+
+		if 		(is_processable_for_average_MT2 (to_process_GDB)) 	sf = process_for_average_MT2 (to_process_GDB);
+		else if (is_processable_for_average_EQ2 (to_process_GDB)) 	sf = process_for_average_EQ2 (to_process_GDB);
+		else if (is_processable_for_average_EQ1 (to_process_GDB)) 	sf = process_for_average_EQ1 (to_process_GDB);
+		else if (is_processable_for_average_HOMOG (to_process_GDB)) sf = process_for_average_EQ1 (to_process_GDB);
+		else 	 {}//cout << "NOT PROCESSED" << endl;
+
 
 		do {
-
-			outGDB.at(j).avD = declare_vector (10e-8, 1.0 - 10e-8, 10e-8);
 
 			if ((outGDB.at(j).DATATYPE != "STRIAE") && (outGDB.at(j).DATATYPE != "SC")) {
 
@@ -927,110 +1009,9 @@ vector <GDB> cGc_average (vector <GDB> inGDB) {
 
 				outGDB.at(j).avD = sf.EIGENVECTOR2;
 				outGDB.at(j).avd = sf.S_2;
-			}
 
-
-
-			j++;
-		}
-
-		while (j < i);
-
-		temp = declare_vector (0.0, 0.0, 0.0);
-
-		intervalbegin = i;
-
-	} while (i < outGDB.size());
-
-	cout << "  - Data set averages were computed for " << independentrecordcounter << " independent data group(s) in " << i << " records." <<  endl;
-
-	return outGDB;
-}
-
-/*
- *
- * vector <GDB> cGc_average (vector <GDB> inGDB) {
-
-	vector <GDB> outGDB = inGDB;
-
-	size_t intervalbegin = 0;
-	size_t independentrecordcounter = 0;
-	size_t i = 0;
-	size_t j = 0;
-
-	DIPDIR_DIP dtemp;
-
-	VCTR temp = declare_vector (0.0, 0.0, 0.0);
-	VCTR temp2;
-	VCTR result;
-
-	bool overturned = false;
-
-	if (outGDB.size() == 1) {
-
-		temp = outGDB.at(0).N;
-		result = DXDYDZ_from_NXNYNZ (temp);
-		result = flip_D_vector (result);
-		result = unitvector(result);
-		outGDB.at(0).avD = result;
-
-		temp = outGDB.at(0).avD;
-		dtemp = dipdir_dip_from_DXDYDZ (temp);
-		outGDB.at(0).avd = dtemp;
-
-		if ((outGDB.at(0).DATATYPE == "BEDDING") && (outGDB.at(0).OFFSET == "OVERTURNED")) outGDB.at(0).avS0offset = "OVERTURNED";
-
-		cout << "  - Data set averages were computed for 1 independent data group in " << i << " records." <<  endl;
-
-		return outGDB;
-	}
-
-	do {
-
-		do {
-
-			if (outGDB.at(i).OFFSET == "OVERTURNED")
-
-				temp = declare_vector (
-						temp.X - outGDB.at(i).N.X,
-						temp.Y - outGDB.at(i).N.Y,
-						temp.Z - outGDB.at(i).N.Z);
-
-			else
-
-				temp = declare_vector (
-						temp.X + outGDB.at(i).N.X,
-						temp.Y + outGDB.at(i).N.Y,
-						temp.Z + outGDB.at(i).N.Z);
-			i++;
-
-			if (i == outGDB.size()) break;
-
-		} while ((outGDB.at(i-1).DATATYPE == outGDB.at(i).DATATYPE) && (outGDB.at(i-1).LOC == outGDB.at(i).LOC));
-
-		j = intervalbegin;
-		independentrecordcounter++;
-
-		temp = unitvector (temp);
-		if (temp.Z < 0.0) overturned = true;
-		temp = flip_N_vector (temp);
-
-		do {
-
-			outGDB.at(j).avD = declare_vector (10e-8, 1.0 - 10e-8, 10e-8);
-
-			if ((outGDB.at(j).DATATYPE != "STRIAE") && (outGDB.at(j).DATATYPE != "SC")) {
-
-				if ((outGDB.at(j).DATATYPE == "BEDDING") && (overturned)) outGDB.at(j).avS0offset = "OVERTURNED";
-
-				result = DXDYDZ_from_NXNYNZ (temp);
-				result = flip_D_vector (result);
-				result = unitvector(result);
-				outGDB.at(j).avD = result;
-
-				temp2 = outGDB.at(j).avD;
-				dtemp = dipdir_dip_from_DXDYDZ (temp2);
-				outGDB.at(j).avd = dtemp;
+			//	cout << outGDB.at(j).avD.X << endl;
+				cout << outGDB.at(j).ID  << "  --   " << outGDB.at(j).avd.DIPDIR << "  --   " << outGDB.at(j).avd.DIP << endl;
 			}
 
 			j++;
@@ -1048,14 +1029,6 @@ vector <GDB> cGc_average (vector <GDB> inGDB) {
 
 	return outGDB;
 }
- *
- */
-
-
-
-
-
-
 
 vector <GDB> cGc_s0_average (vector <GDB> inGDB) {
 
@@ -1111,6 +1084,8 @@ vector <GDB> cGc_s0_average (vector <GDB> inGDB) {
 			if (outGDB.at(i).DATATYPE == "BEDDING") {
 
 				temp = outGDB.at(i).avD;
+
+				cout << outGDB.at(i).ID << outGDB.at(i).avD.X << endl;
 			}
 
 			i++;
@@ -1135,6 +1110,8 @@ vector <GDB> cGc_s0_average (vector <GDB> inGDB) {
 			outGDB.at(j).avS0N = temp2;
 
 			outGDB.at(j).avS0d = avs0;
+
+			//cout << outGDB.at(j).avS0d.DIPDIR << "  " << outGDB.at(j).ID << endl;
 
 			j++;
 
@@ -1383,18 +1360,34 @@ GDB striae_tilt (GDB inGDB, bool paleonorht) {
 
 		axis = unitvector (axis);
 
-		//cout << outGDB.ID << "  " << outGDB.avS0d.DIPDIR << "  " << outGDB.avS0d.DIP << angle << endl;
+	cout << outGDB.ID << "  " << outGDB.avS0d.DIPDIR << "  " << outGDB.avS0d.DIP << "  " << angle << endl;
 
-		input = outGDB.SV; // FIXME If input is [0,0,0] then after rotation, it won't be a unit vector
-		result = ROTATE (axis, input, angle);
-		result = unitvector(result);
-		outGDB.SV = result;
+	cout << outGDB.SV.X << "  " << outGDB.SV.Y << "  " << outGDB.SV.Z << endl;
+
+
 
 		input = outGDB.DC;
 		result = ROTATE (axis, input, angle);
 		result = flip_D_vector (result);
 		result = unitvector(result);
 		outGDB.DC = result;
+
+		if (outGDB.OFFSET == "NONE") outGDB.SV = declare_vector (0.0, 0.0, 0.0);
+
+		else {
+
+			input = outGDB.SV;
+			result = ROTATE (axis, input, angle);
+			result = unitvector(result);
+			outGDB.SV = result;
+		}
+
+
+
+
+
+
+
 
 		input = outGDB.DC;
 		result = NXNYNZ_from_DXDYDZ (input);

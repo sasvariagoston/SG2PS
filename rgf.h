@@ -68,6 +68,19 @@ bool check_dataset_homogenity (vector <GDB> inGDB);
 
 void fold_from_planes (vector <GDB> inGDB, ofstream& o, INPSET inset, CENTER center);
 
+GDB init_average (GDB inGDB);
+
+bool is_datatype_processable_for_average (vector <GDB> inGDB);
+bool is_processable_for_average_MT2 (vector <GDB> inGDB);
+bool is_processable_for_average_EQ2 (vector <GDB> inGDB);
+bool is_processable_for_average_EQ1 (vector <GDB> inGDB);
+bool is_processable_for_average_HOMOG (vector <GDB> inGDB);
+STRESSFIELD process_for_average_MT2 (vector <GDB> inGDB);
+STRESSFIELD process_for_average_EQ2 (vector <GDB> inGDB);
+STRESSFIELD process_for_average_EQ1 (vector <GDB> inGDB);
+
+vector <GDB> calculate_average_for_1 (vector <GDB> inGDB);
+
 vector <GDB> cGc_average (vector <GDB> inGDB);
 vector <GDB> cGc_s0_average (vector <GDB> inGDB);
 
