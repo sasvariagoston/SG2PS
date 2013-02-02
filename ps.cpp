@@ -2356,13 +2356,16 @@ void PS_idealmovement (vector <GDB > inGDB, ofstream& o, INPSET inset, CENTER ce
 
 	do {
 
-		shear_vector = unitvector (inGDB.at(i).SHEAR_S);
+		if (vectorlength (inGDB.at(i).SHEAR_S) > 10e-5) {
 
-		inGDB.at(i).N = flip_N_vector (shear_vector);
+			shear_vector = unitvector (inGDB.at(i).SHEAR_S);
 
-		inGDB.at(i).PSCOLOR = "0.0 0.0 0.5";
+			inGDB.at(i).N = flip_N_vector (shear_vector);
 
-		PS_polepoint (inGDB.at(i), o, inset, center, false, "");
+			inGDB.at(i).PSCOLOR = "0.0 0.0 0.5";
+
+			PS_polepoint (inGDB.at(i), o, inset, center, false, "");
+		}
 
 		i++;
 

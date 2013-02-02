@@ -535,19 +535,28 @@ void output_to_ps (PFN output, vector <GDB> processGDB, vector <GDB> tiltprocess
 	PS_net (output_ps_file, inset, P);
 }
 
-void process_group_by_group (vector <GDB> outGDB, vector <GDB> tiltoutGDB, ofstream& o, INPSET inset, CENTER center, PAPER P) {
+void process_group_by_group (vector <GDB> inGDB, vector <GDB> tiltinGDB, ofstream& o, INPSET inset, CENTER center, PAPER P) {
 
 	CENTER mohr_center;
 
-	PS_draw_rose (outGDB, tiltoutGDB, o, inset, center, P);
+	PS_draw_rose (inGDB, tiltinGDB, o, inset, center, P);
 
-	if ((inset.fracture == "B") && (outGDB.at(0).DATATYPE == "FRACTURE") && (outGDB.size() < 2)) return;
-	if ((inset.fracture == "B") && (outGDB.at(0).DATATYPE == "FRACTURE") && (tiltoutGDB.size() < 2)) return;
+	vector <GDB> outGDB;
+	vector <GDB> tiltoutGDB;
 
-	if ((inset.fracture == "B") && (outGDB.at(0).DATATYPE == "FRACTURE")) {
+	if ((inset.fracture == "B") && (inGDB.at(0).DATATYPE == "FRACTURE") && (inGDB.size() < 2)) return;
+	if ((inset.fracture == "B") && (inGDB.at(0).DATATYPE == "FRACTURE") && (tiltinGDB.size() < 2)) return;
 
-		cout << "  - For '" << outGDB.at(0).LOC << "' location" << flush;
-		if (inset.group == "Y")	cout << ", '"<< outGDB.at(0).GC << "', " << flush;
+	if (inGDB.at(0).DATATYPE == "STRIAE") {
+
+		outGDB = return_striae_with_offset (inGDB);
+		tiltoutGDB = return_striae_with_offset (tiltinGDB);
+	}
+
+	if ((inset.fracture == "B") && (inGDB.at(0).DATATYPE == "FRACTURE")) {
+
+		cout << "  - For '" << inGDB.at(0).LOC << "' location" << flush;
+		if (inset.group == "Y")	cout << ", '"<< inGDB.at(0).GC << "', " << flush;
 		else 					cout << "," << flush;
 		cout << "fracture statistics after Bingham (1964): " << flush;
 
@@ -568,14 +577,14 @@ void process_group_by_group (vector <GDB> outGDB, vector <GDB> tiltoutGDB, ofstr
 		else cout << "less (independent) data than required to the statistics." << endl;
 	}
 
-	else if ((inset.inversion == "F") && ((outGDB.at(0).DATATYPE == "STRIAE"))) {
+	else if ((inset.inversion == "F") && ((inGDB.at(0).DATATYPE == "STRIAE"))) {
 
-		cout << "  - For '" << outGDB.at(0).LOC << "' location" << flush;
-		if (inset.group == "Y")	cout << ", '"<< outGDB.at(0).GC << "', " << flush;
+		cout << "  - For '" << inGDB.at(0).LOC << "' location" << flush;
+		if (inset.group == "Y")	cout << ", '"<< inGDB.at(0).GC << "', " << flush;
 		else 					cout << "," << flush;
 		cout << "regression after Fry (1999): " << flush;
 
-		if ((useful_striae_number (outGDB) > 5)  && (check_dataset_homogenity (outGDB) && check_dataset_homogenity (tiltoutGDB))) {
+		if ((outGDB.size() > 1)  && (check_dataset_homogenity (outGDB) && check_dataset_homogenity (tiltoutGDB))) {
 
 			cout << endl;
 			cout << "    - Original : " << flush;
@@ -596,14 +605,14 @@ void process_group_by_group (vector <GDB> outGDB, vector <GDB> tiltoutGDB, ofstr
 		else cout << "less (independent) data than required to the statistics." << endl;
 	}
 
-	else if ((inset.inversion == "M") && ((outGDB.at(0).DATATYPE == "STRIAE"))) {
+	else if ((inset.inversion == "M") && ((inGDB.at(0).DATATYPE == "STRIAE"))) {
 
-		cout << "  - For '" << outGDB.at(0).LOC << "' location" << flush;
-		if (inset.group == "Y")	cout << ", '"<< outGDB.at(0).GC << "', " << flush;
+		cout << "  - For '" << inGDB.at(0).LOC << "' location" << flush;
+		if (inset.group == "Y")	cout << ", '"<< inGDB.at(0).GC << "', " << flush;
 		else 					cout << "," << flush;
 		cout << "regression after Michael (1984): " << flush;
 
-		if ((useful_striae_number (outGDB) > 4) && (check_dataset_homogenity (outGDB) && check_dataset_homogenity (tiltoutGDB))) {
+		if ((outGDB.size() > 1) && (check_dataset_homogenity (outGDB) && check_dataset_homogenity (tiltoutGDB))) {
 
 			cout << endl;
 			cout << "    - Original : " << flush;
@@ -624,14 +633,14 @@ void process_group_by_group (vector <GDB> outGDB, vector <GDB> tiltoutGDB, ofstr
 		else cout << "less (independent) data than required to the statistics." << endl;
 	}
 
-	else if ((inset.inversion == "S") && ((outGDB.at(0).DATATYPE == "STRIAE"))) {
+	else if ((inset.inversion == "S") && ((inGDB.at(0).DATATYPE == "STRIAE"))) {
 
-		cout << "  - For '" << outGDB.at(0).LOC << "' location" << flush;
-		if (inset.group == "Y")	cout << ", '"<< outGDB.at(0).GC << "', " << flush;
+		cout << "  - For '" << inGDB.at(0).LOC << "' location" << flush;
+		if (inset.group == "Y")	cout << ", '"<< inGDB.at(0).GC << "', " << flush;
 		else 					cout << "," << flush;
 		cout << "regression after Shan et al. (2003): " << flush;
 
-		if ((useful_striae_number (outGDB) > 4) && (check_dataset_homogenity (outGDB) && check_dataset_homogenity (tiltoutGDB))) {
+		if ((outGDB.size() > 1) && (check_dataset_homogenity (outGDB) && check_dataset_homogenity (tiltoutGDB))) {
 
 			cout << endl;
 			cout << "    - Original : " << flush;
@@ -652,14 +661,14 @@ void process_group_by_group (vector <GDB> outGDB, vector <GDB> tiltoutGDB, ofstr
 		else cout << "less (independent) data than required to the statistics." << endl;
 	}
 
-	else if ((inset.inversion == "A") && ((outGDB.at(0).DATATYPE == "STRIAE"))) {
+	else if ((inset.inversion == "A") && ((inGDB.at(0).DATATYPE == "STRIAE"))) {
 
-		cout << "  - For '" << outGDB.at(0).LOC << "' location" << flush;
-		if (inset.group == "Y")	cout << ", '"<< outGDB.at(0).GC << "', " << flush;
+		cout << "  - For '" << inGDB.at(0).LOC << "' location" << flush;
+		if (inset.group == "Y")	cout << ", '"<< inGDB.at(0).GC << "', " << flush;
 		else 					cout << "," << flush;
 		cout << "inversion after Angelier (1990): " << flush;
 
-		if ((useful_striae_number (outGDB) > 3) && (check_dataset_homogenity (outGDB) && check_dataset_homogenity (tiltoutGDB))) {
+		if ((outGDB.size() > 1) && (check_dataset_homogenity (outGDB) && check_dataset_homogenity (tiltoutGDB))) {
 
 			cout << endl;
 			cout << "    - Original : " << flush;
@@ -680,14 +689,14 @@ void process_group_by_group (vector <GDB> outGDB, vector <GDB> tiltoutGDB, ofstr
 		else cout << "less (independent) data than required to the statistics." << endl;
 	}
 
-	else if ((inset.inversion == "O") && ((outGDB.at(0).DATATYPE == "STRIAE"))) {
+	else if ((inset.inversion == "O") && ((inGDB.at(0).DATATYPE == "STRIAE"))) {
 
-		cout << "  - For '" << outGDB.at(0).LOC << "' location" << flush;
-		if (inset.group == "Y")	cout << ", '"<< outGDB.at(0).GC << "', " << flush;
+		cout << "  - For '" << inGDB.at(0).LOC << "' location" << flush;
+		if (inset.group == "Y")	cout << ", '"<< inGDB.at(0).GC << "', " << flush;
 		else 					cout << "," << flush;
 		cout << "inversion after Mostafa (2005): " << flush;
 
-		if ((useful_striae_number (outGDB) > 3) && (check_dataset_homogenity (outGDB) && check_dataset_homogenity (tiltoutGDB))) {
+		if ((outGDB.size() > 1) && (check_dataset_homogenity (outGDB) && check_dataset_homogenity (tiltoutGDB))) {
 
 			cout << endl;
 			cout << "    - Original : " << flush;
@@ -708,16 +717,16 @@ void process_group_by_group (vector <GDB> outGDB, vector <GDB> tiltoutGDB, ofstr
 		else cout << "less (independent) data than required to the statistics." << endl;
 	}
 
-	else if ((inset.inversion == "D") && ((outGDB.at(0).DATATYPE == "STRIAE"))) {
+	else if ((inset.inversion == "D") && ((inGDB.at(0).DATATYPE == "STRIAE"))) {
 
-		cout << "  - For '" << outGDB.at(0).LOC << "' location" << flush;
-		if (inset.group == "Y")	cout << ", '"<< outGDB.at(0).GC << "', " << flush;
+		cout << "  - For '" << inGDB.at(0).LOC << "' location" << flush;
+		if (inset.group == "Y")	cout << ", '"<< inGDB.at(0).GC << "', " << flush;
 		else 					cout << "," << flush;
 		cout << "regression after Sprang (1972): " << flush;
 
 		cout << "useful_striae_number: " << useful_striae_number(outGDB) << endl;
 
-		if ((useful_striae_number (outGDB) > 1) && (check_dataset_homogenity (outGDB) && check_dataset_homogenity (tiltoutGDB))) {
+		if ((outGDB.size() > 1) && (check_dataset_homogenity (outGDB) && check_dataset_homogenity (tiltoutGDB))) {
 
 			cout << endl;
 			cout << "    - Original : " << flush;
@@ -737,14 +746,14 @@ void process_group_by_group (vector <GDB> outGDB, vector <GDB> tiltoutGDB, ofstr
 		else cout << "less (independent) data than required to the statistics." << endl;
 	}
 
-	else if ((inset.inversion == "P") && ((outGDB.at(0).DATATYPE == "STRIAE"))) {
+	else if ((inset.inversion == "P") && ((inGDB.at(0).DATATYPE == "STRIAE"))) {
 
-		cout << "  - For '" << outGDB.at(0).LOC << "' location" << flush;
-		if (inset.group == "Y")	cout << ", '"<< outGDB.at(0).GC << "', " << flush;
+		cout << "  - For '" << inGDB.at(0).LOC << "' location" << flush;
+		if (inset.group == "Y")	cout << ", '"<< inGDB.at(0).GC << "', " << flush;
 		else 					cout << "," << flush;
 		cout << " regression after Turner (1953): " << flush;
 
-		if ((useful_striae_number (outGDB) > 1) && (check_dataset_homogenity (outGDB) && check_dataset_homogenity (tiltoutGDB))) {
+		if ((outGDB.size() > 1) && (check_dataset_homogenity (outGDB) && check_dataset_homogenity (tiltoutGDB))) {
 
 			cout << endl;
 			cout << "    - Original : " << flush;
@@ -766,10 +775,10 @@ void process_group_by_group (vector <GDB> outGDB, vector <GDB> tiltoutGDB, ofstr
 
 	else {}
 
-	if  (outGDB.at(0).DATATYPE == "FOLDSURFACE") {
+	if  (inGDB.at(0).DATATYPE == "FOLDSURFACE") {
 
-		cout << "  - For '" << outGDB.at(0).LOC << "' location" << flush;
-		if (inset.group == "Y")	cout << ", '"<< outGDB.at(0).GC << "', " << flush;
+		cout << "  - For '" << inGDB.at(0).LOC << "' location" << flush;
+		if (inset.group == "Y")	cout << ", '"<< inGDB.at(0).GC << "', " << flush;
 		else 					cout << "," << flush;
 		cout << " fold axis calculation: " << endl;
 

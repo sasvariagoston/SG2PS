@@ -9,7 +9,7 @@ using namespace std;
 void throw_std_logic_error(const string& msg) {
 
 	cout << flush;
-	cerr << msg << endl; // TODO Should be removed from the final program: error is reported twice
+	cerr << msg << endl;
 
 	throw logic_error(msg);
 }

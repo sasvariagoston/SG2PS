@@ -378,9 +378,6 @@ CORRECTSTRIAE cGc_correct_striae_DIPcor (GDB inGDB) {
 	VCTR cSTR;
 	double misfit;
 
-	//if ((inGDB.N.X == inGDB.NC.X) && (inGDB.N.Y == inGDB.NC.Y) && (inGDB.N.Z == inGDB.NC.Z)) inGDB.N.X = inGDB.N.X + 10e-8;
-	//if ((inGDB.S.X == inGDB.SC.X) && (inGDB.S.Y == inGDB.SC.Y) && (inGDB.S.Z == inGDB.SC.Z)) inGDB.S.X = inGDB.S.X + 10e-8;
-
 	if ((inGDB.N.X == inGDB.SC.X) && (inGDB.N.Y == inGDB.SC.Y) && (inGDB.N.Z == inGDB.SC.Z)) inGDB.N.X = inGDB.N.X + 10e-8;
 
 	cSTR = crossproduct (inGDB.SC, inGDB.N);
@@ -465,19 +462,11 @@ vector <GDB> cGc_striae_correction (vector <GDB> inGDB) {
 			corrSTR_DIPcor.MISFIT = 999.99;
 			corrSTR_DIPDIRcor.MISFIT = 999.99;
 
-			/*cout << fixed << setprecision (6) << endl;
-			cout << "-----------------" << endl;
-			cout << dotproduct (inGDB.at(i).SC, inGDB.at(i).N) << endl;
-			cout << dotproduct (inGDB.at(i).NC, inGDB.at(i).N) << endl;*/
-
 			if (
 					(fabs(dotproduct (inGDB.at(i).SC, inGDB.at(i).N)) > 0.9999 && fabs(dotproduct (inGDB.at(i).SC, inGDB.at(i).N)) < 1.0001)
 					||
 					(fabs(dotproduct (inGDB.at(i).NC, inGDB.at(i).N)) > 0.9999 && fabs(dotproduct (inGDB.at(i).NC, inGDB.at(i).N)) < 1.0001)
 					) {
-
-				/*cout << "bement" << endl;*/
-
 
 				corrSTR_DIPcor.MISFIT = 0.0;
 				corrSTR_DIPDIRcor.MISFIT = 0.0;
@@ -800,8 +789,6 @@ bool check_dataset_homogenity (vector <GDB> inGDB) {
 
 	double var2 = fabs(maxD - minD);
 
-	//cout << minDD << "  " << maxDD << "  " << minD << "  " << maxD << endl;
-
 	cout << "homogeneous: " << (var1 > 0.1 || var2 > 0.1) << "  " << inGDB.at(0).ID << "  " << inGDB.size() << endl;
 
 	return (var1 > 0.1 || var2 > 0.1);
@@ -901,13 +888,10 @@ bool is_processable_for_average_HOMOG (vector <GDB> inGDB) {
 
 STRESSFIELD process_for_average_MT2 (vector <GDB> inGDB) {
 
-	//cout << "bingham data" << endl;
 	return BINGHAM_PROCESS (inGDB);
 }
 
 STRESSFIELD process_for_average_EQ2 (vector <GDB> inGDB) {
-
-	//cout << "2 data " << inGDB.at(0).LOC << endl;
 
 	STRESSFIELD sf;
 
@@ -925,8 +909,6 @@ STRESSFIELD process_for_average_EQ2 (vector <GDB> inGDB) {
 
 STRESSFIELD process_for_average_EQ1 (vector <GDB> inGDB) {
 
-	//cout << "1 data" << endl;
-
 	STRESSFIELD sf;
 
 	sf.EIGENVECTOR2 = inGDB.at(0).D;
@@ -934,8 +916,6 @@ STRESSFIELD process_for_average_EQ1 (vector <GDB> inGDB) {
 
 	return sf;
 }
-
-
 
 vector <GDB> calculate_average_for_1 (vector <GDB> inGDB) {
 
@@ -998,7 +978,7 @@ vector <GDB> cGc_average (vector <GDB> inGDB) {
 		else if (is_processable_for_average_EQ2 (to_process_GDB)) 	sf = process_for_average_EQ2 (to_process_GDB);
 		else if (is_processable_for_average_EQ1 (to_process_GDB)) 	sf = process_for_average_EQ1 (to_process_GDB);
 		else if (is_processable_for_average_HOMOG (to_process_GDB)) sf = process_for_average_EQ1 (to_process_GDB);
-		else 	 {}//cout << "NOT PROCESSED" << endl;
+		else 	 {}
 
 
 		do {
@@ -1009,9 +989,6 @@ vector <GDB> cGc_average (vector <GDB> inGDB) {
 
 				outGDB.at(j).avD = sf.EIGENVECTOR2;
 				outGDB.at(j).avd = sf.S_2;
-
-			//	cout << outGDB.at(j).avD.X << endl;
-				cout << outGDB.at(j).ID  << "  --   " << outGDB.at(j).avd.DIPDIR << "  --   " << outGDB.at(j).avd.DIP << endl;
 			}
 
 			j++;
@@ -1084,8 +1061,6 @@ vector <GDB> cGc_s0_average (vector <GDB> inGDB) {
 			if (outGDB.at(i).DATATYPE == "BEDDING") {
 
 				temp = outGDB.at(i).avD;
-
-				cout << outGDB.at(i).ID << outGDB.at(i).avD.X << endl;
 			}
 
 			i++;
@@ -1110,8 +1085,6 @@ vector <GDB> cGc_s0_average (vector <GDB> inGDB) {
 			outGDB.at(j).avS0N = temp2;
 
 			outGDB.at(j).avS0d = avs0;
-
-			//cout << outGDB.at(j).avS0d.DIPDIR << "  " << outGDB.at(j).ID << endl;
 
 			j++;
 
@@ -1360,12 +1333,6 @@ GDB striae_tilt (GDB inGDB, bool paleonorht) {
 
 		axis = unitvector (axis);
 
-	cout << outGDB.ID << "  " << outGDB.avS0d.DIPDIR << "  " << outGDB.avS0d.DIP << "  " << angle << endl;
-
-	cout << outGDB.SV.X << "  " << outGDB.SV.Y << "  " << outGDB.SV.Z << endl;
-
-
-
 		input = outGDB.DC;
 		result = ROTATE (axis, input, angle);
 		result = flip_D_vector (result);
@@ -1381,13 +1348,6 @@ GDB striae_tilt (GDB inGDB, bool paleonorht) {
 			result = unitvector(result);
 			outGDB.SV = result;
 		}
-
-
-
-
-
-
-
 
 		input = outGDB.DC;
 		result = NXNYNZ_from_DXDYDZ (input);

@@ -102,7 +102,7 @@ bool input_xy (const string& projectname) {
 
 		cout << "  - Cannot process " << capslock(projectname + ".xy") << " file or the file is empty." << endl;
 
-		return false; // TODO What should happen with empty / header only files? Is it an error?
+		return false;
 	}
 
 	else {
@@ -180,8 +180,6 @@ bool XYcheck () {
 	vector <string> bad_records;
 
 	for (size_t i = 1; i < xy_to_check.size(); i++) {
-
-		cout << i << "  " << xy_to_check.at(i).at(LOC_X) << endl;
 
 		if (!is_allowed_coordinate (xy_to_check.at(i).at(LOC_X)) ||	!is_allowed_coordinate (xy_to_check.at(i).at(LOC_Y))) bad_records.push_back(xy_to_check.at(i).at(LOCATION));
 	}

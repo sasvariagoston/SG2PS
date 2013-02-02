@@ -82,6 +82,8 @@ bool check_correct_stressfield (STRESSFIELD sf);
 
 VCTR generarte_stress_colors (double value);
 
+
+double vectorlength (VCTR in);
 VCTR unitvector (VCTR in);
 CENTR_VECT unitvector (CENTR_VECT in);
 vector < double > unitvector (vector < double > in);
@@ -120,6 +122,7 @@ bool existence_of_groupcodes (vector <GDB> inGDB);
 vector <double> cubic_solution (double A, double B, double C, double D);
 vector <double> quartic_solution (double A, double B, double C, double D, double E);
 
+STRESSTENSOR fix_stress_tensor_singularity(STRESSTENSOR& st);
 STRESSFIELD eigenvalue_eigenvector (STRESSTENSOR st, bool bingham);
 STRESSTENSOR stresstensor_from_eigenvalue_eigenvector (STRESSFIELD sf);
 

@@ -549,48 +549,6 @@ STRESSFIELD NDA_PROCESS (vector <GDB> inGDB, INPSET inset) {
 	return stress_regime (sf);
 }
 
-double determinant_of_stress_tensor(const STRESSTENSOR& st) {
-
-	return	(st._11 * st._22 * st._33) +
-			(st._12 * st._23 * st._13) +
-			(st._13 * st._12 * st._23) -
-			(st._13 * st._22 * st._13) -
-			(st._12 * st._12 * st._33) -
-			(st._11 * st._23 * st._23);
-}
-
-void fix_stress_tensor_singularity(STRESSTENSOR& st) {
-
-	const double eps = 1.0e-15;
-
-	cout << setprecision(6);
-
-	if (st._11 <= eps) {
-		cout << "WARNING: st_11 " << st._11 << '\n';
-		st._11 = eps;
-	}
-
-	if (st._22 <= eps) {
-		cout << "WARNING: st_22 " << st._22 << '\n';
-		st._22 = eps;
-	}
-
-	if (st._33 <= eps) {
-		cout << "WARNING: st_33 " << st._33 << '\n';
-		st._33 = eps;
-	}
-
-	const double one_plus_tiny = 1 + 1.0e-4;
-
-	st._11 *= one_plus_tiny;
-	st._22 *= one_plus_tiny;
-	st._33 *= one_plus_tiny;
-
-	double det = determinant_of_stress_tensor(st);
-
-	ASSERT(fabs(det) > 1.0e-20);
-}
-
 STRESSTENSOR BINGHAM (vector <GDB> inGDB) {
 
 	size_t i = 0;
@@ -607,10 +565,6 @@ STRESSTENSOR BINGHAM (vector <GDB> inGDB) {
 	VCTR E = declare_vector (1.0, 0.0, 0.0);
 	VCTR U = declare_vector (0.0, 0.0, 1.0);
 	VCTR planenormal;
-
-	cout << inGDB.size() << "  " << inGDB.at(0).LOC << endl;
-	cout << inGDB.at(0).DIPDIR << "/" << inGDB.at(0).DIP << endl;
-	cout << inGDB.at(1).DIPDIR << "/" << inGDB.at(1).DIP << endl;
 
 	do {
 
@@ -629,22 +583,9 @@ STRESSTENSOR BINGHAM (vector <GDB> inGDB) {
 		st._23 = st._23 + (dotproduct (planenormal, N, false) * dotproduct (planenormal, U, false));
 		st._33 = st._33 + (dotproduct (planenormal, U, false) * dotproduct (planenormal, U, false));
 
-		/*cout << "X: " << planenormal.X << endl;
-		cout << "Y: " << planenormal.Y << endl;
-		cout << "Z: " << planenormal.Z << endl;
-
-		cout << "E*E" << dotproduct (planenormal, E, false) * dotproduct (planenormal, E, false) << endl;
-		cout << "E*N" << dotproduct (planenormal, E, false) * dotproduct (planenormal, N, false) << endl;
-		cout << "E*U" << dotproduct (planenormal, E, false) * dotproduct (planenormal, U, false) << endl;
-		cout << "N*E" << dotproduct (planenormal, N, false) * dotproduct (planenormal, E, false) << endl;
-		cout << "E*N" << dotproduct (planenormal, N, false) * dotproduct (planenormal, N, false) << endl;
-		cout << "U*U" << dotproduct (planenormal, U, false) * dotproduct (planenormal, U, false) << endl;*/
-
 		i++;
 
 	} while (i < inGDB.size());
-
-	fix_stress_tensor_singularity(st);
 
 	return st;
 }
@@ -663,19 +604,17 @@ size_t useful_striae_number (vector <GDB> inGDB) {
 	return useful_striae_number;
 }
 
+vector <GDB> return_striae_with_offset (vector <GDB> inGDB) {
 
+	vector <GDB> outGDB;
 
+	for (size_t i = 0; i < inGDB.size(); i++) {
 
+		if (inGDB.at(i).OFFSET != "NONE") outGDB.push_back(inGDB.at(i));
+	}
 
-
-
-
-
-
-
-
-
-
+	return outGDB;
+}
 
 
 vector <GDB> return_stressvector_estimators (STRESSTENSOR st, vector <GDB> inGDB, string method, bool compression_positive) {

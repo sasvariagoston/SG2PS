@@ -164,7 +164,7 @@ double ATAN (double in) {
 	return (in * 180.0) / 3.1415926535;
 }
 
-double rounding (double in) { // TODO What is going on?
+/*double rounding (double in) { // TODO What is going on?
 
 	double fract_part, int_part;
 
@@ -182,7 +182,7 @@ double rounding (double in) { // TODO What is going on?
 		if (fract_part >= 0.5) return floor (in);
 		else return ceil (in);
 	}
-}
+}*/
 
 double mm_to_point (int i) {
 
@@ -634,28 +634,6 @@ vector <vector <double> > jacobi (vector <vector <double> > in) {
 
 	} while (i < 40);
 
-	//cout << fixed << setprecision(3) << endl;
-
-	/*for (size_t i = 0; i < in.size(); i++){
-
-		for (size_t j = 0; j < in.size(); j++){
-
-			cout << A.at(i).at(j) << " " << flush;
-			}
-		cout << endl;
-	}
-
-
-	for (size_t i = 0; i < in.size(); i++){
-
-			for (size_t j = 0; j < in.size(); j++){
-
-				cout << D.at(i).at(j) << " " << flush;
-				}
-			cout << endl;
-		}
-		*/
-
 	i = 0;
 
 	do {
@@ -996,57 +974,39 @@ VCTR generarte_stress_colors (double value) {
 	return out;
 }
 
+double vectorlength (VCTR in) {
+
+	return sqrt(in.X * in.X + in.Y * in.Y + in.Z * in.Z);
+}
+
 VCTR unitvector (VCTR in) {
 
 	if (isnan(in.X)||isnan(in.Y)||isnan(in.Z)) {
+
+		cout << endl;
+
 		ASSERT2(false,"NaN detected, [X, Y, Z] = [ "<<in.X<<", "<<in.Y<<", "<<in.Z<<"]");
 	}
 
 	double vectorlength = sqrt(in.X * in.X + in.Y * in.Y + in.Z * in.Z);
 
-	if ((vectorlength > 10e-8) && (vectorlength < 1.0e+300)) {
+	if ((vectorlength > 10e-10) && (vectorlength < 1.0e+300)) {
 
 		in.X = (in.X / vectorlength);
 		in.Y = (in.Y / vectorlength);
 		in.Z = (in.Z / vectorlength);
 	}
 	else {
+
+		cout << endl;
+
 		ASSERT2(false,"Problem with vector length, [X, Y, Z] = [ "<<in.X<<", "<<in.Y<<", "<<in.Z<<"]");
+
+
 	}
 
 	return in;
 }
-
-// TODO Dead function, delete code!
-//vector < double > unitvector (vector < double > in) {
-//
-//	size_t j = 0;
-//	double vectorlength = 0.0;
-//
-//	do {
-//
-//		vectorlength = vectorlength + (in.at(j) * in.at(j));
-//		j++;
-//
-//	} while (j < in.size());
-//
-//	vectorlength = sqrt (vectorlength);
-//	j = 0;
-//
-//	if (vectorlength < 10e-8) return in;
-//
-//	else {
-//
-//		do {
-//
-//			in.at(j) = in.at(j) / vectorlength;
-//			j++;
-//
-//		} while (j < in.size());
-//	}
-//
-//	return in;
-//}
 
 CENTR_VECT unitvector (CENTR_VECT in) {
 
@@ -1535,10 +1495,38 @@ void check_stress_tensor_singularity(const STRESSTENSOR& st) {
 	(st._12 * st._12 * st._33) -
 	(st._11 * st._23 * st._23);
 
-	ASSERT2(fabs(det) > 1.0e-20, "Stress tensor nearly singluar, determinant = "<< det);
+	ASSERT2(fabs(det) > 1.0e-25, "Stress tensor nearly singluar, determinant = "<< det);
+}
+
+double determinant_of_stress_tensor(const STRESSTENSOR& st) {
+
+	return	(st._11 * st._22 * st._33) +
+			(st._12 * st._23 * st._13) +
+			(st._13 * st._12 * st._23) -
+			(st._13 * st._22 * st._13) -
+			(st._12 * st._12 * st._33) -
+			(st._11 * st._23 * st._23);
+}
+
+STRESSTENSOR fix_stress_tensor_singularity(STRESSTENSOR& st) {
+
+	const double one_plus_tiny = 1 + 1.0e-4;
+
+	double det = determinant_of_stress_tensor(st);
+
+	if (det < 10e-25) {
+
+		st._11 *= one_plus_tiny;
+		st._22 *= one_plus_tiny;
+		st._33 *= one_plus_tiny;
+	}
+
+	return st;
 }
 
 STRESSFIELD eigenvalue_eigenvector (STRESSTENSOR st, bool bingham) {
+
+	st =  fix_stress_tensor_singularity(st);
 
 	check_stress_tensor_singularity( st );
 
@@ -1950,7 +1938,7 @@ string build_date () {
 
 	vector <char> date (11, ' ');
 
-	string DATE  = __DATE__; //TODO What is happening here?
+	string DATE  = __DATE__;
 
 	if (DATE.at(4) == ' ') 		date.at(0) = '0';
 	else 						date.at(0) = DATE.at(4);
