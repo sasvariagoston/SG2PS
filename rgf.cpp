@@ -789,11 +789,7 @@ bool check_dataset_homogenity (vector <GDB> inGDB) {
 
 	double var2 = fabs(maxD - minD);
 
-	cout << "homogeneous: " << (var1 > 0.1 || var2 > 0.1) << "  " << inGDB.at(0).ID << "  " << inGDB.size() << endl;
-
 	return (var1 > 0.1 || var2 > 0.1);
-
-
 }
 
 void fold_from_planes (vector <GDB> inGDB, ofstream& o, INPSET inset, CENTER center) {

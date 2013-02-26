@@ -9,8 +9,9 @@
 #include <iostream>
 #include <stdexcept>
 
-#include "data_io.h"
 #include "array_to_vector.hpp"
+#include "data_io.h"
+#include "density.h"
 #include "platform_dep.hpp"
 #include "ps.h"
 #include "rgf.h"
@@ -543,6 +544,8 @@ void process_group_by_group (vector <GDB> inGDB, vector <GDB> tiltinGDB, ofstrea
 
 	vector <GDB> outGDB;
 	vector <GDB> tiltoutGDB;
+
+	if (inGDB.at(0).DATAGROUP == "PLANE" || inGDB.at(0).DATAGROUP == "LINEATION") plot_densities (inGDB, tiltinGDB, o, inset, center, P);
 
 	if ((inset.fracture == "B") && (inGDB.at(0).DATATYPE == "FRACTURE") && (inGDB.size() < 2)) return;
 	if ((inset.fracture == "B") && (inGDB.at(0).DATATYPE == "FRACTURE") && (tiltinGDB.size() < 2)) return;

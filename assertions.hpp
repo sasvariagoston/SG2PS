@@ -69,6 +69,16 @@ void throw_std_logic_error(const std::string& message);
 	} \
 }
 
+#define ASSERT_GT(val_1, val_2) { \
+	if (val_1 >= val_2) { \
+		std::ostringstream os; \
+		os << #val_1 << " < " << #val_2 << " failed: "; \
+		os << val_1 << " >= " << val_2 << '\n'; \
+		os << "In \'" << FUNCTION_NAME << "\' at "<< __FILE__ << ':' << __LINE__ ; \
+		throw_std_logic_error(os.str()); \
+	} \
+}
+
 #define ASSERT_LT(val_1, val_2) { \
 	if (val_1 >= val_2) { \
 		std::ostringstream os; \

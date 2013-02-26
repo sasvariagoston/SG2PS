@@ -8,6 +8,7 @@
 #include <iostream>
 #include <sstream>
 
+#include "density.h"
 #include "ps.h"
 #include "rgf.h"
 #include "common.h"
@@ -2928,4 +2929,66 @@ void PS_SYMBOLS (vector <GDB> inGDB, ofstream& o, INPSET inset, PAPER P) {
 
 		return;
 	}
+}
+
+void ps_plot_densities (DENSITY dens, size_t radius, ofstream& o, INPSET inset, CENTER center, PAPER P) {
+
+
+
+	const size_t min_dipdir = dens.direction.DIPDIR - radius;
+	const size_t max_dipdir = dens.direction.DIPDIR + radius;
+
+	const size_t min_dip = dens.direction.DIP - radius;
+	const size_t max_dip = dens.direction.DIP + radius;
+
+	DIPDIR_DIP act_DD;
+
+	act_DD.DIPDIR = min_dipdir;
+	act_DD.DIP = min_dip;
+
+	XY act_xy = stereonet_coordinate_from_DIPDIR_DIP (act_DD, center, inset);
+
+	cout << "PLOT" << endl;
+
+	o << fixed << setprecision (3) << endl;
+
+	o << "newpath" << endl;
+
+	o << "  "  <<  act_xy.X << " " << act_xy.Y << " moveto" << endl;
+
+	for (act_DD.DIPDIR = min_dipdir + 1; act_DD.DIPDIR < max_dipdir + 1; act_DD.DIPDIR++) {
+
+		XY act_xy = stereonet_coordinate_from_DIPDIR_DIP (act_DD, center, inset);
+		o << "  "  <<  act_xy.X << " " << act_xy.Y << " lineto" << endl;
+	}
+
+	for (act_DD.DIP = min_dip + 1; act_DD.DIP < max_dip + 1; act_DD.DIP++) {
+
+		XY act_xy = stereonet_coordinate_from_DIPDIR_DIP (act_DD, center, inset);
+		o << "  "  <<  act_xy.X << " " << act_xy.Y << " lineto" << endl;
+	}
+
+	for (act_DD.DIPDIR = max_dipdir - 1; act_DD.DIPDIR > min_dipdir - 1; act_DD.DIPDIR--) {
+
+		XY act_xy = stereonet_coordinate_from_DIPDIR_DIP (act_DD, center, inset);
+		o << "  "  <<  act_xy.X << " " << act_xy.Y << " lineto" << endl;
+	}
+
+	for (act_DD.DIP = min_dip - 1; act_DD.DIP > max_dip - 1; act_DD.DIP--) {
+
+		XY act_xy = stereonet_coordinate_from_DIPDIR_DIP (act_DD, center, inset);
+		o << "  "  <<  act_xy.X << " " << act_xy.Y << " lineto" << endl;
+	}
+
+	o << "  closepath" << endl;
+
+
+	o << fixed << setprecision (2) << endl;
+
+	o
+	<< "  "
+	<< (density_color_from_percentage(dens.percentage)).X << " "
+	<< (density_color_from_percentage(dens.percentage)).Y << " "
+	<< (density_color_from_percentage(dens.percentage)).Z << " "
+	<< "setrgbcolor fill stroke" << endl << endl;
 }

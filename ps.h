@@ -72,4 +72,6 @@ void PS_SYMBOLS_LABEL (ofstream& o, INPSET inset, PAPER P);
 
 void PS_SYMBOLS (vector <GDB> inGDB, ofstream& o, INPSET inset, PAPER P);
 
+void ps_plot_densities (DENSITY dens, size_t radius, ofstream&  o, INPSET inset, CENTER center, PAPER P);
+
 #endif

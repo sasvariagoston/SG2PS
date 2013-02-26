@@ -199,4 +199,16 @@ struct ANG_PRM {
 	double a, b, c, d, e, f, g, h, i, j, k, l, m, n, p, q, u, v, w;
 };
 
+struct DENSITY {
+
+	DIPDIR_DIP direction;
+	double percentage;
+};
+
+struct XY {
+
+	double X;
+	double Y;
+};
+
 #endif
