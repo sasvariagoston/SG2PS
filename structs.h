@@ -106,6 +106,8 @@ struct GDB  {
 	VCTR SHEAR_S, NORMAL_S, UPSILON;
 
 	double ANG, RUP;
+
+	//int RUP_clusternumber;
 };
 
 struct CORRECTSTRIAE {

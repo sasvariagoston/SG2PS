@@ -922,6 +922,13 @@ vector <GDB> inversion (string method, vector <GDB> inGDB, ofstream& o, INPSET i
 
 	}
 
+	// RUP distribution calculations HERE
+	// modify input:
+	// 1) return cluster numbers
+	// 2) variable indicating "hard processing" (with ps output) and with no cluster numbers
+	// a variable added to general struct to return idel clusternumber
+	//
+
 	if (successfull) {
 
 		if (method == "ANGELIER") {

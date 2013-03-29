@@ -240,10 +240,6 @@ vector <CENTR_VECT> compute_centroid_from_which_group (size_t cluster_number, ve
 	vector <CENTR_VECT> new_centroid;
 	CENTR_VECT CV;
 
-	cout << "INIT--------------------------------------------" << endl;
-	cout << cluster_number << endl;
-	cout << record_number << endl;
-
 	do {
 		CV = declare_vector (0.0, 0.0, 0.0, 0.0, 0.0, 0.0);
 		new_centroid.push_back(CV);
@@ -281,18 +277,7 @@ vector <CENTR_VECT> compute_centroid_from_which_group (size_t cluster_number, ve
 					new_centroid.at(j).W = new_centroid.at(j).W + inGDB.at(k).N.Z;
 
 					processed_data_number++;
-
-					cout << inGDB.at(k).ID << "  " << inGDB.at(k).DATATYPE << endl;
-					cout << "-TOP-- " << k << " ------------ " << j << " ----------------" << endl;
-					cout << new_centroid.at(j).U << endl;
-					cout << new_centroid.at(j).V << endl;
-					cout << new_centroid.at(j).W << endl;
-					cout << new_centroid.at(j).X << endl;
-					cout << new_centroid.at(j).Y << endl;
-					cout << new_centroid.at(j).Z << endl;
-					cout << "-bottom------------------------------" << endl;
 				}
-				cout << "k: " << k << " recordnumber: " << record_number << endl;
 			}
 
 			k++;
@@ -300,17 +285,7 @@ vector <CENTR_VECT> compute_centroid_from_which_group (size_t cluster_number, ve
 
 		} while (k < record_number);
 
-		cout << "-returned below:-<< " << j << " ---" << k << " ----" << endl;
-		cout << new_centroid.at(j).U << endl;
-		cout << new_centroid.at(j).V << endl;
-		cout << new_centroid.at(j).W << endl;
-		cout << new_centroid.at(j).X << endl;
-		cout << new_centroid.at(j).Y << endl;
-		cout << new_centroid.at(j).Z << endl;
-
 		if (processed_data_number > 0) new_centroid.at(j) = unitvector (new_centroid.at(j));
-
-		cout << "j: " << j << " cluster_number: " << cluster_number  << endl;
 
 		k = 0;
 		j++;

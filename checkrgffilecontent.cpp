@@ -896,6 +896,8 @@ vector <GDB> create_GDB_from_rgf (const string& file_name) {
 
 		buffer.COMMENT = row.at(COMMENT);
 
+		cout << buffer.ID << " - " << buffer.OFFSET << endl;
+
 		outGDB.push_back(buffer);
 	}
 
