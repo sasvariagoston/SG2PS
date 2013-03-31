@@ -727,7 +727,7 @@ void process_group_by_group (vector <GDB> inGDB, vector <GDB> tiltinGDB, ofstrea
 		else 					cout << "," << flush;
 		cout << "regression after Sprang (1972): " << flush;
 
-		cout << "useful_striae_number: " << useful_striae_number(outGDB) << endl;
+		//cout << "useful_striae_number: " << useful_striae_number(outGDB) << endl;
 
 		if ((outGDB.size() > 1) && (check_dataset_homogenity (outGDB) && check_dataset_homogenity (tiltoutGDB))) {
 

@@ -4,9 +4,11 @@
 #ifndef RGF_HPP_
 #define RGF_HPP_
 
-#include "angelier.h"
+#include "inversion.h"
 #include "cluster.h"
 #include "common.h"
+
+
 
 //string GC_from_tempGC (string GCtemp);
 //double DIPDIR_from_DIPDIRtemp (string DIPDIRtemp, INPSET inset, string DATAGROUP);

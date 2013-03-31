@@ -1524,7 +1524,7 @@ STRESSTENSOR fix_stress_tensor_singularity(STRESSTENSOR& st) {
 	return st;
 }
 
-STRESSFIELD eigenvalue_eigenvector (STRESSTENSOR st, bool bingham) {
+STRESSFIELD eigenvalue_eigenvector (STRESSTENSOR st) {
 
 	st =  fix_stress_tensor_singularity(st);
 

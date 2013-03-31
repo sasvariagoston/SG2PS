@@ -6,12 +6,15 @@
 #include <cmath>
 #include <iostream>
 #include <iomanip>
-#include "rgf.h"
+
+#include "bingham.h"
 #include "checkrgffilecontent.h"
 #include "checkxycontent.h"
 #include "data_io.h"
 #include "ps.h"
 #include "random.hpp"
+#include "rgf.h"
+
 
 using namespace std;
 
@@ -821,7 +824,7 @@ void fold_from_planes (vector <GDB> inGDB, ofstream& o, INPSET inset, CENTER cen
 
 		if (buffer.at(0).DATATYPE == "FOLDSURFACE") {
 
-			sf = BINGHAM_PROCESS (buffer);
+			sf = sf_BINGHAM (st_BINGHAM (buffer));
 
 			great_circle_normal = flip_D_vector (sf.EIGENVECTOR1);
 
@@ -884,7 +887,7 @@ bool is_processable_for_average_HOMOG (vector <GDB> inGDB) {
 
 STRESSFIELD process_for_average_MT2 (vector <GDB> inGDB) {
 
-	return BINGHAM_PROCESS (inGDB);
+	return sf_BINGHAM (st_BINGHAM (inGDB));
 }
 
 STRESSFIELD process_for_average_EQ2 (vector <GDB> inGDB) {

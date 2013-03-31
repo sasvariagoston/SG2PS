@@ -1,0 +1,238 @@
+
+
+ ------------------------------------------------------------------ 
+|                                                                  |
+|                             SG2PS                                |
+|       Structural Geological data to PostScript converter         |
+|                                                                  |
+|                       Data processing software                   |
+|     Copyright (C) 2013 Agoston Sasvari.  All rights reserved.    |
+|             This a free software, license: GNU LGPL.             |
+|                                                                  |
+|              This software comes with NO WARRANTY.               |
+|                                                                  |
+|            For further information check www.sg2ps.eu            |
+|                                                                  |
+ ------------------------------------------------------------------ 
+|                                                                  |
+|                 Built on: 22 Jan 2013, 21:53:22                  | 
+|                                                                  |
+ ------------------------------------------------------------------ 
+
+RUNNING SG2PS IN GUI MODE.
+    - The header (column names) of the data file has been processed.
+    - Input DEMO9.RGF file read, 335 record(s) imported.
+    - Existing DATA_ID's in all records.
+    - Correct DATA_ID's in all records.
+    - Correct group code(s) in all records.
+    - Correct color code(s) in all records.
+    - Correct coordinate(s) in all records.
+    - Correct datatype(s) in all records.
+    - Correct strike/dip direction(s) in all records.
+    - Correct dip angle(s) in all records.
+    - Correct CS/striae(s) in all records.
+    - Correct paleo north direction(s) in all records.
+    - Input DEMO9.RGF file structure is correct.
+
+
+CHECKING OF SETTINGS OF 'DEMO9' PROJECT
+  - Using 'DEMO9.SET' setting file.
+  - Data convention.............................: german dipdir-dip
+  - Plot type ..................................: Angelier plot
+  - Net type....................................: Schmidt-net
+  - Hemisphere..................................: lower hemisphere
+  - Tilting by..................................: bedding
+  - Groupcode...................................: do not use
+  - Clustering..................................: 4 clusters
+  - Labeling....................................: do no label
+  - Inversion...................................: none
+  - Virtual symmetrical striae set..............: do not use
+  - Ideal slickenside movement..................: do not display
+  - Angle between s1 and fault plane (if needed): 30 degs
+  - Fracture statistics.........................: Bingham statistics
+  - Linewidth:..................................: 0.6 points
+  - Rose plot type..............................: symmetrical
+  - Data bin size on rose plot..................: 10.0 deg
+CHECKING OF 'DEMO9.XY' FILE INTEGRITY
+  - Input DEMO9.XY file read, 9 record(s) imported.
+    - Existing LOCATION's in all records of XY file.
+    - Correct LOCATION's in all records of XY file.
+    - Correct coordinate(s) in all records.
+  - Input DEMO9.XY file structure is correct.
+GEODATABASE PROCESSING FOR 'DEMO9.RGF' DATABASE FILE
+    - The header (column names) of the data file has been processed.
+  - Geodatabase completed for 335 records.
+  - Normal, dip and strike vectors were computed for 335 records.
+  - Pitch to lineation conversion has done for 71 pitches of 113 striae data.
+  - Apparent angular misfit for 42 striae(s) were computed in 39 records.
+    - less  than 5 degrees apparent angular misfit: 28 data.
+    - 5 to 15 degrees apparent angular misfit     : 10 data.
+    - 15 to 45 degrees apparent angular misfit    : 1 data.
+    - more than 45 degrees apparent angular misfit: 0 data.
+  - Striae correction.
+    - Record 'D5_0123' corrected from 271/73//198/47 to 271/73//200/47 (change: 1.4 deg) using 'DIPDIR' correction.
+    - Record 'D5_0124' corrected from 264/64//198/42 to 264/64//200/42 (change: 1.5 deg) using 'DIPDIR' correction.
+    - Record 'D5_0125' corrected from 278/77//218/61 to 278/77//212/61 (change: 2.7 deg) using 'DIPDIR' correction.
+    - Record 'D5_0126' corrected from 266/76//264/78 to 266/76//264/76 (change: 2.0 deg) using 'DIP' correction.
+    - Record 'D5_0127' corrected from 264/74//254/78 to 264/74//254/74 (change: 4.2 deg) using 'DIP' correction.
+    - Record 'D5_0128' corrected from 248/69//308/58 to 248/69//300/58 (change: 4.0 deg) using 'DIPDIR' correction.
+    - Record 'D5_0131' corrected from 201/81//142/62 to 201/81//128/61 (change: 6.8 deg) using 'DIPDIR' correction.
+    - Record 'D5_0132' corrected from 198/86//148/71 to 198/86//118/68 (change: 10.6 deg) using 'DIPDIR' correction.
+    - Record 'D5_0133' corrected from 193/88//112/64 to 193/88//107/64 (change: 2.2 deg) using 'DIPDIR' correction.
+    - Record 'D5_0134' corrected from 198/86//114/58 to 198/86//114/58 (change: 0.2 deg) using 'DIPDIR' correction.
+    - Record 'D5_0135' corrected from 346/51//357/47 to 346/51//357/50 (change: 3.5 deg) using 'DIP' correction.
+    - Record 'D5_0136' corrected from 357/45//032/29 to 357/45//032/39 (change: 10.3 deg) using 'DIP' correction.
+    - Record 'D5_0137' corrected from 352/48//022/45 to 352/48//022/44 (change: 1.1 deg) using 'DIP' correction.
+    - Record 'D5_0138' corrected from 352/48//014/43 to 352/48//014/46 (change: 2.8 deg) using 'DIP' correction.
+    - Record 'D5_0139' corrected from 291/65//268/66 to 291/65//268/63 (change: 2.9 deg) using 'DIP' correction.
+    - Record 'D5_0140' corrected from 307/77//245/60 to 307/77//240/60 (change: 2.3 deg) using 'DIPDIR' correction.
+    - Record 'D5_0141' corrected from 297/57//268/56 to 297/57//268/53 (change: 2.6 deg) using 'DIP' correction.
+    - Record 'D5_0142' corrected from 278/56//244/42 to 278/56//244/51 (change: 8.9 deg) using 'DIP' correction.
+    - Record 'D5_0143' corrected from 318/45//252/37 to 318/45//252/22 (change: 14.9 deg) using 'DIP' correction.
+    - Record 'D5_0144' corrected from 322/61//249/32 to 322/61//252/32 (change: 2.7 deg) using 'DIPDIR' correction.
+    - Record 'D5_0145' corrected from 312/51//238/28 to 312/51//247/28 (change: 8.1 deg) using 'DIPDIR' correction.
+    - Record 'D5_0146' corrected from 312/55//246/32 to 312/55//248/32 (change: 1.6 deg) using 'DIPDIR' correction.
+    - Record 'D5_0147' corrected from 266/75//204/56 to 266/75//199/56 (change: 2.6 deg) using 'DIPDIR' correction.
+    - Record 'D5_0148' corrected from 276/62//216/51 to 276/62//226/51 (change: 6.5 deg) using 'DIPDIR' correction.
+    - Record 'D5_0149' corrected from 272/75//205/49 to 272/75//200/49 (change: 3.4 deg) using 'DIPDIR' correction.
+    - Record 'D5_0150' corrected from 267/72//202/48 to 267/72//198/48 (change: 2.6 deg) using 'DIPDIR' correction.
+    - Record 'D5_0282' corrected from 012/35//041/33 to 012/35//041/31 (change: 1.5 deg) using 'DIP' correction.
+    - Record 'D5_0283' corrected from 042/41//024/33 to 042/41//024/40 (change: 6.6 deg) using 'DIP' correction.
+    - Record 'D5_0284' corrected from 061/48//058/46 to 061/48//058/48 (change: 2.0 deg) using 'DIP' correction.
+    - Record 'D5_0285' corrected from 081/22//058/21 to 081/22//058/20 (change: 0.6 deg) using 'DIP' correction.
+    - Record 'D5_0286' corrected from 069/28//056/36 to 069/28//056/27 (change: 8.6 deg) using 'DIP' correction.
+    - Record 'D5_0287' corrected from 134/27//062/22 to 134/27//062/09 (change: 13.1 deg) using 'DIP' correction.
+    - Record 'D5_0288' corrected from 046/35//041/59 to 046/35//041/35 (change: 24.1 deg) using 'DIP' correction.
+    - Record 'D5_0329' corrected from 283/86//012/18 to 283/86//012/18 (change: 0.3 deg) using 'DIPDIR' correction.
+    - Record 'D5_0330' corrected from 110/35//020/06 to 110/35//020/00 (change: 6.0 deg) using 'DIP' correction.
+    - Record 'D5_0331' corrected from 089/32//009/07 to 089/32//009/06 (change: 0.8 deg) using 'DIP' correction.
+    - Record 'D5_0332' corrected from 147/36//200/15 to 147/36//200/24 (change: 8.6 deg) using 'DIP' correction.
+    - Record 'D5_0333' corrected from 045/47//328/13 to 045/47//327/13 (change: 0.6 deg) using 'DIPDIR' correction.
+    - Record 'D5_0335' corrected from 050/66//325/12 to 050/66//325/12 (change: 0.4 deg) using 'DIPDIR' correction.
+  - Striae offset correction
+    - Striae offset in record 'D5_0122' has change from DEXTRAL to INVERSE.
+    - Striae offset in record 'D5_0123' has change from DEXTRAL to INVERSE.
+    - Striae offset in record 'D5_0124' has change from DEXTRAL to INVERSE.
+    - Striae offset in record 'D5_0125' has change from DEXTRAL to INVERSE.
+    - Striae offset in record 'D5_0143' has change from INVERSE to DEXTRAL.
+    - Striae offset in record 'D5_0144' has change from INVERSE to DEXTRAL.
+    - Striae offset in record 'D5_0145' has change from INVERSE to DEXTRAL.
+    - Striae offset in record 'D5_0146' has change from INVERSE to DEXTRAL.
+    - Striae offset in record 'D5_0287' has change from INVERSE to DEXTRAL.
+K-MEANS CLUSTERING OF 'DEMO9.RGF' DATABASE FILE
+  - User defined k-means clustering of '
+1' location, 'STRIAE' data set into 4 clusters with 2.93% error.
+  - User defined k-means clustering of '
+230' location, 'BEDDING' data set into 2 clusters with 0.00% error.
+  - User defined k-means clustering of '
+230' location, 'FRACTURE' data set into 4 clusters with 0.07% error.
+  - User defined k-means clustering of '
+ANG001' location, 'STRIAE' data set into 3 clusters with 1.77% error.
+  - User defined k-means clustering of '
+ANG002' location, 'BEDDING' data set into 1 clusters with 0.00% error.
+  - User defined k-means clustering of '
+ANG002' location, 'STRIAE' data set into 4 clusters with 1.20% error.
+  - User defined k-means clustering of '
+BE-03' location, 'BEDDING' data set into 2 clusters with 0.00% error.
+  - User defined k-means clustering of '
+CLUST' location, 'FRACTURE' data set into 4 clusters with 0.73% error.
+  - User defined k-means clustering of '
+DEMO3' location, 'BEDDING' data set into 1 clusters with 0.00% error.
+  - User defined k-means clustering of '
+DEMO3' location, 'STRIAE' data set into 4 clusters with 1.56% error.
+  - User defined k-means clustering of '
+OR001' location, 'BEDDING' data set into 1 clusters with 0.00% error.
+  - User defined k-means clustering of '
+OR001' location, 'STRIAE' data set into 2 clusters with 1.87% error.
+AVERAGE BEDDING COMPUTATION FOR 'DEMO9.RGF' DATABASE FILE
+  - Data set averages were computed for 12 independent data group(s) in 335 records.
+  - Average bedding was computed for 8 independent data group(s) in 335 records.
+RETILTING OF 'DEMO9.RGF' DATABASE FILE
+  - Retilting all of  335 data records by the bedding has done.
+  - Striae offset correction
+    - Striae offset in record 'D5_0313' has change from NORMAL to DEXTRAL.
+    - Striae offset in record 'D5_0310' has change from NORMAL to DEXTRAL.
+    - Striae offset in record 'D5_0311' has change from NORMAL to DEXTRAL.
+    - Striae offset in record 'D5_0305' has change from NORMAL to DEXTRAL.
+    - Striae offset in record 'D5_0300' has change from NORMAL to DEXTRAL.
+    - Striae offset in record 'D5_0301' has change from NORMAL to DEXTRAL.
+    - Striae offset in record 'D5_0302' has change from NORMAL to DEXTRAL.
+    - Striae offset in record 'D5_0314' has change from NORMAL to DEXTRAL.
+    - Striae offset in record 'D5_0324' has change from NORMAL to DEXTRAL.
+    - Striae offset in record 'D5_0325' has change from NORMAL to DEXTRAL.
+    - Striae offset in record 'D5_0317' has change from NORMAL to DEXTRAL.
+    - Striae offset in record 'D5_0326' has change from NORMAL to DEXTRAL.
+    - Striae offset in record 'D5_0327' has change from NORMAL to DEXTRAL.
+    - Striae offset in record 'D5_0292' has change from NORMAL to DEXTRAL.
+    - Striae offset in record 'D5_0303' has change from NORMAL to DEXTRAL.
+    - Striae offset in record 'D5_0293' has change from NORMAL to DEXTRAL.
+    - Striae offset in record 'D5_0294' has change from NORMAL to DEXTRAL.
+    - Striae offset in record 'D5_0297' has change from NORMAL to DEXTRAL.
+    - Striae offset in record 'D5_0296' has change from NORMAL to DEXTRAL.
+    - Striae offset in record 'D5_0304' has change from NORMAL to DEXTRAL.
+    - Striae offset in record 'D5_0312' has change from NORMAL to INVERSE.
+    - Striae offset in record 'D5_0295' has change from NORMAL to INVERSE.
+    - Striae offset in record 'D5_0316' has change from NORMAL to INVERSE.
+    - Striae offset in record 'D5_0290' has change from NORMAL to SINISTRAL.
+    - Striae offset in record 'D5_0291' has change from NORMAL to SINISTRAL.
+    - Striae offset in record 'D5_0323' has change from NORMAL to SINISTRAL.
+    - Striae offset in record 'D5_0322' has change from NORMAL to SINISTRAL.
+    - Striae offset in record 'D5_0321' has change from NORMAL to SINISTRAL.
+    - Striae offset in record 'D5_0320' has change from NORMAL to SINISTRAL.
+    - Striae offset in record 'D5_0319' has change from NORMAL to SINISTRAL.
+    - Striae offset in record 'D5_0318' has change from NORMAL to SINISTRAL.
+    - Striae offset in record 'D5_0298' has change from NORMAL to SINISTRAL.
+    - Striae offset in record 'D5_0299' has change from NORMAL to SINISTRAL.
+    - Striae offset in record 'D5_0309' has change from NORMAL to SINISTRAL.
+    - Striae offset in record 'D5_0308' has change from NORMAL to SINISTRAL.
+    - Striae offset in record 'D5_0307' has change from NORMAL to SINISTRAL.
+    - Striae offset in record 'D5_0306' has change from NORMAL to SINISTRAL.
+    - Striae offset in record 'D5_0128' has change from NORMAL to SINISTRAL.
+    - Striae offset in record 'D5_0129' has change from NORMAL to SINISTRAL.
+    - Striae offset in record 'D5_0139' has change from NORMAL to SINISTRAL.
+    - Striae offset in record 'D5_0142' has change from NORMAL to SINISTRAL.
+    - Striae offset in record 'D5_0141' has change from NORMAL to SINISTRAL.
+    - Striae offset in record 'D5_0140' has change from NORMAL to SINISTRAL.
+    - Striae offset in record 'D5_0127' has change from NORMAL to SINISTRAL.
+    - Striae offset in record 'D5_0126' has change from NORMAL to SINISTRAL.
+    - Striae offset in record 'D5_0147' has change from INVERSE to DEXTRAL.
+    - Striae offset in record 'D5_0146' has change from INVERSE to DEXTRAL.
+    - Striae offset in record 'D5_0145' has change from INVERSE to DEXTRAL.
+    - Striae offset in record 'D5_0144' has change from INVERSE to DEXTRAL.
+    - Striae offset in record 'D5_0143' has change from INVERSE to DEXTRAL.
+    - Striae offset in record 'D5_0148' has change from INVERSE to DEXTRAL.
+    - Striae offset in record 'D5_0149' has change from INVERSE to DEXTRAL.
+    - Striae offset in record 'D5_0150' has change from INVERSE to DEXTRAL.
+    - Striae offset in record 'D5_0138' has change from NORMAL to INVERSE.
+    - Striae offset in record 'D5_0135' has change from NORMAL to INVERSE.
+    - Striae offset in record 'D5_0136' has change from NORMAL to INVERSE.
+    - Striae offset in record 'D5_0137' has change from NORMAL to INVERSE.
+    - Striae offset in record 'D5_0134' has change from NORMAL to SINISTRAL.
+    - Striae offset in record 'D5_0133' has change from NORMAL to SINISTRAL.
+    - Striae offset in record 'D5_0132' has change from NORMAL to SINISTRAL.
+    - Striae offset in record 'D5_0131' has change from NORMAL to SINISTRAL.
+    - Striae offset in record 'D5_0283' has change from INVERSE to DEXTRAL.
+    - Striae offset in record 'D5_0287' has change from INVERSE to DEXTRAL.
+    - Striae offset in record 'D5_0285' has change from INVERSE to DEXTRAL.
+    - Striae offset in record 'D5_0286' has change from INVERSE to DEXTRAL.
+    - Striae offset in record 'D5_0288' has change from INVERSE to DEXTRAL.
+  - Data set averages were computed for 12 independent data group(s) in 335 records.
+  - Average bedding was computed for 8 independent data group(s) in 335 records.
+DATA EVALUATION AND EXPORT FROM 'DEMO9.RGF' DATABASE FILE
+  - Original input RGF file has been successfully copied to the project folder.
+  - Original input SET file has been successfully copied to the project folder.
+  - Original input .XY file has been successfully copied to the project folder.
+  - For '230' location,fracture statistics after Bingham (1964): 
+    - Original : e1: 079/71 (73.6%), e2: 331/06 (25.7%), e3: 239/18 (00.7%)
+    - Corrected: e1: 079/71 (73.6%), e2: 331/06 (25.7%), e3: 239/18 (00.7%)
+  - For 'CLUST' location,fracture statistics after Bingham (1964): 
+    - Original : e1: 054/71 (54.3%), e2: 149/02 (39.2%), e3: 239/19 (06.4%)
+    - Corrected: e1: 054/71 (54.3%), e2: 149/02 (39.2%), e3: 239/19 (06.4%)
+DATA EXPORT FROM 'DEMO9.RGF' DATABASE FILE
+  - Postscript output completed for 12 file containing 335 records.
+  - RGF output completed for 12 file containing 335 records.
+  - Tilted RGF output completed for 12 file containing 335 records.
+  - Average RGF output completed.
+  - Completed RGF file exported.
+EVALUATION OF DEMO9.RGF FILE COMPLETED.
+  - Elapsed time: 3.72 seconds.

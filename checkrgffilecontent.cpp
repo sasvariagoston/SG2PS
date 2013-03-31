@@ -10,9 +10,9 @@
 #include <map>
 #include <stdexcept>
 
-#include "checkrgffilecontent.h"
 #include "array_to_vector.hpp"
 #include "assertions.hpp"
+#include "checkrgffilecontent.h"
 #include "exceptions.hpp"
 #include "read_csv.hpp"
 #include "ReservedColumnNames.hpp"
@@ -896,7 +896,7 @@ vector <GDB> create_GDB_from_rgf (const string& file_name) {
 
 		buffer.COMMENT = row.at(COMMENT);
 
-		cout << buffer.ID << " - " << buffer.OFFSET << endl;
+		//cout << buffer.ID << " - " << buffer.OFFSET << endl;
 
 		outGDB.push_back(buffer);
 	}
