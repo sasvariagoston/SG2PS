@@ -213,4 +213,13 @@ struct XY {
 	double Y;
 };
 
+struct RUP_table {
+
+	size_t clusternumber;
+	double k;
+	double v;
+	double delta;
+	double C;
+};
+
 #endif

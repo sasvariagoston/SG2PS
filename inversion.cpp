@@ -18,6 +18,7 @@
 #include "ps.h"
 #include "ptn.h"
 #include "rgf.h"
+#include "rup_clustering.hpp"
 #include "shan.h"
 #include "structs.h"
 
@@ -168,6 +169,7 @@ vector <GDB> inversion (string method, vector <GDB> inGDB, ofstream& o, INPSET i
 
 	bool successfull = false;
 	double average_misfit;
+	int RUP_clusters_number;
 
 	if (method == "ANGELIER") {
 
@@ -236,10 +238,18 @@ vector <GDB> inversion (string method, vector <GDB> inGDB, ofstream& o, INPSET i
 	successfull = check_correct_stressfield (sf);
 
 
-	if (method == "MOSTAFA") 						inGDB = return_stressvector_estimators (st, inGDB, "MOSTAFA", false);
-	if (method != "MOSTAFA" && method != "BINGHAM") inGDB = return_stressvector_estimators (st, inGDB, "ANGELIER", false);
+	if 		(method == "MOSTAFA") 						inGDB = return_stressvector_estimators (st, inGDB, "MOSTAFA", false);
+	else if (method != "MOSTAFA" && method != "BINGHAM") inGDB = return_stressvector_estimators (st, inGDB, "ANGELIER", false);
+	else {};
 
 
+	RUP_clusters_number = return_RUP_clusters (inGDB);
+
+	//cout << "RUP_clusters_number: " << RUP_clusters_number << endl;
+
+	//THIS ONE IS THE IDEAL BIN NUMBER FOR THE RUP DISTRIBUTION
+
+	//exit (0);
 
 // RUP distribution calculations HERE
 	// modify input:
