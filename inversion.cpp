@@ -169,7 +169,7 @@ vector <GDB> inversion (string method, vector <GDB> inGDB, ofstream& o, INPSET i
 
 	bool successfull = false;
 	double average_misfit;
-	int RUP_clusters_number;
+	size_t RUP_clusters_number;
 
 	if (method == "ANGELIER") {
 
@@ -238,12 +238,12 @@ vector <GDB> inversion (string method, vector <GDB> inGDB, ofstream& o, INPSET i
 	successfull = check_correct_stressfield (sf);
 
 
-	if 		(method == "MOSTAFA") 						inGDB = return_stressvector_estimators (st, inGDB, "MOSTAFA", false);
-	else if (method != "MOSTAFA" && method != "BINGHAM") inGDB = return_stressvector_estimators (st, inGDB, "ANGELIER", false);
+	if 		(method == "MOSTAFA") 							inGDB = return_stressvector_estimators (st, inGDB, "MOSTAFA", false);
+	else if (method != "MOSTAFA" && method != "BINGHAM") 	inGDB = return_stressvector_estimators (st, inGDB, "ANGELIER", false);
 	else {};
 
 
-	RUP_clusters_number = return_RUP_clusters (inGDB);
+	RUP_clusters_number =  return_clusternumber_for_dataset (inGDB);
 
 	//cout << "RUP_clusters_number: " << RUP_clusters_number << endl;
 

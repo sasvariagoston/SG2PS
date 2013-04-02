@@ -16,6 +16,8 @@ using namespace std;
 
 size_t RUP_number_in_range (vector <GDB> inGDB, double range_min, double range_max);
 
+double bin_size_for_RUP (vector <GDB> inGDB, size_t bin_number);
+
 RUP_table return_cost_function_member (vector <GDB> inGDB, size_t bin_number);
 
 bool by_RUP(const GDB& x, const GDB& y);
@@ -26,7 +28,9 @@ vector <GDB> sort_by_RUP (vector <GDB> inGDB);
 
 vector <RUP_table> sort_by_C (vector <RUP_table> RT);
 
-int return_RUP_clusters (vector <GDB > inGDB);
+size_t return_RUP_ideal_bin_number (vector <GDB > inGDB);
+
+size_t return_clusternumber_for_dataset (vector <GDB> inGDB);
 
 void dbg_cout_GDB_RUP (vector <GDB> inGDB);
 

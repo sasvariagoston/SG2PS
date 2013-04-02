@@ -6,6 +6,7 @@
 
 #include "structs.h"
 #include "rup_clustering.hpp"
+#include "valley_method.hpp"
 
 
 using namespace std;
@@ -28,22 +29,32 @@ size_t RUP_number_in_range (vector <GDB> inGDB, double range_min, double range_m
 	return counter;
 }
 
+double bin_size_for_RUP (vector <GDB> inGDB, size_t bin_number) {
+
+	inGDB = sort_by_RUP (inGDB);
+
+	double RUP_min = inGDB.at(0).RUP;
+	double RUP_max = inGDB.at(inGDB.size() - 1).RUP;
+
+	return (RUP_max - RUP_min) / bin_number;
+}
+
 RUP_table return_cost_function_member (vector <GDB> inGDB, size_t bin_number) {
 
 	RUP_table out;
 
 	out.clusternumber = bin_number;
 
-	const double init_bin_size = inGDB.at(inGDB.size() - 1).RUP - inGDB.at(0).RUP;
+	//const double init_bin_size = inGDB.at(inGDB.size() - 1).RUP - inGDB.at(0).RUP;
 
-	out.delta = init_bin_size / out.clusternumber;
+	//out.delta = init_bin_size / out.clusternumber;
+
+	out.delta = bin_size_for_RUP (inGDB, out.clusternumber);
 
 	double range_min = inGDB.at(0).RUP;
-
 	double range_max = inGDB.at(0).RUP + out.delta;
 
 	double cml_mean = 0.0;
-
 	double cml_variance = 0.0;
 
 	for (size_t i = 0; i < out.clusternumber; i++) {
@@ -54,7 +65,7 @@ RUP_table return_cost_function_member (vector <GDB> inGDB, size_t bin_number) {
 
 		if (out.clusternumber == 7) {
 
-			cout << range_min << " -- " << range_max << " -- " << k_i << endl;
+			//cout << range_min << " -- " << range_max << " -- " << k_i << endl;
 		}
 
 		range_min = range_min + out.delta;
@@ -80,7 +91,7 @@ RUP_table return_cost_function_member (vector <GDB> inGDB, size_t bin_number) {
 
 		if (out.clusternumber == 7) {
 
-			cout << range_min << " -- " << range_max << " -- " << (k_i - out.k) * (k_i - out.k) << endl;
+			//cout << range_min << " -- " << range_max << " -- " << (k_i - out.k) * (k_i - out.k) << endl;
 		}
 
 
@@ -120,13 +131,13 @@ vector <RUP_table> sort_by_C (vector <RUP_table> RT) {
 	return RT;
 }
 
-int return_RUP_clusters (vector <GDB > inGDB) {
+size_t return_RUP_ideal_bin_number (vector <GDB > inGDB) {
 
 	vector <GDB > outGDB = sort_by_RUP (inGDB);
 
 	//input rendben
 
-	dbg_cout_GDB_RUP (outGDB);
+	//dbg_cout_GDB_RUP (outGDB);
 
 	RUP_table buffer;
 
@@ -141,9 +152,16 @@ int return_RUP_clusters (vector <GDB > inGDB) {
 
 	RT = sort_by_C (RT);
 
-	dbg_cout_RUP_table (RT);
+	//dbg_cout_RUP_table (RT);
 
 	return RT.at(0).clusternumber;
+}
+
+size_t return_clusternumber_for_dataset (vector <GDB> inGDB) {
+
+	size_t ideal_bin_number = return_RUP_ideal_bin_number (inGDB);
+
+	return return_ideal_clusternumber (inGDB, ideal_bin_number);
 }
 
 void dbg_cout_GDB_RUP (vector <GDB> inGDB) {

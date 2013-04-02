@@ -222,4 +222,17 @@ struct RUP_table {
 	double C;
 };
 
+struct HISTOGRAM {
+
+	double BIN_MIN;
+	int COUNT;
+};
+
+struct VALLEY {
+
+	int BIN_ID;
+	string DIR;
+};
+
+
 #endif
