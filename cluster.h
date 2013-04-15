@@ -21,6 +21,7 @@ vector <CENTR_VECT> compute_centroid_from_which_group (size_t cluster_number, ve
 vector <vector <double> > compute_distance_matrix_from_centroid (vector <vector <double> > distance_matrix, vector <GDB> inGDB, vector <CENTR_VECT> centroid);
 vector <int> compute_whichgroup_from_distances (vector <vector <double> > distance_matrix);
 
+vector <GDB> attach_color_codes (vector <int> which_group, vector <GDB> inGDB);
 vector <GDB> attach_group_codes (vector <int> which_group, vector <GDB> inGDB);
 
 double cumulative_distance (vector <vector <double> > distance_matrix, vector <int> which_group);

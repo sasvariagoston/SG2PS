@@ -7,8 +7,9 @@
 
 #include "common.h"
 #include "cluster.h"
+#include "data_io.h"
 #include "random.hpp"
-
+#include "rgf.h"
 
 vector <CENTR_VECT>  init_centriod (size_t cluster_number, vector <GDB> inGDB) {
 
@@ -295,6 +296,29 @@ vector <CENTR_VECT> compute_centroid_from_which_group (size_t cluster_number, ve
 	return new_centroid;
 }
 
+vector <GDB> attach_color_codes (vector <int> which_group, vector <GDB> inGDB) {
+
+	vector <GDB> outGDB = inGDB;
+
+	for (size_t i = 0; i < inGDB.size(); i++) {
+
+		if 		(which_group.at(i) == 1) 	outGDB.at(i).GC = "A";
+		else if (which_group.at(i) == 2) 	outGDB.at(i).GC = "B";
+		else if (which_group.at(i) == 3) 	outGDB.at(i).GC = "C";
+		else if (which_group.at(i) == 4)	outGDB.at(i).GC = "D";
+		else if (which_group.at(i) == 5) 	outGDB.at(i).GC = "E";
+		else if (which_group.at(i) == 6) 	outGDB.at(i).GC = "F";
+		else if (which_group.at(i) == 7) 	outGDB.at(i).GC = "G";
+		else if (which_group.at(i) == 8) 	outGDB.at(i).GC = "H";
+		else if (which_group.at(i) == 9) 	outGDB.at(i).GC = "I";
+		else outGDB.at(i).GC = "X";
+	}
+
+	outGDB = colorcode_grom_groupcode (outGDB);
+
+	return outGDB;
+}
+
 vector <GDB> attach_group_codes (vector <int> which_group, vector <GDB> inGDB) {
 
 	vector <GDB> outGDB = inGDB;
@@ -415,15 +439,26 @@ vector <vector <double> > clustering_cycle (size_t cluster_number, vector <GDB> 
 	if (existence_of_group (9, whichgroup)) group_counter++;
 
 
-	if (i.clusternumber == "A") cout << "  - Automatic k-means clustering of '" << flush;
-	else  						cout << "  - User defined k-means clustering of '" << endl;
+	if (i.RUP_clustering == "Y") {
 
-	cout
+		cout
+		<< "    - RUP clustering into "
+		<< group_counter << " clusters with "
+		<< fixed << setprecision (2) << cml_dst_1 << "% error."
+		<< endl;
+	}
 
-	<< inGDB.at(0).LOC << "' location, '"
-	<< inGDB.at(0).DATATYPE << "' data set into "
-	<< group_counter << " clusters with "
-	<< fixed << setprecision (2) << cml_dst_1 << "% error." << endl;
+	else {
+
+		if (i.clusternumber == "A")		cout << "  - Automatic k-means clustering of '" << flush;
+		else 							cout << "  - User defined k-means clustering of '" << flush;
+
+		cout
+		<< inGDB.at(0).LOC << "' location, '"
+		<< inGDB.at(0).DATATYPE << "' data set into "
+		<< group_counter << " clusters with "
+		<< fixed << setprecision (2) << cml_dst_1 << "% error." << endl;
+	}
 
 	return distance_matrix;
 }
@@ -438,11 +473,12 @@ vector <GDB> k_means_clustering (size_t cluster_number, vector <GDB> inGDB, INPS
 
 		distance_matrix = clustering_cycle (cluster_number, inGDB, i);
 		whichgroup = compute_whichgroup_from_distances (distance_matrix);
-		outGDB = attach_group_codes (whichgroup, inGDB);
+
+		if (i.RUP_clustering == "Y" ) 	outGDB = attach_color_codes (whichgroup, inGDB);
+		else 							outGDB = attach_group_codes (whichgroup, inGDB);
+
 		return outGDB;
-
 	}
-
 	else  {
 
 		cout

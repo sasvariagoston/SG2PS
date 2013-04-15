@@ -290,6 +290,12 @@ INPSET loadsettingsfromsettingfile (string settingfilename) {
 	getline (settingfile, c);
 	settings.rosebinning = capslock (c);
 
+	//needs to be deleted
+
+	settings.RUP_clustering = "Y";
+
+	settings.contouring = "S";
+
 	settingfile.close();
 
 	return settings;
@@ -345,6 +351,11 @@ void printsettingsonscreen (INPSET settings) {
 	if (settings.idealmovement == "Y")	cout<<"  - Ideal slickenside movement..................: display" 							<< endl;
 	if (settings.idealmovement == "N")	cout<<"  - Ideal slickenside movement..................: do not display"					<< endl;
 
+	//new
+	if (settings.RUP_clustering == "Y")	cout<<"  - Clustering using RUP values.................: do clustering" 					<< endl;
+	if (settings.RUP_clustering == "N")	cout<<"  - Clustering using RUP values.................: do not cluster"					<< endl;
+
+
 	cout<<"  - Angle between s1 and fault plane (if needed): " << settings.angle << " degs" 	<<endl;
 
 	if (settings.fracture == "B")		cout<<"  - Fracture statistics.........................: Bingham statistics"				<< endl;
@@ -359,6 +370,11 @@ void printsettingsonscreen (INPSET settings) {
 	if (settings.rosebinning=="B")	cout<<"  - Data bin size on rose plot..................:  5.0 deg"								<< endl;
 	if (settings.rosebinning=="C")	cout<<"  - Data bin size on rose plot..................: 10.0 deg"								<< endl;
 	if (settings.rosebinning=="D")	cout<<"  - Data bin size on rose plot..................: 22.5 deg"								<< endl;
+
+	//new
+	if (settings.contouring == "N")	cout<<"  - Contour of input data.......................: no contouring"							<< endl;
+	if (settings.contouring == "S")	cout<<"  - Contour of input data.......................: Schmidt 1% method"						<< endl;
+	if (settings.contouring == "K")	cout<<"  - Contour of input data.......................: Kamb's method"							<< endl;
 }
 
 INPSET inputsettings_manually (string projectname) {

@@ -445,11 +445,11 @@ void outputselected_ps_rgf (PFN output, vector <GDB> outGDB, vector <GDB> tiltou
 
 				if (existence_of_groupcodes (processGDB)) {
 
-
-
 					processGDB = 		colorcode_grom_groupcode (processGDB);
 					tiltprocessGDB = 	colorcode_grom_groupcode (tiltprocessGDB);
 				}
+
+				else {}
 			}
 
 			else {
@@ -523,19 +523,109 @@ void output_to_ps (PFN output, vector <GDB> processGDB, vector <GDB> tiltprocess
 
 	PS_border (processGDB.at(0), output_ps_file, inset, P);
 
+	//originally below one_by_one
+	processGDB = 		process_group_by_group (processGDB, output_ps_file, inset, center, P, false);
+	tiltprocessGDB = 	process_group_by_group (tiltprocessGDB, output_ps_file, inset, center, P, true);
+
+
+
 	for (size_t j=0; j<processGDB.size(); ++j) {
 
 		process_one_by_one (processGDB.at(j), tiltprocessGDB.at(j), output_ps_file, inset, center, P);
 		if (j < processGDB.size()-1) output_ps_file << endl;
 	}
 
-	process_group_by_group (processGDB, tiltprocessGDB, output_ps_file, inset, center, P);
+	//process_group_by_group (processGDB, tiltprocessGDB, output_ps_file, inset, center, P);
 
 	PS_datanumber_averagebedding (processGDB.at(0), output_ps_file, inset, P, center, processGDB.size());
 
 	PS_net (output_ps_file, inset, P);
 }
 
+void cout_method_text (vector <GDB> inGDB, INPSET inset) {
+
+	cout
+	<< "  - For '" << inGDB.at(0).LOC << "' location" << flush;
+
+	if (inset.group == "Y")	cout << ", '"<< inGDB.at(0).GC << "', " << flush;
+	else 					cout << "," << flush;
+
+	if 		(inGDB.at(0).DATATYPE == "FRACTURE" && inset.fracture == "B")		cout << "fracture statistics after Bingham (1964): " << flush;
+	else if (inGDB.at(0).DATATYPE == "STRIAE" && inset.inversion == "F")	cout << "regression after Fry (1999): " << flush;
+	else if (inGDB.at(0).DATATYPE == "STRIAE" && inset.inversion == "M")	cout << "regression after Michael (1984): " << flush;
+	else if (inGDB.at(0).DATATYPE == "STRIAE" && inset.inversion == "S")	cout << "regression after Shan et al. (2003): " << flush;
+	else if (inGDB.at(0).DATATYPE == "STRIAE" && inset.inversion == "A")	cout << "inversion after Angelier (1990): " << flush;
+	else if (inGDB.at(0).DATATYPE == "STRIAE" && inset.inversion == "O") 	cout << "inversion after Mostafa (2005): " << flush;
+	else if (inGDB.at(0).DATATYPE == "STRIAE" && inset.inversion == "D") 	cout << "regression after Sprang (1972): " << flush;
+	else if (inGDB.at(0).DATATYPE == "STRIAE" && inset.inversion == "P") 	cout << " regression after Turner (1953): " << flush;
+	else if (inGDB.at(0).DATATYPE == "FOLDSURFACE")cout << " fold axis calculation: " << endl;
+	else {};
+}
+
+void cout_original_tilted_text (bool tilt) {
+
+	cout << endl;
+
+	if (!tilt) 	cout << "    - Original : " << flush;
+	else 		cout << "    - Corrected: " << flush;
+}
+
+vector <GDB> process_group_by_group (vector <GDB> inGDB, ofstream& o, INPSET inset, CENTER center, PAPER P, bool tilt) {
+
+	vector <GDB> outGDB = inGDB;
+
+	CENTER mohr_center;
+
+	if (!tilt) {
+
+		center.X = P.O1X;
+		center.Y = P.O1Y;
+		mohr_center.X = P.O7X;
+		mohr_center.Y = P.O7Y;
+	}
+	else {
+
+		center.X = P.O2X;
+		center.Y = P.O2Y;
+		mohr_center.X = P.O8X;
+		mohr_center.Y = P.O8Y;
+	}
+
+	bool is_correct = (outGDB.size() > 1  && check_dataset_homogenity (outGDB));
+
+	PS_draw_rose (inGDB, o, inset, center, P, tilt);
+
+	if ((inset.fracture == "B") && (inGDB.at(0).DATATYPE == "FRACTURE") && (inGDB.size() < 2)) return outGDB;
+
+
+
+	if (inGDB.at(0).DATATYPE == "STRIAE") outGDB = return_striae_with_offset (inGDB);
+
+
+
+	if ((inset.fracture == "B" && outGDB.at(0).DATATYPE == "FRACTURE")
+		||
+		(inGDB.at(0).DATATYPE == "STRIAE" && inset.inversion != "N")
+		||
+		(inGDB.at(0).DATATYPE == "FOLDSURFACE")) {
+
+		if (!tilt) cout_method_text (outGDB, inset);
+
+		if (is_correct) {
+
+			cout_original_tilted_text (tilt);
+
+			outGDB = inversion (outGDB, o, inset, center, mohr_center, P);
+		}
+
+		else cout << "less (independent) data than required to the statistics." << endl;
+	}
+	else {};
+
+	return outGDB;
+}
+
+/*
 void process_group_by_group (vector <GDB> inGDB, vector <GDB> tiltinGDB, ofstream& o, INPSET inset, CENTER center, PAPER P) {
 
 	CENTER mohr_center;
@@ -801,18 +891,31 @@ void process_group_by_group (vector <GDB> inGDB, vector <GDB> tiltinGDB, ofstrea
 
 		else cout << "less (independent) data than required to the statistics." << endl;
 	}
-
 }
+
+*/
 
 void process_one_by_one (GDB processGDB, GDB tiltprocessGDB, ofstream& o, INPSET inset, CENTER center, PAPER P) {
 
-
 	center.X = P.O1X;
 	center.Y = P.O1Y;
-
 	PS_DRAW_record (processGDB, o, inset, center);
 
 	center.X = P.O2X;
 	center.Y = P.O2Y;
 	PS_DRAW_record (tiltprocessGDB, o, inset, center);
+}
+
+void dbg_cout_RGF_colors (vector <GDB> inGDB) {
+
+	cout << "RGF ps colors" << endl;
+
+	for (size_t i = 0; i < inGDB.size(); i++) {
+
+		cout
+		<< inGDB.at(i).ID << '\t'
+		<< inGDB.at(i).COLOR << '\t'
+		<< inGDB.at(i).PSCOLOR << '\t'
+		<< endl;
+	}
 }

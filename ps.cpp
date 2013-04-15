@@ -13,6 +13,7 @@
 #include "rgf.h"
 #include "common.h"
 #include "run_mode.h"
+#include "rup_clustering.hpp"
 
 using namespace std;
 
@@ -957,6 +958,143 @@ void PS_mohr_circle (vector <GDB> inGDB, ofstream& o, CENTER mohr_center, PAPER 
 
 void PS_RUP_distribution (vector <GDB>  inGDB, ofstream& o, CENTER center, PAPER P) {
 
+	inGDB = sort_by_RUP(inGDB);
+
+	size_t binsize = return_RUP_ideal_bin_number (inGDB);
+
+	double RUP_min = inGDB.at(0).RUP;
+	double RUP_max = inGDB.at(inGDB.size() - 1).RUP;
+
+	size_t i = 0;
+	size_t j = 0;
+
+	double step = binsize;
+	double counter = 0.0;
+
+	int data_counter;
+
+	counter = 0.0;
+
+	o << "/ArialNarrow-Bold findfont 8 scalefont setfont" << endl;
+
+	o
+	<< "  " << fixed << setprecision (3) << center.X + P.R + 2.0 * P.B + 5.0
+	<< " "  << fixed << setprecision (3) << center.Y + P.R + 7.0
+	<< "  moveto (RUP) 	0 0 0 setrgbcolor show " << endl;
+
+	do {
+
+		data_counter = 0;
+		i = 0;
+
+		do {
+
+			if ((inGDB.at(i).RUP > counter) && (inGDB.at(i).RUP <= counter + step)) data_counter++;
+			i++;
+
+		} while (i < inGDB.size());
+
+		o << "  0.8 0.8 0.8 setrgbcolor " << data_counter << " setlinewidth" << endl;
+
+		o
+		<< "  newpath "
+		<< fixed << setprecision (3) << center.X + P.R + 2.0 * P.B + data_counter / 2.0 << " " << center.Y - P.R + 2.0 * P.R * (counter / RUP_max) << " moveto "
+		<< fixed << setprecision (3) << center.X + P.R + 2.0 * P.B + data_counter / 2.0 << " " << center.Y - P.R + 2.0 * P.R * ((counter + step) / RUP_max)  << " lineto stroke" << endl;
+
+		counter = counter + step;
+
+		j++;
+
+	} while (counter < RUP_max);
+
+	counter = RUP_min;
+	step = binsize;
+
+	if (RUP_max < 1.0) step = 0.2;
+	else {
+
+		if (RUP_max < 5.0) step = 1;
+		else {
+
+			if (RUP_max < 10) step = 2;
+			else {
+
+				if (RUP_max < 20) step = 4;
+				else {
+
+					if (RUP_max < 50) step = 10;
+					else {
+
+						if (RUP_max < 100) step = 20;
+						else {
+
+							if (RUP_max < 250) step = 50;
+							else step = RUP_max / 5.0;
+						}
+					}
+				}
+			}
+		}
+	}
+
+	o << fixed << setprecision (0) << endl;
+
+	o << "/ArialNarrow-Bold findfont 6 scalefont setfont" << endl;
+	o << "  0.0 0.0 0.0 setrgbcolor 0.5 setlinewidth" << endl;
+
+	do {
+
+		o << "  0.0 0.0 0.0 setrgbcolor 0.5 setlinewidth" << endl;
+		o
+		<< "  newpath "
+		<< fixed << setprecision (3) << center.X + P.R + 2.0 * P.B << " " << center.Y - P.R + 2.0 * P.R * (counter / RUP_max) << " moveto "
+		<< fixed << setprecision (3) << center.X + P.R + 2.2 * P.B << " " << center.Y - P.R + 2.0 * P.R * (counter / RUP_max)  << " lineto stroke" << endl;
+
+		o
+		<< "  " << fixed << setprecision (3) << center.X + P.R + 2.4 * P.B
+		<< " "  << fixed << setprecision (3) << center.Y - P.R + 2.0 * P.R * (counter / RUP_max) - 1.0
+		<< fixed << setprecision (0)
+		<< "  moveto (" << counter << "%) 0 0 0 setrgbcolor show " << endl;
+
+		counter = counter + step;
+
+	} while (counter < RUP_max);
+
+	o
+	<< "  newpath "
+	<< fixed << setprecision (3) << center.X + P.R + 2.0 * P.B << " " << center.Y - P.R + 2.0 * P.R  << " moveto "
+	<< fixed << setprecision (3) << center.X + P.R + 2.2 * P.B << " " << center.Y - P.R + 2.0 * P.R  << " lineto stroke" << endl;
+
+	o
+	<< "  " << fixed << setprecision (3) << center.X + P.R + 2.4 * P.B
+	<< " "  << fixed << setprecision (3) << center.Y - P.R + 2.0 * P.R - 1.0
+	<< fixed << setprecision (0)
+	<< "  moveto (" << RUP_max << "%) 0 0 0 setrgbcolor show " << endl;
+
+	i = 0;
+
+	do {
+
+		o
+		<< "newpath "
+		<< fixed << setprecision (3) << center.X + P.R + 2.0 * P.B << " "
+		<< fixed << setprecision (3) << center.Y - P.R + 2.0 * P.R * (inGDB.at(i).RUP / RUP_max)
+		<< " 0.7 0 360 arc 3 setlinewidth 1 1 1 setrgbcolor stroke" << endl;
+
+		o
+		<< "newpath "
+		<< fixed << setprecision (3) << center.X + P.R + 2.0 * P.B << " "
+		<< fixed << setprecision (3) << center.Y - P.R + 2.0 * P.R * (inGDB.at(i).RUP / RUP_max)
+		<< " 0.7 0 360 arc 2 setlinewidth 0 0 0 setrgbcolor stroke" << endl;
+
+		i++;
+
+		} while (i < inGDB.size());
+}
+
+/*
+ * void PS_RUP_distribution (vector <GDB>  inGDB, ofstream& o, CENTER center, PAPER P) {
+
 	double RUP_max = 0.0;
 
 	size_t i = 0;
@@ -1095,6 +1233,8 @@ void PS_RUP_distribution (vector <GDB>  inGDB, ofstream& o, CENTER center, PAPER
 
 		} while (i < inGDB.size());
 }
+ *
+ */
 
 void PS_ANG_distribution (vector <GDB>  inGDB, ofstream& o, CENTER center, PAPER P) {
 
@@ -2948,7 +3088,7 @@ void ps_plot_densities (DENSITY dens, size_t radius, ofstream& o, INPSET inset, 
 
 	XY act_xy = stereonet_coordinate_from_DIPDIR_DIP (act_DD, center, inset);
 
-	cout << "PLOT" << endl;
+	//cout << "PLOT" << endl;
 
 	o << fixed << setprecision (3) << endl;
 

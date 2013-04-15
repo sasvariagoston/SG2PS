@@ -380,21 +380,26 @@ void PS_draw_rose_DIP (vector <GDB> inGDB, ofstream& o, INPSET inset, CENTER cen
 	}
 }
 
-void PS_draw_rose (vector <GDB> roseGDB, vector <GDB> tiltroseGDB, ofstream& o, INPSET inset, CENTER center, PAPER P) {
+void PS_draw_rose (vector <GDB> roseGDB, ofstream& o, INPSET inset, CENTER center, PAPER P, bool tilt) {
 
-	center.X = P.O3X;
-	center.Y = P.O3Y;
-	PS_draw_rose_DIPDIR (roseGDB, o, inset, center);
+	if (tilt) {
 
-	center.X = P.O4X;
-	center.Y = P.O4Y;
-	PS_draw_rose_DIPDIR (tiltroseGDB, o, inset, center);
+		center.X = P.O3X;
+		center.Y = P.O3Y;
+		PS_draw_rose_DIPDIR (roseGDB, o, inset, center);
 
-	center.X = P.O5X;
-	center.Y = P.O5Y;
-	PS_draw_rose_DIP (roseGDB, o, inset, center);
+		center.X = P.O5X;
+		center.Y = P.O5Y;
+		PS_draw_rose_DIP (roseGDB, o, inset, center);
+	}
+	else {
 
-	center.X = P.O6X;
-	center.Y = P.O6Y;
-	PS_draw_rose_DIP (tiltroseGDB, o, inset, center);
+		center.X = P.O4X;
+		center.Y = P.O4Y;
+		PS_draw_rose_DIPDIR (roseGDB, o, inset, center);
+
+		center.X = P.O6X;
+		center.Y = P.O6Y;
+		PS_draw_rose_DIP (roseGDB, o, inset, center);
+	}
 }

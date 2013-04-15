@@ -10,6 +10,7 @@
 #include "assertions.hpp"
 #include "bingham.h"
 #include "common.h"
+#include "data_io.h"
 #include "fry.h"
 #include "inversion.h"
 #include "michael.h"
@@ -120,7 +121,10 @@ void ps_inversion (string method, STRESSTENSOR st, STRESSFIELD sf, vector <GDB> 
 	if (method == "PTN") 	PS_mohr_circle (inGDB, o, mohr_center, P, sf, st, true);
 	else 					PS_mohr_circle (inGDB, o, mohr_center, P, sf, st, false);
 
-	if (method == "ANGELIER" || method == "MOSTAFA" || method == "SHAN" || method == "FRY") PS_RUP_distribution (inGDB, o, center, P);
+	if (method == "ANGELIER" || method == "MOSTAFA" || method == "SHAN" || method == "FRY") {
+
+		PS_RUP_distribution (inGDB, o, center, P);
+	}
 
 	PS_ANG_distribution (inGDB, o, center, P);
 
@@ -162,10 +166,22 @@ void inversion_result_output (STRESSFIELD sf, double average_misfit) {
 	<< endl;
 }
 
-vector <GDB> inversion (string method, vector <GDB> inGDB, ofstream& o, INPSET inset, CENTER center, CENTER mohr_center, PAPER P) {
+vector <GDB> inversion (vector <GDB> inGDB, ofstream& o, INPSET inset, CENTER center, CENTER mohr_center, PAPER P) {
 
 	STRESSFIELD sf;
 	STRESSTENSOR st;
+
+	string method = "";
+
+	if 		(inGDB.at(0).DATATYPE == "FRACTURE" && inset.fracture == "B")	method = "BINGHAM";
+	else if (inGDB.at(0).DATATYPE == "STRIAE" && inset.inversion == "F")	method = "FRY";
+	else if (inGDB.at(0).DATATYPE == "STRIAE" && inset.inversion == "M")	method = "MICHAEL";
+	else if (inGDB.at(0).DATATYPE == "STRIAE" && inset.inversion == "S")	method = "SHAN";
+	else if (inGDB.at(0).DATATYPE == "STRIAE" && inset.inversion == "A")	method = "ANGELIER";
+	else if (inGDB.at(0).DATATYPE == "STRIAE" && inset.inversion == "O") 	method = "MOSTAFA";
+	else if (inGDB.at(0).DATATYPE == "STRIAE" && inset.inversion == "D") 	method = "NDA";
+	else if (inGDB.at(0).DATATYPE == "STRIAE" && inset.inversion == "P") 	method = "PTN";
+	else {};
 
 	bool successfull = false;
 	double average_misfit;
@@ -243,34 +259,35 @@ vector <GDB> inversion (string method, vector <GDB> inGDB, ofstream& o, INPSET i
 	else {};
 
 
-	RUP_clusters_number =  return_clusternumber_for_dataset (inGDB);
-
-	//cout << "RUP_clusters_number: " << RUP_clusters_number << endl;
-
-	//THIS ONE IS THE IDEAL BIN NUMBER FOR THE RUP DISTRIBUTION
-
-	//exit (0);
-
-// RUP distribution calculations HERE
-	// modify input:
-	// 1) return cluster numbers
-	// 2) variable indicating "hard processing" (with ps output) and with no cluster numbers
-	// a variable added to general struct to return idel clusternumber
-	//
 
 	if (successfull) {
 
 		average_misfit = return_average_misfit (st, inGDB, false);
-
-		ps_inversion (method, st, sf, inGDB, o, center, mohr_center, P);
 
 		if (method == "BINGHAM") bingham_result_output (sf);
 
 		else {
 
 			inversion_result_output (sf, average_misfit);
+
+			// RUP distribution calculations HERE
+			// modify input:
+			// 1) return cluster numbers
+			// 2) variable indicating "hard processing" (with ps output) and with no cluster numbers
+			// a variable added to general struct to return idel clusternumber
+			//
+
+			RUP_clusters_number =  return_clusternumber_for_dataset (inGDB);
+
+			inGDB = k_means_clustering (RUP_clusters_number, inGDB, inset);
+
+			//size_t return_RUP_ideal_bin_number (vector <GDB > inGDB) >
+			//to plot bin width
+
 			PS_idealmovement (inGDB, o, inset, center);
 		}
+
+		ps_inversion (method, st, sf, inGDB, o, center, mohr_center, P);
 
 		PS_lineation (inGDB.at(0), o, inset, center, sf, false, "S1");
 		PS_lineation (inGDB.at(0), o, inset, center, sf, false, "S2");

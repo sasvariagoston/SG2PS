@@ -4,6 +4,7 @@
 #include <iostream>
 #include <vector>
 
+#include "math.h"
 #include "structs.h"
 #include "rup_clustering.hpp"
 #include "valley_method.hpp"
@@ -71,8 +72,6 @@ RUP_table return_cost_function_member (vector <GDB> inGDB, size_t bin_number) {
 		range_min = range_min + out.delta;
 
 		range_max = range_max + out.delta;
-
-
 	}
 
 	out.k = cml_mean / out.clusternumber;
@@ -89,12 +88,6 @@ RUP_table return_cost_function_member (vector <GDB> inGDB, size_t bin_number) {
 
 		cml_variance = cml_variance + ((k_i - out.k) * (k_i - out.k));
 
-		if (out.clusternumber == 7) {
-
-			//cout << range_min << " -- " << range_max << " -- " << (k_i - out.k) * (k_i - out.k) << endl;
-		}
-
-
 		range_min = range_min + out.delta;
 
 		range_max = range_max + out.delta;
@@ -103,6 +96,8 @@ RUP_table return_cost_function_member (vector <GDB> inGDB, size_t bin_number) {
 	out.v = cml_variance / out.clusternumber;
 
 	out.C = ((2.0 * out.k) - out.v) / (out.delta * out.delta);
+
+	//dbg_cout_GDB_RUP (inGDB);
 
 	return out;
 }
@@ -143,7 +138,7 @@ size_t return_RUP_ideal_bin_number (vector <GDB > inGDB) {
 
 	vector <RUP_table> RT;
 
-	for (size_t bin_number = 1; bin_number < outGDB.size(); bin_number++) {
+	for (size_t bin_number = 1; bin_number < sqrt(outGDB.size()) * 2.0; bin_number++) {
 
 		buffer = return_cost_function_member (outGDB, bin_number);
 
@@ -153,6 +148,12 @@ size_t return_RUP_ideal_bin_number (vector <GDB > inGDB) {
 	RT = sort_by_C (RT);
 
 	//dbg_cout_RUP_table (RT);
+
+	//cout << "PROPOSED BIN NUMBER: " << RT.at(0).clusternumber << endl;
+
+	//az a gond, hogy egy csomo esetben icipici a bin size,
+	//es emiatt egymilio klaszter lesz;
+	//a bin size-ra es a klaszterek szamara kellene valami korlat
 
 	return RT.at(0).clusternumber;
 }

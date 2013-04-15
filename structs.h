@@ -49,6 +49,9 @@ struct INPSET  {
 	string rosetype;
 	string rosebinning;
 	string filename;
+
+	string RUP_clustering;
+	string contouring;
 };
 
 struct GDB  {

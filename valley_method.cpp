@@ -56,7 +56,7 @@ vector <VALLEY> generate_valley_graph (vector <HISTOGRAM> H) {
 		V.push_back(buffer);
 	}
 
-	dbg_cout_V (V);
+	//dbg_cout_V (V);
 
 	return V;
 }
@@ -81,7 +81,7 @@ vector <VALLEY> reduce_N_valley_graph (vector <VALLEY> inV) {
 		else {};
 	}
 
-	dbg_cout_V (outV);
+	//dbg_cout_V (outV);
 
 	return outV;
 }
@@ -111,7 +111,7 @@ vector <VALLEY> reduce_UD_valley_graph (vector <VALLEY> inV) {
 		else {};
 	}
 
-	dbg_cout_V (outV);
+	//dbg_cout_V (outV);
 
 	return outV;
 }
@@ -125,7 +125,7 @@ size_t return_DU_number (vector <VALLEY> inV) {
 		if (inV.at(i).DIR == "D" && inV.at(i + 1).DIR == "U") DU_counter++;
 	}
 
-	cout << "DU_counter: " << DU_counter << endl;
+	//cout << "DU_counter: " << DU_counter << endl;
 
 	return DU_counter;
 }
@@ -140,7 +140,7 @@ size_t return_ideal_clusternumber (vector <GDB> inGDB, size_t bin_number) {
 
 	V = reduce_UD_valley_graph (V);
 
-	return return_DU_number (V);
+	return return_DU_number(V) + 1 ;
 }
 
 void dbg_cout_H (vector <HISTOGRAM> inH) {
