@@ -908,13 +908,13 @@ void process_one_by_one (GDB processGDB, GDB tiltprocessGDB, ofstream& o, INPSET
 
 void dbg_cout_RGF_colors (vector <GDB> inGDB) {
 
-	cout << "RGF ps colors" << endl;
+	cout << "RGF colors" << endl;
 
 	for (size_t i = 0; i < inGDB.size(); i++) {
 
 		cout
 		<< inGDB.at(i).ID << '\t'
-		<< inGDB.at(i).COLOR << '\t'
+		<< inGDB.at(i).GC << '\t'
 		<< inGDB.at(i).PSCOLOR << '\t'
 		<< endl;
 	}

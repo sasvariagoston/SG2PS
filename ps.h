@@ -23,8 +23,9 @@ void PS_stressdata (ofstream& o, CENTER center, PAPER P, STRESSFIELD sf, string 
 void PS_stressarrows (ofstream& o, CENTER center, PAPER P, STRESSFIELD sf);
 
 void PS_mohr_circle (vector <GDB> inGDB, ofstream& o, CENTER center, PAPER P, STRESSFIELD sf, STRESSTENSOR st, bool compression_positive);
-void PS_RUP_distribution (vector <GDB>  inGDB, ofstream& o, CENTER center, PAPER P);
-void PS_ANG_distribution (vector <GDB>  inGDB, ofstream& o, CENTER center, PAPER P);
+
+void PS_RUP_distribution (vector <GDB> inGDB, INPSET inset, vector <VALLEY> V, ofstream& o, CENTER center, PAPER P);
+void PS_ANG_distribution (vector <GDB> inGDB, ofstream& o, CENTER center, PAPER P);
 
 void PS_stress_state (ofstream& o, PAPER P, CENTER center, STRESSFIELD sf);
 

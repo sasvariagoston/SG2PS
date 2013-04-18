@@ -14,6 +14,8 @@
 #include "common.h"
 #include "run_mode.h"
 #include "rup_clustering.hpp"
+#include "valley_method.hpp"
+
 
 using namespace std;
 
@@ -956,24 +958,59 @@ void PS_mohr_circle (vector <GDB> inGDB, ofstream& o, CENTER mohr_center, PAPER 
 	} while (j < inGDB.size());
 }
 
-void PS_RUP_distribution (vector <GDB>  inGDB, ofstream& o, CENTER center, PAPER P) {
+void PS_RUP_distribution (vector <GDB> inGDB, INPSET inset, vector <VALLEY> V, ofstream& o, CENTER center, PAPER P) {
 
 	inGDB = sort_by_RUP(inGDB);
 
-	size_t binsize = return_RUP_ideal_bin_number (inGDB);
-
 	double RUP_min = inGDB.at(0).RUP;
 	double RUP_max = inGDB.at(inGDB.size() - 1).RUP;
+
+	vector <double> table = GDB_to_table(inGDB, "RUP");
+
+	vector <string> H_CLR;
+
+	/*H_CLR.push_back("0.00 0.00 0.00");
+	H_CLR.push_back("0.00 0.00 1.00");
+	H_CLR.push_back("1.00 0.00 0.67");
+	H_CLR.push_back("1.00 0.00 0.00");
+	H_CLR.push_back("1.00 0.50 0.00");
+	H_CLR.push_back("1.00 1.00 0.00");
+	H_CLR.push_back("0.00 1.00 0.00");
+	H_CLR.push_back("0.67 0.00 0.67");
+	H_CLR.push_back("0.50 1.00 1.00");
+	H_CLR.push_back("0.50 0.50 0.50");
+	*/
+
+	H_CLR.push_back("0.50 0.50 0.50");
+	H_CLR.push_back("0.50 0.50 1.00");
+	H_CLR.push_back("1.00 0.50 0.83");
+	H_CLR.push_back("1.00 0.50 0.50");
+	H_CLR.push_back("1.00 0.75 0.50");
+	H_CLR.push_back("1.00 1.00 0.50");
+	H_CLR.push_back("0.50 1.00 0.50");
+	H_CLR.push_back("0.83 0.50 0.83");
+	H_CLR.push_back("0.75 1.00 1.00");
+	H_CLR.push_back("0.75 0.75 0.75");
+
+	string act_clr = "";
+
+	double bin_number = return_DATA_ideal_bin_number (table);
+
+	double binsize = (RUP_max - RUP_min) / bin_number;
 
 	size_t i = 0;
 	size_t j = 0;
 
 	double step = binsize;
-	double counter = 0.0;
+	double counter = RUP_min;
 
 	int data_counter;
 
-	counter = 0.0;
+	vector <HISTOGRAM> H = generate_DATA_histogram (GDB_to_table (inGDB, "RUP"),  bin_number);
+	H = sort_by_COUNT (H);
+
+	int max_count = H.at(H.size() - 1).COUNT;
+
 
 	o << "/ArialNarrow-Bold findfont 8 scalefont setfont" << endl;
 
@@ -994,12 +1031,29 @@ void PS_RUP_distribution (vector <GDB>  inGDB, ofstream& o, CENTER center, PAPER
 
 		} while (i < inGDB.size());
 
-		o << "  0.8 0.8 0.8 setrgbcolor " << data_counter << " setlinewidth" << endl;
+		////cout << counter << endl;
+		//cout << binsize << endl;
+
+		for (size_t k = 0; k < V.size() - 1; k++) { //ok
+
+			//cout << k << endl;
+
+			if (counter < V.at(0).BIN_CENTER) 											act_clr = H_CLR.at(0);
+			else if (is_in_range (V.at(k).BIN_CENTER, V.at(k+1).BIN_CENTER, counter)) 	act_clr = H_CLR.at(k+1);
+			else if (counter > V.at(V.size() - 1).BIN_CENTER) 							act_clr = H_CLR.at(k+2);
+			else 																		act_clr = " 0.8 0.8 0.8 ";
+		}
+
+		double linewidth = data_counter;
+
+		linewidth = (linewidth / max_count) * 30.0;
+
+		o <<  act_clr << " setrgbcolor " << linewidth << " setlinewidth" << endl;
 
 		o
 		<< "  newpath "
-		<< fixed << setprecision (3) << center.X + P.R + 2.0 * P.B + data_counter / 2.0 << " " << center.Y - P.R + 2.0 * P.R * (counter / RUP_max) << " moveto "
-		<< fixed << setprecision (3) << center.X + P.R + 2.0 * P.B + data_counter / 2.0 << " " << center.Y - P.R + 2.0 * P.R * ((counter + step) / RUP_max)  << " lineto stroke" << endl;
+		<< fixed << setprecision (3) << center.X + P.R + 2.0 * P.B + linewidth / 2.0 << " " << center.Y - P.R + 2.0 * P.R * (counter / RUP_max) << " moveto "
+		<< fixed << setprecision (3) << center.X + P.R + 2.0 * P.B + linewidth / 2.0 << " " << center.Y - P.R + 2.0 * P.R * ((counter + step) / RUP_max)  << " lineto stroke" << endl;
 
 		counter = counter + step;
 
@@ -1073,7 +1127,7 @@ void PS_RUP_distribution (vector <GDB>  inGDB, ofstream& o, CENTER center, PAPER
 
 	i = 0;
 
-	do {
+	/*do {
 
 		o
 		<< "newpath "
@@ -1090,6 +1144,7 @@ void PS_RUP_distribution (vector <GDB>  inGDB, ofstream& o, CENTER center, PAPER
 		i++;
 
 		} while (i < inGDB.size());
+		*/
 }
 
 /*

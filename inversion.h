@@ -30,7 +30,7 @@ vector <GDB> return_stressvector_estimators (STRESSTENSOR st, vector <GDB> inGDB
 
 vector <GDB> generate_virtual_striae (vector <GDB> inGDB);
 
-void ps_inversion (string method, STRESSTENSOR st, STRESSFIELD sf, vector <GDB> inGDB, ofstream& o, CENTER center, CENTER mohr_center, PAPER P);
+void ps_inversion (string method, STRESSTENSOR st, STRESSFIELD sf, vector <GDB> inGDB, vector <VALLEY> V, INPSET inset, ofstream& o, CENTER center, CENTER mohr_center, PAPER P);
 
 void bingham_result_output (STRESSFIELD sf);
 

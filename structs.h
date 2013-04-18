@@ -229,13 +229,14 @@ struct HISTOGRAM {
 
 	double BIN_MIN;
 	int COUNT;
+	string GC;
 };
 
 struct VALLEY {
 
 	int BIN_ID;
+	double BIN_CENTER;
 	string DIR;
 };
-
 
 #endif

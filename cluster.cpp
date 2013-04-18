@@ -296,7 +296,7 @@ vector <CENTR_VECT> compute_centroid_from_which_group (size_t cluster_number, ve
 	return new_centroid;
 }
 
-vector <GDB> attach_color_codes (vector <int> which_group, vector <GDB> inGDB) {
+/*vector <GDB> attach_color_codes (vector <int> which_group, vector <GDB> inGDB) {
 
 	vector <GDB> outGDB = inGDB;
 
@@ -317,7 +317,7 @@ vector <GDB> attach_color_codes (vector <int> which_group, vector <GDB> inGDB) {
 	outGDB = colorcode_grom_groupcode (outGDB);
 
 	return outGDB;
-}
+}*/
 
 vector <GDB> attach_group_codes (vector <int> which_group, vector <GDB> inGDB) {
 
@@ -474,8 +474,9 @@ vector <GDB> k_means_clustering (size_t cluster_number, vector <GDB> inGDB, INPS
 		distance_matrix = clustering_cycle (cluster_number, inGDB, i);
 		whichgroup = compute_whichgroup_from_distances (distance_matrix);
 
-		if (i.RUP_clustering == "Y" ) 	outGDB = attach_color_codes (whichgroup, inGDB);
-		else 							outGDB = attach_group_codes (whichgroup, inGDB);
+		//if (i.RUP_clustering == "Y" ) 	outGDB = attach_color_codes (whichgroup, inGDB);
+		//else
+			outGDB = attach_group_codes (whichgroup, inGDB);
 
 		return outGDB;
 	}

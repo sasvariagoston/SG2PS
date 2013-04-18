@@ -111,7 +111,7 @@ vector <GDB> generate_virtual_striae (vector <GDB> inGDB) {
 	return outGDB;
 }
 
-void ps_inversion (string method, STRESSTENSOR st, STRESSFIELD sf, vector <GDB> inGDB, ofstream& o, CENTER center, CENTER mohr_center, PAPER P) {
+void ps_inversion (string method, STRESSTENSOR st, STRESSFIELD sf, vector <GDB> inGDB, vector <VALLEY> V, INPSET inset, ofstream& o, CENTER center, CENTER mohr_center, PAPER P) {
 
 	PS_stressdata (o, center, P, sf, method);
 	if (method == "BINGHAM") return;
@@ -123,7 +123,7 @@ void ps_inversion (string method, STRESSTENSOR st, STRESSFIELD sf, vector <GDB> 
 
 	if (method == "ANGELIER" || method == "MOSTAFA" || method == "SHAN" || method == "FRY") {
 
-		PS_RUP_distribution (inGDB, o, center, P);
+		PS_RUP_distribution (inGDB, inset, V, o, center, P);
 	}
 
 	PS_ANG_distribution (inGDB, o, center, P);
@@ -186,6 +186,7 @@ vector <GDB> inversion (vector <GDB> inGDB, ofstream& o, INPSET inset, CENTER ce
 	bool successfull = false;
 	double average_misfit;
 	size_t RUP_clusters_number;
+	vector <VALLEY> V;
 
 	if (method == "ANGELIER") {
 
@@ -270,31 +271,28 @@ vector <GDB> inversion (vector <GDB> inGDB, ofstream& o, INPSET inset, CENTER ce
 
 			inversion_result_output (sf, average_misfit);
 
-			// RUP distribution calculations HERE
-			// modify input:
-			// 1) return cluster numbers
-			// 2) variable indicating "hard processing" (with ps output) and with no cluster numbers
-			// a variable added to general struct to return idel clusternumber
-			//
+			V = return_valleygraph_for_dataset (inGDB, "RUP");
 
-			RUP_clusters_number =  return_clusternumber_for_dataset (inGDB);
+			if (V.size() == 1 && V.at(0).BIN_ID == 999) cout << "  - Cannot cluster input data set using RUP values." << endl;
+			else if (V.size() > 9) 						cout << "  - Clustering result not reliable: more than 9 clusters." << endl;
+			else										cout << "  - Input data set separated into " << V.size() + 1 << " clusters." << endl;
 
-			inGDB = k_means_clustering (RUP_clusters_number, inGDB, inset);
-
-			//size_t return_RUP_ideal_bin_number (vector <GDB > inGDB) >
-			//to plot bin width
+			inGDB = associate_GDB_RUP_clusters (inGDB, V);
+			inGDB = colorcode_grom_groupcode (inGDB);
 
 			PS_idealmovement (inGDB, o, inset, center);
 		}
 
-		ps_inversion (method, st, sf, inGDB, o, center, mohr_center, P);
+		//dbg_cout_RGF_colors(inGDB);
+
+		ps_inversion (method, st, sf, inGDB, V, inset, o, center, mohr_center, P);
 
 		PS_lineation (inGDB.at(0), o, inset, center, sf, false, "S1");
 		PS_lineation (inGDB.at(0), o, inset, center, sf, false, "S2");
 		PS_lineation (inGDB.at(0), o, inset, center, sf, false, "S3");
 	}
-
 	else cout << "unable to compute stress field for the data set." << endl;
 
 	return inGDB;
 }
+
