@@ -202,7 +202,7 @@ void dbg_cout_GDB_RUP (vector <GDB> inGDB) {
 
 		cout
 		<< inGDB.at(i).ID << '\t'
-		<< inGDB.at(i).RUP << '\t'
+		<< inGDB.at(i).ANG << '\t'
 		<< inGDB.at(i).GC << '\t'
 		<< endl;
 	}
@@ -248,7 +248,7 @@ void dbg_cout_RUP_table (vector <RUP_table> RT) {
 	}
 }
 
-vector <GDB> associate_GDB_RUP_clusters (vector <GDB> inGDB, vector <VALLEY> V) {
+vector <GDB> associate_GDB_DATA_clusters (vector <GDB> inGDB, vector <VALLEY> V, INPSET inset, string method) {
 
 	vector <string> GC;
 
@@ -263,16 +263,29 @@ vector <GDB> associate_GDB_RUP_clusters (vector <GDB> inGDB, vector <VALLEY> V) 
 	GC.push_back("H");
 	GC.push_back("I");
 
-	for (size_t i = 0; i < V.size() - 1; i++) {
-		for (size_t j = 0; j < inGDB.size(); j++) {
+	bool is_RUP = (method == "RUP");
+	bool is_ANG = (method == "ANG");
+	bool is_RUP_clustering = (inset.clustering_RUP_ANG == "R");
+	bool is_ANG_clustering = (inset.clustering_RUP_ANG == "A");
 
-			if (inGDB.at(j).RUP < V.at(0).BIN_CENTER) inGDB.at(j).GC = GC.at(0);
-			else if (is_in_range (V.at(i).BIN_CENTER, V.at(i+1).BIN_CENTER, inGDB.at(j).RUP)) inGDB.at(j).GC = GC.at(i+1);
-			else inGDB.at(j).GC = GC.at(i+2);
+	for (size_t j = 0; j < inGDB.size(); j++) {
+
+		if ((is_RUP_clustering || is_ANG_clustering) && (V.size() == 0))	inGDB.at(j).GC = GC.at(0);
+		else if (is_RUP && !is_RUP_clustering) 								inGDB.at(j).GC = GC.at(0);
+		else if (is_ANG && !is_ANG_clustering) 								inGDB.at(j).GC = GC.at(0);
+		else {
+
+			for (size_t i = 0; i < V.size() - 1; i++) {
+
+				if (inGDB.at(j).RUP < V.at(0).BIN_CENTER) 											inGDB.at(j).GC = GC.at(0);
+				else if (is_in_range (V.at(i).BIN_CENTER, V.at(i+1).BIN_CENTER, inGDB.at(j).RUP)) 	inGDB.at(j).GC = GC.at(i+1);
+				else if (inGDB.at(j).RUP > V.at(V.size() - 1).BIN_CENTER) 							inGDB.at(j).GC = GC.at(i+2);
+				else {}
+			}
 		}
 	}
 
-	dbg_cout_GDB_RUP(inGDB);
+	//dbg_cout_GDB_RUP(inGDB);
 
 	return inGDB;
 }

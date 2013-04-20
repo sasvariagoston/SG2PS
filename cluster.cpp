@@ -439,7 +439,7 @@ vector <vector <double> > clustering_cycle (size_t cluster_number, vector <GDB> 
 	if (existence_of_group (9, whichgroup)) group_counter++;
 
 
-	if (i.RUP_clustering == "Y") {
+	if (i.clustering_RUP_ANG == "Y") {
 
 		cout
 		<< "    - RUP clustering into "

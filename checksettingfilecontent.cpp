@@ -292,7 +292,7 @@ INPSET loadsettingsfromsettingfile (string settingfilename) {
 
 	//needs to be deleted
 
-	settings.RUP_clustering = "Y";
+	settings.clustering_RUP_ANG = "R";
 
 	settings.contouring = "S";
 
@@ -352,9 +352,9 @@ void printsettingsonscreen (INPSET settings) {
 	if (settings.idealmovement == "N")	cout<<"  - Ideal slickenside movement..................: do not display"					<< endl;
 
 	//new
-	if (settings.RUP_clustering == "Y")	cout<<"  - Clustering using RUP values.................: do clustering" 					<< endl;
-	if (settings.RUP_clustering == "N")	cout<<"  - Clustering using RUP values.................: do not cluster"					<< endl;
-
+	if (settings.clustering_RUP_ANG == "N")	cout<<"  - Clustering using RUP / ANG values.......: do clustering" 					<< endl;
+	if (settings.clustering_RUP_ANG == "A")	cout<<"  - Clustering using RUP / ANG values.......: use ANG values"					<< endl;
+	if (settings.clustering_RUP_ANG == "R")	cout<<"  - Clustering using RUP / ANG values.......: use RUP values"					<< endl;
 
 	cout<<"  - Angle between s1 and fault plane (if needed): " << settings.angle << " degs" 	<<endl;
 

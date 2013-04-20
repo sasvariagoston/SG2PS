@@ -19,6 +19,8 @@
 
 using namespace std;
 
+
+
 PAPER PS_dimensions () {
 
 	PAPER P;
@@ -958,28 +960,36 @@ void PS_mohr_circle (vector <GDB> inGDB, ofstream& o, CENTER mohr_center, PAPER 
 	} while (j < inGDB.size());
 }
 
-void PS_RUP_distribution (vector <GDB> inGDB, INPSET inset, vector <VALLEY> V, ofstream& o, CENTER center, PAPER P) {
+bool by_border (const BRDR& x, const BRDR& y) {
 
-	inGDB = sort_by_RUP(inGDB);
+	return x.border < y.border;
+}
 
-	double RUP_min = inGDB.at(0).RUP;
-	double RUP_max = inGDB.at(inGDB.size() - 1).RUP;
+vector <BRDR> sort_by_border (vector <BRDR> in) {
 
-	vector <double> table = GDB_to_table(inGDB, "RUP");
+	sort(in.begin(), in.end(), by_border);
+
+	return in;
+}
+vector <line_RUP_ANG> generate_graph_histogram (vector <HISTOGRAM> H, vector <VALLEY> V, INPSET inset, string method, double DATA_MIN, double DATA_MAX) {
+
+	bool is_RUP = (method == "RUP");
+	bool is_ANG = (method == "ANG");
+
+	bool is_RUP_clustering (inset.clustering_RUP_ANG == "R");
+	bool is_ANG_clustering (inset.clustering_RUP_ANG == "A");
+
+	bool BW = ((is_RUP && !is_RUP_clustering) || (is_ANG && !is_ANG_clustering));
+
+	double SN = 10e-8;
+
+	line_RUP_ANG buffer;
+	vector <line_RUP_ANG> out;
+
+	BRDR brdr_buf;
+	vector <BRDR> BORDERS;
 
 	vector <string> H_CLR;
-
-	/*H_CLR.push_back("0.00 0.00 0.00");
-	H_CLR.push_back("0.00 0.00 1.00");
-	H_CLR.push_back("1.00 0.00 0.67");
-	H_CLR.push_back("1.00 0.00 0.00");
-	H_CLR.push_back("1.00 0.50 0.00");
-	H_CLR.push_back("1.00 1.00 0.00");
-	H_CLR.push_back("0.00 1.00 0.00");
-	H_CLR.push_back("0.67 0.00 0.67");
-	H_CLR.push_back("0.50 1.00 1.00");
-	H_CLR.push_back("0.50 0.50 0.50");
-	*/
 
 	H_CLR.push_back("0.50 0.50 0.50");
 	H_CLR.push_back("0.50 0.50 1.00");
@@ -992,98 +1002,194 @@ void PS_RUP_distribution (vector <GDB> inGDB, INPSET inset, vector <VALLEY> V, o
 	H_CLR.push_back("0.75 1.00 1.00");
 	H_CLR.push_back("0.75 0.75 0.75");
 
-	string act_clr = "";
+	string act_clr = "0.80 0.80 0.80";
+
+	brdr_buf.border = DATA_MAX + SN;
+	brdr_buf.ID = "MAX";
+	BORDERS.push_back(brdr_buf);
+
+	for (size_t i = 0; i < V.size(); i++) {
+
+		brdr_buf.border = V.at(i).BIN_CENTER;
+		brdr_buf.ID = "VAL";
+		BORDERS.push_back(brdr_buf);
+	}
+
+	for (size_t i = 0; i < H.size(); i++) {
+
+		brdr_buf.border = H.at(i).BIN_MIN;
+		brdr_buf.ID = "";
+		brdr_buf.COUNT = H.at(i).COUNT;
+		BORDERS.push_back(brdr_buf);
+	}
+
+	BORDERS = sort_by_border(BORDERS);
+
+	size_t col_cntr = 0;
+
+	for (size_t i = 0; i < BORDERS.size() - 1; i++) {
+
+		buffer.L_STR = BORDERS.at(i).border;
+		buffer.L_END = BORDERS.at(i+1).border;
+
+
+		buffer.COUNT = BORDERS.at(i).COUNT;
+
+
+		if (BORDERS.at(i).ID == "VAL") {
+
+			col_cntr++;
+			buffer.COUNT = BORDERS.at(i-1).COUNT;
+		}
+		else buffer.COUNT = BORDERS.at(i).COUNT;
+		buffer.GC = H_CLR.at(col_cntr);
+
+		out.push_back(buffer);
+	}
+
+	for (size_t i = 0; i < out.size(); i++) {
+
+		cout
+		<< out.at(i).L_STR << '\t'
+		<< out.at(i).L_END << '\t'
+		<< out.at(i).COUNT << '\t'
+		<< out.at(i).GC << endl;
+	}
+
+	return out;
+ }
+
+void PS_RUP_ANG_distribution (vector <GDB> inGDB, INPSET inset, vector <VALLEY> V, ofstream& o, CENTER center, PAPER P, string method) {
+
+	bool is_RUP = (method == "RUP");
+	bool is_ANG = (method == "ANG");
+
+	bool is_RUP_clustering = (inset.clustering_RUP_ANG == "R");
+	bool is_ANG_clustering = (inset.clustering_RUP_ANG == "A");
+
+
+	double DATA_min = 0.0;
+	double DATA_max = 0.0;
+
+	if (is_RUP) {
+
+		inGDB = sort_by_RUP(inGDB);
+		DATA_min = inGDB.at(0).RUP;
+		DATA_max = inGDB.at(inGDB.size() - 1).RUP;
+	}
+
+	else {
+		inGDB = sort_by_ANG(inGDB);
+		DATA_min = inGDB.at(0).ANG;
+		DATA_max = inGDB.at(inGDB.size() - 1).ANG;
+	}
+
+	double X = 0.0;
+	double X1 = 0.0;
+	double Y = 0.0;
+	double Y1 = 0.0;
+
+	vector <double> table = GDB_to_table(inGDB, method);
 
 	double bin_number = return_DATA_ideal_bin_number (table);
 
-	double binsize = (RUP_max - RUP_min) / bin_number;
+	double binsize = (DATA_max - DATA_min) / bin_number;
 
-	size_t i = 0;
+	string act_clr = " 0.80 0.80 0.80";
+
+	//size_t i = 0;
 	size_t j = 0;
 
 	double step = binsize;
-	double counter = RUP_min;
+	double counter = DATA_min;
 
 	int data_counter;
 
-	vector <HISTOGRAM> H = generate_DATA_histogram (GDB_to_table (inGDB, "RUP"),  bin_number);
+	vector <HISTOGRAM> H = generate_DATA_histogram (GDB_to_table (inGDB, method),  bin_number);
 	H = sort_by_COUNT (H);
-
 	int max_count = H.at(H.size() - 1).COUNT;
+
 
 
 	o << "/ArialNarrow-Bold findfont 8 scalefont setfont" << endl;
 
+	if (is_RUP) X = center.X + P.R + 2.0 * P.B + 5.0;
+	else 		X = center.X + P.R + 4.0 * P.B + 5.0;
+	Y = center.Y + P.R + 7.0;
+
+
 	o
-	<< "  " << fixed << setprecision (3) << center.X + P.R + 2.0 * P.B + 5.0
-	<< " "  << fixed << setprecision (3) << center.Y + P.R + 7.0
-	<< "  moveto (RUP) 	0 0 0 setrgbcolor show " << endl;
+	<< "  " << fixed << setprecision (3) << X
+	<< " "  << fixed << setprecision (3) << Y << flush;
+
+	if (is_RUP) o << "  moveto (RUP) 	0 0 0 setrgbcolor show " << endl;
+	else 		o << "  moveto (ANG) 	0 0 0 setrgbcolor show " << endl;
+cout << "OK" << endl;
+
+	vector <line_RUP_ANG> L_R_A = generate_graph_histogram (H, V, inset, method, DATA_min, DATA_max);
+
+
 
 	do {
 
 		data_counter = 0;
-		i = 0;
 
-		do {
+		for (size_t i = 0; i < inGDB.size(); i++) {
 
-			if ((inGDB.at(i).RUP > counter) && (inGDB.at(i).RUP <= counter + step)) data_counter++;
-			i++;
-
-		} while (i < inGDB.size());
-
-		////cout << counter << endl;
-		//cout << binsize << endl;
-
-		for (size_t k = 0; k < V.size() - 1; k++) { //ok
-
-			//cout << k << endl;
-
-			if (counter < V.at(0).BIN_CENTER) 											act_clr = H_CLR.at(0);
-			else if (is_in_range (V.at(k).BIN_CENTER, V.at(k+1).BIN_CENTER, counter)) 	act_clr = H_CLR.at(k+1);
-			else if (counter > V.at(V.size() - 1).BIN_CENTER) 							act_clr = H_CLR.at(k+2);
-			else 																		act_clr = " 0.8 0.8 0.8 ";
+			if (is_RUP  && (inGDB.at(i).RUP > counter && inGDB.at(i).RUP <= counter + step)) data_counter++;
+			if (!is_RUP && (inGDB.at(i).ANG > counter && inGDB.at(i).ANG <= counter + step)) data_counter++;
 		}
 
-		double linewidth = data_counter;
 
-		linewidth = (linewidth / max_count) * 30.0;
 
-		o <<  act_clr << " setrgbcolor " << linewidth << " setlinewidth" << endl;
+		double linewidth = L_R_A.at(j).COUNT * 30;
+		linewidth = linewidth / max_count;
+
+		if (is_RUP) X = center.X + P.R + 2.0 * P.B + linewidth / 2.0;
+		else 		X = center.X + P.R + 4.0 * P.B + linewidth / 2.0;
+
+
+
+		Y  = center.Y - P.R + 2.0 * P.R * (L_R_A.at(j).L_STR / DATA_max);
+		Y1 = center.Y - P.R + 2.0 * P.R * ((L_R_A.at(j).L_END) / DATA_max);
+
+		o <<  L_R_A.at(j).GC << " setrgbcolor " << linewidth << " setlinewidth" << endl;
 
 		o
 		<< "  newpath "
-		<< fixed << setprecision (3) << center.X + P.R + 2.0 * P.B + linewidth / 2.0 << " " << center.Y - P.R + 2.0 * P.R * (counter / RUP_max) << " moveto "
-		<< fixed << setprecision (3) << center.X + P.R + 2.0 * P.B + linewidth / 2.0 << " " << center.Y - P.R + 2.0 * P.R * ((counter + step) / RUP_max)  << " lineto stroke" << endl;
+		<< fixed << setprecision (3) << X << " " << Y  << " moveto "
+		<< fixed << setprecision (3) << X << " " << Y1 << " lineto stroke" << endl;
+
 
 		counter = counter + step;
 
 		j++;
 
-	} while (counter < RUP_max);
+	} while (j <= H.size() + 1);
 
-	counter = RUP_min;
+	counter = 0;
 	step = binsize;
 
-	if (RUP_max < 1.0) step = 0.2;
+	if (DATA_max < 1.0) step = 0.2;
 	else {
 
-		if (RUP_max < 5.0) step = 1;
+		if (DATA_max < 5.0) step = 1;
 		else {
 
-			if (RUP_max < 10) step = 2;
+			if (DATA_max < 10) step = 2;
 			else {
 
-				if (RUP_max < 20) step = 4;
+				if (DATA_max < 20) step = 4;
 				else {
 
-					if (RUP_max < 50) step = 10;
+					if (DATA_max < 50) step = 10;
 					else {
 
-						if (RUP_max < 100) step = 20;
+						if (DATA_max < 100) step = 20;
 						else {
 
-							if (RUP_max < 250) step = 50;
-							else step = RUP_max / 5.0;
+							if (DATA_max < 250) step = 50;
+							else step = DATA_max / 5.0;
 						}
 					}
 				}
@@ -1098,34 +1204,78 @@ void PS_RUP_distribution (vector <GDB> inGDB, INPSET inset, vector <VALLEY> V, o
 
 	do {
 
+		if (is_RUP) {
+
+			X  = center.X + P.R + 2.0 * P.B;
+			X1 = center.X + P.R + 2.2 * P.B;
+		}
+		else {
+
+			X  = center.X + P.R + 4.0 * P.B;
+			X1 = center.X + P.R + 4.2 * P.B;
+		}
+
+		Y = center.Y - P.R + 2.0 * P.R * (counter / DATA_max);
+
 		o << "  0.0 0.0 0.0 setrgbcolor 0.5 setlinewidth" << endl;
 		o
 		<< "  newpath "
-		<< fixed << setprecision (3) << center.X + P.R + 2.0 * P.B << " " << center.Y - P.R + 2.0 * P.R * (counter / RUP_max) << " moveto "
-		<< fixed << setprecision (3) << center.X + P.R + 2.2 * P.B << " " << center.Y - P.R + 2.0 * P.R * (counter / RUP_max)  << " lineto stroke" << endl;
+		<< fixed << setprecision (3) << X  << " " << Y << " moveto "
+		<< fixed << setprecision (3) << X1 << " " << Y << " lineto stroke" << endl;
+
+
+		if (is_RUP) X = center.X + P.R + 2.4 * P.B;
+		else 		X = center.X + P.R + 4.4 * P.B;
+
+		Y = center.Y - P.R + 2.0 * P.R * (counter / DATA_max) - 1.0;
 
 		o
-		<< "  " << fixed << setprecision (3) << center.X + P.R + 2.4 * P.B
-		<< " "  << fixed << setprecision (3) << center.Y - P.R + 2.0 * P.R * (counter / RUP_max) - 1.0
+		<< "  " << fixed << setprecision (3) << X
+		<< " "  << fixed << setprecision (3) << Y
 		<< fixed << setprecision (0)
 		<< "  moveto (" << counter << "%) 0 0 0 setrgbcolor show " << endl;
 
 		counter = counter + step;
 
-	} while (counter < RUP_max);
+	} while (counter < DATA_max);
+
+
+
+
+	if (is_RUP) {
+		X =  center.X + P.R + 2.0 * P.B;
+		X1 = center.X + P.R + 2.2 * P.B;
+	}
+	else {
+		X =  center.X + P.R + 4.0 * P.B;
+		X1 = center.X + P.R + 4.2 * P.B;
+	}
+
+	Y = center.Y - P.R + 2.0 * P.R;
 
 	o
 	<< "  newpath "
-	<< fixed << setprecision (3) << center.X + P.R + 2.0 * P.B << " " << center.Y - P.R + 2.0 * P.R  << " moveto "
-	<< fixed << setprecision (3) << center.X + P.R + 2.2 * P.B << " " << center.Y - P.R + 2.0 * P.R  << " lineto stroke" << endl;
+	<< fixed << setprecision (3) << X  << " " << Y  << " moveto "
+	<< fixed << setprecision (3) << X1 << " " << Y  << " lineto stroke" << endl;
+
+
+
+
+	if (is_RUP) X = center.X + P.R + 2.4 * P.B;
+	else 		X = center.X + P.R + 4.4 * P.B;
+
+	Y = center.Y - P.R + 2.0 * P.R - 1.0;
 
 	o
-	<< "  " << fixed << setprecision (3) << center.X + P.R + 2.4 * P.B
-	<< " "  << fixed << setprecision (3) << center.Y - P.R + 2.0 * P.R - 1.0
-	<< fixed << setprecision (0)
-	<< "  moveto (" << RUP_max << "%) 0 0 0 setrgbcolor show " << endl;
+	<< "  " << fixed << setprecision (3) << X
+	<< " "  << fixed << setprecision (3) << Y
+	<< fixed << setprecision (0) << flush;
 
-	i = 0;
+	if (is_RUP)	o << "  moveto (" << DATA_max << "%) 0 0 0 setrgbcolor show " << endl;
+	else 		o << "  moveto (" << DATA_max << " deg) 0 0 0 setrgbcolor show " << endl;
+
+
+	//i = 0;
 
 	/*do {
 
@@ -1291,7 +1441,9 @@ void PS_RUP_distribution (vector <GDB> inGDB, INPSET inset, vector <VALLEY> V, o
  *
  */
 
-void PS_ANG_distribution (vector <GDB>  inGDB, ofstream& o, CENTER center, PAPER P) {
+
+
+/*void PS_ANG_distribution (vector <GDB>  inGDB, ofstream& o, CENTER center, PAPER P) {
 
 	double ANG_max = 0.0;
 
@@ -1432,6 +1584,7 @@ void PS_ANG_distribution (vector <GDB>  inGDB, ofstream& o, CENTER center, PAPER
 
 		} while (i < inGDB.size());
 }
+*/
 
 void PS_stress_state (ofstream& o, PAPER P, CENTER center, STRESSFIELD sf) {
 

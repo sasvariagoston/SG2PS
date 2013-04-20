@@ -34,6 +34,8 @@ vector <HISTOGRAM> generate_DATA_histogram (vector <double> in, size_t bin_numbe
 
 	if (H.size() == 1) H.at(0).COUNT = 999;
 
+	dbg_cout_H(H);
+
 	return H;
 }
 
@@ -147,7 +149,7 @@ vector <VALLEY> create_valley_graph (vector <VALLEY> V) {
 		}
 	}
 
-	dbg_cout_V (out);
+	//dbg_cout_V (out);
 
 	return out;
 }
@@ -199,6 +201,8 @@ void dbg_cout_H (vector <HISTOGRAM> inH) {
 }
 
 void dbg_cout_V (vector <VALLEY> inV) {
+
+	if (inV.size() == 0) cout << "Empty valley graph" << endl;
 
 	cout << endl;
 

@@ -24,8 +24,15 @@ void PS_stressarrows (ofstream& o, CENTER center, PAPER P, STRESSFIELD sf);
 
 void PS_mohr_circle (vector <GDB> inGDB, ofstream& o, CENTER center, PAPER P, STRESSFIELD sf, STRESSTENSOR st, bool compression_positive);
 
-void PS_RUP_distribution (vector <GDB> inGDB, INPSET inset, vector <VALLEY> V, ofstream& o, CENTER center, PAPER P);
-void PS_ANG_distribution (vector <GDB> inGDB, ofstream& o, CENTER center, PAPER P);
+bool by_border (const BRDR& x, const BRDR& y);
+vector <BRDR> sort_by_border (vector <BRDR> in);
+
+vector <line_RUP_ANG> generate_graph_histogram (vector <HISTOGRAM> H, vector <VALLEY> V, INPSET inset, string method, double DATA_MIN, double DATA_MAX);
+
+void PS_RUP_ANG_distribution (vector <GDB> inGDB, INPSET inset, vector <VALLEY> V, ofstream& o, CENTER center, PAPER P, string method);
+
+//void PS_RUP_distribution (vector <GDB> inGDB, INPSET inset, vector <VALLEY> V, ofstream& o, CENTER center, PAPER P);
+//void PS_ANG_distribution (vector <GDB> inGDB, ofstream& o, CENTER center, PAPER P);
 
 void PS_stress_state (ofstream& o, PAPER P, CENTER center, STRESSFIELD sf);
 

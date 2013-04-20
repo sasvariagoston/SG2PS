@@ -40,6 +40,6 @@ void dbg_cout_GDB_RUP (vector <GDB> inGDB);
 void dbg_cout_IN_RUP (vector <double> in);
 void dbg_cout_RUP_table (vector <RUP_table> RT);
 
-vector <GDB> associate_GDB_RUP_clusters (vector <GDB> inGDB, vector <VALLEY> V);
+vector <GDB> associate_GDB_DATA_clusters (vector <GDB> inGDB, vector <VALLEY> V, INPSET inset, string method);
 
 #endif

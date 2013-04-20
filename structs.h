@@ -50,7 +50,7 @@ struct INPSET  {
 	string rosebinning;
 	string filename;
 
-	string RUP_clustering;
+	string clustering_RUP_ANG;
 	string contouring;
 };
 
@@ -237,6 +237,21 @@ struct VALLEY {
 	int BIN_ID;
 	double BIN_CENTER;
 	string DIR;
+};
+
+struct line_RUP_ANG {
+
+	double L_STR;
+	double L_END;
+	size_t COUNT;
+	string GC;
+};
+
+struct BRDR {
+
+	double border;
+	string ID;
+	size_t COUNT;
 };
 
 #endif
