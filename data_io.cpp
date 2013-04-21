@@ -529,11 +529,14 @@ void output_to_ps (PFN output, vector <GDB> processGDB, vector <GDB> tiltprocess
 
 
 
-	for (size_t j=0; j<processGDB.size(); ++j) {
+/*	for (size_t j=0; j < processGDB.size(); ++j) {
 
-		process_one_by_one (processGDB.at(j), tiltprocessGDB.at(j), output_ps_file, inset, center, P);
+		process_one_by_one (processGDB.at(j), output_ps_file, inset, center, P, false);
+		process_one_by_one (tiltprocessGDB.at(j), output_ps_file, inset, center, P, true);
+
 		if (j < processGDB.size()-1) output_ps_file << endl;
 	}
+	*/
 
 	//process_group_by_group (processGDB, tiltprocessGDB, output_ps_file, inset, center, P);
 
@@ -573,6 +576,8 @@ void cout_original_tilted_text (bool tilt) {
 vector <GDB> process_group_by_group (vector <GDB> inGDB, ofstream& o, INPSET inset, CENTER center, PAPER P, bool tilt) {
 
 	vector <GDB> outGDB = inGDB;
+
+	process_one_by_one (inGDB, o, inset, center, P, tilt);
 
 	CENTER mohr_center;
 
@@ -895,15 +900,23 @@ void process_group_by_group (vector <GDB> inGDB, vector <GDB> tiltinGDB, ofstrea
 
 */
 
-void process_one_by_one (GDB processGDB, GDB tiltprocessGDB, ofstream& o, INPSET inset, CENTER center, PAPER P) {
+void process_one_by_one (vector <GDB> inGDB, ofstream& o, INPSET inset, CENTER center, PAPER P, bool tilt) {
 
-	center.X = P.O1X;
-	center.Y = P.O1Y;
-	PS_DRAW_record (processGDB, o, inset, center);
+	if (!tilt) {
 
-	center.X = P.O2X;
-	center.Y = P.O2Y;
-	PS_DRAW_record (tiltprocessGDB, o, inset, center);
+		center.X = P.O1X;
+		center.Y = P.O1Y;
+	}
+	else {
+
+		center.X = P.O2X;
+		center.Y = P.O2Y;
+	}
+
+	for (size_t i = 0; i < inGDB.size(); i++) {
+
+		PS_DRAW_record (inGDB.at(i), o, inset, center);
+	}
 }
 
 void dbg_cout_RGF_colors (vector <GDB> inGDB) {

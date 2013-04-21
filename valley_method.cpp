@@ -34,7 +34,7 @@ vector <HISTOGRAM> generate_DATA_histogram (vector <double> in, size_t bin_numbe
 
 	if (H.size() == 1) H.at(0).COUNT = 999;
 
-	dbg_cout_H(H);
+	//dbg_cout_H(H);
 
 	return H;
 }

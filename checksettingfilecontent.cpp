@@ -292,7 +292,7 @@ INPSET loadsettingsfromsettingfile (string settingfilename) {
 
 	//needs to be deleted
 
-	settings.clustering_RUP_ANG = "R";
+	settings.clustering_RUP_ANG = "N";
 
 	settings.contouring = "S";
 
@@ -348,13 +348,13 @@ void printsettingsonscreen (INPSET settings) {
 	if (settings.virt_striae == "Y")	cout<<"  - Virtual symmetrical striae set..............: use" 								<< endl;
 	if (settings.virt_striae == "N")	cout<<"  - Virtual symmetrical striae set..............: do not use"						<< endl;
 
-	if (settings.idealmovement == "Y")	cout<<"  - Ideal slickenside movement..................: display" 							<< endl;
-	if (settings.idealmovement == "N")	cout<<"  - Ideal slickenside movement..................: do not display"					<< endl;
+	if (settings.idealmovement == "Y")		cout<<"  - Ideal slickenside movement..................: display" 							<< endl;
+	if (settings.idealmovement == "N")		cout<<"  - Ideal slickenside movement..................: do not display"					<< endl;
 
 	//new
-	if (settings.clustering_RUP_ANG == "N")	cout<<"  - Clustering using RUP / ANG values.......: do clustering" 					<< endl;
-	if (settings.clustering_RUP_ANG == "A")	cout<<"  - Clustering using RUP / ANG values.......: use ANG values"					<< endl;
-	if (settings.clustering_RUP_ANG == "R")	cout<<"  - Clustering using RUP / ANG values.......: use RUP values"					<< endl;
+	if (settings.clustering_RUP_ANG == "N")	cout<<"  - Clustering using RUP / ANG values.......    : do clustering" 					<< endl;
+	if (settings.clustering_RUP_ANG == "A")	cout<<"  - Clustering using RUP / ANG values.......    : use ANG values"					<< endl;
+	if (settings.clustering_RUP_ANG == "R")	cout<<"  - Clustering using RUP / ANG values.......    : use RUP values"					<< endl;
 
 	cout<<"  - Angle between s1 and fault plane (if needed): " << settings.angle << " degs" 	<<endl;
 

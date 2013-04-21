@@ -127,7 +127,7 @@ void ps_inversion (string method, STRESSTENSOR st, STRESSFIELD sf, vector <GDB> 
 		PS_RUP_ANG_distribution (inGDB, inset, V, o, center, P, "RUP");
 	}
 
-	//PS_RUP_ANG_distribution (inGDB, inset, V, o, center, P, "ANG");
+	PS_RUP_ANG_distribution (inGDB, inset, V, o, center, P, "ANG");
 
 	//PS_ANG_distribution (inGDB, o, center, P);
 
@@ -280,7 +280,7 @@ vector <GDB> inversion (vector <GDB> inGDB, ofstream& o, INPSET inset, CENTER ce
 			else if (is_RUP) V = return_valleygraph_for_dataset (inGDB, "RUP");
 			else {}
 
-			dbg_cout_V(V);
+			//dbg_cout_V(V);
 
 			if (is_RUP || is_ANG) {
 
