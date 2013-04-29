@@ -256,9 +256,11 @@ struct BRDR {
 
 struct TRIANGLE {
 
+	size_t GROUP;
 	VCTR A;
 	VCTR B;
 	VCTR C;
+	size_t COUNT;
 };
 
 #endif

@@ -502,6 +502,7 @@ vector <GDB> cGc_striae_correction (vector <GDB> inGDB) {
 				misfitangle 		= corrSTR_DIPDIRcor.MISFIT;
 			}
 
+
 			temp = outGDB.at(i).DC;
 
 			ttemp = dipdir_dip_from_DXDYDZ (temp);

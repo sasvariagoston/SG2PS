@@ -12,6 +12,7 @@
 #include "array_to_vector.hpp"
 #include "data_io.h"
 #include "density.h"
+#include "kaalsbeek.hpp"
 #include "platform_dep.hpp"
 #include "ps.h"
 #include "rgf.h"
@@ -543,6 +544,12 @@ void output_to_ps (PFN output, vector <GDB> processGDB, vector <GDB> tiltprocess
 	PS_datanumber_averagebedding (processGDB.at(0), output_ps_file, inset, P, center, processGDB.size());
 
 	PS_net (output_ps_file, inset, P);
+
+	//vector <VCTR> arc = generate_arc (3, 1);
+
+	vector <vector <vector <VCTR> > > net = generate_net ();
+
+
 }
 
 void cout_method_text (vector <GDB> inGDB, INPSET inset) {
