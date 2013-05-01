@@ -86,7 +86,7 @@ PAPER PS_dimensions () {
 	//dummy
 }
 
-void PS_header (string DATATYPE, string LOC, ofstream& o) {
+void PS_header (string DATATYPE, INPSET inset, string LOC, ofstream& o) {
 
 	string filename;
 
@@ -136,102 +136,102 @@ void PS_header (string DATATYPE, string LOC, ofstream& o) {
 		o << "    -4.0   4.0 rlineto" 									<< endl;
 		o << "    -4.0  -4.0 rlineto closepath" 						<< endl;
 		o << "    1.0 setlinewidth"										<< endl;
-
-		o << "    1 1 1 setrgbcolor stroke" 							<< endl;
-		o << "    -2.0   0.0 moveto "									<< endl;
-		o << "     4.0   4.0 rlineto" 									<< endl;
-		o << "    -4.0   4.0 rlineto" 									<< endl;
-		o << "    -4.0  -4.0 rlineto closepath" 						<< endl;
-
-		o << "    1 0 0 setrgbcolor" 									<< endl;
-		o << "    fill stroke" 											<< endl;
-		o << "} def" 													<< endl << endl;
+		o << "    1 1 1 setrgbcolor stroke" << endl;
+		o << "    -2.0   0.0 moveto " << endl;
+		o << "     4.0   4.0 rlineto" << endl;
+		o << "    -4.0   4.0 rlineto" << endl;
+		o << "    -4.0  -4.0 rlineto closepath" << endl;
+		if (inset.grayscale == "Y") o << "    0 0 0 setrgbcolor" << endl;
+		else 						o << "    1 0 0 setrgbcolor" << endl;
+		o << "    fill stroke" << endl;
+		o << "} def" << endl << endl;
 
 		o << "/s1_iter_axis {" 											<< endl;
 		o << "  newpath"												<< endl;
-		o << "    1 1 1 setrgbcolor stroke" 							<< endl;
+		o << "    1 1 1 setrgbcolor stroke" << endl;
 		o << "    -2.0   0.0 moveto "									<< endl;
 		o << "     4.0   4.0 rlineto" 									<< endl;
 		o << "    -4.0   4.0 rlineto" 									<< endl;
 		o << "    -4.0  -4.0 rlineto closepath" 						<< endl;
-		o << "    1 0 0 setrgbcolor 1 setlinewidth stroke" 				<< endl;
-		o << "} def" 													<< endl << endl;
+		if (inset.grayscale == "Y") o << "    0 0 0 setrgbcolor " << endl;
+		else 						o << "    1 0 0 setrgbcolor " << endl;
+		o << " 1 setlinewidth stroke" << endl;
+		o << "} def" << endl << endl;
 
-		o << "/s2_axis {" 												<< endl;
-		o << "  newpath"												<< endl;
-		o << "    -2.0   0.0 moveto "									<< endl;
-		o << "     4.0   4.0 rlineto" 									<< endl;
-		o << "    -4.0   4.0 rlineto" 									<< endl;
-		o << "    -4.0  -4.0 rlineto closepath" 						<< endl;
-		o << "    1.0 setlinewidth"										<< endl;
+		o << "/s2_axis {" << endl;
+		o << "  newpath" << endl;
+		o << "    -2.0   0.0 moveto " << endl;
+		o << "     4.0   4.0 rlineto" << endl;
+		o << "    -4.0   4.0 rlineto" << endl;
+		o << "    -4.0  -4.0 rlineto closepath" << endl;
+		o << "    1.0 setlinewidth"	<< endl;
+		o << "    1 1 1 setrgbcolor stroke" << endl;
+		o << "    -2.0   0.0 moveto " << endl;
+		o << "     4.0   4.0 rlineto" << endl;
+		o << "    -4.0   4.0 rlineto" << endl;
+		o << "    -4.0  -4.0 rlineto closepath" << endl;
+		if (inset.grayscale == "Y")	o << "   0.5 0.5 0.5 setrgbcolor" << endl;
+		else 						o << "    0 1 0 setrgbcolor" << endl;
+		o << "    fill stroke" << endl;
+		o << "} def" << endl << endl;
 
-		o << "    1 1 1 setrgbcolor stroke" 							<< endl;
-		o << "    -2.0   0.0 moveto "									<< endl;
-		o << "     4.0   4.0 rlineto" 									<< endl;
-		o << "    -4.0   4.0 rlineto" 									<< endl;
-		o << "    -4.0  -4.0 rlineto closepath" 						<< endl;
+		o << "/s2_iter_axis {" << endl;
+		o << "  newpath" << endl;
+		o << "    1 1 1 setrgbcolor stroke" << endl;
+		o << "    -2.0   0.0 moveto " << endl;
+		o << "     4.0   4.0 rlineto" << endl;
+		o << "    -4.0   4.0 rlineto" << endl;
+		o << "    -4.0  -4.0 rlineto closepath" << endl;
+		if (inset.grayscale == "Y")	o << "   0.5 0.5 0.5 setrgbcolor" << endl;
+		else 						o << "   0 1 0 setrgbcolor" << endl;
+		o << " 1 setlinewidth stroke" << endl;
+		o << "} def" << endl << endl;
 
-		o << "    0 1 0 setrgbcolor" 									<< endl;
-		o << "    fill stroke" 											<< endl;
-		o << "} def" 													<< endl << endl;
+		o << "/s3_axis {" << endl;
+		o << "  newpath" << endl;
+		o << "    -2.0   0.0 moveto " << endl;
+		o << "     4.0   4.0 rlineto" << endl;
+		o << "    -4.0   4.0 rlineto" << endl;
+		o << "    -4.0  -4.0 rlineto closepath" << endl;
+		o << "    1.0 setlinewidth"	<< endl;
+		if (inset.grayscale == "Y") o << "    0 0 0 setrgbcolor stroke" << endl;
+		else 						o << "    1 1 1 setrgbcolor stroke" << endl;
+		o << "    -2.0   0.0 moveto " << endl;
+		o << "     4.0   4.0 rlineto" << endl;
+		o << "    -4.0   4.0 rlineto" << endl;
+		o << "    -4.0  -4.0 rlineto closepath" << endl;
+		if (inset.grayscale == "Y") o << "    1 1 1 setrgbcolor" << endl;
+		else 						o << "    0 0 1 setrgbcolor" << endl;
+		o << "    fill stroke" << endl;
+		o << "} def" << endl << endl;
 
-		o << "/s2_iter_axis {" 											<< endl;
-		o << "  newpath"												<< endl;
-		o << "    1 1 1 setrgbcolor stroke" 							<< endl;
-		o << "    -2.0   0.0 moveto "									<< endl;
-		o << "     4.0   4.0 rlineto" 									<< endl;
-		o << "    -4.0   4.0 rlineto" 									<< endl;
-		o << "    -4.0  -4.0 rlineto closepath" 						<< endl;
-		o << "    0 1 0 setrgbcolor 1 setlinewidth stroke" 				<< endl;
-		o << "} def" 													<< endl << endl;
+		o << "/s3_iter_axis {" << endl;
+		o << "  newpath" << endl;
+		if (inset.grayscale == "Y") o << "    0 0 0 setrgbcolor stroke" << endl;
+		else 						o << "    1 1 1 setrgbcolor stroke" << endl;
+		o << "    -2.0   0.0 moveto " << endl;
+		o << "     4.0   4.0 rlineto" << endl;
+		o << "    -4.0   4.0 rlineto" << endl;
+		o << "    -4.0  -4.0 rlineto closepath" << endl;
+		if (inset.grayscale == "Y") o << "    1 1 1 setrgbcolor" << endl;
+		else 						o << "    0 0 1 setrgbcolor" << endl;
+		o << " 1 setlinewidth stroke" << endl;
+		o << "} def"  << endl << endl;
 
-
-		o << "/s3_axis {" 												<< endl;
-		o << "  newpath"												<< endl;
-		o << "    -2.0   0.0 moveto "									<< endl;
-		o << "     4.0   4.0 rlineto" 									<< endl;
-		o << "    -4.0   4.0 rlineto" 									<< endl;
-		o << "    -4.0  -4.0 rlineto closepath" 						<< endl;
-		o << "    1.0 setlinewidth"										<< endl;
-
-		o << "    1 1 1 setrgbcolor stroke" 							<< endl;
-		o << "    -2.0   0.0 moveto "									<< endl;
-		o << "     4.0   4.0 rlineto" 									<< endl;
-		o << "    -4.0   4.0 rlineto" 									<< endl;
-		o << "    -4.0  -4.0 rlineto closepath" 						<< endl;
-
-		o << "    0 0 1 setrgbcolor" 									<< endl;
-		o << "    fill stroke" 											<< endl;
-		o << "} def" 													<< endl << endl;
-
-
-		o << "/s3_iter_axis {" 											<< endl;
-		o << "  newpath"												<< endl;
-		o << "    1 1 1 setrgbcolor stroke" 							<< endl;
-		o << "    -2.0   0.0 moveto "									<< endl;
-		o << "     4.0   4.0 rlineto" 									<< endl;
-		o << "    -4.0   4.0 rlineto" 									<< endl;
-		o << "    -4.0  -4.0 rlineto closepath" 						<< endl;
-
-		o << "    0 0 1 setrgbcolor 1 setlinewidth stroke" 				<< endl;
-		o << "} def" 													<< endl << endl;
-
-		o << "/normalarrow {" 											<< endl;
-		o << "  newpath  0.0  -6.0 moveto  0.0 6.0 lineto " 			<< endl;
-		o << "    1 setlinewidth stroke"								<< endl;
-		o << "  newpath -2.0  3.0 moveto  2.0 10.0 rlineto " 			<< endl;
-		o << "    2.0  -10.0 rlineto " 									<< endl;
-		o << "    -2.0 3.0 rlineto " 									<< endl;
-		o << "    -2.0 -3.0 rlineto "			 						<< endl;
-		o << "    1 setlinewidth"										<< endl;
-		o << "    fill stroke" 											<< endl;
-		o << "    0.7 setlinewidth" 									<< endl;
-		o << "    0.0 0.0 1.5 0.0 360.0 arc stroke"						<< endl;
-		o << "    1.0 1.0 1.0 setrgbcolor 0.7 setlinewidth" 			<< endl;
-		o << "    0.0 0.0 0.7 0.0 360.0 arc stroke"						<< endl;
-		o << "} def" 													<< endl << endl;
-
-
+		o << "/normalarrow {" << endl;
+		o << "  newpath  0.0  -6.0 moveto  0.0 6.0 lineto " << endl;
+		o << "    1 setlinewidth stroke" << endl;
+		o << "  newpath -2.0  3.0 moveto  2.0 10.0 rlineto " << endl;
+		o << "    2.0  -10.0 rlineto " << endl;
+		o << "    -2.0 3.0 rlineto " << endl;
+		o << "    -2.0 -3.0 rlineto " << endl;
+		o << "    1 setlinewidth" << endl;
+		o << "    fill stroke" << endl;
+		o << "    0.7 setlinewidth" << endl;
+		o << "    0.0 0.0 1.5 0.0 360.0 arc stroke"	<< endl;
+		o << "    1.0 1.0 1.0 setrgbcolor 0.7 setlinewidth" << endl;
+		o << "    0.0 0.0 0.7 0.0 360.0 arc stroke"	<< endl;
+		o << "} def" << endl << endl;
 
 		o << "/dextralarrow {" 											<< endl;
 		o << "  newpath  0.0 -1.5 moveto -6.0 -1.5 lineto" 				<< endl;
@@ -299,7 +299,8 @@ void PS_header (string DATATYPE, string LOC, ofstream& o) {
 		o << "    2.0   0.0 rlineto" 				<< endl;
 		o << "    0.0  -2.0 rlineto closepath" 		<< endl;
 		o << "    0.5 setlinewidth"					<< endl;
-		o << "    1 0 0 setrgbcolor" 				<< endl;
+		if (inset.grayscale == "Y") o << "    0 0 0 setrgbcolor" << endl;
+		else 						o << "    1 0 0 setrgbcolor" << endl;
 		o << "    fill stroke" 						<< endl;
 		o << "} def" 								<< endl << endl;
 
@@ -310,7 +311,8 @@ void PS_header (string DATATYPE, string LOC, ofstream& o) {
 		o << "	  2.0   0.0 rlineto" 				<< endl;
 		o << "	  0.0  -2.0 rlineto closepath" 		<< endl;
 		o << "    0.5 setlinewidth"					<< endl;
-		o << "    0 0 1 setrgbcolor" 				<< endl;
+		if (inset.grayscale == "Y") o << "    0.33 0.33 0.33 setrgbcolor" << endl;
+		else 						o << "    0 0 1 setrgbcolor" << endl;
 		o << "    fill stroke" 						<< endl;
 		o << "} def" 								<< endl << endl;
 
@@ -321,7 +323,8 @@ void PS_header (string DATATYPE, string LOC, ofstream& o) {
 		o << "	  2.0   0.0 rlineto" 				<< endl;
 		o << "	  0.0  -2.0 rlineto closepath" 		<< endl;
 		o << "    0.5 setlinewidth"					<< endl;
-		o << "    0 1 0 setrgbcolor" 				<< endl;
+		if (inset.grayscale == "Y") o << "    0.66 0.66 0.66 setrgbcolor" << endl;
+		else 						o << "    0 1 0 setrgbcolor" << endl;
 		o << "    fill stroke" 						<< endl;
 		o << "} def" 								<< endl << endl;
 	}
@@ -363,7 +366,7 @@ void PS_border (GDB inGDB, ofstream& o, INPSET inset, PAPER P) {
 	o << "  0.3 setlinewidth 0.5 0.5 0.5 setrgbcolor" << endl;
 }
 
-void PS_stress_scale (ofstream& o, PAPER P) {
+void PS_stress_scale (ofstream& o, INPSET inset, PAPER P) {
 
 	double value = 0.0;
 	double step = 1.0 / 100.0;
@@ -374,7 +377,7 @@ void PS_stress_scale (ofstream& o, PAPER P) {
 
 		value = value + step;
 
-		color = generarte_stress_colors (value);
+		color = generate_stress_colors (value, inset);
 
 		o << fixed << setprecision (2) << flush;
 		o
@@ -844,7 +847,7 @@ void PS_stressarrows (ofstream& o, CENTER center, PAPER P, STRESSFIELD sf) {
 	}
 }
 
-void PS_mohr_circle (vector <GDB> inGDB, ofstream& o, CENTER mohr_center, PAPER P, STRESSFIELD sf, STRESSTENSOR st, bool compression_positive) {
+void PS_mohr_circle (vector <GDB> inGDB, ofstream& o, INPSET inset, CENTER mohr_center, PAPER P, STRESSFIELD sf, STRESSTENSOR st, bool compression_positive) {
 
 	const double X = 5.0 * P.A;
 	const double fi = sf.stressratio;
@@ -862,7 +865,7 @@ void PS_mohr_circle (vector <GDB> inGDB, ofstream& o, CENTER mohr_center, PAPER 
 	VCTR stressvector;
 	VCTR color;
 
-	color = generarte_stress_colors (sf.delvaux_str);
+	color = generate_stress_colors (sf.delvaux_str, inset);
 
 	o << "newpath" << endl;
 	o
@@ -969,8 +972,6 @@ void PS_RUP_ANG_distribution (vector <GDB> inGDB, INPSET inset, vector <VALLEY> 
 	double bin_number = return_DATA_ideal_bin_number (GDB_to_table(inGDB, method));
 
 	double binsize = (DATA_max - DATA_min) / bin_number;
-
-	//int max_count = return_count_max (inGDB, method);
 
 	vector <HISTOGRAM> H = generate_DATA_histogram (GDB_to_table (inGDB, method), bin_number);
 
@@ -1324,14 +1325,17 @@ void PS_plane (GDB i, ofstream& o, INPSET inset, CENTER center, bool label, stri
 		o
 		<< "%%____" << setfill ('0') << fixed << setprecision (2) << i.corr.DIPDIR <<
 				"/" << setfill ('0') << fixed << setprecision (2) << i.corr.DIP << endl;
-		o << "  1.00 0.00 0.00 setrgbcolor 1 setlinewidth newpath " << endl;
+
+		if (inset.grayscale == "Y") o << "  0.20 0.20 0.20 setrgbcolor 2 setlinewidth newpath " << endl;
+		else 						o << "  1.00 0.00 0.00 setrgbcolor 1 setlinewidth newpath " << endl;
 	}
 
 	else if (type == "FOLD") {
 
 		o << "%%____" << setfill ('0') << fixed << setprecision (2) << i.corr.DIPDIR <<
 				  "/" << setfill ('0') << fixed << setprecision (2) << i.corr.DIP << endl;
-		o << "  0.00 0.00 1.00 setrgbcolor 1 setlinewidth newpath " << endl;
+		if (inset.grayscale == "Y")	o << "  0.60 0.60 0.60 setrgbcolor 2 setlinewidth newpath " << endl;
+		else 						o << "  0.00 0.00 1.00 setrgbcolor 1 setlinewidth newpath " << endl;
 	}
 
 	else {
@@ -1398,9 +1402,20 @@ void PS_plane (GDB i, ofstream& o, INPSET inset, CENTER center, bool label, stri
 		o << "  [   ] 0 setdash " << endl;
 	}
 
-	else {
+	else if (type == "AV") {
 
 		o << "stroke" << endl << endl;
+	}
+
+	else {
+
+		if (inset.grayscale == "Y")  {
+
+			o << "  [" << i.DASHED << "] 0 setdash stroke" << endl;
+			o << "  [   ] 0 setdash " << endl;
+		}
+
+		else o << "stroke" << endl << endl;
 	}
 
 	if (label) {
@@ -1921,8 +1936,16 @@ void PS_rosesegment (ofstream& o, INPSET inset, CENTER center, double percentage
 	  << " "  << fixed << setprecision (2) << center.Y << " translate"
       << " "  << fixed << setprecision (2) << - degree << " rotate " << endl;
 
-	if (c_plane) o << "1.0 setlinewidth 0.00 0.00 1.00 setrgbcolor " << endl;
-	else o << "0.7 setlinewidth 0.00 0.50 0.00 setrgbcolor " << endl;
+	if (inset.grayscale == "Y") {
+
+		if (c_plane)	o << "1.0 setlinewidth 0.00 0.00 0.00 setrgbcolor " << endl;
+		else 			o << "0.7 setlinewidth 0.50 0.50 0.50 setrgbcolor " << endl;
+	}
+	else {
+
+		if (c_plane)	o << "1.0 setlinewidth 0.00 0.00 1.00 setrgbcolor " << endl;
+		else 			o << "0.7 setlinewidth 0.00 0.50 0.00 setrgbcolor " << endl;
+	}
 
 	o << " newpath 0.0 0.0 moveto "
 	  << fixed << setprecision (2) << + (radius * SIN(step_angle)) << " "
@@ -1932,15 +1955,22 @@ void PS_rosesegment (ofstream& o, INPSET inset, CENTER center, double percentage
 	o << "  0.0 0.0 moveto 0.0 " << fixed << setprecision (3) << radius << " lineto" << endl;
 	o << "  closepath " << endl;
 
-	if (c_plane) o << " stroke" << endl;
-	else o << " gsave 0.00 1.00 0.00 setrgbcolor fill grestore stroke" << endl;
+	if (inset.grayscale == "Y") {
+		if (c_plane)	o << " stroke" << endl;
+		else 			o << " gsave 0.80 0.80 0.80 setrgbcolor fill grestore stroke" << endl;
+	}
+	else {
+		if (c_plane)	o << " stroke" << endl;
+		else			o << " gsave 0.00 1.00 0.00 setrgbcolor fill grestore stroke" << endl;
+	}
+
 
 	o << " "  << fixed << setprecision (2) << degree    << " rotate "
 	  << "  " << fixed << setprecision (2) << -center.X
 	  << " "  << fixed << setprecision (2) << -center.Y << " translate" << endl << endl;
 }
 
-void PS_draw_rose_circle_horizontal (ofstream& o, CENTER center, ROSENUMBER percent) {
+void PS_draw_rose_circle_horizontal (ofstream& o, INPSET inset, CENTER center, ROSENUMBER percent) {
 
 	double i, step;
 
@@ -1955,7 +1985,8 @@ void PS_draw_rose_circle_horizontal (ofstream& o, CENTER center, ROSENUMBER perc
 	o << "/ArialNarrow-Bold findfont 8 scalefont setfont" << endl;
 	o << fixed << setprecision (3) << center.X << " "
 	  << fixed << setprecision (3) << center.Y << " translate" << endl;
-	o << "  0.5 setlinewidth 0.50 0.50 0.50 setrgbcolor" << endl;
+	if (inset.grayscale == "Y") o << "  0.5 setlinewidth 0.00 0.00 0.00 setrgbcolor" << endl;
+	else 						o << "  0.5 setlinewidth 0.50 0.50 0.50 setrgbcolor" << endl;
 	o << "  [3 3] 0 setdash" << endl;
 
 	do {
@@ -1976,7 +2007,7 @@ void PS_draw_rose_circle_horizontal (ofstream& o, CENTER center, ROSENUMBER perc
 	          << fixed << setprecision (3) << - center.Y << " translate" << endl;
 }
 
-void PS_draw_rose_circle_vertical (ofstream& o, CENTER center, ROSENUMBER percent) {
+void PS_draw_rose_circle_vertical (ofstream& o, INPSET inset, CENTER center, ROSENUMBER percent) {
 
 	double i, step;
 
@@ -1989,9 +2020,11 @@ void PS_draw_rose_circle_vertical (ofstream& o, CENTER center, ROSENUMBER percen
 	step = i;
 
 	o << "/ArialNarrow-Bold findfont 8 scalefont setfont" << endl;
-	o << fixed << setprecision (3) << center.X << " "
-	  << fixed << setprecision (3) << center.Y << " translate" << endl;
-	o << "  0.5 setlinewidth 0.50 0.50 0.50 setrgbcolor" << endl;
+	o
+	<< fixed << setprecision (3) << center.X << " "
+	<< fixed << setprecision (3) << center.Y << " translate" << endl;
+	if (inset.grayscale == "Y") o << "  0.5 setlinewidth 0.00 0.00 0.00 setrgbcolor" << endl;
+	else 						o << "  0.5 setlinewidth 0.50 0.50 0.50 setrgbcolor" << endl;
 	o << "  [3 3] 0 setdash" << endl;
 
 	do {
@@ -2115,7 +2148,8 @@ void PS_idealmovement (vector <GDB > inGDB, ofstream& o, INPSET inset, CENTER ce
 
 			inGDB.at(i).N = flip_N_vector (shear_vector);
 
-			inGDB.at(i).PSCOLOR = "0.0 0.0 0.5";
+			if (inset.grayscale == "Y") inGDB.at(i).PSCOLOR = "0.0 0.0 0.0";
+			else 						inGDB.at(i).PSCOLOR = "0.0 0.0 0.5";
 
 			PS_polepoint (inGDB.at(i), o, inset, center, false, "");
 		}
@@ -2188,36 +2222,78 @@ void PS_SYMBOLS_border (ofstream& o, PAPER P) {
 	o << "  (SYMBOLS) 0 0 0 setrgbcolor show"  << endl;
 }
 
-void PS_SYMBOL_draw_plane (double X, double Y, ofstream& o, PAPER P, string type, string group) {
+void PS_SYMBOL_draw_plane (double X, double Y, ofstream& o, INPSET inset, PAPER P, string type, string group) {
 
 	string color = "0.00 0.00 0.00";
+	string dash = "   ";
 
 	o <<  "   newpath " << P.S1X + 1.2 * X << " " << P.S1Y - 3.5 * Y << " " << 3.0 * P.A << " 80 110 arc" << endl;
 
-	if (group == "A") color = "0.00 0.00 1.00";
-	if (group == "B") color = "1.00 0.00 0.67";
-	if (group == "C") color = "1.00 0.00 0.00";
-	if (group == "D") color = "1.00 0.50 0.00";
-	if (group == "E") color = "1.00 1.00 0.00";
-	if (group == "F") color = "0.00 1.00 0.00";
-	if (group == "G") color = "0.67 0.00 0.67";
-	if (group == "H") color = "0.50 1.00 1.00";
-	if (group == "I") color = "0.50 0.50 0.50";
+	if (inset.grayscale == "Y") {
 
-	if 			(type == "AV") 		o << "  1.00 0.00 0.00 setrgbcolor 1.5 setlinewidth " << endl;
-	else if		(type == "AV_O") 	o << "  1.00 0.00 0.00 setrgbcolor 1.5 setlinewidth " << endl;
-	else if 	(type == "FOLD") 	o << "  0.00 0.00 1.00 setrgbcolor 1 setlinewidth " << endl;
+		if 		(group == "X") color = "0.20 0.20 0.20";
+		else if (group == "A") color = "0.20 0.20 0.20";
+		else if (group == "B") color = "0.20 0.20 0.20";
+		else if (group == "C") color = "0.40 0.40 0.40";
+		else if (group == "D") color = "0.40 0.40 0.40";
+		else if (group == "E") color = "0.40 0.40 0.40";
+		else if (group == "F") color = "0.40 0.40 0.40";
+		else if (group == "G") color = "0.60 0.60 0.60";
+		else if (group == "H") color = "0.60 0.60 0.60";
+		else if (group == "I") color = "0.60 0.60 0.60";
+		else {}
+
+		if (group == "X") dash = "   ";
+		else if (group == "A") dash = "3 3";
+		else if (group == "B") dash = "6 6";
+		else if (group == "C") dash = "   ";
+		else if (group == "D") dash = "3 3";
+		else if (group == "E") dash = "3 6";
+		else if (group == "F") dash = "6 6";
+		else if (group == "G") dash = "   ";
+		else if (group == "H") dash = "3 3";
+		else if (group == "I") dash = "6 6";
+		else {}
+	}
+	else {
+		if (group == "A") color = "0.00 0.00 1.00";
+		else if (group == "B") color = "1.00 0.00 0.67";
+		else if (group == "C") color = "1.00 0.00 0.00";
+		else if (group == "D") color = "1.00 0.50 0.00";
+		else if (group == "E") color = "1.00 1.00 0.00";
+		else if (group == "F") color = "0.00 1.00 0.00";
+		else if (group == "G") color = "0.67 0.00 0.67";
+		else if (group == "H") color = "0.50 1.00 1.00";
+		else if (group == "I") color = "0.50 0.50 0.50";
+		else {}
+	}
+
+	if 			(type == "AV") 		{
+
+		if (inset.grayscale == "Y") o << "  0.20 0.20 0.20 setrgbcolor 2 setlinewidth  " << endl;
+		else						o << "  1.00 0.00 0.00 setrgbcolor 1.5 setlinewidth  " << endl;
+	}
+	else if		(type == "AV_O") 	{
+		if (inset.grayscale == "Y") o << "  0.20 0.20 0.20 setrgbcolor 2 setlinewidth  " << endl;
+		else 						o << "  1.00 0.00 0.00 setrgbcolor 1.5 setlinewidth  " << endl;
+	}
+	else if 	(type == "FOLD") 	{
+		if (inset.grayscale == "Y")	o << "  0.60 0.60 0.60 setrgbcolor 2 setlinewidth  " << endl;
+		else 						o << "  0.00 0.00 1.00 setrgbcolor 1 setlinewidth  " << endl;
+	}
+
 	else 							o << "  " << color << " setrgbcolor 1 setlinewidth " << endl;
 
-	if 			(type == "AV") 		o << "  [   ] 0 setdash stroke  [   ] 0 setdash " << endl;
-	if 			(type == "AV_O") 	o << "  [6 6] 0 setdash stroke  [   ] 0 setdash " << endl;
-	if 			(type == "O") 		o << "  [6 6] 0 setdash stroke  [   ] 0 setdash " << endl;
-	else if 	(type == "FOLD") 	o << "  [6 6] 0 setdash stroke  [   ] 0 setdash " << endl;
-	else if 	(type == "C") 		o << "  [3 3] 0 setdash stroke  [   ] 0 setdash " << endl;
-	else 							o << "stroke" << endl << endl;
+	if 			(type == "AV") 			o << "  [   ] 0 setdash stroke  [   ] 0 setdash " << endl;
+	else if 	(type == "AV_O") 		o << "  [6 6] 0 setdash stroke  [   ] 0 setdash " << endl;
+	else if 	(type == "O") 			o << "  [6 6] 0 setdash stroke  [   ] 0 setdash " << endl;
+	else if 	(type == "FOLD") 		o << "  [6 6] 0 setdash stroke  [   ] 0 setdash " << endl;
+	else if 	(type == "C") 			o << "  [3 3] 0 setdash stroke  [   ] 0 setdash " << endl;
+	else if (inset.grayscale == "Y")	o << "  [" << dash << "] 0 setdash stroke  [   ] 0 setdash " << endl;
+	else 								o << "stroke" << endl << endl;
 }
 
-void PS_SYMBOLS_STRIAE (ofstream& o, PAPER P) {
+void PS_SYMBOLS_STRIAE (ofstream& o, INPSET inset, PAPER P) {
 
 	double arrow_X, arrow_Y;
 	double step = 0.30;
@@ -2231,16 +2307,16 @@ void PS_SYMBOLS_STRIAE (ofstream& o, PAPER P) {
 	o  << "  " << arrow_X  + 5.0 << " " << arrow_Y + (0.40 * P.A) << " moveto (Average bedding) 0 0 0 setrgbcolor show"  << endl;
 	o  << "  " << arrow_X  + 5.0 << " " << arrow_Y + (0.22 * P.A) << " moveto (Overturned) 0 0 0 setrgbcolor show"  << endl;
 
-	PS_SYMBOL_draw_plane (1.0 * P.A, 1.00 * P.A, o, P, "", "");
+	PS_SYMBOL_draw_plane (1.0 * P.A, 1.00 * P.A, o, inset, P, "", "");
 
-	PS_SYMBOL_draw_plane (1.0 * P.A, 1.40 * P.A, o, P, "AV", "");
-	PS_SYMBOL_draw_plane (1.0 * P.A, 1.60 * P.A, o, P, "AV_O", "");
-	PS_SYMBOL_draw_plane (1.0 * P.A, 1.80 * P.A, o, P, "", "");
-	PS_SYMBOL_draw_plane (1.0 * P.A, 1.97 * P.A, o, P, "", "");
-	PS_SYMBOL_draw_plane (1.0 * P.A, 2.14 * P.A, o, P, "", "");
-	PS_SYMBOL_draw_plane (1.0 * P.A, 2.31 * P.A, o, P, "", "");
-	PS_SYMBOL_draw_plane (1.0 * P.A, 2.48 * P.A, o, P, "", "");
-	PS_SYMBOL_draw_plane (1.0 * P.A, 2.65 * P.A, o, P, "", "");
+	PS_SYMBOL_draw_plane (1.0 * P.A, 1.40 * P.A, o, inset, P, "AV", "");
+	PS_SYMBOL_draw_plane (1.0 * P.A, 1.60 * P.A, o, inset, P, "AV_O", "");
+	PS_SYMBOL_draw_plane (1.0 * P.A, 1.80 * P.A, o, inset, P, "", "");
+	PS_SYMBOL_draw_plane (1.0 * P.A, 1.97 * P.A, o, inset, P, "", "");
+	PS_SYMBOL_draw_plane (1.0 * P.A, 2.14 * P.A, o, inset, P, "", "");
+	PS_SYMBOL_draw_plane (1.0 * P.A, 2.31 * P.A, o, inset, P, "", "");
+	PS_SYMBOL_draw_plane (1.0 * P.A, 2.48 * P.A, o, inset, P, "", "");
+	PS_SYMBOL_draw_plane (1.0 * P.A, 2.65 * P.A, o, inset, P, "", "");
 
 
 	o << "  " << arrow_X << " " << arrow_Y << "  translate 20 rotate" << endl;
@@ -2282,16 +2358,17 @@ void PS_SYMBOLS_STRIAE (ofstream& o, PAPER P) {
 	arrow_Y = arrow_Y - (0.3 * P.A);
 	o  << "  " << arrow_X + 5.0 << " " << arrow_Y << " moveto (Ideal movement) 0 0 0 setrgbcolor show"  << endl;
 
+	if (inset.grayscale == "Y") o << "  0.0 0.0 0.0 setrgbcolor 0.7 setlinewidth" << endl;
+	else 						o << "  0.0 0.0 0.5 setrgbcolor 0.7 setlinewidth" << endl;
 
-	o << "  0.0 0.0 0.5 setrgbcolor 0.7 setlinewidth" << endl;
 	o
 	<< "  newpath " << fixed << setprecision (3) << arrow_X
-			 << " " << fixed << setprecision (3) << arrow_Y + 12.5
-			 << " 1.5 0 360 arc 0 gsave 1.00 1.00 1.00 setrgbcolor fill grestore stroke" << endl;
+	<< " " << fixed << setprecision (3) << arrow_Y + 12.5
+	<< " 1.5 0 360 arc 0 gsave 1.00 1.00 1.00 setrgbcolor fill grestore stroke" << endl;
 	o << "  0 0 0 setrgbcolor" << endl;
 }
 
-void PS_SYMBOLS_SC (ofstream& o, PAPER P) {
+void PS_SYMBOLS_SC (ofstream& o, INPSET inset, PAPER P) {
 
 	double arrow_X, arrow_Y;
 
@@ -2304,9 +2381,9 @@ void PS_SYMBOLS_SC (ofstream& o, PAPER P) {
 	o  << "  " << arrow_X  + 5.0 << " " << arrow_Y + (1.1 * P.A) << " moveto (Cleavage plane) 0 0 0 setrgbcolor show"  << endl;
 	o  << "  " << arrow_X  - 5.0 << " " << arrow_Y + (0.92 * P.A) << " moveto (with movement direction) 0 0 0 setrgbcolor show"  << endl;
 
-	PS_SYMBOL_draw_plane (1.0 * P.A, 1.00 * P.A, o, P, "", "");
-	PS_SYMBOL_draw_plane (1.0 * P.A, 1.40 * P.A, o, P, "C", "");
-	PS_SYMBOL_draw_plane (1.0 * P.A, 1.80 * P.A, o, P, "AV", "");
+	PS_SYMBOL_draw_plane (1.0 * P.A, 1.00 * P.A, o, inset, P, "", "");
+	PS_SYMBOL_draw_plane (1.0 * P.A, 1.40 * P.A, o, inset, P, "C", "");
+	PS_SYMBOL_draw_plane (1.0 * P.A, 1.80 * P.A, o, inset, P, "AV", "");
 
 	o << " 0.00 0.00 0.00 setrgbcolor " << endl;
 	o << "  " << arrow_X  << " " << arrow_Y + 1.4 * P.A << "  translate 20 rotate" << endl;
@@ -2318,7 +2395,7 @@ void PS_SYMBOLS_SC (ofstream& o, PAPER P) {
 	arrow_Y = arrow_Y - (0.4 * P.A);
 }
 
-void PS_SYMBOLS_PLANE (vector <GDB> inGDB, ofstream& o, PAPER P) {
+void PS_SYMBOLS_PLANE (vector <GDB> inGDB, ofstream& o, INPSET inset, PAPER P) {
 
 	double arrow_X = P.S1X + 0.6 * P.A;
 	double arrow_Y = P.S1Y - 3.355 * P.A;
@@ -2347,21 +2424,21 @@ void PS_SYMBOLS_PLANE (vector <GDB> inGDB, ofstream& o, PAPER P) {
 	o  << "  " << arrow_X  + 5.0 << " " << arrow_Y + (0.40 * P.A) << " moveto (Average bedding) 0 0 0 setrgbcolor show"  << endl;
 	o  << "  " << arrow_X  + 5.0 << " " << arrow_Y + (0.22 * P.A) << " moveto (Overturned) 0 0 0 setrgbcolor show"  << endl;
 
-	PS_SYMBOL_draw_plane (1.0 * P.A, 1.00 * P.A, o, P, "", "");
+	PS_SYMBOL_draw_plane (1.0 * P.A, 1.00 * P.A, o, inset, P, "", "");
 	if (type == "BEDDING")
-	PS_SYMBOL_draw_plane (1.0 * P.A, 1.20 * P.A, o, P, "O", "");
+	PS_SYMBOL_draw_plane (1.0 * P.A, 1.20 * P.A, o, inset, P, "O", "");
 
-	PS_SYMBOL_draw_plane (1.0 * P.A, 1.40 * P.A, o, P, "AV", "");
-	PS_SYMBOL_draw_plane (1.0 * P.A, 1.60 * P.A, o, P, "AV_O", "");
+	PS_SYMBOL_draw_plane (1.0 * P.A, 1.40 * P.A, o, inset, P, "AV", "");
+	PS_SYMBOL_draw_plane (1.0 * P.A, 1.60 * P.A, o, inset, P, "AV_O", "");
 
 	if (inGDB.at(0).DATATYPE == "FOLDSURFACE") {
 
-		PS_SYMBOL_draw_plane (1.0 * P.A, 1.80 * P.A, o, P, "FOLD", "");
+		PS_SYMBOL_draw_plane (1.0 * P.A, 1.80 * P.A, o, inset, P, "FOLD", "");
 		o  << "  " << arrow_X + 5.0 << " " << arrow_Y - (0.3 * P.A) << " moveto (Average bedding) 0 0 0 setrgbcolor show"  << endl;
 	}
 }
 
-void PS_SYMBOLS_LINEATION (vector <GDB> inGDB, ofstream& o, PAPER P) {
+void PS_SYMBOLS_LINEATION (vector <GDB> inGDB, ofstream& o, INPSET inset, PAPER P) {
 
 	double arrow_X = P.S1X + 0.6 * P.A;
 	double arrow_Y = P.S1Y - 3.355 * P.A;
@@ -2380,8 +2457,8 @@ void PS_SYMBOLS_LINEATION (vector <GDB> inGDB, ofstream& o, PAPER P) {
 	o  << "  " << arrow_X  + 5.0 << " " << arrow_Y + (0.40 * P.A) << " moveto (Average bedding) 0 0 0 setrgbcolor show"  << endl;
 	o  << "  " << arrow_X  + 5.0 << " " << arrow_Y + (0.22 * P.A) << " moveto (Overturned) 0 0 0 setrgbcolor show"  << endl;
 
-	PS_SYMBOL_draw_plane (1.0 * P.A, 1.40 * P.A, o, P, "AV", "");
-	PS_SYMBOL_draw_plane (1.0 * P.A, 1.60 * P.A, o, P, "AV_O", "");
+	PS_SYMBOL_draw_plane (1.0 * P.A, 1.40 * P.A, o, inset, P, "AV", "");
+	PS_SYMBOL_draw_plane (1.0 * P.A, 1.60 * P.A, o, inset, P, "AV_O", "");
 
 	o
 	<< "  " << " 0.0 0.0 0.0 setrgbcolor 1.5 setlinewidth newpath "
@@ -2422,20 +2499,20 @@ void PS_SYMBOLS_HOEPPNER (ofstream& o, PAPER P) {
 	arrow_Y = arrow_Y - (0.4 * P.A);
 }
 
-void PS_SYMBOLS_GROUPS (ofstream& o, PAPER P) {
+void PS_SYMBOLS_GROUPS (ofstream& o, INPSET inset, PAPER P) {
 
 	double arrow_X = P.S1X + 0.6 * P.A + 6.0 * P.A;;
 	double arrow_Y = P.S1Y - 3.355 * P.A;
 
-	PS_SYMBOL_draw_plane (6.8 * P.A, 1.00 * P.A, o, P, "", "A");
-	PS_SYMBOL_draw_plane (6.8 * P.A, 1.20 * P.A, o, P, "", "B");
-	PS_SYMBOL_draw_plane (6.8 * P.A, 1.40 * P.A, o, P, "", "C");
-	PS_SYMBOL_draw_plane (6.8 * P.A, 1.60 * P.A, o, P, "", "D");
-	PS_SYMBOL_draw_plane (6.8 * P.A, 1.80 * P.A, o, P, "", "E");
-	PS_SYMBOL_draw_plane (6.8 * P.A, 2.00 * P.A, o, P, "", "F");
-	PS_SYMBOL_draw_plane (6.8 * P.A, 2.20 * P.A, o, P, "", "G");
-	PS_SYMBOL_draw_plane (6.8 * P.A, 2.40 * P.A, o, P, "", "H");
-	PS_SYMBOL_draw_plane (6.8 * P.A, 2.60 * P.A, o, P, "", "I");
+	PS_SYMBOL_draw_plane (6.8 * P.A, 1.00 * P.A, o, inset, P, "", "A");
+	PS_SYMBOL_draw_plane (6.8 * P.A, 1.20 * P.A, o, inset, P, "", "B");
+	PS_SYMBOL_draw_plane (6.8 * P.A, 1.40 * P.A, o, inset, P, "", "C");
+	PS_SYMBOL_draw_plane (6.8 * P.A, 1.60 * P.A, o, inset, P, "", "D");
+	PS_SYMBOL_draw_plane (6.8 * P.A, 1.80 * P.A, o, inset, P, "", "E");
+	PS_SYMBOL_draw_plane (6.8 * P.A, 2.00 * P.A, o, inset, P, "", "F");
+	PS_SYMBOL_draw_plane (6.8 * P.A, 2.20 * P.A, o, inset, P, "", "G");
+	PS_SYMBOL_draw_plane (6.8 * P.A, 2.40 * P.A, o, inset, P, "", "H");
+	PS_SYMBOL_draw_plane (6.8 * P.A, 2.60 * P.A, o, inset, P, "", "I");
 
 	o  << "  " << arrow_X  + 1.3 * P.A << " " << arrow_Y + (2.5 * P.A) << " moveto (Group 'A') 0 0 0 setrgbcolor show"  << endl;
 	o  << "  " << arrow_X  + 1.3 * P.A << " " << arrow_Y + (1.8 * P.A) << " moveto (Group 'B') 0 0 0 setrgbcolor show"  << endl;
@@ -2522,7 +2599,7 @@ void PS_SYMBOLS_BINGHAM (ofstream& o, PAPER P) {
 	o  << "  " << arrow_X - 0.8 * P.A << " " << arrow_Y << " moveto (Minimum weight point) 0 0 0 setrgbcolor show"  << endl;
 }
 
-void PS_SYMBOLS_ROSE (vector <GDB> inGDB, ofstream& o, PAPER P) {
+void PS_SYMBOLS_ROSE (vector <GDB> inGDB, ofstream& o, INPSET inset, PAPER P) {
 
 	double angle = 80.0;
 	double radius = 80.0;
@@ -2537,7 +2614,8 @@ void PS_SYMBOLS_ROSE (vector <GDB> inGDB, ofstream& o, PAPER P) {
 	o
 	<< "  " << fixed << setprecision (2) << arrow_X + 1.5 * P.A
 	<< " "  << fixed << setprecision (2) << arrow_Y - 1.0 * P.A << " translate -30 rotate" << endl;
-	o << "0.7 setlinewidth 0.00 0.50 0.00 setrgbcolor " << endl;
+
+	o << "0.7 setlinewidth 0.50 0.50 0.50 setrgbcolor " << endl;
 	o << " newpath 0.0 0.0 moveto "
 	  << fixed << setprecision (2) << radius * SIN(10.0) << " "
 	  << fixed << setprecision (2) << radius * COS(10.0) << " lineto" << endl;
@@ -2546,7 +2624,8 @@ void PS_SYMBOLS_ROSE (vector <GDB> inGDB, ofstream& o, PAPER P) {
 	<< " "     << fixed << setprecision (3) << angle << " 90.0 arc" << endl;
 	o << "  0.0 0.0 moveto 0.0 " << fixed << setprecision (3) << radius << " lineto" << endl;
 	o << "  closepath " << endl;
-	o << " gsave 0.00 1.00 0.00 setrgbcolor fill grestore stroke" << endl;
+	if (inset.grayscale == "Y") o << " gsave 0.80 0.80 0.80 setrgbcolor fill grestore stroke" << endl;
+	else 						o << " gsave 0.00 1.00 0.00 setrgbcolor fill grestore stroke" << endl;
 	o
 	<< "  30 rotate "
 	<< fixed << setprecision (2) << - (arrow_X + 1.5 * P.A) << " "
@@ -2566,8 +2645,9 @@ void PS_SYMBOLS_ROSE (vector <GDB> inGDB, ofstream& o, PAPER P) {
 	o
 	<< "  " << fixed << setprecision (2) << arrow_X + 1.5 * P.A
 	<< " "  << fixed << setprecision (2) << arrow_Y - 1.0 * P.A << " translate -30 rotate" << endl;
+	if (inset.grayscale == "Y") o << "1.0 setlinewidth 0.00 0.00 0.00 setrgbcolor " << endl;
+	else o << "1.0 setlinewidth 0.00 0.00 1.00 setrgbcolor " << endl;
 
-	o << "1.0 setlinewidth 0.00 0.00 1.00 setrgbcolor " << endl;
 	o << " newpath 0.0 0.0 moveto "
 			<< fixed << setprecision (2) << radius * SIN(10.0) << " "
 			<< fixed << setprecision (2) << radius * COS(10.0) << " lineto" << endl;
@@ -2626,17 +2706,17 @@ void PS_SYMBOLS (vector <GDB> inGDB, ofstream& o, INPSET inset, PAPER P) {
 
 	o << "  " << P.S1X + 5.2 * P.A << " " << P.S1Y - 0.3 * P.A  << " moveto " << endl;
 	o << "  (ROSE PLOT) 0 0 0 setrgbcolor show"  << endl;
-	PS_SYMBOLS_ROSE (inGDB, o, P);
+	PS_SYMBOLS_ROSE (inGDB, o, inset, P);
 
 	o << "  " << P.S1X + 7.4 * P.A << " " << P.S1Y - 0.3 * P.A  << " moveto " << endl;
 	o << "  (GROUPS) 0 0 0 setrgbcolor show"  << endl;
-	PS_SYMBOLS_GROUPS (o, P);
+	PS_SYMBOLS_GROUPS (o, inset, P);
 
 	if (inGDB.at(0).DATAGROUP == "PLANE") {
 
 		o << "  " << P.S1X + 0.8 * P.A << " " << P.S1Y - 0.3 * P.A  << " moveto " << endl;
 		o << "  (PLANES) 0 0 0 setrgbcolor show"  << endl;
-		PS_SYMBOLS_PLANE (inGDB, o, P);
+		PS_SYMBOLS_PLANE (inGDB, o, inset, P);
 
 		o << "  " << P.S1X + 2.5 * P.A << " " << P.S1Y - 0.3 * P.A  << " moveto " << endl;
 		o << "  (BINGHAM STATISTICS) 0 0 0 setrgbcolor show"  << endl;
@@ -2651,7 +2731,7 @@ void PS_SYMBOLS (vector <GDB> inGDB, ofstream& o, INPSET inset, PAPER P) {
 		o << "  " << P.S1X + 0.1 * P.A << " " << P.S1Y - 0.3 * P.A  << " moveto " << endl;
 		o << "  (FAULT AND STRIAE DATA) 0 0 0 setrgbcolor show"  << endl;
 
-		if (inset.plot == "A")	PS_SYMBOLS_STRIAE (o, P);
+		if (inset.plot == "A")	PS_SYMBOLS_STRIAE (o, inset, P);
 		else PS_SYMBOLS_HOEPPNER (o, P);
 
 		o << "  " << P.S1X + 2.6 * P.A << " " << P.S1Y - 0.3 * P.A  << " moveto " << endl;
@@ -2665,7 +2745,7 @@ void PS_SYMBOLS (vector <GDB> inGDB, ofstream& o, INPSET inset, PAPER P) {
 
 		o << "  " << P.S1X + 0.1 * P.A << " " << P.S1Y - 0.3 * P.A  << " moveto " << endl;
 		o << "  (SCHISTOSITY, CLEAVEGE) 0 0 0 setrgbcolor show"  << endl;
-		PS_SYMBOLS_SC (o, P);
+		PS_SYMBOLS_SC (o, inset, P);
 
 		o << "  " << P.S1X + 2.6 * P.A << " " << P.S1Y - 0.3 * P.A  << " moveto " << endl;
 		o << "  (STRESS INVERSION) 0 0 0 setrgbcolor show"  << endl;
@@ -2677,7 +2757,7 @@ void PS_SYMBOLS (vector <GDB> inGDB, ofstream& o, INPSET inset, PAPER P) {
 
 		o << "  " << P.S1X + 0.6 * P.A << " " << P.S1Y - 0.3 * P.A  << " moveto " << endl;
 		o << "  (LINEATION) 0 0 0 setrgbcolor show"  << endl;
-		PS_SYMBOLS_LINEATION (inGDB, o, P);
+		PS_SYMBOLS_LINEATION (inGDB, o, inset, P);
 
 		return;
 	}

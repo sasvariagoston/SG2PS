@@ -13,16 +13,16 @@ using namespace std;
 
 PAPER PS_dimensions ();
 
-void PS_header (string DATATYPE, string LOC, ofstream& o);
+void PS_header (string DATATYPE, INPSET inset, string LOC, ofstream& o);
 void PS_border (GDB inGDB, ofstream& o, INPSET inset, PAPER P);
-void PS_stress_scale (ofstream& o, PAPER P);
+void PS_stress_scale (ofstream& o, INPSET inset, PAPER P);
 void ps_clusteringresult (ofstream& o, INPSET inset, PAPER P, int clusternumber);
 
 void PS_net (ofstream& o, INPSET inset, PAPER P);
 void PS_stressdata (ofstream& o, CENTER center, PAPER P, STRESSFIELD sf, string method);
 void PS_stressarrows (ofstream& o, CENTER center, PAPER P, STRESSFIELD sf);
 
-void PS_mohr_circle (vector <GDB> inGDB, ofstream& o, CENTER center, PAPER P, STRESSFIELD sf, STRESSTENSOR st, bool compression_positive);
+void PS_mohr_circle (vector <GDB> inGDB, ofstream& o, INPSET inset, CENTER mohr_center, PAPER P, STRESSFIELD sf, STRESSTENSOR st, bool compression_positive);
 
 bool by_border (const BRDR& x, const BRDR& y);
 vector <BRDR> sort_by_border (vector <BRDR> in);
@@ -48,8 +48,8 @@ void PS_striaearrow (GDB i, ofstream& o, INPSET inset, CENTER center, bool label
 void PS_getstereonet (ofstream& o, INPSET inset, CENTER center);
 
 void PS_rosesegment (ofstream& o, INPSET inset, CENTER center, double percentage, double degree, bool c_plane);
-void PS_draw_rose_circle_horizontal (ofstream& o, CENTER center, ROSENUMBER percent);
-void PS_draw_rose_circle_vertical (ofstream& o, CENTER center, ROSENUMBER percent);
+void PS_draw_rose_circle_horizontal (ofstream& o, INPSET inset, CENTER center, ROSENUMBER percent);
+void PS_draw_rose_circle_vertical (ofstream& o, INPSET inset, CENTER center, ROSENUMBER percent);
 
 void PS_datanumber_averagebedding (GDB i, ofstream& o, INPSET inset, PAPER P, CENTER center, size_t j);
 
@@ -64,18 +64,18 @@ void PS_idealmovement (vector <GDB> inGDB, ofstream& o, INPSET inset, CENTER cen
 void PS_DRAW_record (GDB i, ofstream& o, INPSET inset, CENTER center);
 
 void PS_SYMBOLS_border (ofstream& o, PAPER P);
-void PS_SYMBOL_draw_plane (double X, double Y, ofstream& o, PAPER P, string type, string group);
+void PS_SYMBOL_draw_plane (double X, double Y, ofstream& o, INPSET inset, PAPER P, string type, string group);
 
 void PS_SYMBOLS_STRIAE (ofstream& o, PAPER P);
-void PS_SYMBOLS_SC (ofstream& o, PAPER P);
-void PS_SYMBOLS_PLANE (vector <GDB> inGDB, ofstream& o, PAPER P);
-void PS_SYMBOLS_LINEATION (vector <GDB> inGDB, ofstream& o, PAPER P);
+void PS_SYMBOLS_SC (ofstream& o, INPSET inset, PAPER P);
+void PS_SYMBOLS_PLANE (vector <GDB> inGDB, ofstream& o, INPSET inset, PAPER P);
+void PS_SYMBOLS_LINEATION (vector <GDB> inGDB, ofstream& o, INPSET inset, PAPER P);
 void PS_SYMBOLS_HOEPPNER (ofstream& o, PAPER P);
 
 void PS_SYMBOLS_INVERSION (ofstream& o, PAPER P);
-void PS_SYMBOLS_GROUPS (ofstream& o, PAPER P);
+void PS_SYMBOLS_GROUPS (ofstream& o, INPSET inset, PAPER P);
 void PS_SYMBOLS_BINGHAM (ofstream& o, PAPER P);
-void PS_SYMBOLS_ROSE (vector <GDB> inGDB, ofstream& o, PAPER P);
+void PS_SYMBOLS_ROSE (vector <GDB> inGDB, ofstream& o, INPSET inset, PAPER P);
 void PS_SYMBOLS_LABEL (ofstream& o, INPSET inset, PAPER P);
 
 void PS_SYMBOLS (vector <GDB> inGDB, ofstream& o, INPSET inset, PAPER P);

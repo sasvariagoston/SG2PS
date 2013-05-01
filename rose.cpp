@@ -254,7 +254,7 @@ void PS_draw_rose_DIPDIR (vector <GDB> inGDB, ofstream& o, INPSET inset, CENTER 
 		percent.PLN_NUM = percent.LIN_NUM;
 	}
 
-	PS_draw_rose_circle_horizontal (o, center, percent);
+	PS_draw_rose_circle_horizontal (o, inset, center, percent);
 
 
 	if ((inGDB.at(j).DATAGROUP == "SC") || (inGDB.at(0).DATAGROUP == "STRIAE")) {
@@ -361,7 +361,7 @@ void PS_draw_rose_DIP (vector <GDB> inGDB, ofstream& o, INPSET inset, CENTER cen
 		percent.PLN_NUM = percent.LIN_NUM;
 	}
 
-	PS_draw_rose_circle_vertical (o, center, percent);
+	PS_draw_rose_circle_vertical (o, inset, center, percent);
 
 	if ((inGDB.at(j).DATAGROUP == "SC") || (inGDB.at(0).DATAGROUP == "STRIAE")) {
 

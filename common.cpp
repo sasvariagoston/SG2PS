@@ -911,11 +911,20 @@ bool check_correct_stressfield (STRESSFIELD sf) {
 	else return false;
 }
 
-VCTR generarte_stress_colors (double value) {
+VCTR generate_stress_colors (double value, INPSET inset) {
 
 	double percentage = 0.0;
 
 	VCTR out;
+
+	if (inset.grayscale == "Y") {
+
+		out.X = 0.80;
+		out.Y = 0.80;
+		out.Z = 0.80;
+
+		return out;
+	}
 
 	if ((value > 0.0) && (value <= 0.5)) {
 

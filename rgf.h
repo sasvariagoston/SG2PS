@@ -25,7 +25,7 @@ vector <GDB> produce_OFFSET (vector <GDB> inGDB);
 //string produce_OFFSET (string SENSEtemp);
 string complete_colorcode (string in);
 vector <GDB> black_colorcode (vector <GDB> inGDB);
-vector <GDB> colorcode_grom_groupcode (vector <GDB> inGDB);
+vector <GDB> colorcode_grom_groupcode (vector <GDB> inGDB, INPSET inset);
 
 vector <GDB> competeRGFcontect (string projectname, string inputxyfilename, INPSET inSET);
 

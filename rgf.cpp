@@ -51,27 +51,57 @@ string complete_colorcode (string in) {
 	else 								return "0.00 0.00 0.00";
 }
 
-vector <GDB> colorcode_grom_groupcode (vector <GDB> inGDB) {
+vector <GDB> colorcode_grom_groupcode (vector <GDB> inGDB, INPSET inset) {
 
 	vector <GDB> outGDB = inGDB;
-	size_t j = 0;
 
-	do {
+	if (inset.grayscale == "Y") {
 
-		if (inGDB.at(j).GC == "X") outGDB.at(j).PSCOLOR = "0.00 0.00 0.00";
-		if (inGDB.at(j).GC == "A") outGDB.at(j).PSCOLOR = "0.00 0.00 1.00";
-		if (inGDB.at(j).GC == "B") outGDB.at(j).PSCOLOR = "1.00 0.00 0.67";
-		if (inGDB.at(j).GC == "C") outGDB.at(j).PSCOLOR = "1.00 0.00 0.00";
-		if (inGDB.at(j).GC == "D") outGDB.at(j).PSCOLOR = "1.00 0.50 0.00";
-		if (inGDB.at(j).GC == "E") outGDB.at(j).PSCOLOR = "1.00 1.00 0.00";
-		if (inGDB.at(j).GC == "F") outGDB.at(j).PSCOLOR = "0.00 1.00 0.00";
-		if (inGDB.at(j).GC == "G") outGDB.at(j).PSCOLOR = "0.67 0.00 0.67";
-		if (inGDB.at(j).GC == "H") outGDB.at(j).PSCOLOR = "0.50 1.00 1.00";
-		if (inGDB.at(j).GC == "I") outGDB.at(j).PSCOLOR = "0.50 0.50 0.50";
+		for (size_t i = 0; i < inGDB.size(); i++) {
 
-		j++;
+			if (inGDB.at(i).GC == "X") outGDB.at(i).PSCOLOR = "0.20 0.20 0.20";
+			if (inGDB.at(i).GC == "A") outGDB.at(i).PSCOLOR = "0.20 0.20 0.20";
+			if (inGDB.at(i).GC == "B") outGDB.at(i).PSCOLOR = "0.20 0.20 0.20";
+			if (inGDB.at(i).GC == "C") outGDB.at(i).PSCOLOR = "0.40 0.40 0.40";
+			if (inGDB.at(i).GC == "D") outGDB.at(i).PSCOLOR = "0.40 0.40 0.40";
+			if (inGDB.at(i).GC == "E") outGDB.at(i).PSCOLOR = "0.40 0.40 0.40";
+			if (inGDB.at(i).GC == "F") outGDB.at(i).PSCOLOR = "0.40 0.40 0.40";
+			if (inGDB.at(i).GC == "G") outGDB.at(i).PSCOLOR = "0.60 0.60 0.60";
+			if (inGDB.at(i).GC == "H") outGDB.at(i).PSCOLOR = "0.60 0.60 0.60";
+			if (inGDB.at(i).GC == "I") outGDB.at(i).PSCOLOR = "0.60 0.60 0.60";
+		}
 
-	} while (j < outGDB.size());
+		for (size_t i = 0; i < inGDB.size(); i++) {
+
+			if (inGDB.at(i).GC == "X") outGDB.at(i).DASHED = "   ";
+			if (inGDB.at(i).GC == "A") outGDB.at(i).DASHED = "3 3";
+			if (inGDB.at(i).GC == "B") outGDB.at(i).DASHED = "6 6";
+			if (inGDB.at(i).GC == "C") outGDB.at(i).DASHED = "   ";
+			if (inGDB.at(i).GC == "D") outGDB.at(i).DASHED = "3 3";
+			if (inGDB.at(i).GC == "E") outGDB.at(i).DASHED = "3 6";
+			if (inGDB.at(i).GC == "F") outGDB.at(i).DASHED = "6 6";
+			if (inGDB.at(i).GC == "G") outGDB.at(i).DASHED = "   ";
+			if (inGDB.at(i).GC == "H") outGDB.at(i).DASHED = "3 3";
+			if (inGDB.at(i).GC == "I") outGDB.at(i).DASHED = "6 6";
+		}
+	}
+	else {
+
+		for (size_t i = 0; i < inGDB.size(); i++) {
+
+			if (inGDB.at(i).GC == "X") outGDB.at(i).PSCOLOR = "0.00 0.00 0.00";
+			if (inGDB.at(i).GC == "A") outGDB.at(i).PSCOLOR = "0.00 0.00 1.00";
+			if (inGDB.at(i).GC == "B") outGDB.at(i).PSCOLOR = "1.00 0.00 0.67";
+			if (inGDB.at(i).GC == "C") outGDB.at(i).PSCOLOR = "1.00 0.00 0.00";
+			if (inGDB.at(i).GC == "D") outGDB.at(i).PSCOLOR = "1.00 0.50 0.00";
+			if (inGDB.at(i).GC == "E") outGDB.at(i).PSCOLOR = "1.00 1.00 0.00";
+			if (inGDB.at(i).GC == "F") outGDB.at(i).PSCOLOR = "0.00 1.00 0.00";
+			if (inGDB.at(i).GC == "G") outGDB.at(i).PSCOLOR = "0.67 0.00 0.67";
+			if (inGDB.at(i).GC == "H") outGDB.at(i).PSCOLOR = "0.50 1.00 1.00";
+			if (inGDB.at(i).GC == "I") outGDB.at(i).PSCOLOR = "0.50 0.50 0.50";
+		}
+	}
+
 
 	return outGDB;
 }
@@ -1580,7 +1610,7 @@ void process_rgf (string inputfilename, string XY_filename, INPSET inset) {
 
 	// inversion: modify to be a "methodology selector" and outsource inversion itself
 	sort(geodatabase.begin(), geodatabase.end(), byLocTypeGc);
-	if (!(inset.clusternumber == "N"))  geodatabase = colorcode_grom_groupcode(geodatabase);
+	if (!(inset.clusternumber == "N"))  geodatabase = colorcode_grom_groupcode(geodatabase, inset);
 
 	cout << "AVERAGE BEDDING COMPUTATION FOR '" << capslock(inputfilename)<< ".RGF' DATABASE FILE" << endl;
 	geodatabase = cGc_average (geodatabase);

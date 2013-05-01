@@ -119,8 +119,8 @@ void ps_inversion (string method, STRESSTENSOR st, STRESSFIELD sf, vector <GDB> 
 
 	PS_stressarrows (o, center, P,  sf);
 
-	if (method == "PTN") 	PS_mohr_circle (inGDB, o, mohr_center, P, sf, st, true);
-	else 					PS_mohr_circle (inGDB, o, mohr_center, P, sf, st, false);
+	if (method == "PTN") 	PS_mohr_circle (inGDB, o, inset, mohr_center, P, sf, st, true);
+	else 					PS_mohr_circle (inGDB, o, inset, mohr_center, P, sf, st, false);
 
 	if (method == "ANGELIER" || method == "MOSTAFA" || method == "SHAN" || method == "FRY") {
 
@@ -293,7 +293,7 @@ vector <GDB> inversion (vector <GDB> inGDB, ofstream& o, INPSET inset, CENTER ce
 				else if (is_RUP) inGDB = associate_GDB_DATA_clusters (inGDB, V, inset, "");
 
 
-				inGDB = colorcode_grom_groupcode (inGDB);
+				inGDB = colorcode_grom_groupcode (inGDB, inset);
 			}
 
 			PS_idealmovement (inGDB, o, inset, center);

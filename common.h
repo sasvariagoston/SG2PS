@@ -80,7 +80,7 @@ vector < vector < double > > generate_D (vector < vector < double > > EVEV);
 bool check_fry_matrix (size_t second_eigenvalue, vector <vector <double> > in_eigenvector);
 bool check_correct_stressfield (STRESSFIELD sf);
 
-VCTR generarte_stress_colors (double value);
+VCTR generate_stress_colors (double value, INPSET inset);
 
 
 double vectorlength (VCTR in);

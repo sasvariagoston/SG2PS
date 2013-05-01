@@ -294,6 +294,8 @@ INPSET loadsettingsfromsettingfile (string settingfilename) {
 
 	settings.clustering_RUP_ANG = "N";
 
+	settings.grayscale = "Y";
+
 	settings.contouring = "S";
 
 	settingfile.close();

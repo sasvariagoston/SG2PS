@@ -446,8 +446,8 @@ void outputselected_ps_rgf (PFN output, vector <GDB> outGDB, vector <GDB> tiltou
 
 				if (existence_of_groupcodes (processGDB)) {
 
-					processGDB = 		colorcode_grom_groupcode (processGDB);
-					tiltprocessGDB = 	colorcode_grom_groupcode (tiltprocessGDB);
+					processGDB = 		colorcode_grom_groupcode (processGDB, inset);
+					tiltprocessGDB = 	colorcode_grom_groupcode (tiltprocessGDB, inset);
 				}
 
 				else {}
@@ -516,10 +516,10 @@ void output_to_ps (PFN output, vector <GDB> processGDB, vector <GDB> tiltprocess
 
 	ofstream output_ps_file(output_ps_filename.c_str());
 
-	PS_header (processGDB.at(0).DATATYPE, processGDB.at(0).LOC, output_ps_file);
+	PS_header (processGDB.at(0).DATATYPE, inset, processGDB.at(0).LOC, output_ps_file);
 	PS_SYMBOLS(processGDB, output_ps_file, inset, P);
 
-	if (processGDB.at(0).DATATYPE == "STRIAE" && (inset.inversion != "N")) PS_stress_scale (output_ps_file, P);
+	if (processGDB.at(0).DATATYPE == "STRIAE" && (inset.inversion != "N")) PS_stress_scale (output_ps_file, inset, P);
 
 
 	PS_border (processGDB.at(0), output_ps_file, inset, P);

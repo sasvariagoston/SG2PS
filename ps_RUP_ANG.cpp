@@ -141,9 +141,11 @@ void ps_draw_histogram_bars (vector <GDB> inGDB, vector <line_RUP_ANG> L_R_A, IN
 		Y1 = center.Y - P.R + 2.0 * P.R * (L_R_A.at(j).L_STR / DATA_max);
 		Y2 = center.Y - P.R + 2.0 * P.R * (L_R_A.at(j).L_END / DATA_max);
 
-		if (BW)	o <<  "  0.8 0.8 0.8 setrgbcolor " << linewidth << " setlinewidth" << endl;
-		else 	o <<  L_R_A.at(j).GC << " setrgbcolor " << linewidth << " setlinewidth" << endl;
-
+		if (inset.grayscale == "Y") o <<  "  0.8 0.8 0.8 setrgbcolor " << linewidth << " setlinewidth" << endl;
+		else {
+			if (BW)	o <<  "  0.8 0.8 0.8 setrgbcolor " << linewidth << " setlinewidth" << endl;
+			else 	o <<  L_R_A.at(j).GC << " setrgbcolor " << linewidth << " setlinewidth" << endl;
+		}
 		o
 		<< "  newpath "
 		<< fixed << setprecision (3) << X << " " << Y1 << " moveto "

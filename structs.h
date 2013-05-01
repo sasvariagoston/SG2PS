@@ -49,6 +49,7 @@ struct INPSET  {
 	string rosetype;
 	string rosebinning;
 	string filename;
+	string grayscale;
 
 	string clustering_RUP_ANG;
 	string contouring;
@@ -78,6 +79,7 @@ struct GDB  {
 	int iID;
 	string DATAGROUP;
 	string PSCOLOR;
+	string DASHED;
 
 
 	DIPDIR_DIP corr, corrL;
