@@ -16,8 +16,6 @@ using namespace std;
 
 vector <double> GDB_to_table (vector <GDB> inGDB, string field);
 
-bool is_in_range (double range_min, double range_max, double in);
-
 size_t DATA_number_in_range (vector <double> in, double range_min, double range_max);
 
 double bin_size_for_DATA (vector <double> in, size_t bin_number);

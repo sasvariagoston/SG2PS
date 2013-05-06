@@ -157,4 +157,8 @@ string version();
 
 string version_id();
 
+bool is_in_range (double range_min, double range_max, double in);
+
+double points_distance (VCTR a, VCTR b);
+
 #endif

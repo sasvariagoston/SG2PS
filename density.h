@@ -21,4 +21,16 @@ VCTR density_color_from_percentage (double percentage);
 
 void plot_densities (vector <GDB> inGDB, vector <GDB> tiltinGDB, ofstream& o, INPSET inset, CENTER center, PAPER P);
 
+vector <GRID_CENTER> generate_rectangular_grid_from_triange_center (size_t cell_number);
+
+vector <GRID_CENTER> calculate_grid_cell_values_from_triangle (vector <GRID_CENTER> rect_grid, vector <GRID_CENTER> tri_center);
+
+bool by_GRID_COUNT (const GRID_CENTER& x, const GRID_CENTER& y);
+
+vector <GRID_CENTER> sort_by_GRID_COUNT (vector <GRID_CENTER> GC);
+
+vector <GRID_CENTER> normalize_grid_cell_values (vector <GRID_CENTER> rect_grid, vector <GRID_CENTER> tri_center);
+
+void dbg_cout_rect_grid (vector <GRID_CENTER> rect_grid);
+
 #endif

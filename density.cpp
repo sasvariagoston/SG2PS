@@ -2,11 +2,13 @@
 // All rights reserved.
 // This code is published under the GNU Lesser General Public License.
 
+#include <algorithm>
 #include <cmath>
 #include <iomanip>
 #include <iostream>
 
 #include "common.h"
+#include "density.h"
 #include "ps.h"
 #include "structs.h"
 
@@ -171,3 +173,124 @@ void plot_densities (vector <GDB> inGDB, vector <GDB> tiltinGDB, ofstream& o, IN
 		//ps_plot_densities (dens.at(i), radius, o, inset, center, P);
 	}
 }
+
+
+vector <GRID_CENTER> generate_rectangular_grid_from_triange_center (size_t cell_number) {
+
+	vector <GRID_CENTER> out;
+
+	double step = 2.0 / cell_number;
+
+	double min = -1.0 + (step / 2.0);
+
+	double counter_Y = min;
+
+	for (size_t i = 0; i < cell_number; i++) {
+
+		double counter_X = min;
+
+		for (size_t j = 0; j < cell_number; j++) {
+
+			GRID_CENTER buf;
+
+			buf.CENTER.X = counter_X;
+			buf.CENTER.Y = counter_Y;
+
+			//cout << i << '\t' << j << endl;
+			//cout << counter_X << '\t' << counter_Y << endl;
+
+			out.push_back(buf);
+
+			counter_X = counter_X + step;
+		}
+
+		counter_Y = counter_Y + step;
+	}
+
+	return out;
+}
+
+
+vector <GRID_CENTER> calculate_grid_cell_values_from_triangle (vector <GRID_CENTER> rect_grid, vector <GRID_CENTER> tri_center) {
+
+	for (size_t j = 0; j < rect_grid.size(); j++) {
+
+		double cml_value = 0;
+		double R_X = rect_grid.at(j).CENTER.X;
+		double R_Y = rect_grid.at(j).CENTER.Y;
+
+		for (size_t i = 0; i < tri_center.size(); i++) {
+
+			double T_X = tri_center.at(i).CENTER.X;
+			double T_Y = tri_center.at(i).CENTER.Y;
+
+			double distance = sqrt((R_X - T_X) * (R_X - T_X) + (R_Y - T_Y) * (R_Y - T_Y));
+
+			cml_value = cml_value + (tri_center.at(i).COUNT / (distance * distance));
+		}
+
+		bool in = (sqrt((R_X * R_X) + (R_Y * R_Y)) <= 1.0);
+
+		if (in)	rect_grid.at(j).COUNT = cml_value;
+		else rect_grid.at(j).COUNT = 0.0;
+	}
+
+	return rect_grid;
+}
+
+bool by_GRID_COUNT (const GRID_CENTER& x, const GRID_CENTER& y) {
+
+	return x.COUNT < y.COUNT;
+}
+
+vector <GRID_CENTER> sort_by_GRID_COUNT (vector <GRID_CENTER> GC) {
+
+	sort(GC.begin(), GC.end(), by_GRID_COUNT);
+
+	return GC;
+}
+
+vector <GRID_CENTER> normalize_grid_cell_values (vector <GRID_CENTER> rect_grid, vector <GRID_CENTER> tri_center) {
+
+	tri_center = sort_by_GRID_COUNT(tri_center);
+
+	double rect_max = 0.0;
+
+	for (size_t i = 0; i < rect_grid.size(); i++) {
+
+		if (rect_grid.at(i).COUNT > rect_max) rect_max = rect_grid.at(i).COUNT;
+	}
+
+	size_t max_count = tri_center.at(tri_center.size() - 1).COUNT;
+
+	//cout << "TRI_CENTER_MAX: " << max_count << endl;
+	//cout << "RECT_MAX: " << rect_max << endl;
+
+	for (size_t i = 0; i < rect_grid.size(); i++) {
+
+		rect_grid.at(i).COUNT = (rect_grid.at(i).COUNT / rect_max) * max_count;
+	}
+
+	dbg_cout_rect_grid (rect_grid);
+
+	return rect_grid;
+}
+
+void dbg_cout_rect_grid (vector <GRID_CENTER> rect_grid) {
+
+	size_t cell_number = sqrt (rect_grid.size());
+
+	for (size_t j = 0; j < cell_number; j++) {
+
+		for (size_t i = 0; i < cell_number; i++) {
+
+			cout
+			<< rect_grid.at(j * cell_number + i).CENTER.X << '\t'
+			<< rect_grid.at(j * cell_number + i).CENTER.Y << '\t'
+			<< rect_grid.at(j * cell_number + i).COUNT << '\t' << endl;
+		}
+
+		//cout << endl;
+	}
+}
+

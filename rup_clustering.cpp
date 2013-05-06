@@ -4,6 +4,7 @@
 #include <iostream>
 #include <vector>
 
+#include "common.h"
 #include "math.h"
 #include "structs.h"
 #include "rup_clustering.hpp"
@@ -33,11 +34,6 @@ vector <double> GDB_to_table (vector <GDB> inGDB, string field) {
 	}
 
 	return out;
-}
-
-bool is_in_range (double range_min, double range_max, double in) {
-
-	return (range_min - SN <= in && in <= range_max + SN);
 }
 
 size_t DATA_number_in_range (vector <double> in, double range_min, double range_max) {

@@ -256,6 +256,7 @@ struct BRDR {
 	size_t COUNT;
 };
 
+
 struct TRIANGLE {
 
 	size_t GROUP;
@@ -263,6 +264,12 @@ struct TRIANGLE {
 	VCTR B;
 	VCTR C;
 	size_t COUNT;
+};
+
+struct GRID_CENTER {
+
+	VCTR CENTER;
+	double COUNT;
 };
 
 #endif

@@ -59,22 +59,69 @@ vector <vector <VCTR> > generate_segment (size_t SEG_CNT) {
 	return out;
 }
 
-vector <vector <vector <VCTR> > > generate_net () {
+vector <TRIANGLE>  generate_net (vector <GDB> inGDB, INPSET inset) {
 
 	vector <vector <VCTR> > buf;
-	vector <vector <vector <VCTR> > > out;
+	vector <vector <vector <VCTR> > > net;
 
 	for (size_t seg_cnt = 0; seg_cnt < 6; seg_cnt++) {
 
 		buf = generate_segment(seg_cnt);
 
-		out.push_back(buf);
+		net.push_back(buf);
 	}
 
-	vector <TRIANGLE> TRI = generate_triangle (out);
+	vector <TRIANGLE> TRI = generate_triangle (net, inset);
+
+	TRI = return_count_in_net (inGDB, TRI);
+
+	//dbg_cout_kaalsbeek_ps(TRI);
+
+	return TRI;
+}
+
+vector <GRID_CENTER> generate_triangle_center (vector <TRIANGLE> net) {
+
+	vector <GRID_CENTER> out;
+
+	for (size_t i = 0; i < net.size(); i++) {
+
+		GRID_CENTER buf;
+
+		buf.CENTER.X = (net.at(i).A.X + net.at(i).B.X + net.at(i).C.X) / 3.0;
+		buf.CENTER.Y = (net.at(i).A.Y + net.at(i).B.Y + net.at(i).C.Y) / 3.0;
+		buf.CENTER.Z = (net.at(i).A.Z + net.at(i).B.Z + net.at(i).C.Z) / 3.0;
+
+		buf.COUNT = net.at(i).COUNT;
+
+		double X = buf.CENTER.X;
+		double Y = buf.CENTER.Y;
+
+		if (sqrt((X * X) + (Y * Y)) <= 1.0) out.push_back(buf);
+		else {}
+	}
 
 	return out;
 }
+
+vector <GRID_CENTER> reduce_triangle_center (vector <GRID_CENTER> in) {
+
+	vector <GRID_CENTER> out;
+
+	for (size_t i = 0; i < in.size(); i++) {
+
+		if (in.at(i).COUNT > 0) out.push_back(in.at(i));
+		else {}
+	}
+
+	return out;
+}
+
+/*double round(double d)
+{
+  return floor(d + 0.5);
+}
+*/
 
 vector <TRIANGLE> merge_triangle (vector <TRIANGLE> target, vector <TRIANGLE> record) {
 
@@ -114,6 +161,7 @@ vector <TRIANGLE> generate_triangle_offnet(vector <vector <vector <VCTR> > > net
 		buf.C = create_offnet_point (buf.A, buf.B);
 
 		buf.GROUP = 6;
+		buf.COUNT = 0;
 
 		//dbg_cout_triangle ("6 - OFFNET", buf.A, buf.B, buf.C, SEG_CNT, 0, p_cnt + 0, SEG_CNT, 0, p_cnt + 1, 33, 33, 33);
 
@@ -148,6 +196,7 @@ vector <TRIANGLE> generate_triangle_offnet_between_segments (vector <vector <vec
 	buf.C = create_offnet_point (buf.A, buf.B);
 
 	buf.GROUP = 7;
+	buf.COUNT = 0;
 
 	//dbg_cout_triangle ("7 - OFF, BTW SEG", buf.A, buf.B, buf.C, SEG_L, 0, 9, SEG_U, 0, 0, 55, 55, 55);
 
@@ -170,6 +219,8 @@ vector <TRIANGLE> generate_triangle_in_arc (vector <vector <vector <VCTR> > > ne
 		buf.C = net.at(SEG_CNT).at(ARC_CNT + 1).at(p_cnt + 0);
 
 		buf.GROUP = 1;
+		buf.COUNT = 0;
+
 
 		//dbg_cout_triangle ("1 - IN_ARC_I", buf.A, buf.B, buf.C, SEG_CNT, ARC_CNT + 0, p_cnt + 1, SEG_CNT, ARC_CNT + 0, p_cnt + 0, SEG_CNT, ARC_CNT + 1, p_cnt + 0);
 
@@ -193,6 +244,7 @@ vector <TRIANGLE> generate_triangle_in_arc_II (vector <vector <vector <VCTR> > >
 		buf.C = net.at(SEG_CNT).at(ARC_CNT + 1).at(p_cnt + 1);
 
 		buf.GROUP = 2;
+		buf.COUNT = 0;
 
 		//dbg_cout_triangle ("2 - IN_ARC_II",	buf.A, buf.B, buf.C, SEG_CNT, ARC_CNT + 0, p_cnt + 1, SEG_CNT, ARC_CNT + 1, p_cnt + 0, SEG_CNT, ARC_CNT + 1, p_cnt + 1);
 
@@ -228,6 +280,7 @@ vector <TRIANGLE> generate_triangle_between_arcs (vector <vector <vector <VCTR> 
 	buf.C = net.at(SEG_U).at(ARC_CNT + 1).at(0);
 
 	buf.GROUP = 3;
+	buf.COUNT = 0;
 
 	//dbg_cout_triangle ("3 - BTW_ARC_I",	buf.A, buf.B, buf.C, SEG_U, ARC_CNT + 0, 0, SEG_L, ARC_CNT + 0, p_max, SEG_U, ARC_CNT + 1, 0);
 
@@ -238,6 +291,7 @@ vector <TRIANGLE> generate_triangle_between_arcs (vector <vector <vector <VCTR> 
 	buf.C = net.at(SEG_L).at(ARC_CNT + 1).at(p_max - 1);
 
 	buf.GROUP = 4;
+	buf.COUNT = 0;
 
 	//dbg_cout_triangle ("4 - BTW_ARC_II", buf.A, buf.B, buf.C, SEG_U, ARC_CNT + 1, 0, SEG_L, ARC_CNT + 0, p_max, SEG_L, ARC_CNT + 1, p_max - 1);
 
@@ -270,6 +324,7 @@ vector <TRIANGLE> generate_central_triangles (vector <vector <vector <VCTR> > > 
 	buf.C = declare_vector (0.0, 0.0, 1.0);
 
 	buf.GROUP = 5;
+	buf.COUNT = 0;
 
 	//dbg_cout_triangle ("5 - CENTRAL", buf.A, buf.B, buf.C, SEG_U, 9, 0, SEG_L, 9, 0, 11, 11, 11);
 
@@ -301,7 +356,7 @@ vector <TRIANGLE> generate_triangle_in_segment (vector <vector <vector <VCTR> > 
 	return out;
 }
 
-vector <TRIANGLE> generate_triangle (vector <vector <vector <VCTR> > > net) {
+vector <TRIANGLE> generate_triangle (vector <vector <vector <VCTR> > > net, INPSET inset) {
 
 	vector <TRIANGLE> buf;
 	vector <TRIANGLE> out;
@@ -325,26 +380,24 @@ vector <TRIANGLE> generate_triangle (vector <vector <vector <VCTR> > > net) {
 		out = merge_triangle(out, buf);
 	}
 
-	out = convert_S_W_net (out);
-
 	//dbg_cout_triangle_coordinates (out);
 
-	dbg_cout_kaalsbeek_ps(out);
+	//out = increase_triange_density(out);
 
-	out = convert_S_W_net (out);
+	//out = increase_triange_density(out);
+
+	out = convert_S_W_net (out, inset);
 
 	return out;
 }
 
-vector <TRIANGLE> convert_S_W_net (vector <TRIANGLE> in) {
-
-	string net = "S";
+vector <TRIANGLE> convert_S_W_net (vector <TRIANGLE> in, INPSET inset) {
 
 	for (size_t i = 0; i < in.size(); i++) {
 
 		if (in.at(i).GROUP < 6) {
 
-			if (net == "W") {
+			if (inset.plottype == "W") {
 
 				if (in.at(i).A.Z < 1.00) {
 
@@ -390,22 +443,150 @@ vector <TRIANGLE> convert_S_W_net (vector <TRIANGLE> in) {
 	return in;
 }
 
- /*bool is_data_in_triangle (TRIANGLE in, VCTR D) {
+vector <TRIANGLE> increase_triange_density (vector <TRIANGLE> in) {
 
-	 double AX = in.A.X;
-	 double AY = in.A.Y;
-	 double BX = in.B.X;
-	 double BY = in.B.Y;
-	 double CX = in.C.X;
-	 double CY = in.C.Y;
+	vector <TRIANGLE> out;
+	TRIANGLE buf;
 
-	 return (det (
+	for (size_t i = 0; i < in.size(); i++) {
 
-	 AX - D.X, AY - D.Y, (AX * AX - D.X * D.X) + (AY * AY - D.Y * D.Y),
-	 BX - D.X, BY - D.Y, (BX * BX - D.X * D.X) + (BY * BY - D.Y * D.Y),
-	 CX - D.X, CY - D.Y, (CX * CX - D.X * D.X) + (CY * CY - D.Y * D.Y) ) > 0.0);
- }*/
+		buf.GROUP = in.at(i).GROUP;
+		buf.A = in.at(i).A;
+		buf.B = declare_vector (
+				(in.at(i).A.X + in.at(i).B.X) / 2.0,
+				(in.at(i).A.Y + in.at(i).B.Y) / 2.0,
+				(in.at(i).A.Z + in.at(i).B.Z) / 2.0
+				);
+		buf.C = declare_vector (
+				(in.at(i).A.X + in.at(i).C.X) / 2.0,
+				(in.at(i).A.Y + in.at(i).C.Y) / 2.0,
+				(in.at(i).A.Z + in.at(i).C.Z) / 2.0
+		);
+		out.push_back(buf);
 
+
+		buf.A = in.at(i).B;
+		buf.B = declare_vector (
+				(in.at(i).B.X + in.at(i).C.X) / 2.0,
+				(in.at(i).B.Y + in.at(i).C.Y) / 2.0,
+				(in.at(i).B.Z + in.at(i).C.Z) / 2.0
+		);
+		buf.C = declare_vector (
+				(in.at(i).A.X + in.at(i).B.X) / 2.0,
+				(in.at(i).A.Y + in.at(i).B.Y) / 2.0,
+				(in.at(i).A.Z + in.at(i).B.Z) / 2.0
+		);
+		out.push_back(buf);
+
+		buf.A = in.at(i).C;
+		buf.B = declare_vector (
+				(in.at(i).C.X + in.at(i).A.X) / 2.0,
+				(in.at(i).C.Y + in.at(i).A.Y) / 2.0,
+				(in.at(i).C.Z + in.at(i).A.Z) / 2.0
+		);
+		buf.C = declare_vector (
+				(in.at(i).B.X + in.at(i).C.X) / 2.0,
+				(in.at(i).B.Y + in.at(i).C.Y) / 2.0,
+				(in.at(i).B.Z + in.at(i).C.Z) / 2.0
+		);
+		out.push_back(buf);
+
+		buf.A = declare_vector (
+				(in.at(i).A.X + in.at(i).B.X) / 2.0,
+				(in.at(i).A.Y + in.at(i).B.Y) / 2.0,
+				(in.at(i).A.Z + in.at(i).B.Z) / 2.0
+		);
+		buf.B = declare_vector (
+				(in.at(i).B.X + in.at(i).C.X) / 2.0,
+				(in.at(i).B.Y + in.at(i).C.Y) / 2.0,
+				(in.at(i).B.Z + in.at(i).C.Z) / 2.0
+		);
+		buf.C = declare_vector (
+				(in.at(i).A.X + in.at(i).C.X) / 2.0,
+				(in.at(i).A.Y + in.at(i).C.Y) / 2.0,
+				(in.at(i).A.Z + in.at(i).C.Z) / 2.0
+		);
+		out.push_back(buf);
+	}
+
+	return out;
+}
+
+bool is_data_in_triangle (TRIANGLE in, VCTR D) {
+
+	double AX = in.A.X;
+	double AY = in.A.Y;
+	double BX = in.B.X;
+	double BY = in.B.Y;
+	double CX = in.C.X;
+	double CY = in.C.Y;
+
+	vector <vector < double > > test = declare_3x3_matrix(
+			AX - D.X, AY - D.Y, (AX * AX - D.X * D.X) + (AY * AY - D.Y * D.Y),
+			BX - D.X, BY - D.Y, (BX * BX - D.X * D.X) + (BY * BY - D.Y * D.Y),
+			CX - D.X, CY - D.Y, (CX * CX - D.X * D.X) + (CY * CY - D.Y * D.Y)
+	);
+
+	return (det_3 (test) > 0.0);
+}
+
+bool is_neighbouring_internal_triange (TRIANGLE inTRI, TRIANGLE offTRI) {
+
+	size_t fit_counter = 0;
+
+	if (points_distance (inTRI.A, offTRI.A) < 10e-4) fit_counter++;
+	if (points_distance (inTRI.A, offTRI.B) < 10e-4) fit_counter++;
+	if (points_distance (inTRI.A, offTRI.C) < 10e-4) fit_counter++;
+	if (points_distance (inTRI.B, offTRI.A) < 10e-4) fit_counter++;
+	if (points_distance (inTRI.B, offTRI.B) < 10e-4) fit_counter++;
+	if (points_distance (inTRI.B, offTRI.C) < 10e-4) fit_counter++;
+	if (points_distance (inTRI.C, offTRI.A) < 10e-4) fit_counter++;
+	if (points_distance (inTRI.C, offTRI.B) < 10e-4) fit_counter++;
+	if (points_distance (inTRI.C, offTRI.C) < 10e-4) fit_counter++;
+
+	if (fit_counter == 2) return true;
+	else return false;
+}
+
+vector <TRIANGLE> add_external_to_internal (vector <TRIANGLE> innet, TRIANGLE offnet) {
+
+	for (size_t i = 0; i < innet.size(); i++) {
+
+		if (is_neighbouring_internal_triange (innet.at(i), offnet)) innet.at(i).COUNT++;
+	}
+
+	return innet;
+}
+
+vector <TRIANGLE> return_count_in_net (vector <GDB> inGDB, vector <TRIANGLE> innet) {
+
+	for (size_t i = 0; i < innet.size(); i++) {
+
+		size_t counter = 0;
+
+		for (size_t j = 0; j < inGDB.size(); j++) {
+
+			DIPDIR_DIP DD = dipdir_dip_from_DXDYDZ(inGDB.at(j).D);
+
+			if (DD.DIPDIR < 180.0) DD.DIPDIR = DD.DIPDIR + 180.0;
+			else DD.DIPDIR = DD.DIPDIR - 180.0;
+
+			DD.DIP = 90.0 - DD.DIP;
+
+			VCTR pole = DXDYDZ_from_dipdir_dip(DD);
+
+			if (is_data_in_triangle(innet.at(i), pole)) {
+
+				if (innet.at(i).GROUP < 6) counter++;
+				else innet = add_external_to_internal (innet, innet.at(i));
+			}
+		}
+
+		innet.at(i).COUNT = counter;
+	}
+
+	return innet;
+}
 
 void dbg_cout_triangle (string method, VCTR A, VCTR B, VCTR C, size_t SC1, size_t AC1, size_t PC1, size_t SC2, size_t AC2, size_t PC2, size_t SC3, size_t AC3, size_t PC3) {
 
@@ -461,5 +642,29 @@ void dbg_cout_kaalsbeek_ps (vector <TRIANGLE> in) {
 		else if (in.at(i).GROUP == 7) o << " 0.50 1.00 0.50 " << flush;
 
 		o << " setrgbcolor fill stroke " << endl;
+
+		o << " 1 0 0 setrgbcolor 0.5 setlinewidth " << endl;
+
+		o
+		<< "  newpath  "
+		<< in.at(i).A.X * 200.0 + 220.0 << "  " << in.at(i).A.Y * 200.0 + 220.0 << " moveto "
+		<< in.at(i).B.X * 200.0 + 220.0 << "  " << in.at(i).B.Y * 200.0 + 220.0 << " lineto" << endl;
+
+		o
+		<< in.at(i).C.X * 200.0 + 220.0 << "  " << in.at(i).C.Y * 200.0 + 220.0 << " lineto " << endl;
+
+		o
+		<< in.at(i).A.X * 200.0 + 220.0 << "  " << in.at(i).A.Y * 200.0 + 220.0 << " lineto stroke" << endl;
+
+		double X = ((in.at(i).A.X + in.at(i).B.X + in.at(i).C.X) / 3.0) * 200 + 220;
+		double Y = ((in.at(i).A.Y + in.at(i).B.Y + in.at(i).C.Y) / 3.0) * 200 + 220;
+
+		o << "/ArialNarrow-Bold findfont 4 scalefont setfont" << endl;
+
+		o << " 0 0 0 setrgbcolor " << endl;
+
+		o
+		<< "  " << X - 2<< " " << Y - 2 << " moveto ("
+		<< in.at(i).COUNT << ") show "<< endl;
 	}
 }

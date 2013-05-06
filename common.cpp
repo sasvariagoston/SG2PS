@@ -2120,3 +2120,19 @@ string version_id() {
 #endif
 	return id;
 }
+
+bool is_in_range (double range_min, double range_max, double in) {
+
+	double SN = 10e-8;
+
+	return (range_min - SN <= in && in <= range_max + SN);
+}
+
+double points_distance (VCTR a, VCTR b) {
+
+	return sqrt (
+			(b.X - a.X) * (b.X - a.X) +
+			(b.Y - a.Y) * (b.Y - a.Y) +
+			(b.Z - a.Z) * (b.Z - a.Z)
+			);
+}

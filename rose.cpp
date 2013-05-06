@@ -382,7 +382,7 @@ void PS_draw_rose_DIP (vector <GDB> inGDB, ofstream& o, INPSET inset, CENTER cen
 
 void PS_draw_rose (vector <GDB> roseGDB, ofstream& o, INPSET inset, CENTER center, PAPER P, bool tilt) {
 
-	if (tilt) {
+	if (!tilt) {
 
 		center.X = P.O3X;
 		center.Y = P.O3Y;

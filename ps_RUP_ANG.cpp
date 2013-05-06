@@ -8,6 +8,7 @@
 #include <iostream>
 #include <vector>
 
+#include "common.h"
 #include "rup_clustering.hpp"
 #include "structs.h"
 #include "valley_method.hpp"
