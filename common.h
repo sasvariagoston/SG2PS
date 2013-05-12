@@ -118,7 +118,7 @@ bool existence_of_groupcodes (vector <GDB> inGDB);
 
 
 
-
+vector <double> quadratic_solution (double A, double B, double C);
 vector <double> cubic_solution (double A, double B, double C, double D);
 vector <double> quartic_solution (double A, double B, double C, double D, double E);
 

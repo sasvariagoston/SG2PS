@@ -272,4 +272,15 @@ struct GRID_CENTER {
 	double COUNT;
 };
 
+struct GRID_CENTER_S {
+
+	VCTR CENTER;
+	size_t COUNT;
+};
+
+struct LINE {
+
+	VCTR A;
+	VCTR B;
+};
 #endif

@@ -546,7 +546,10 @@ void output_to_ps (PFN output, vector <GDB> processGDB, vector <GDB> tiltprocess
 
 	PS_net (output_ps_file, inset, P);
 
-	vector <TRIANGLE> TRI = generate_net (processGDB, inset);
+	contouring (processGDB, inset);
+
+
+	/*vector <TRIANGLE> TRI = generate_net (processGDB, inset);
 
 	//cout << TRI.size() << endl;
 
@@ -560,20 +563,14 @@ void output_to_ps (PFN output, vector <GDB> processGDB, vector <GDB> tiltprocess
 
 	tri_center = reduce_triangle_center(tri_center);
 
-	vector <GRID_CENTER> RECT_grid = generate_rectangular_grid_from_triange_center (cell_number);
+	vector < vector <GRID_CENTER> > RECT_grid = generate_rectangular_grid_from_triange_center (cell_number);
 
-	/*for (size_t i = 0; i < tri_center.size(); i++) {
 
-		cout
-		<< tri_center.at(i).CENTER.X << '\t'
-		<< tri_center.at(i).CENTER.Y << '\t'
-		<< tri_center.at(i).CENTER.Z << endl;
-	}
-	*/
 
 	RECT_grid = calculate_grid_cell_values_from_triangle (RECT_grid, tri_center);
 
 	RECT_grid = normalize_grid_cell_values (RECT_grid, tri_center);
+	*/
 }
 
 void cout_method_text (vector <GDB> inGDB, INPSET inset) {

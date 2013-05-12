@@ -117,12 +117,6 @@ vector <GRID_CENTER> reduce_triangle_center (vector <GRID_CENTER> in) {
 	return out;
 }
 
-/*double round(double d)
-{
-  return floor(d + 0.5);
-}
-*/
-
 vector <TRIANGLE> merge_triangle (vector <TRIANGLE> target, vector <TRIANGLE> record) {
 
 	TRIANGLE buf;
@@ -220,7 +214,6 @@ vector <TRIANGLE> generate_triangle_in_arc (vector <vector <vector <VCTR> > > ne
 
 		buf.GROUP = 1;
 		buf.COUNT = 0;
-
 
 		//dbg_cout_triangle ("1 - IN_ARC_I", buf.A, buf.B, buf.C, SEG_CNT, ARC_CNT + 0, p_cnt + 1, SEG_CNT, ARC_CNT + 0, p_cnt + 0, SEG_CNT, ARC_CNT + 1, p_cnt + 0);
 
@@ -392,6 +385,8 @@ vector <TRIANGLE> generate_triangle (vector <vector <vector <VCTR> > > net, INPS
 }
 
 vector <TRIANGLE> convert_S_W_net (vector <TRIANGLE> in, INPSET inset) {
+
+	//cout << inset.plottype << endl;
 
 	for (size_t i = 0; i < in.size(); i++) {
 
@@ -565,6 +560,8 @@ vector <TRIANGLE> return_count_in_net (vector <GDB> inGDB, vector <TRIANGLE> inn
 		size_t counter = 0;
 
 		for (size_t j = 0; j < inGDB.size(); j++) {
+
+			//cout << i << " " << j << endl;
 
 			DIPDIR_DIP DD = dipdir_dip_from_DXDYDZ(inGDB.at(j).D);
 
