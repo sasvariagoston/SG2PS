@@ -128,7 +128,7 @@ vector <VALLEY> create_valley_graph (vector <VALLEY> V) {
 
 	VALLEY buffer;
 
-	if (V.size() == 2) {
+	if (V.size() == 2 && V.at(0).DIR != "D" && V.at(1).DIR != "U") {
 
 		buffer.BIN_CENTER = 0.0;
 		buffer.BIN_ID = 999;

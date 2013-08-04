@@ -102,9 +102,6 @@ double return_step (double DATA_max) {
 	}
 }
 
-
-
-
 void ps_draw_histogram_bars (vector <GDB> inGDB, vector <line_RUP_ANG> L_R_A, INPSET inset, ofstream& o, CENTER center, PAPER P, double DATA_min, double DATA_max, size_t bin_number, double binsize, string method) {
 
 	double counter = DATA_min;
@@ -117,9 +114,6 @@ void ps_draw_histogram_bars (vector <GDB> inGDB, vector <line_RUP_ANG> L_R_A, IN
 	bool ANG_display = (method == "ANG");
 
 	bool BW = ((!RUP_clustering && !ANG_clustering) || (RUP_clustering && ANG_display) || (ANG_clustering && RUP_display));
-
-	//cout << "BW: " << BW << endl;
-	//cout << "method: " << method << endl;
 
 	for (size_t j = 0; j < L_R_A.size(); j++) {
 
@@ -222,8 +216,10 @@ void ps_percentage (ofstream& o, CENTER center, PAPER P, string method, double D
 		o
 		<< "  " << fixed << setprecision (3) << X1
 		<< " "  << fixed << setprecision (3) << Y
-		<< fixed << setprecision (0)
-		<< "  moveto (" << counter << "%) 0 0 0 setrgbcolor show " << endl;
+		<< fixed << setprecision (0) << "  moveto (" << counter << flush;
+
+		if (method == "RUP") o << "%) 0 0 0 setrgbcolor show " << endl;
+		else 				 o << " deg) 0 0 0 setrgbcolor show " << endl;
 
 		counter = counter + step;
 
@@ -271,14 +267,6 @@ void ps_percentage_max (ofstream& o, CENTER center, PAPER P, string method, doub
 
 vector <line_RUP_ANG> generate_graph_histogram (vector <HISTOGRAM> H, vector <VALLEY> V, INPSET inset, string method, double DATA_MIN, double DATA_MAX) {
 
-	//bool is_RUP = (method == "RUP");
-	//bool is_ANG = (method == "ANG");
-
-	//bool is_RUP_clustering (inset.clustering_RUP_ANG == "R");
-	//bool is_ANG_clustering (inset.clustering_RUP_ANG == "A");
-
-	//bool BW = ((is_RUP && !is_RUP_clustering) || (is_ANG && !is_ANG_clustering));
-
 	double SN = 10e-8;
 
 	line_RUP_ANG buffer;
@@ -325,54 +313,26 @@ vector <line_RUP_ANG> generate_graph_histogram (vector <HISTOGRAM> H, vector <VA
 
 	size_t col_cntr = 0;
 
+	//dbg_cout_V (V);
+
 	for (size_t i = 0; i < BORDERS.size() - 1; i++) {
 
 		buffer.L_STR = BORDERS.at(i).border;
 		buffer.L_END = BORDERS.at(i+1).border;
 
-
 		buffer.COUNT = BORDERS.at(i).COUNT;
 
-
-		if (BORDERS.at(i).ID == "VAL") {
+		if (BORDERS.at(i).ID == "VAL" && i > 0) {
 
 			col_cntr++;
 			buffer.COUNT = BORDERS.at(i-1).COUNT;
 		}
 		else buffer.COUNT = BORDERS.at(i).COUNT;
+
 		buffer.GC = H_CLR.at(col_cntr);
 
 		out.push_back(buffer);
 	}
 
-	/*for (size_t i = 0; i < out.size(); i++) {
-
-		cout
-		<< out.at(i).L_STR << '\t'
-		<< out.at(i).L_END << '\t'
-		<< out.at(i).COUNT << '\t'
-		<< out.at(i).GC << endl;
-	}*/
-
 	return out;
  }
-
-
-/*do {
-
-		o
-		<< "newpath "
-		<< fixed << setprecision (3) << center.X + P.R + 2.0 * P.B << " "
-		<< fixed << setprecision (3) << center.Y - P.R + 2.0 * P.R * (inGDB.at(i).RUP / RUP_max)
-		<< " 0.7 0 360 arc 3 setlinewidth 1 1 1 setrgbcolor stroke" << endl;
-
-		o
-		<< "newpath "
-		<< fixed << setprecision (3) << center.X + P.R + 2.0 * P.B << " "
-		<< fixed << setprecision (3) << center.Y - P.R + 2.0 * P.R * (inGDB.at(i).RUP / RUP_max)
-		<< " 0.7 0 360 arc 2 setlinewidth 0 0 0 setrgbcolor stroke" << endl;
-
-		i++;
-
-		} while (i < inGDB.size());
- */

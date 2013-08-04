@@ -129,8 +129,6 @@ void ps_inversion (string method, STRESSTENSOR st, STRESSFIELD sf, vector <GDB> 
 
 	PS_RUP_ANG_distribution (inGDB, inset, V, o, center, P, "ANG");
 
-	//PS_ANG_distribution (inGDB, o, center, P);
-
 	PS_stress_state (o, P, center, sf);
 
 	sf = stressvector_to_DXDYDZ (sf);
@@ -165,8 +163,7 @@ void inversion_result_output (STRESSFIELD sf, double average_misfit) {
 	<< ", R: "  		<< setfill ('0') << setw (4)  << fixed << setprecision (3) << sf.stressratio
 	<< ", R': " 		<< setfill ('0') << setw (4)  << fixed << setprecision (3) << sf.delvaux_str
 	<< ", av. misfit: " << setfill (' ') << setw (4)  << fixed << setprecision (1) << average_misfit
-	<< " deg."
-	<< endl;
+	<< " deg." << endl;
 }
 
 vector <GDB> inversion (vector <GDB> inGDB, ofstream& o, INPSET inset, CENTER center, CENTER mohr_center, PAPER P) {
@@ -280,26 +277,21 @@ vector <GDB> inversion (vector <GDB> inGDB, ofstream& o, INPSET inset, CENTER ce
 			else if (is_RUP) V = return_valleygraph_for_dataset (inGDB, "RUP");
 			else {}
 
-			//dbg_cout_V(V);
+			if (V.size() == 1 && V.at(0).DIR == "X") V.clear();
 
 			if (is_RUP || is_ANG) {
 
-				if (V.size() == 0) 		cout << "    - Cannot cluster input data set using RUP / ANG values." << endl;
+				if 		(V.size() == 0) cout << "    - Cannot cluster input data set using RUP / ANG values." << endl;
 				else if (V.size() > 9) 	cout << "    - Clustering result not reliable: more than 9 clusters." << endl;
 				else					cout << "    - Input data set separated into " << V.size() + 1 << " clusters." << endl;
 
 				if 		(is_RUP) inGDB = associate_GDB_DATA_clusters (inGDB, V, inset, "RUP");
 				else if (is_ANG) inGDB = associate_GDB_DATA_clusters (inGDB, V, inset, "ANG");
-				else if (is_RUP) inGDB = associate_GDB_DATA_clusters (inGDB, V, inset, "");
-
-
-				inGDB = colorcode_grom_groupcode (inGDB, inset);
+				else    		 inGDB = associate_GDB_DATA_clusters (inGDB, V, inset, "");
 			}
 
 			PS_idealmovement (inGDB, o, inset, center);
 		}
-
-		//dbg_cout_RGF_colors(inGDB);
 
 		ps_inversion (method, st, sf, inGDB, V, inset, o, center, mohr_center, P);
 
@@ -308,6 +300,8 @@ vector <GDB> inversion (vector <GDB> inGDB, ofstream& o, INPSET inset, CENTER ce
 		PS_lineation (inGDB.at(0), o, inset, center, sf, false, "S3");
 	}
 	else cout << "unable to compute stress field for the data set." << endl;
+
+	//dbg_cout_RGF_colors(inGDB);
 
 	return inGDB;
 }

@@ -83,7 +83,11 @@ void real_main(int argument_number, char *argv[]) {
 	if (!is_COMMANDLINE()) using_xy_files = true;
 	else using_xy_files = needxyfile ();
 
-	if (is_COMMANDLINE()) manage_settings_nobatch (inputfilename_vector.at(0));
+	//main entrance point need to find!
+
+	INPSET inset;
+
+	if (is_COMMANDLINE()) inset = manage_settings_nobatch (inputfilename_vector.at(0));
 
 	//----------------------------------------------------------------------------------------------
 	// Main processing loop
@@ -92,9 +96,9 @@ void real_main(int argument_number, char *argv[]) {
 
 	string xy_filename;
 
-	for (size_t j=0; j<inputfilename_vector.size() ; ++j) {
+	for (size_t j = 0; j < inputfilename_vector.size() ; j++) {
 
-		INPSET inset = manage_settings_batch (inputfilename_vector.at(j));
+		inset = manage_settings_batch (inputfilename_vector.at(j));
 
 		if (using_xy_files) xy_filename = check_xy_inputs (inputfilename_vector.at(j));
 

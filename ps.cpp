@@ -17,10 +17,7 @@
 #include "rup_clustering.hpp"
 #include "valley_method.hpp"
 
-
 using namespace std;
-
-
 
 PAPER PS_dimensions () {
 
@@ -82,8 +79,6 @@ PAPER PS_dimensions () {
 	P.S6Y = P.S1Y;
 
 	return P;
-
-	//dummy
 }
 
 void PS_header (string DATATYPE, INPSET inset, string LOC, ofstream& o) {
@@ -978,9 +973,6 @@ void PS_RUP_ANG_distribution (vector <GDB> inGDB, INPSET inset, vector <VALLEY> 
 	H = sort_by_COUNT (H);
 
 	vector <line_RUP_ANG> L_R_A = generate_graph_histogram (H, V, inset, method, DATA_min, DATA_max);
-
-
-
 
 	ps_RUP_ANG_header (o, center, P, method);
 

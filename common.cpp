@@ -1318,38 +1318,21 @@ vector <double> quadratic_solution (double A, double B, double C) {
 
 	vector <double> out;
 
-	//3x^2 + 4x - 95 = 0;
-
-	A = 12.0;
-	B = 9.0;
-	C = -651.0;
-
 	double DET = (B * B) - (4.0 * A * C);
-
-	cout << DET << endl;
 
 	if (DET < 0.0) {
 
 		out.push_back(999.99);
 		out.push_back(999.99);
-
-		return out;
 	}
 	else {
 
 		out.push_back((- B - sqrt (DET)) / (2.0 * A));
 		out.push_back((- B + sqrt (DET)) / (2.0 * A));
-
-		cout << out.at(0)<< endl;
-		cout << out.at(1)<< endl;
-
-		return out;
 	}
+
+	return out;
 }
-
-
-
-
 
 vector <double> cubic_solution (double A, double B, double C, double D) {
 

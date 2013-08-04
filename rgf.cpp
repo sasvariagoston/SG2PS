@@ -108,17 +108,12 @@ vector <GDB> colorcode_grom_groupcode (vector <GDB> inGDB, INPSET inset) {
 
 vector <GDB> black_colorcode (vector <GDB> inGDB) {
 
-	vector <GDB> outGDB = inGDB;
-	size_t j = 0;
+	for (size_t j = 0; j < inGDB.size(); j++) {
 
-	do {
+		inGDB.at(j).PSCOLOR = "0.00 0.00 0.00";
+	}
 
-		outGDB.at(j).PSCOLOR = "0.00 0.00 0.00";
-		j++;
-
-	} while (j < outGDB.size());
-
-	return outGDB;
+	return inGDB;
 }
 
 vector <GDB> cGc_NDS (vector <GDB> inGDB) {
@@ -1600,15 +1595,8 @@ void process_rgf (string inputfilename, string XY_filename, INPSET inset) {
 
 	cout << "K-MEANS CLUSTERING OF '" << capslock(inputfilename)<< ".RGF' DATABASE FILE" << endl;
 	geodatabase = clustering_GBD (inset, geodatabase);
-	//inversion must be done here with the cluster number output
-	// using "process_group_by_group" function
-	// inversion must be modified:
-	// 1) function returning "st" using inv. meth. (8 different fnctns)
-	// 2) function returning "sf" using inv. meth. (8 different fnctns)
-	// 3) calculate cluster numbers (1 fntc)
-	// 4) ps and rgf outputs (8 different fnctns)
 
-	// inversion: modify to be a "methodology selector" and outsource inversion itself
+
 	sort(geodatabase.begin(), geodatabase.end(), byLocTypeGc);
 	if (!(inset.clusternumber == "N"))  geodatabase = colorcode_grom_groupcode(geodatabase, inset);
 

@@ -19,7 +19,9 @@ VCTR density_color_from_percentage (double percentage);
 
 //vector <DENSITY> generate_density_vector (vector <GDB> in, size_t radius);
 
-void plot_densities (vector <GDB> inGDB, vector <GDB> tiltinGDB, ofstream& o, INPSET inset, CENTER center, PAPER P);
+//void plot_densities (vector <GDB> inGDB, vector <GDB> tiltinGDB, ofstream& o, INPSET inset, CENTER center, PAPER P);
+
+
 
 vector < vector <GRID_CENTER> > generate_rectangular_grid_from_triange_center (size_t cell_number);
 
@@ -31,6 +33,8 @@ vector < vector <GRID_CENTER> > normalize_grid_cell_values (vector < vector <GRI
 
 
 size_t return_contour_step (double max_COUNT);
+
+size_t return_isoline (double max_COUNT, size_t k);
 
 vector < vector <GRID_CENTER_S> > generate_empty_binary_rect_grid (size_t cell_number);
 
@@ -80,6 +84,8 @@ vector <VCTR> turn_off_BZ_record (vector <VCTR> in);
 
 vector < vector <VCTR> > fit_to_circle_II (vector < vector <VCTR> > inBZ);
 
+vector < vector <VCTR> > shorten_bezier (vector < vector <VCTR> > inBZ);
+
 vector < vector <VCTR> > generate_final_bezier (vector < vector <VCTR> > inBZ);
 
 vector < vector <VCTR> > eliminate_empty_records (vector < vector <VCTR> > inBZ);
@@ -113,6 +119,9 @@ void cout_bezier_to_ps (vector < vector <VCTR> > BZ, ofstream& o, size_t isoline
 void dbg_cout_line_vctr (vector <vector <LINE> > LV);
 
 void dbg_bezier_points (vector < vector <VCTR> > BZ);
+
+void cout_rect_grid_to_ps (vector <vector < GRID_CENTER> > rect_grid, ofstream& o, INPSET inset, double max_COUNT);
+
 
 
 #endif

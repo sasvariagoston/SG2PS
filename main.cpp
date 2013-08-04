@@ -3,6 +3,7 @@
 // This code is published under the GNU Lesser General Public License.
 #include <iostream>
 #include <stdexcept>
+
 #include "exceptions.hpp"
 #include "ExitStatus.hpp"
 

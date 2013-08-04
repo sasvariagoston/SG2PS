@@ -248,40 +248,33 @@ vector <GDB> associate_GDB_DATA_clusters (vector <GDB> inGDB, vector <VALLEY> V,
 
 	vector <string> GC;
 
-	GC.push_back("X");
-	GC.push_back("A");
-	GC.push_back("B");
-	GC.push_back("C");
-	GC.push_back("D");
-	GC.push_back("E");
-	GC.push_back("F");
-	GC.push_back("G");
-	GC.push_back("H");
-	GC.push_back("I");
+	GC.push_back("X");	GC.push_back("A");	GC.push_back("B");	GC.push_back("C");
+	GC.push_back("D");	GC.push_back("E");	GC.push_back("F");	GC.push_back("G");
+	GC.push_back("H");	GC.push_back("I");
 
 	bool is_RUP = (method == "RUP");
 	bool is_ANG = (method == "ANG");
 	bool is_RUP_clustering = (inset.clustering_RUP_ANG == "R");
 	bool is_ANG_clustering = (inset.clustering_RUP_ANG == "A");
 
+	//dbg_cout_V(V);
+
 	for (size_t j = 0; j < inGDB.size(); j++) {
 
-		if ((is_RUP_clustering || is_ANG_clustering) && (V.size() == 0))	inGDB.at(j).GC = GC.at(0);
-		else if (is_RUP && !is_RUP_clustering) 								inGDB.at(j).GC = GC.at(0);
-		else if (is_ANG && !is_ANG_clustering) 								inGDB.at(j).GC = GC.at(0);
+		if ((is_RUP_clustering || is_ANG_clustering) && (V.size() == 0))	inGDB.at(j).COLOR = GC.at(0);
+		else if (is_RUP && !is_RUP_clustering) 								inGDB.at(j).COLOR = GC.at(0);
+		else if (is_ANG && !is_ANG_clustering) 								inGDB.at(j).COLOR = GC.at(0);
 		else {
 
-			for (size_t i = 0; i < V.size() - 1; i++) {
+			for (size_t i = 0; i < V.size(); i++) {
 
-				if (inGDB.at(j).RUP < V.at(0).BIN_CENTER) 											inGDB.at(j).GC = GC.at(0);
-				else if (is_in_range (V.at(i).BIN_CENTER, V.at(i+1).BIN_CENTER, inGDB.at(j).RUP)) 	inGDB.at(j).GC = GC.at(i+1);
-				else if (inGDB.at(j).RUP > V.at(V.size() - 1).BIN_CENTER) 							inGDB.at(j).GC = GC.at(i+2);
+				if 	(inGDB.at(j).RUP < V.at(0).BIN_CENTER) inGDB.at(j).COLOR = GC.at(0);
+				else if (inGDB.at(j).RUP > V.at(V.size()-1).BIN_CENTER) inGDB.at(j).COLOR = GC.at(i+2);
+				else if (i > 0 && is_in_range (V.at(i-1).BIN_CENTER, V.at(i).BIN_CENTER, inGDB.at(j).RUP)) inGDB.at(j).COLOR = GC.at(i+1);
 				else {}
 			}
 		}
 	}
-
-	//dbg_cout_GDB_RUP(inGDB);
 
 	return inGDB;
 }

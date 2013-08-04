@@ -90,6 +90,8 @@ DENSITY density_in_cell (vector <GDB> in, size_t search_dipdir, size_t search_di
 	return out;
 }
 
+/*
+
 vector <DENSITY> normalize_density (vector <DENSITY> in) {
 
 	size_t max = 0;
@@ -108,7 +110,7 @@ vector <DENSITY> normalize_density (vector <DENSITY> in) {
 	return in;
 }
 
-vector <DENSITY> generate_density_vector (vector <GDB> in, size_t radius) {
+ vector <DENSITY> generate_density_vector (vector <GDB> in, size_t radius) {
 
 	vector <DENSITY> out;
 
@@ -119,10 +121,10 @@ vector <DENSITY> generate_density_vector (vector <GDB> in, size_t radius) {
 
 		for (size_t search_dipdir = radius; search_dipdir < 360; search_dipdir += dipdir_step) {
 
-			/*if 		((search_dip >   0) && (search_dip < 40)) 	dipdir_step =  2 * radius;
-			else if ((search_dip >= 40) && (search_dip < 60)) 	dipdir_step =  3 * radius;
-			else if ((search_dip >= 60) && (search_dip < 80)) 	dipdir_step =  5 * radius;
-			else 												dipdir_step = 10 * radius;*/
+			//if 		((search_dip >   0) && (search_dip < 40)) 	dipdir_step =  2 * radius;
+			////else if ((search_dip >= 40) && (search_dip < 60)) 	dipdir_step =  3 * radius;
+			//else if ((search_dip >= 60) && (search_dip < 80)) 	dipdir_step =  5 * radius;
+			//else 												dipdir_step = 10 * radius;
 
 			DENSITY buffer = density_in_cell (in, search_dipdir, search_dip, radius);
 
@@ -171,7 +173,7 @@ void plot_densities (vector <GDB> inGDB, vector <GDB> tiltinGDB, ofstream& o, IN
 
 
 
-
+*/
 
 
 
@@ -180,9 +182,13 @@ vector < vector <GRID_CENTER> > generate_rectangular_grid_from_triange_center (s
 
 	vector < vector <GRID_CENTER> > out;
 
-	double step = 2.0 / cell_number;
+	double step = 2.1 / cell_number;
+	//was: double step = 2.1 / cell_number;
 
-	double min = -1.0 + (step / 2.0);
+	double min = -1.05 + (step / 2.0);
+	//was: double min = -1.0 + (step / 2.0);
+
+	//cout << "step: " << step << endl;
 
 	double counter_Y = min;
 
@@ -200,7 +206,6 @@ vector < vector <GRID_CENTER> > generate_rectangular_grid_from_triange_center (s
 			buf.CENTER.Y = counter_Y;
 			buf.COUNT = 0;
 
-			//cout << i << '\t' << j << endl;
 			//cout << counter_X << '\t' << counter_Y << endl;
 
 			grid_buf.push_back(buf);
@@ -240,11 +245,11 @@ vector < vector <GRID_CENTER> > calculate_grid_cell_values_from_triangle (vector
 				cml_value = cml_value + (tri_center.at(i).COUNT / (distance * distance));
 			}
 
-			//bool in = (sqrt((R_X * R_X) + (R_Y * R_Y)) <= 1.0);
+			bool in = (sqrt((R_X * R_X) + (R_Y * R_Y)) <= 1.0);
 
-			//if (in)
+			if (in)
 				rect_grid.at(k).at(j).COUNT = cml_value;
-			//else {}
+			else {}
 		}
 	}
 
@@ -318,10 +323,20 @@ size_t return_contour_step (double max_COUNT) {
 			else {
 
 				if (max_COUNT < 100.0) return 2;
-				else return max_COUNT / 3;
+				else return max_COUNT / 20;
 			}
 		}
 	}
+}
+
+
+size_t return_isoline (double max_COUNT, size_t k) {
+
+	if (k == 0) return max_COUNT / 500;
+	else if (k == 1) return max_COUNT / 300;
+	else if (k == 2) return max_COUNT / 200;
+	else if (k == 3) return max_COUNT / 100;
+	else return max_COUNT / 50;
 }
 
 vector < vector <GRID_CENTER_S> > generate_empty_binary_rect_grid (size_t cell_number) {
@@ -744,17 +759,9 @@ vector <LINE> generate_raw_lines (vector <vector <GRID_CENTER_S> > m_sq, vector 
 
 			out.insert(out.end(), buf.begin(), buf.end());
 
-			/*for (size_t k = 0; k < buf.size(); k++) {
-
-				out.push_back(buf.at(k));
-			}
-			*/
-
 			buf.clear();
 		}
 	}
-
-	//cout << out.size() << endl;
 
 	return out;
 }
@@ -964,19 +971,44 @@ vector < vector <VCTR> > fit_to_circle_I (vector < vector <VCTR> > inBZ) {
 	return out;
 }
 
-VCTR interpolate_between_points (VCTR A, VCTR B, bool linestart) {
+VCTR interpolate_between_points (VCTR inA, VCTR inB, bool linestart) {
 
-	//double length = sqrt(((A.X - B.X) * (A.X - B.X)) +	((A.Y - B.Y)  * (A.Y - B.Y)));
+	double W = (inB.Y - inA.Y) / (inB.X - inA.X);
 
-	//if (linestart) {
+	double A = (W * W) + 1;
+	double B = 2.0 * W * W * inA.X + 2.0 * W * inA.Y;
+	double C = W * W * inA.X * inA.X  +  inA.Y * inA.Y  -  2.0 * inA.Y * inA.X * W - 1.0;
 
-		//VCTR C =
-	//}
-	//else {
+	vector <double> QUAD_SOL = quadratic_solution(A, B, C);
 
-	//}
 
-	return A;
+
+	double X1 = QUAD_SOL.at(0);
+	double X2 = QUAD_SOL.at(1);
+
+	//cout << "----QUADRATIC" << endl;
+	//cout << X1 << '\t' << X2 << endl;
+
+	double Y1 = sqrt(1.0 - (X1 * X1));
+	double Y2 = sqrt(1.0 - (X2 * X2));
+
+	//cout << "----INTERPOLATION" << endl;
+	//cout << inA.X << '\t' << inA.Y << endl;
+	//cout << inB.X << '\t' << inB.Y << endl;
+
+
+
+
+	if (
+			(is_in_range(inA.X, inB.X, X1) && is_in_range(inA.Y, inB.Y, Y1))
+			||
+			(is_in_range(inB.X, inA.X, X1) && is_in_range(inB.Y, inA.Y, Y1))
+	)
+	{
+
+		return declare_vector(X1, Y1, NaN());
+	}
+	else return declare_vector(X2, Y2, NaN());
 }
 
 VCTR generate_new_start (VCTR A) {
@@ -988,6 +1020,11 @@ VCTR generate_new_start (VCTR A) {
 	out.X = A.X / length;
 	out.Y = A.Y / length;
 	out.Z = A.Z / length;
+
+	//cout << "----NEW START----" << endl;
+
+	//cout << A.X << '\t' << A.Y << endl;
+	//cout << out.X << '\t' << out.Y << endl;
 
 	return out;
 }
@@ -1081,7 +1118,6 @@ vector < vector <VCTR> > connect_bezier_segments (vector < vector <VCTR> > inBZ)
 					change_counter++;
 				}
 				else {}
-
 			}
 		}
 
@@ -1107,17 +1143,25 @@ vector < vector <VCTR> > fit_to_circle_II (vector < vector <VCTR> > inBZ) {
 		VCTR new_start;
 		VCTR new_end;
 
-		bool is_start_crossing = is_circle_border(min_A, min_B);
-		bool is_end_crossing = is_circle_border(max_A, max_B);
-		bool closed_line = is_closed_line (min_A, max_B);
+		bool is_start_crossing =	is_circle_border(min_A, min_B);
+		bool is_end_crossing = 		is_circle_border(max_A, max_B);
+
+		bool closed_line = (is_closed_line (min_A, max_B) &&
+
+				min_A.X < 900.0 &&
+				min_A.Y < 900.0 &&
+				max_B.X < 900.0 &&
+				max_B.Y < 900.0);
 
 		if (is_start_crossing) min_A = interpolate_between_points (min_A, min_B, true);
 		else if (!is_start_crossing && closed_line) {}
-		else new_start = generate_new_start (min_A);
+		else if (!is_start_crossing && !closed_line) new_start = generate_new_start (min_A);
+		else {}
 
 		if (is_end_crossing) max_B = interpolate_between_points (max_A, max_B, false);
 		else if (!is_end_crossing && closed_line) {}
-		else new_end = generate_new_start (max_B);
+		else if (!is_end_crossing && !closed_line) new_end = generate_new_start (max_B);
+		else {}
 
 		if (!is_start_crossing && !closed_line) buf.push_back (new_start);
 		else {}
@@ -1132,6 +1176,44 @@ vector < vector <VCTR> > fit_to_circle_II (vector < vector <VCTR> > inBZ) {
 
 	return out;
 }
+
+
+vector < vector <VCTR> > shorten_bezier (vector < vector <VCTR> > inBZ) {
+
+	vector < vector <VCTR> > out;
+
+	for (size_t i = 0; i < inBZ.size(); i++) {
+
+		if (inBZ.at(i).size() < 10) {}
+		else {
+
+			vector <VCTR> buf;
+
+			VCTR start  = inBZ.at(i).at(0);
+			VCTR end  = inBZ.at(i).at(inBZ.at(i).size() - 1);
+
+			buf.push_back(start);
+
+			for (size_t k = 0; k < inBZ.at(i).size(); k+=5) {
+
+				buf.push_back(inBZ.at(i).at(k));
+
+			}
+
+			if (
+					buf.at(buf.size() - 1).Y != end.Y &&
+					buf.at(buf.size() - 1).Y != end.Y) {
+
+				buf.push_back(end);
+			}
+
+			out.push_back(buf);
+		}
+	}
+
+	return out;
+}
+
 
 VCTR vctr_average (VCTR A, VCTR B) {
 
@@ -1167,36 +1249,58 @@ vector < vector <VCTR> > generate_final_bezier (vector < vector <VCTR> > inBZ) {
 			VCTR line_end = inBZ.at(i).at(inBZ.at(i).size() - 1);
 			VCTR before_line_end = inBZ.at(i).at(inBZ.at(i).size() - 2);
 
+			VCTR E = vctr_average(A, B);
+						VCTR F = vctr_average(B, C);
+						VCTR G = vctr_average(before_line_end, A);
+
 			bool closed_line = is_closed_line (line_start, line_end);
 
 			if (j == 0) {
 
 				if (closed_line) {
 
-					buf.push_back(vctr_average(before_line_end, A));
-					buf.push_back(A);
-					buf.push_back(A);
-					buf.push_back(vctr_average(A, B));
+					buf.push_back(G);
+					//buf.push_back(A); original
+					//buf.push_back(A);
+					buf.push_back(vctr_average(G, A));
+					buf.push_back(vctr_average(A, E));
+					buf.push_back(E);
 
-					buf.push_back(vctr_average(A, B));
-					buf.push_back(B);
-					buf.push_back(B);
-					buf.push_back(vctr_average(B, C));
+					buf.push_back(E);
+					//buf.push_back(B); original
+					//buf.push_back(B);
+					buf.push_back(vctr_average(E, B));
+					buf.push_back(vctr_average(B, F));
+					buf.push_back(F);
 				}
 				else {
 
-					buf.push_back(inBZ.at(i).at(0));
-					buf.push_back(B);
-					buf.push_back(B);
-					buf.push_back(vctr_average(B, C));
+					buf.push_back(line_start);
+					//buf.push_back(B); original
+					//buf.push_back(B);
+					buf.push_back(vctr_average(line_start, B));
+					buf.push_back(vctr_average(B, F));
+					buf.push_back(F);
 				}
+			}
+
+			else if (j == inBZ.at(i).size() - 3 && !closed_line)  {
+
+				buf.push_back(E);
+				//buf.push_back(B); original
+				//buf.push_back(B);
+				buf.push_back(vctr_average(E, B));
+				buf.push_back(vctr_average(B, C));
+				buf.push_back(C);
 			}
 			else {
 
-				buf.push_back(vctr_average(A, B));
-				buf.push_back(B);
-				buf.push_back(B);
-				buf.push_back(vctr_average(B, C));
+				buf.push_back(E);
+				//buf.push_back(B); original
+				//buf.push_back(B);
+				buf.push_back(vctr_average(E, B));
+				buf.push_back(vctr_average(B, F));
+				buf.push_back(F);
 			}
 		}
 
@@ -1224,7 +1328,13 @@ vector < vector <VCTR> > eliminate_out_circle_curves (vector < vector <VCTR> > i
 
 	for (size_t i = 0; i < inBZ.size(); i++) {
 
-		if (is_point_in_circle (inBZ.at(i).at(2))) out.push_back(inBZ.at(i));
+		bool to_eliminate = false;
+
+		if (inBZ.at(i).size() < 5) to_eliminate = true;
+
+		if (inBZ.at(i).size() >= 5 && !is_point_in_circle (inBZ.at(i).at(1))) to_eliminate = true;
+
+		if (!to_eliminate) out.push_back(inBZ.at(i));
 	}
 
 	return out;
@@ -1268,22 +1378,14 @@ void contouring (vector <GDB> inGDB, INPSET inset) {
 
 	TRI_CENTER = reduce_triangle_center(TRI_CENTER);
 
-
 	vector < vector <GRID_CENTER> > RECT_GRID = generate_rectangular_grid_from_triange_center (cell_number);
 
 	RECT_GRID = calculate_grid_cell_values_from_triangle (RECT_GRID, TRI_CENTER);
 	//dbg_cout_rect_grid(RECT_grid);
 
-	RECT_GRID = normalize_grid_cell_values (RECT_GRID, TRI_CENTER);
-	//dbg_cout_rect_grid(RECT_grid);
-
 
 	double max_COUNT = return_rect_grid_max_count (RECT_GRID);
-	cout << max_COUNT << endl;
-
-	size_t contour_step = return_contour_step (max_COUNT);
-	cout << contour_step << endl;
-
+	//cout << max_COUNT << endl;
 
 	string outputfilename = "LINE.PS";
 
@@ -1291,15 +1393,34 @@ void contouring (vector <GDB> inGDB, INPSET inset) {
 
 	cout_line_to_ps_header (o);
 
+	//cout_rect_grid_to_ps (RECT_GRID, o, inset, max_COUNT);
+
+
+
+	RECT_GRID = normalize_grid_cell_values (RECT_GRID, TRI_CENTER);
+	//dbg_cout_rect_grid(RECT_GRID);
 
 
 
 
 
 
+	//size_t contour_step = return_contour_step (max_COUNT);
+	//cout << contour_step << endl;
 
 
-	for (size_t isoline = contour_step; isoline < max_COUNT; isoline += contour_step) {
+
+
+	size_t isoline = 10;
+
+
+
+
+
+
+	//for (size_t k = 0; k < 5; k++) {
+
+		//size_t isoline = return_isoline (max_COUNT, k);
 
 		vector < vector <GRID_CENTER_S> > BIN_GRID = generate_binary_rect_grid (RECT_GRID, isoline);
 
@@ -1327,30 +1448,42 @@ void contouring (vector <GDB> inGDB, INPSET inset) {
 		LINE_VCTR = tidy_vectors(LINE_VCTR); // ok a zarta is
 		//dbg_cout_line_vctr(LINE_VCTR);
 
-		vector < vector <VCTR> > BZ = generate_bezier_points (LINE_VCTR); // zartra is
+		vector < vector <VCTR> > BZ = generate_bezier_points (LINE_VCTR); // zartra is //OK
 		//dbg_bezier_points(BZ);
 
-		BZ = fit_to_circle_I (BZ);  //ok, zartra is
-		dbg_bezier_points(BZ);
+		BZ = fit_to_circle_I (BZ);  //ok, zartra is // OK
+		//dbg_bezier_points(BZ);
+
+		BZ = eliminate_out_circle_curves (BZ); // OK
+		//dbg_bezier_points(BZ);
 
 		BZ = connect_bezier_segments (BZ); // nincs tesztelve
-		dbg_bezier_points(BZ);
+		//dbg_bezier_points(BZ);  //OK
+
+		BZ = eliminate_empty_records (BZ);
+		//dbg_bezier_points(BZ);
 
 		BZ = fit_to_circle_II (BZ);  //ok, zartra is
 		//dbg_bezier_points(BZ);
 
+
+		//BZ = shorten_bezier (BZ); //no debug
+
+
+
+
 		BZ = generate_final_bezier (BZ); // seems to be OK,zartra ok
 		//dbg_bezier_points(BZ);
 
-		BZ = eliminate_empty_records (BZ);
 
-		BZ = eliminate_out_circle_curves (BZ);
+
+
 
 		cout_bezier_to_ps(BZ, o, isoline, max_COUNT);
 		//cout_line_to_ps (C_LINE, o, isoline, max_COUNT);
 
 		//cout << C_LINE.size() << endl;
-	}
+	//}
 }
 
 
@@ -1486,9 +1619,66 @@ void dbg_bezier_points (vector < vector <VCTR> > BZ) {
 		for(size_t j = 0; j < BZ.at(i).size(); j++) {
 
 			cout << BZ.at(i).at(j).X << '\t' << flush;
-			cout << BZ.at(i).at(j).Y << endl;
+			cout << BZ.at(i).at(j).Y << '\t' << flush;
+			cout << BZ.at(i).at(j).X * BZ.at(i).at(j).X + BZ.at(i).at(j).Y * BZ.at(i).at(j).Y << endl;
 		}
 
 		cout << endl;
 	}
 }
+
+
+void cout_rect_grid_to_ps (vector <vector < GRID_CENTER> > rect_grid, ofstream& o, INPSET inset, double max_COUNT) {
+
+	o << "%!PS-Adobe-3.0 EPSF-3.0" << endl;
+	o << "%%BoundingBox:  0 0 440 440" << endl;
+
+	o << "  220.0 220.0 200.0 0.0 360.0 arc stroke"	<< endl;
+
+	size_t cell_number = rect_grid.at(0).size();
+
+	for (size_t j = 0; j < cell_number - 1; j++) {
+
+		for (size_t i = 0; i < cell_number - 1; i++) {
+
+			double AX = rect_grid.at(j + 1).at(i + 0).CENTER.X;
+			double BX = rect_grid.at(j + 1).at(i + 1).CENTER.X;
+			double CX = rect_grid.at(j + 0).at(i + 1).CENTER.X;
+			double DX = rect_grid.at(j + 0).at(i + 0).CENTER.X;
+
+			double AY = rect_grid.at(j + 1).at(i + 0).CENTER.Y;
+			double BY = rect_grid.at(j + 1).at(i + 1).CENTER.Y;
+			double CY = rect_grid.at(j + 0).at(i + 1).CENTER.Y;
+			double DY = rect_grid.at(j + 0).at(i + 0).CENTER.Y;
+
+			double AW = rect_grid.at(j + 1).at(i + 0).COUNT;
+			double BW = rect_grid.at(j + 1).at(i + 1).COUNT;
+			double CW = rect_grid.at(j + 0).at(i + 1).COUNT;
+			double DW = rect_grid.at(j + 0).at(i + 0).COUNT;
+
+			double COUNT = 30.0 * (AW + BW + CW + DW) / (4.0 * max_COUNT);
+
+			inset.grayscale = "N";
+
+			VCTR COLOR = generate_stress_colors(COUNT, inset);
+
+			if (COUNT > 0.01) {
+
+				o
+				<< " " << AX * 200.0 + 220.0 << " " << AY * 200.0 + 220.0 << " moveto"
+				<< " " << BX * 200.0 + 220.0 << " " << BY * 200.0 + 220.0 << " lineto"
+				<< " " << CX * 200.0 + 220.0 << " " << CY * 200.0 + 220.0 << " lineto"
+				<< " " << DX * 200.0 + 220.0 << " " << DY * 200.0 + 220.0 << " lineto"
+
+				<< " " << COLOR.X << " " << COLOR.Y << " " << COLOR.Z
+
+				<< " setrgbcolor fill stroke" << endl;
+			}
+		}
+
+		cout << endl;
+	}
+}
+
+
+
