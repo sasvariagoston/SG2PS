@@ -340,7 +340,7 @@ vector < vector <string> > return_virtual () {
 
 	buf2.push_back ("Y");
 	buf2.push_back ("  - Virtual symmetrical striae set..............: use");
-	buf2.push_back ("    - or use virtual symmetric striae set...................[Y]?  ");
+	buf2.push_back ("    - or use virtual symmetric striae set...................[y]?  ");
 	out.push_back(buf2);
 
 	return out;
@@ -364,7 +364,7 @@ vector < vector <string> > return_idealmovement () {
 
 	buf2.push_back ("Y");
 	buf2.push_back ("  - Ideal slickenside movement..................: display");
-	buf2.push_back ("    - or display............................................[Y]?  ");
+	buf2.push_back ("    - or display............................................[y]?  ");
 	out.push_back(buf2);
 
 	return out;
@@ -380,22 +380,11 @@ vector < vector <string> > return_stressangle () {
 	out.push_back (buf2);
 	buf2.clear();
 
-	/*
-	buf2.push_back ("999");
-	buf2.push_back ("  - Angle in degs between s1 and fault plane....: ");
-	buf2.push_back (" angle");
-	buf2.push_back ("    - 10 to 80 degrees.................................[10..80]?  ");
-	buf2.push_back ("");
-	buf2.push_back ("10");
-	buf2.push_back ("80");
-	out.push_back(buf2);
-	*/
-
 	buf2.push_back ("999");
 	buf2.push_back ("10");
 	buf2.push_back ("80");
 	buf2.push_back ("  - Angle in degs between s1 and fault plane....: ");
-	buf2.push_back (" angle");
+	buf2.push_back (" degree(s)");
 	buf2.push_back ("    - 10 to 80 degrees.................................[10..80]?  ");
 	buf2.push_back ("");
 	out.push_back(buf2);
@@ -478,13 +467,40 @@ vector < vector <string> > return_rosetype () {
 	out.push_back(buf2);
 	buf2.clear();
 
-	buf2.push_back ("N");
+	buf2.push_back ("A");
 	buf2.push_back ("  - Rose plot type..............................: asymmetrical");
 	buf2.push_back ("    - or asymmetrical.......................................[a]?  ");
 	out.push_back(buf2);
 
 	return out;
 }
+
+/*
+ vector < vector <string> > return_rosedirection () {
+
+	vector < vector <string> > out;
+	vector  <string> buf2;
+
+	buf2.push_back("ROSEDIRECTION:");
+	buf2.push_back("  - Roses are indicating:");
+	out.push_back (buf2);
+	buf2.clear();
+
+	buf2.push_back ("S");
+	buf2.push_back ("  - Plot data on rose diagram as:...............: strikes");
+	buf2.push_back ("    - strike directions.....................................[S],  ");
+	out.push_back(buf2);
+	buf2.clear();
+
+	buf2.push_back ("D");
+	buf2.push_back ("  - Plot data on rose diagram as................: dips");
+	buf2.push_back ("    - dip directions........................................[d],  ");
+	out.push_back(buf2);
+
+	return out;
+}
+
+ */
 
 vector < vector <string> > return_rosebinning () {
 
@@ -541,13 +557,13 @@ vector < vector <string> > return_contouring () {
 
 	buf2.push_back ("S");
 	buf2.push_back ("  - Contour of input data.......................: Schmidt 1% method");
-	buf2.push_back ("    - Schmidt 1% method.....................................[N],  ");
+	buf2.push_back ("    - Schmidt 1% method.....................................[s],  ");
 	out.push_back(buf2);
 	buf2.clear();
 
 	buf2.push_back ("K");
 	buf2.push_back ("  - Contour of input data.......................: Kamb's (1959) method");
-	buf2.push_back ("    - Kamb's (1959) method...................................[k],  ");
+	buf2.push_back ("    - Kamb's (1959) method..................................[k],  ");
 	out.push_back(buf2);
 
 	return out;

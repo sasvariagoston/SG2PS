@@ -4,768 +4,303 @@
 
 #include <cstdlib> // TODO Instead of atof, a string_to_int function should be used in common.cpp
 #include <fstream>
+#include <iomanip>
 #include <iostream>
 
+#include "array_to_vector.hpp"
 #include "checksettingfilecontent.h"
 #include "exceptions.hpp"
+#include "generate_default_settings.hpp"
 #include "run_mode.h"
 
-using namespace std;
+namespace {
 
-bool settingfilecorrect (string settingfilename) {
+bool conv_has_failed;
 
+}
 
-	ifstream settingfile;
-	string filename = settingfilename + ".set";
-	settingfile.open (filename.c_str());
+bool has_settings_file_data (string settingfilename) {
 
-	bool settingfilecorrect = true;
-	string b, c;
+	ifstream inputfile (settingfilename.c_str());
 
-	if (settingfile.eof()) settingfilecorrect = false;
-	else  {
+	//cout << inputfile.eof() << endl;
 
-		getline (settingfile, b, '\t');
-		getline (settingfile, c);
-		b = capslock (b);
-		c = capslock (c);
-	}
-	if (!(((c == "R") || (c == "G")) && (b == "DATARULE:")))	settingfilecorrect = false;
+	//cout << inputfile.is_open() << endl;
 
-
-
-	if (settingfile.eof()) settingfilecorrect=false;
-	else  {
-
-		getline (settingfile, b, '\t');
-		getline (settingfile, c);
-		b = capslock (b);
-		c = capslock (c);
-	}
-	if (!(((c == "A") || (c == "H")) && (b == "PLOT:")))	settingfilecorrect=false;
-
-
-
-	if (settingfile.eof()) settingfilecorrect=false;
-	else  {
-
-		getline (settingfile, b, '\t');
-		getline (settingfile, c);
-		b = capslock (b);
-		c = capslock (c);
-	}
-	if (!(((c == "S") || (c == "W")) && (b == "PLOTTYPE:")))	settingfilecorrect = false;
-
-
-	if (settingfile.eof()) settingfilecorrect=false;
-	else  {
-
-		getline (settingfile, b, '\t');
-		getline (settingfile, c);
-		b = capslock (b);
-		c = capslock (c);
-	}
-
-	if (!(((c == "U")|| (c == "L")) && (b == "HEMISPHERE:"))) settingfilecorrect = false;
-
-
-	if (settingfile.eof()) settingfilecorrect=false;
-	else  {
-
-		getline (settingfile, b, '\t');
-		getline (settingfile, c);
-		b = capslock (b);
-		c = capslock (c);
-	}
-	if (!(((c == "B") || (c == "P") || (c == "A")) && (b == "TILTING:")))	settingfilecorrect = false;
-
-
-	if (settingfile.eof()) settingfilecorrect=false;
-	else  {
-
-		getline (settingfile, b, '\t');
-		getline (settingfile, c);
-		b = capslock (b);
-		c = capslock (c);
-	}
-	if (!(((c == "N") || (c == "Y")) && (b == "GROUP:")))	settingfilecorrect=false;
-
-
-	if (settingfile.eof()) settingfilecorrect = false;
-	else  {
-
-		getline (settingfile, b, '\t');
-		getline (settingfile, c);
-		b = capslock (b);
-		c = capslock (c);
-	}
-	if (!(((c == "N") || (c == "A") || (c == "2") || (c == "3") || (c == "4") || (c == "5") || (c == "6") || (c == "7") || (c == "8") || (c == "9")) && (b == "CLUSTERNUMBER:")))	settingfilecorrect=false;
-
-
-	if (settingfile.eof()) settingfilecorrect = false;
-	else  {
-
-		getline (settingfile, b, '\t');
-		getline (settingfile, c);
-		b = capslock (b);
-		c = capslock (c);
-	}
-	if (!(((c == "Y") || (c == "N")) && (b == "LABELING:"))) settingfilecorrect = false;
-
-
-	if (settingfile.eof()) settingfilecorrect = false;
-	else {
-		getline (settingfile, b, '\t');
-		getline (settingfile, c);
-		b = capslock (b);
-		c = capslock (c);
-	}
-	if (!(((c == "D") || (c == "A") || (c == "P") || (c == "M") || (c == "O") || (c == "S") || (c == "F") || (c == "N")) && (b == "INVERSION:"))) settingfilecorrect = false;
-
-
-	if (settingfile.eof()) settingfilecorrect = false;
-	else  {
-
-		getline (settingfile, b, '\t');
-		getline (settingfile, c);
-		b = capslock (b);
-		c = capslock (c);
-	}
-	if (!(((c == "Y") || (c == "N")) && (b == "VIRTUAL:"))) settingfilecorrect = false;
-
-
-	if (settingfile.eof()) settingfilecorrect = false;
-	else  {
-
-		getline (settingfile, b, '\t');
-		getline (settingfile, c);
-		b = capslock (b);
-		c = capslock (c);
-	}
-	if (!(((c == "Y") || (c == "N")) && (b == "IDEALMOVEMENT:"))) settingfilecorrect = false;
-
-
-	if (settingfile.eof()) settingfilecorrect=false;
-	else  {
-
-		getline (settingfile, b, '\t');
-		getline (settingfile, c);
-		b = capslock (b);
-	}
-	if ((atof(c.c_str()) < 10.0) || (atof(c.c_str()) > 80.0) || (b != "STRESSANGLE:")) settingfilecorrect=false;
-
-
-	if (settingfile.eof()) settingfilecorrect=false;
-	else  {
-
-		getline (settingfile, b, '\t');
-		getline (settingfile, c);
-		b = capslock (b);
-		c = capslock (c);
-	}
-	if (!(((c == "B")|| (c == "N")) && (b == "BINGHAM:")))	settingfilecorrect = false;
-
-
-	if (settingfile.eof()) settingfilecorrect=false;
-	else  {
-
-		getline (settingfile, b, '\t');
-		getline (settingfile, c);
-		b = capslock (b);
-
-	}
-	if (!((	(c == "0") || (c == "1") || (c == "2") ||
-			(c == "3") || (c == "4") || (c == "5") ||
-			(c == "6") || (c == "7") || (c == "8") ||
-			(c == "9") || (c == "0")) && (b == "LINEWIDTH:"))) settingfilecorrect = false;
-
-
-	if (settingfile.eof()) settingfilecorrect=false;
-	else  {
-
-		getline (settingfile, b, '\t');
-		getline (settingfile, c);
-		b = capslock (b);
-		c = capslock (c);
-	}
-	if (!(((c == "S") || (c == "A")) && (b == "ROSETYPE:"))) settingfilecorrect = false;
-
-
-
-	if (settingfile.eof()) settingfilecorrect=false;
-	else  {
-
-		getline (settingfile, b, '\t');
-		getline (settingfile, c);
-		b = capslock (b);
-		c = capslock (c);
-	}
-	if (!(((c == "A") || (c == "B") || (c == "C")|| (c == "D")) && (b == "ROSEBINNING:"))) settingfilecorrect = false;
-
-	settingfile.close();
-
-	if (!settingfilecorrect) {
-
-		if (is_GUI()) throw set_error();
-		else return false;
-	}
+	if (inputfile.eof() || !inputfile.is_open()) return false;
 
 	return true;
 }
 
-INPSET loadsettingsfromsettingfile (string settingfilename) {
+vector < vector <string> > read_settingsfile_to_vector (string settingfilename) {
 
-	INPSET settings;
-	string b, c;
+	//cout << settingfilename << endl;
 
-	ifstream settingfile;
-	string filename = settingfilename + ".set";
-	settingfile.open (filename.c_str());
+	//cout << "read_settingsfile_to_vector" << endl;
 
-	getline (settingfile, b, '\t');
-	getline (settingfile, c);
-	settings.datarule = capslock (c);
+	vector < vector <string> > SET;
 
-	getline (settingfile, b, '\t');
-	getline (settingfile, c);
-	settings.plot = capslock (c);
+	if (!has_settings_file_data (settingfilename)) return SET;
+	else {};
 
-	getline (settingfile, b, '\t');
-	getline (settingfile, c);
-	settings.plottype = capslock (c);
+//	cout << has_settings_file_data (settingfilename) << endl;
 
-	getline (settingfile, b, '\t');
-	getline (settingfile, c);
-	settings.hemisphere = capslock (c);
+	ifstream inputfile (settingfilename.c_str());
 
-	getline (settingfile, b, '\t');
-	getline (settingfile, c);
-	settings.tilting = capslock (c);
+	while (!inputfile.eof()) {
 
-	getline (settingfile, b, '\t');
-	getline (settingfile, c);
-	settings.group = capslock (c);
+		string key, value;
 
-	getline (settingfile, b, '\t');
-	getline (settingfile, c);
-	settings.clusternumber = capslock (c);
+		vector <string> buf;
 
-	getline (settingfile, b, '\t');
-	getline (settingfile, c);
-	settings.labeling = capslock (c);
+		getline(inputfile, key, '\t');
 
-	getline (settingfile, b, '\t');
-	getline (settingfile, c);
-	settings.inversion = capslock (c);
+		getline(inputfile, value);
 
-	getline (settingfile, b, '\t');
-	getline (settingfile, c);
-	settings.virt_striae = capslock (c);
+		if (!is_whitecharacter(key) && !is_whitecharacter(value)) {
 
-	getline (settingfile, b, '\t');
-	getline (settingfile, c);
-	settings.idealmovement = capslock (c);
+			buf.push_back(key);
 
-	getline (settingfile, b, '\t');
-	getline (settingfile, settings.anglest);
-	settings.angle = atof(settings.anglest.c_str());
+			buf.push_back(value);
 
-	getline (settingfile, b, '\t');
-	getline (settingfile, c);
-	settings.fracture = capslock (c);
+			SET.push_back(buf);
+		}
+		else {}
+	}
 
-	getline (settingfile, b, '\t');
-	getline (settingfile, settings.linewidthst);
+	//cout << "endl_read_settingsfile_to_vector" << endl;
 
-	bool failed;
-
-	if (settings.linewidthst == "1") settings.linewidth = 1.0;
-	else settings.linewidth = string_to_double (settings.linewidthst, failed) / 10.0;
-
-	getline (settingfile, b, '\t');
-	getline (settingfile, c);
-	settings.rosetype = capslock (c);
-
-	getline (settingfile, b, '\t');
-	getline (settingfile, c);
-	settings.rosebinning = capslock (c);
-
-	//needs to be deleted
-
-	settings.clustering_RUP_ANG = "N";
-
-	settings.grayscale = "Y";
-
-	settings.contouring = "S";
-
-	settingfile.close();
-
-	return settings;
+	return SET;
 }
 
-void printsettingsonscreen (INPSET settings) {
+bool is_whitecharacter (string in) {
 
-	if (settings.datarule=="R")			cout<<"  - Data convention ............................: right-hand rule"					<< endl;
-	if (settings.datarule=="G")			cout<<"  - Data convention.............................: german dipdir-dip"					<< endl;
+	size_t length = in.size();
 
-	if (settings.plot=="H")				cout<<"  - Plot type ..................................: Hoeppener plot"					<< endl;
-	if (settings.plot=="A")				cout<<"  - Plot type ..................................: Angelier plot"						<< endl;
+	if (length == 0) return true;
+	else {};
 
-	if (settings.plottype=="S")			cout<<"  - Net type....................................: Schmidt-net"						<< endl;
-	if (settings.plottype=="W")			cout<<"  - Net type....................................: Wulff-net"							<< endl;
+	bool is_character_white = false;
 
-	if (settings.hemisphere=="U")		cout<<"  - Hemisphere..................................: upper hemisphere"					<< endl;
-	if (settings.hemisphere=="L")		cout<<"  - Hemisphere..................................: lower hemisphere"					<< endl;
+	for (size_t i = 0; i < length; i++) if (in.at(i) == '\t' || in.at(i) == '\n' ) is_character_white = true;
 
-	if (settings.tilting=="B")			cout<<"  - Tilting by..................................: bedding"							<< endl;
-	if (settings.tilting=="P")			cout<<"  - Tilting by..................................: paleo-north direction"				<< endl;
-	if (settings.tilting=="A")			cout<<"  - Tilting by..................................: bedding and paleo-north"			<< endl;
-
-	if (settings.group=="Y")			cout<<"  - Groupcode...................................: use"								<< endl;
-	if (settings.group=="N")			cout<<"  - Groupcode...................................: do not use"						<< endl;
-
-	if (settings.clusternumber=="N")	cout<<"  - Clustering..................................: do not use"						<< endl;
-	if (settings.clusternumber=="A")	cout<<"  - Clustering..................................: iteration for ideal cluster number"<< endl;
-	if (settings.clusternumber=="2")	cout<<"  - Clustering..................................: 2 clusters"						<< endl;
-	if (settings.clusternumber=="3")	cout<<"  - Clustering..................................: 3 clusters"						<< endl;
-	if (settings.clusternumber=="4")	cout<<"  - Clustering..................................: 4 clusters"						<< endl;
-	if (settings.clusternumber=="5")	cout<<"  - Clustering..................................: 5 clusters"						<< endl;
-	if (settings.clusternumber=="6")	cout<<"  - Clustering..................................: 6 clusters"						<< endl;
-	if (settings.clusternumber=="7")	cout<<"  - Clustering..................................: 7 clusters"						<< endl;
-	if (settings.clusternumber=="8")	cout<<"  - Clustering..................................: 8 clusters"						<< endl;
-	if (settings.clusternumber=="9")	cout<<"  - Clustering..................................: 9 clusters"						<< endl;
-
-	if (settings.labeling == "Y")		cout<<"  - Labeling....................................: yes"								<< endl;
-	if (settings.labeling == "N")		cout<<"  - Labeling....................................: do no label"						<< endl;
-
-	if (settings.inversion == "D")		cout<<"  - Inversion...................................: using Sprang (1972) method"		<< endl;
-	if (settings.inversion == "A")		cout<<"  - Inversion...................................: using Angelier's method"			<< endl;
-	if (settings.inversion == "P")		cout<<"  - Inversion...................................: using Turner's (1953) method"		<< endl;
-	if (settings.inversion == "S")		cout<<"  - Inversion...................................: using Shan et al's (2003) method"	<< endl;
-	if (settings.inversion == "F")		cout<<"  - Inversion...................................: using Fry's (1999) method"			<< endl;
-	if (settings.inversion == "O")		cout<<"  - Inversion...................................: using Mostafa's (2005) method"		<< endl;
-	if (settings.inversion == "M")		cout<<"  - Inversion...................................: using using Michael (1984) method"	<< endl;
-	if (settings.inversion == "N")		cout<<"  - Inversion...................................: none"								<< endl;
-
-	if (settings.virt_striae == "Y")	cout<<"  - Virtual symmetrical striae set..............: use" 								<< endl;
-	if (settings.virt_striae == "N")	cout<<"  - Virtual symmetrical striae set..............: do not use"						<< endl;
-
-	if (settings.idealmovement == "Y")		cout<<"  - Ideal slickenside movement..................: display" 							<< endl;
-	if (settings.idealmovement == "N")		cout<<"  - Ideal slickenside movement..................: do not display"					<< endl;
-
-	//new
-	if (settings.clustering_RUP_ANG == "N")	cout<<"  - Clustering using RUP / ANG values.......    : do clustering" 					<< endl;
-	if (settings.clustering_RUP_ANG == "A")	cout<<"  - Clustering using RUP / ANG values.......    : use ANG values"					<< endl;
-	if (settings.clustering_RUP_ANG == "R")	cout<<"  - Clustering using RUP / ANG values.......    : use RUP values"					<< endl;
-
-	cout<<"  - Angle between s1 and fault plane (if needed): " << settings.angle << " degs" 	<<endl;
-
-	if (settings.fracture == "B")		cout<<"  - Fracture statistics.........................: Bingham statistics"				<< endl;
-	if (settings.fracture == "N")		cout<<"  - Fracture statistics.........................: no statistics"						<< endl;
-
-	cout<<"  - Linewidth:..................................: "<<settings.linewidth<<" points"	<<endl;
-
-	if (settings.rosetype=="S")		cout<<"  - Rose plot type..............................: symmetrical"							<< endl;
-	if (settings.rosetype=="A")		cout<<"  - Rose plot type..............................: asymmetrical"							<< endl;
-
-	if (settings.rosebinning=="A")	cout<<"  - Data bin size on rose plot..................:  2.5 deg"								<< endl;
-	if (settings.rosebinning=="B")	cout<<"  - Data bin size on rose plot..................:  5.0 deg"								<< endl;
-	if (settings.rosebinning=="C")	cout<<"  - Data bin size on rose plot..................: 10.0 deg"								<< endl;
-	if (settings.rosebinning=="D")	cout<<"  - Data bin size on rose plot..................: 22.5 deg"								<< endl;
-
-	//new
-	if (settings.contouring == "N")	cout<<"  - Contour of input data.......................: no contouring"							<< endl;
-	if (settings.contouring == "S")	cout<<"  - Contour of input data.......................: Schmidt 1% method"						<< endl;
-	if (settings.contouring == "K")	cout<<"  - Contour of input data.......................: Kamb's method"							<< endl;
+	return is_character_white;
 }
 
-INPSET inputsettings_manually (string projectname) {
+bool fit_of_records (vector  <string> SETrecord, size_t j, size_t k) {
 
-	string c;
-	INPSET inputsettingsonscreen;
+	vector < vector < vector <string> > > DEF = return_default_settings_database ();
 
-	cout << endl << "INPUT USER SETTINGS - to exit: press [X]" << endl;
+	string actual_key = SETrecord.at(0);
+	string list_key = DEF.at(j).at(0).at(0);
 
-	do {
-		cout << "  - Data convention:" << endl;
-		cout << "    - german with dip direction.............................[G],  " << endl;
-		cout << "    - or right-hand rule with strike........................[r]?  " << flush;
+	if (actual_key != list_key) return false;
 
-		cin >> c;
-		c = capslock(c);
-		if (c == "X") throw exit_requested();
+	string actual_value = capslock (SETrecord.at(1));
+	string list_value = capslock (DEF.at(j).at(k).at(0));
+
+	if (actual_key == "LINEWIDTH:" || actual_key == "STRESSANGLE:") {
+
+		double min_value = string_to_double (DEF.at(j).at(k).at(1), conv_has_failed);
+		double max_value = string_to_double (DEF.at(j).at(k).at(2), conv_has_failed);
+
+		double value = string_to_double (actual_value, conv_has_failed);
+
+		//if (actual_key == "LINEWIDTH:") value = value / 10.0;
+
+		//cout << "FIT_OF_RECORDS" << endl;
+		//cout << actual_value << " converted to " << value << " and the conversion " << flush;
+		//if (!conv_has_failed) cout << " is successfull" << endl;
+		//else cout << " has failed" << endl;
+
+		if (is_in_range(min_value, max_value, value) && !conv_has_failed) return true;
+		else return false;
 	}
-	while (!((c == "G") || (c == "R")));
-	inputsettingsonscreen.datarule = c;
 
+	else if (actual_key == "CLUSTERNUMBER:") {
 
-	do {
-		cout << "  - Plot type:" << endl;
-		cout << "    - Angelier plot with planes.............................[A],  " << endl;
-		cout << "    - or Hoeppener plot with poles..........................[h]?  " << flush;
+		if (actual_value == "A" || actual_value == "N") {
 
-		cin >> c;
-		c = capslock(c);
-		if (c == "X") throw exit_requested();
+			if (actual_value == list_value) return true;
+			else return false;
+		}
+		else {
+
+			double min_value = string_to_double (DEF.at(j).at(k).at(1), conv_has_failed);
+			double max_value = string_to_double (DEF.at(j).at(k).at(2), conv_has_failed);
+
+			double value = string_to_double (actual_value, conv_has_failed);
+
+			//cout << "FIT_OF_RECORDS" << endl;
+			//cout << actual_value << " converted to " << value << " and the conversion is " << flush;
+			//if (!conv_has_failed) cout << " is successfull" << endl;
+			//else cout << " has failed" << endl;
+
+			if (is_in_range(min_value, max_value, value) && !conv_has_failed) return true;
+			else return false;
+		}
 	}
-	while (!((c == "A") || (c == "H")));
-	inputsettingsonscreen.plot = c;
+	else {
 
-
-
-	do {
-		cout << "  - Net type:" << endl;
-		cout << "    - equal are Schmidt-net.................................[S],  " << endl;
-		cout << "    - or equal angle Wulff-net..............................[w]?  " << flush;
-		cin >> c;
-		c = capslock(c);
-		if (c == "X") throw exit_requested();
+		if (actual_value == list_value) return true;
+		else return false;
 	}
-	while (!((c == "S") || (c == "W")));
-	inputsettingsonscreen.plottype = c;
-
-
-	do {
-		cout << "  - Hemisphere:" << endl;
-		cout << "    - upper hemisphere......................................[u],  " << endl;
-		cout << "    - or lower hemisphere...................................[L]?  " << flush;
-
-		cin >> c;
-		c = capslock(c);
-		if (c == "X") throw exit_requested();
-	}
-	while (!((c == "L") || (c == "U")));
-	inputsettingsonscreen.hemisphere = c;
-
-
-	do {
-		cout << "  - Correction of measured data with:" << endl;
-		cout << "    - bedding...............................................[b],  " << endl;
-		cout << "    - paleo-north direction.................................[p],  " << endl;
-		cout << "    - or bedding and paleo-north direction..................[A]?  " << flush;
-
-		cin >> c;
-		c = capslock(c);
-		if (c == "X") throw exit_requested();
-	}
-	while (!((c == "B") || (c == "P") || (c == "A")));
-	inputsettingsonscreen.tilting = c;
-
-
-	do {
-		cout << "  - Using group codes:" << endl;
-		cout << "    - use and evaluate groups independently.................[Y],  " << endl;
-		cout << "    - or do not use and evaluate groups together............[n]?  " << flush;
-
-		cin >> c;
-		c = capslock(c);
-		if (c == "X") throw exit_requested();
-	}
-	while (!((c == "Y") || (c == "N")));
-	inputsettingsonscreen.group = c;
-
-
-	do {
-		cout << "  - Clustering:" << endl;
-		cout << "    - no clustering.........................................[N],  " << endl;
-		cout << "    - automatic cluster number..............................[a],  " << endl;
-		cout << "    - or 2..9 clusters...................................[2..9]?  " << flush;
-
-		cin >> c;
-		c = capslock(c);
-		if (c == "X") throw exit_requested();
-	}
-	while (!((c == "N") || (c == "A") || (c == "2") || (c == "3") || (c == "4") || (c == "5") || (c == "6") || (c == "7") || (c == "8") || (c == "9")));
-	inputsettingsonscreen.clusternumber = c;
-
-
-	do {
-		cout << "  - Labeling of stereonet:" << endl;
-		cout << "    - labeling of measured data using data ID...............[y],  " << endl;
-		cout << "    - or none...............................................[N]?  " << flush;
-
-		cin >> c;
-		c = capslock(c);
-		if (c == "X") throw exit_requested();
-	}
-	while (!((c == "Y") || (c == "N")));
-	inputsettingsonscreen.labeling = c;
-
-
-	do {
-		cout << "  - Inversion of slickenside data:" << endl;
-		cout << "    - pseudo-inversion using Sprang's (1972) NDA method.....[D],  " << endl;
-		cout << "    - pseudo-inversion using Turner's (1953) PTN method.....[p],  " << endl;
-		cout << "    - regression using Fry's (1999) method..................[f],  " << endl;
-		cout << "    - regression using Shan et al's (2003) method...........[s],  " << endl;
-		cout << "    - regression using Michael's (1984) method..............[m],  " << endl;
-		cout << "    - inversion using Angelier's (1984) method..............[a],  " << endl;
-	    cout << "    - inversion Mostafa's (2005) method.....................[o],  " << endl;
-		cout << "    - or none...............................................[n]?  " << flush;
-
-		cin >> c;
-		c = capslock(c);
-		if (c == "X") throw exit_requested();
-	}
-	while (!((c == "D") || (c == "A") || (c == "P") || (c == "N") || (c == "M") || (c == "O") || (c == "S") || (c == "F") ));
-	inputsettingsonscreen.inversion = c;
-
-
-	do {
-		cout << "  - Virtual symmetric striae set:" << endl;
-		cout << "    - use virtual symmetric striae set......................[Y],  " << endl;
-		cout << "    - or do not generate virtual symmetric set..............[n)],  " << flush;
-
-		cin >> c;
-		c = capslock(c);
-		if (c == "X") throw exit_requested();
-	}
-	while (!((c == "Y") || (c == "N")));
-	inputsettingsonscreen.virt_striae = c;
-
-
-	do {
-		cout << "  - Ideal movement display for slickensides:" << endl;
-		cout << "    - display...............................................[Y],  " << endl;
-		cout << "    - or do not display.....................................[n],  " << flush;
-
-		cin >> c;
-		c = capslock(c);
-		if (c == "X") throw exit_requested();
-	}
-	while (!((c == "Y") || (c == "N")));
-	inputsettingsonscreen.virt_striae = c;
-
-
-	do {
-		cout << "  - Angle between s1 and fault plane for pseudo-inversion: " << endl;
-		cout << "    - 10 to 80 degrees.................................[10..80]?  " << flush;
-
-		cin >> c;
-		if (c == "X") throw exit_requested();
-	}
-	while ((atof(c.c_str()) < 10.0) || (atof(c.c_str()) > 80.0));
-	inputsettingsonscreen.angle = atof(c.c_str());
-
-
-	do {
-		cout << "  - Fracture statistics:" << endl;
-		cout << "    - Bingham statistics for weight point computation.......[B],  " << endl;
-		cout << "    - or none...............................................[n]?  " << flush;
-
-		cin >> c;
-		c = capslock(c);
-		if (c == "X") throw exit_requested();
-	}
-	while (!((c == "B") || (c == "N")));
-	inputsettingsonscreen.fracture = c;
-
-
-	do {
-		cout << "  - Linewidth in points (1/72 inch):" << endl;
-		cout << "    - 0.1 to 1.0.............................[1...9, 0 for 1.0]?  " << flush;
-
-		cin >> c;
-		if (c == "X") throw exit_requested();
-	}
-	while (!(
-		  (c == "0") || (c == "1") || (c == "2") || (c == "3")|| (c == "4") ||
-		  (c == "5") || (c == "6") || (c == "7") || (c == "8")|| (c == "9") || (c == "0")
-		  ));
-	inputsettingsonscreen.linewidth = 0.1;
-
-	if (c == "2") inputsettingsonscreen.linewidth = 0.2;
-	if (c == "3") inputsettingsonscreen.linewidth = 0.3;
-	if (c == "4") inputsettingsonscreen.linewidth = 0.4;
-	if (c == "5") inputsettingsonscreen.linewidth = 0.5;
-	if (c == "6") inputsettingsonscreen.linewidth = 0.6;
-	if (c == "7") inputsettingsonscreen.linewidth = 0.7;
-	if (c == "8") inputsettingsonscreen.linewidth = 0.8;
-	if (c == "9") inputsettingsonscreen.linewidth = 0.9;
-	if (c == "0") inputsettingsonscreen.linewidth = 1.0;
-
-	inputsettingsonscreen.linewidthst = c;
-
-	do {
-		cout << "  - Rose plot for data sets:" << endl;
-		cout << "    - symmetrical...........................................[S],  " << endl;
-		cout << "    - or asymmetrical.......................................[a]?  " << flush;
-
-		cin >> c;
-		c = capslock(c);
-		if (c == "X") throw exit_requested();
-	}
-	while (!((c == "S") || (c == "A")));
-	inputsettingsonscreen.rosetype = c;
-
-
-	do {
-		cout << "  - Bin size on rose plot:" << endl;
-		cout << "    - 2.5 degrees...........................................[a],  " << endl;
-		cout << "    - 5.0 degrees...........................................[b],  " << endl;
-		cout << "    - 10.0 degrees..........................................[C],  " << endl;
-		cout << "    - or 22.5 degrees.......................................[d]?  " << flush;
-		cin >> c;
-		c = capslock(c);
-		if (c == "X") throw exit_requested();
-	}
-	while (!((c == "A") || (c == "B") || (c == "C") || (c == "D")));
-	inputsettingsonscreen.rosebinning = c;
-
-	cout << endl << endl;
-	cout << "NEW SETTINGS FOR '" << capslock (projectname) << "' PROJECT"<< endl;
-
-return inputsettingsonscreen;
-
 }
 
-bool outputsettingfile (INPSET outputsettingfile, string projectname) {
+bool is_setting_record_correct (vector <string> SETrecord) {
 
-	ofstream settingfile;
-	string filename = projectname + ".set";
-	settingfile.open (filename.c_str());
+	vector <vector <vector <string> > > DEF = return_default_settings_database ();
 
-	if ((settingfile.is_open())) {
+	for (size_t j = 0; j < DEF.size(); j++) {
+		for (size_t k = 1; k < DEF.at(j).size(); k++) {
 
-		settingfile << "DATARULE:" << '\t' << flush;
-		settingfile << outputsettingfile.datarule << endl;
-
-		settingfile << "PLOT:" << '\t' << flush;
-		settingfile << outputsettingfile.plot << endl;
-
-		settingfile << "PLOTTYPE:" << '\t' << flush;
-		settingfile << outputsettingfile.plottype << endl;
-
-		settingfile << "HEMISPHERE:" << '\t' << flush;
-		settingfile << outputsettingfile.hemisphere << endl;
-
-		settingfile << "TILTING:" << '\t' << flush;
-		settingfile << outputsettingfile.tilting << endl;
-
-		settingfile << "GROUP:" << '\t' << flush;
-		settingfile << outputsettingfile.group << endl;
-
-		settingfile << "CLUSTERNUMBER:" << '\t' << flush;
-		settingfile << outputsettingfile.clusternumber << endl;
-
-		settingfile << "LABELING:" << '\t' << flush;
-		settingfile << outputsettingfile.labeling << endl;
-
-		settingfile << "INVERSION:" << '\t' << flush;
-		settingfile << outputsettingfile.inversion << endl;
-
-		settingfile << "VIRTUAL:" << '\t' << flush;
-		settingfile << outputsettingfile.virt_striae << endl;
-
-		settingfile << "IDEALMOVEMENT:" << '\t' << flush;
-		settingfile << outputsettingfile.idealmovement << endl;
-
-		settingfile << "STRESSANGLE:" << '\t' << flush;
-		settingfile << outputsettingfile.angle << endl;
-
-		settingfile << "BINGHAM:" << '\t' << flush;
-		settingfile << outputsettingfile.fracture << endl;
-
-		settingfile << "LINEWIDTH:" << '\t' << flush;
-		settingfile << outputsettingfile.linewidthst << endl;
-
-		settingfile << "ROSETYPE:" << '\t' << flush;
-		settingfile << outputsettingfile.rosetype << endl;
-
-		settingfile << "ROSEBINNING:" << '\t' << flush;
-		settingfile << outputsettingfile.rosebinning << endl;
-		
-		return true;
+			if (fit_of_records (SETrecord, j, k)) return true;
+		}
 	}
 
 	return false;
 }
 
-INPSET input_hardcoded () {
+bool is_settings_file_correct (string settingfilename) {
 
-	INPSET input_hardcoded;
+	vector <vector <string> > SET = read_settingsfile_to_vector (settingfilename);
 
-	input_hardcoded.datarule		= "G";
-	input_hardcoded.plot			= "A";
-	input_hardcoded.plottype		= "S";
-	input_hardcoded.hemisphere		= "L";
-	input_hardcoded.tilting			= "A";
-	input_hardcoded.group			= "Y";
-	input_hardcoded.clusternumber	= "N";
-	input_hardcoded.labeling		= "N";
-	input_hardcoded.inversion		= "D";
-	input_hardcoded.virt_striae		= "N";
-	input_hardcoded.idealmovement	= "N";
-	input_hardcoded.angle			= 30.0;
-	input_hardcoded.fracture		= "B";
-	input_hardcoded.linewidth		= 0.6;
-	input_hardcoded.rosetype		= "S";
-	input_hardcoded.rosebinning		= "C";
-	input_hardcoded.filename		= "sg2ps.set";
+	if (SET.size() == 0) return false;
 
-	return input_hardcoded;
-}
+	for (size_t i = 0; i < SET.size(); i++) {
 
-INPSET decide_setting_status (string projectname) {
+		if (!is_setting_record_correct (SET.at(i))) {
 
-	INPSET currect_settings;
+			cout << i << " " << flush;
 
-	cout << endl << endl;
-	cout << "CHECKING OF SETTINGS OF '" <<  capslock(projectname) << "' PROJECT"<< endl;
+			cout << SET.at(i).at(0) << " " << flush;
+			cout << SET.at(i).at(1) << " " << flush;
 
-	if (settingfilecorrect (projectname)) {
-
-		cout << "  - Using '" << capslock (projectname) << ".SET' setting file." << endl;
-		currect_settings = loadsettingsfromsettingfile (projectname);
-	}
-
-	else {
-
-		if (settingfilecorrect ("sg2ps")) {
-
-			cout << "  - No project setting file, using 'SG2PS.SET' setting file." << endl;
-			currect_settings = loadsettingsfromsettingfile ("sg2ps");
+			cout << " IS INCORRECT."<< endl;
 		}
 
-		else {
-
-			cout << "  - No setting file present, hard coded settings were used." << endl;
-			currect_settings = input_hardcoded ();
-		}
+		if (!is_setting_record_correct (SET.at(i))) return false;
 	}
 
-	return currect_settings;
+	return true;
 }
 
-INPSET manage_settings_batch (string projectname) {
+vector <vector <string> > input_hardcoded () {
 
-	INPSET currect_settings = decide_setting_status (projectname);
+	vector < vector < vector <string> > > DEF = return_default_settings_database ();
 
-	printsettingsonscreen (currect_settings);
+	vector < vector <string> > OUT;
 
-	return currect_settings;
+	for (size_t i = 0; i < DEF.size(); i++) {
+
+		vector <string> buf;
+
+		buf.push_back(DEF.at(i).at(0).at(0));
+
+		if      (DEF.at(i).at(0).at(0) == "LINEWIDTH:")   buf.push_back("6");
+		else if (DEF.at(i).at(0).at(0) == "STRESSANGLE:") buf.push_back("30");
+		else buf.push_back(DEF.at(i).at(1).at(0));
+
+		OUT.push_back(buf);
+	}
+
+	return OUT;
 }
 
-INPSET manage_settings_nobatch (string projectname) {
+vector <vector <string> > apply_default (vector <vector <string> > SET) {
 
-	INPSET currect_settings = decide_setting_status (projectname);
+	vector <vector <vector <string> > > DEF = return_default_settings_database ();
 
-	string c;
+	vector <vector <string> > OUT;
 
-	do {
+	for (size_t i = 0; i < DEF.size(); i++) {
 
-		printsettingsonscreen (currect_settings);
+		string out_key   = DEF.at(i).at(0).at(0);
+		string out_value = DEF.at(i).at(1).at(0);
 
-		c = input_setting_decision ();
+		for (size_t j = 0; j < SET.size(); j++) if (SET.at(j).at(0) == out_key) out_value = SET.at(j).at(1);
 
-		if (c == "D") currect_settings = input_hardcoded ();
-		if (c == "N") currect_settings = inputsettings_manually (projectname);
+		vector <string> buf;
 
-	} while (!(c == "S"));
+		buf.push_back(out_key);
+		buf.push_back(out_value);
 
-	if (c != "S") outputsettingfile (currect_settings, projectname);
+		OUT.push_back(buf);
+	}
 
-	return currect_settings;
+	return OUT;
+}
+
+vector <vector <string> > settings_to_vector (INPSET inset) {
+
+	vector <vector <string> > out;
+
+	for (size_t i = 0; i < 19; i++) {
+
+		vector <string> rec;
+
+		string buf = "";
+
+		rec.push_back(buf);
+		rec.push_back(buf);
+
+		out.push_back(rec);
+	}
+
+	out.at( 0).at(0) = "DATARULE:";			out.at( 0).at(1) = inset.datarule;
+	out.at( 1).at(0) = "PLOT:";				out.at( 1).at(1) = inset.plot;
+	out.at( 2).at(0) = "PLOTTYPE:";			out.at( 2).at(1) = inset.plottype;
+	out.at( 3).at(0) = "HEMISPHERE:";		out.at( 3).at(1) = inset.hemisphere;
+	out.at( 4).at(0) = "TILTING:";			out.at( 4).at(1) = inset.tilting;
+	out.at( 5).at(0) = "GROUP:";			out.at( 5).at(1) = inset.group;
+	out.at( 6).at(0) = "CLUSTERNUMBER:";	out.at( 6).at(1) = inset.clusternumber;
+	out.at( 7).at(0) = "LABELING:";			out.at( 7).at(1) = inset.labeling;
+	out.at( 8).at(0) = "INVERSION:";		out.at( 8).at(1) = inset.inversion;
+	out.at( 9).at(0) = "RUP_CLUSTERING:";	out.at( 9).at(1) = inset.clustering_RUP_ANG;
+	out.at(10).at(0) = "VIRTUAL:";			out.at(10).at(1) = inset.virt_striae;
+	out.at(11).at(0) = "IDEALMOVEMENT:";	out.at(11).at(1) = inset.idealmovement;
+	out.at(12).at(0) = "STRESSANGLE:";		out.at(12).at(1) = double_to_string(inset.angle, 1); // double here
+	out.at(13).at(0) = "BINGHAM:";			out.at(13).at(1) = inset.fracture;
+	out.at(14).at(0) = "LINEWIDTH:";		out.at(14).at(1) = double_to_string(inset.linewidth, 1);// double here
+	out.at(15).at(0) = "ROSETYPE:";			out.at(15).at(1) = inset.rosetype;
+	out.at(16).at(0) = "ROSEBINNING:";		out.at(16).at(1) = inset.rosebinning;
+	out.at(17).at(0) = "CONTOURING:";		out.at(17).at(1) = inset.contouring;
+	out.at(18).at(0) = "GRAYSCALE:";		out.at(18).at(1) = inset.grayscale;
+
+	return out;
+}
+
+INPSET vector_to_settings (vector <vector <string> > SET) {
+
+	INPSET inset;
+
+	bool failed;
+
+	for (size_t i = 0; i < SET.size(); i++) {
+
+		if 		(SET.at(i).at(0) == "DATARULE:") 		inset.datarule 				= SET.at(i).at(1);
+		else if (SET.at(i).at(0) == "PLOT:")			inset.plot 					= SET.at(i).at(1);
+		else if (SET.at(i).at(0) == "PLOTTYPE:")		inset.plottype 				= SET.at(i).at(1);
+		else if (SET.at(i).at(0) == "HEMISPHERE:")		inset.hemisphere 			= SET.at(i).at(1);
+		else if (SET.at(i).at(0) == "TILTING:")			inset.tilting 				= SET.at(i).at(1);
+		else if (SET.at(i).at(0) == "GROUP:")			inset.group 				= SET.at(i).at(1);
+		else if (SET.at(i).at(0) == "CLUSTERNUMBER:")	inset.clusternumber 		= SET.at(i).at(1);
+		else if (SET.at(i).at(0) == "LABELING:")		inset.labeling 				= SET.at(i).at(1);
+		else if (SET.at(i).at(0) == "INVERSION:")		inset.inversion				= SET.at(i).at(1);
+		else if (SET.at(i).at(0) == "RUP_CLUSTERING:")	inset.clustering_RUP_ANG	= SET.at(i).at(1);
+		else if (SET.at(i).at(0) == "VIRTUAL:")			inset.virt_striae			= SET.at(i).at(1);
+		else if (SET.at(i).at(0) == "IDEALMOVEMENT:")	inset.idealmovement			= SET.at(i).at(1);
+		else if (SET.at(i).at(0) == "STRESSANGLE:")		inset.angle					= string_to_double(SET.at(i).at(1), failed);
+		else if (SET.at(i).at(0) == "BINGHAM:")			inset.fracture				= SET.at(i).at(1);
+		else if (SET.at(i).at(0) == "LINEWIDTH:")		inset.linewidth				= string_to_double(SET.at(i).at(1), failed);
+		else if (SET.at(i).at(0) == "ROSETYPE:")		inset.rosetype				= SET.at(i).at(1);
+		else if (SET.at(i).at(0) == "ROSEBINNING:")		inset.rosebinning			= SET.at(i).at(1);
+		else if (SET.at(i).at(0) == "CONTOURING:")		inset.contouring			= SET.at(i).at(1);
+		else if (SET.at(i).at(0) == "GRAYSCALE:")		inset.grayscale				= SET.at(i).at(1);
+		else {}
+	}
+
+	return inset;
 }
 
 string input_setting_decision () {
@@ -787,4 +322,255 @@ string input_setting_decision () {
 	}
 
 	return c;
+}
+
+vector <vector <string> > decide_setting_status (string projectname) {
+
+	//cout << "decide_setting_status" << endl;
+
+	cout << endl << endl;
+	cout << "CHECK SETTINGS OF '" <<  capslock(projectname) << "' PROJECT"<< endl;
+
+	if (is_settings_file_correct (projectname + ".set")) {
+
+		cout << "  - Using '" << capslock (projectname) << ".SET' setting file." << endl;
+
+		return read_settingsfile_to_vector (projectname + ".set");
+	}
+	else {
+
+		cout << " +++ +++ INCORRECT SETTINGDS FILE +++ +++" << endl;
+
+		if (is_settings_file_correct ("sg2ps.set")) {
+
+			cout << "  - No valid setting found, using 'SG2PS.SET' setting file." << endl;
+
+			return read_settingsfile_to_vector ("sg2ps.set");
+		}
+		else {
+
+			cout << "  - No valid setting found at all, uisng hard coded ones." << endl;
+
+			return input_hardcoded ();
+		}
+	}
+}
+
+void list_settings_options (vector <vector <vector <string> > > DEF, size_t k) {
+
+	//cout << DEF.at(k).at(0).at(1) << endl;
+
+	//cout << "list_settings_options" << endl;
+
+	bool is_clustering  = (DEF.at(k).at(0).at(0) == "CLUSTERNUMBER:");
+	bool is_linewidth   = (DEF.at(k).at(0).at(0) == "LINEWIDTH:");
+	bool is_stressangle = (DEF.at(k).at(0).at(0) == "STRESSANGLE:");
+
+	if (is_clustering) {
+
+		//cout << "is_clustering" << endl;
+
+		for (size_t i = 1; i < DEF.at(k).size() - 1; i++) cout << DEF.at(k).at(i).at(2) << endl;
+
+		cout << DEF.at(k).at(DEF.at(k).size() - 1).at(5) << endl;
+	}
+
+
+
+	else if (is_stressangle || is_linewidth) {
+
+		for (size_t i = 1; i < DEF.at(k).size(); i++) cout << DEF.at(k).at(i).at(5) << endl;
+	}
+
+	else {
+
+		for (size_t i = 1; i < DEF.at(k).size(); i++) cout << DEF.at(k).at(i).at(2) << endl;
+	}
+}
+
+vector <vector <string> > inputsettings_manually (string projectname) {
+
+	vector <vector <string> > OUT;
+
+	vector <vector <vector <string> > > DEF = return_default_settings_database ();
+
+	cout << endl << "INPUT USER SETTINGS - to exit: press [X]" << endl;
+
+	for (size_t i = 0; i < DEF.size(); i++) {
+
+		vector <string> buf;
+
+		do {
+
+			string c;
+
+			buf.clear();
+
+			list_settings_options (DEF, i);
+
+			cin >> c;
+
+			c = capslock(c);
+
+			if (c == "X") throw exit_requested();
+
+			buf.push_back(DEF.at(i).at(0).at(0));
+			buf.push_back(c);
+
+
+			//cout << is_setting_record_correct (buf) << endl;
+
+		} while (!is_setting_record_correct (buf));
+
+		OUT.push_back(buf);
+	}
+
+	cout << endl << endl;
+	cout << "NEW SETTINGS FOR '" << capslock (projectname) << "' PROJECT"<< endl;
+
+return OUT;
+
+}
+
+INPSET manage_settings_batch (string projectname) {
+
+	//cout << "manage_settings_batch" << endl;
+
+	vector <vector <string> > SET = decide_setting_status (projectname);
+
+	SET = apply_default(SET);
+
+	dump_actual_settings(SET);
+
+	//cout << "endl_manage_settings_batch" << endl;
+
+	return vector_to_settings(SET);
+}
+
+INPSET manage_settings_nobatch (string projectname) {
+
+	//cout << "manage_settings_nobatch" << endl;
+
+	vector <vector <string> > SET = decide_setting_status (projectname);
+
+	SET = apply_default(SET);
+
+	string c = "";
+
+	do {
+
+		SET = apply_default(SET);
+
+		dump_actual_settings(SET);
+
+		c = input_setting_decision ();
+
+		if (c == "D") SET = input_hardcoded ();
+		else if (c == "N") SET = inputsettings_manually (projectname);
+		else {}
+
+	} while (!(c == "S"));
+
+	//cout << "save settings" << endl;
+
+	outputsettingfile (SET, projectname);
+
+	//cout << "endl_manage_settings_nobatch" << endl;
+
+	return vector_to_settings(SET);
+}
+
+void outputsettingfile (vector <vector <string> > SET, string projectname) {
+
+	ofstream o;
+
+	o.open ((projectname + ".set").c_str());
+
+	for (size_t i = 0; i < SET.size(); i++) {
+
+		o << SET.at(i).at(0) << '\t' << SET.at(i).at(1) << endl;
+	}
+}
+
+void dump_actual_settings (vector <vector <string> >SET) {
+
+	//kiirataskor nem mukodik a double to string konverzio,
+	//es ezert a fit_of_recotrds parancs is lukra fut.
+
+	vector <vector <vector <string> > > DEF = return_default_settings_database ();
+
+	for (size_t i = 0; i < SET.size(); i++) {
+		for (size_t j = 0; j < DEF.size(); j++) {
+			for (size_t k = 1; k < DEF.at(j).size(); k++) {
+
+			//	cout << "i: " << i << "j: " << j << "k: " << k << endl;
+
+				if (fit_of_records (SET.at(i), j, k)) {
+
+					string actual_key = SET.at(i).at(0);
+					string actual_value = SET.at(i).at(1);
+
+					if (actual_key == "LINEWIDTH:") {
+
+						cout << DEF.at(j).at(k).at(3) << flush;
+
+						double LW = string_to_double(SET.at(i).at(1));
+						cout << fixed << setprecision (1) << LW / 10.0 << flush;
+						cout << DEF.at(j).at(k).at(4) << endl;
+					}
+
+					else if (actual_key == "STRESSANGLE:") {
+
+						cout << DEF.at(j).at(k).at(3) << flush;
+						cout << SET.at(i).at(1) << flush;
+						cout << DEF.at(j).at(k).at(4) << endl;
+					}
+
+					else if (actual_key == "CLUSTERNUMBER:") {
+
+						if (actual_value == "A" || actual_value == "N") cout << DEF.at(j).at(k).at(1) << endl;
+						else {
+
+							cout << DEF.at(j).at(k).at(3) << flush;
+							cout << SET.at(i).at(1) << flush;
+							cout << DEF.at(j).at(k).at(4) << endl;
+						}
+					}
+
+					else cout << DEF.at(j).at(k).at(1) << endl;
+				}
+			}
+		}
+	}
+}
+
+void dbg_cout_settings_vector (vector < vector <string> > IN) {
+
+	for (size_t i = 0; i < IN.size(); i++) {
+
+		cout << IN.at(i).at(0) << '\t' << IN.at(i).at(1) << endl;
+	}
+}
+
+void dbg_cout_inpset (INPSET inset) {
+
+	cout << "inset.datarule" << '\t' << inset.datarule << endl;
+	cout << "inset.plot" << '\t' << inset.plot << endl;
+	cout << "inset.plottype" << '\t' << inset.plottype << endl;
+	cout << "inset.hemisphere" << '\t' << inset.hemisphere << endl;
+	cout << "inset.tilting" << '\t' << inset.tilting << endl;
+	cout << "inset.group" << '\t' << inset.group << endl;
+	cout << "inset.clusternumber" << '\t' << inset.clusternumber << endl;
+	cout << "inset.labeling" << '\t' << inset.labeling << endl;
+	cout << "inset.inversion" << '\t' << inset.inversion << endl;
+	cout << "inset.clustering_RUP_ANG" << '\t' << inset.clustering_RUP_ANG << endl;
+	cout << "inset.virt_striae" << '\t' << inset.virt_striae << endl;
+	cout << "inset.idealmovement" << '\t' << inset.idealmovement << endl;
+	cout << "inset.angle" << '\t' << inset.angle << endl;
+	cout << "inset.fracture" << '\t' << inset.fracture << endl;
+	cout << "inset.linewidth" << '\t' << inset.linewidth << endl;
+	cout << "inset.rosetype" << '\t' << inset.rosetype << endl;
+	cout << "inset.rosebinning" << '\t' << inset.rosebinning << endl;
+	cout << "inset.contouring" << '\t' << inset.contouring << endl;
+	cout << "inset.grayscale" << '\t' << inset.grayscale << endl;
 }

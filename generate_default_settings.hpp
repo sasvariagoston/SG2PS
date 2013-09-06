@@ -26,6 +26,7 @@ vector < vector <string> > return_stressangle ();
 vector < vector <string> > return_bingham ();
 vector < vector <string> > return_linewidth ();
 vector < vector <string> > return_rosetype ();
+//vector < vector <string> > return_rosedirection ()
 vector < vector <string> > return_rosebinning ();
 vector < vector <string> > return_contouring ();
 vector < vector <string> > return_grayscale ();

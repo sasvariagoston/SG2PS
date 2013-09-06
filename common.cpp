@@ -69,6 +69,13 @@ const string int_to_string (int i) {
 	return os.str();
 }
 
+const string double_to_string(double in, size_t precision) {
+
+	ostringstream os;
+	os << setprecision (precision) << in << flush;
+	return os.str();
+}
+
 const string char_to_string (char i) {
 
 	ostringstream os;
