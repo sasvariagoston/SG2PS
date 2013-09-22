@@ -50,6 +50,7 @@ struct INPSET  {
 	string rosebinning;
 	string filename;
 	string grayscale;
+	string rosedirection;
 
 	string clustering_RUP_ANG;
 	string contouring;

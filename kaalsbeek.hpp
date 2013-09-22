@@ -5,13 +5,21 @@
 #ifndef KAALSBEEK_HPP_
 #define KAALSBEEK_HPP_
 
+#include <vector>
+
+#include "structs.h"
+
 using namespace std;
 
 vector <VCTR> generate_arc (size_t SEG_CNT, size_t ARC_CNT);
 
 vector <vector <VCTR> > generate_segment (size_t SEG_CNT);
 
-vector <TRIANGLE>  generate_net (vector <GDB> inGDB, INPSET inset);
+vector <vector <vector <VCTR> > > generate_net ();
+
+vector <TRIANGLE>  generate_net_count (vector <GDB> inGDB, vector <vector <vector <VCTR> > > NET, INPSET inset);
+
+//vector <TRIANGLE>  generate_net (vector <GDB> inGDB, INPSET inset);
 
 vector <GRID_CENTER> generate_triangle_center (vector <TRIANGLE> net);
 

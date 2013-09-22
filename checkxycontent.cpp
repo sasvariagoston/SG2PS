@@ -7,6 +7,7 @@
 #include <iterator>
 #include <map>
 
+#include "allowed_keys.hpp"
 #include "checkxycontent.h"
 #include "checkrgffilecontent.h" // TODO XY related functions in checkrgffilecontent.h
 #include "run_mode.h"

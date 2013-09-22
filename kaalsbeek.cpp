@@ -10,7 +10,6 @@
 
 #include "common.h"
 #include "kaalsbeek.hpp"
-#include "structs.h"
 
 using namespace std;
 
@@ -59,19 +58,37 @@ vector <vector <VCTR> > generate_segment (size_t SEG_CNT) {
 	return out;
 }
 
-vector <TRIANGLE>  generate_net (vector <GDB> inGDB, INPSET inset) {
+vector <vector <vector <VCTR> > > generate_net () {
+
+	vector <vector <vector <VCTR> > > NET;
+
+	for (size_t seg_cnt = 0; seg_cnt < 6; seg_cnt++) {
+
+		vector <vector <VCTR> > buf;
+
+		buf = generate_segment(seg_cnt);
+
+		NET.push_back(buf);
+	}
+
+	return NET;
+}
+
+vector <TRIANGLE>  generate_net_count (vector <GDB> inGDB, vector <vector <vector <VCTR> > > NET, INPSET inset) {
 
 	vector <vector <VCTR> > buf;
-	vector <vector <vector <VCTR> > > net;
+	//vector <vector <vector <VCTR> > > net;
 
+	/*
 	for (size_t seg_cnt = 0; seg_cnt < 6; seg_cnt++) {
 
 		buf = generate_segment(seg_cnt);
 
 		net.push_back(buf);
 	}
+	 */
 
-	vector <TRIANGLE> TRI = generate_triangle (net, inset);
+	vector <TRIANGLE> TRI = generate_triangle (NET, inset);
 
 	TRI = return_count_in_net (inGDB, TRI);
 

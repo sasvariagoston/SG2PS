@@ -10,26 +10,9 @@
 
 using namespace std;
 
-vector < vector <string> > return_dataconvention ();
-vector < vector <string> > return_plot ();
-vector < vector <string> > return_plottype ();
-vector < vector <string> > return_hemisphere ();
-vector < vector <string> > return_tilting ();
-vector < vector <string> > return_group ();
-vector < vector <string> > return_clusternumber ();
-vector < vector <string> > return_labeling ();
-vector < vector <string> > return_inversion ();
-vector < vector <string> > return_RUP_clustering ();
-vector < vector <string> > return_virtual ();
-vector < vector <string> > return_idealmovement ();
-vector < vector <string> > return_stressangle ();
-vector < vector <string> > return_bingham ();
-vector < vector <string> > return_linewidth ();
-vector < vector <string> > return_rosetype ();
-//vector < vector <string> > return_rosedirection ()
-vector < vector <string> > return_rosebinning ();
-vector < vector <string> > return_contouring ();
-vector < vector <string> > return_grayscale ();
+void pushbach_settings_item (vector < vector <string> >& defitem, string key, string output);
+void pushbach_settings_option (vector < vector <string> >& defitem, string value, string opt1, string opt2);
+void pushbach_settings_range (vector < vector <string> >& defitem, string min, string max, string opt1, string opt2, string opt3, string dflt);
 
 vector <vector < vector <string> > > return_default_settings_database ();
 

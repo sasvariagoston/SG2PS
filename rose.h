@@ -6,18 +6,13 @@
 
 #include "common.h"
 
-ROSENUMBER compute_data_number_DIPDIR (vector <GDB> inGDB, double strike_begin, double strike_end);
-ROSENUMBER compute_data_number_DIP (vector <GDB> inGDB, double strike_begin, double strike_end);
+ROSENUMBER compute_data_number_DIPDIR_DIP (vector <GDB> inGDB, double strike_begin, double strike_end, string DIPDIR_DIP);
 
-void PS_draw_rose_PLANE (ofstream& o, INPSET inset, CENTER center, ROSENUMBER percent, double begin_angle, bool vertical);
-void PS_draw_rose_LINEATION (ofstream& o, INPSET inset, CENTER center, ROSENUMBER percent, double begin_angle, bool vertical);
-void PS_draw_rose_SC_STRIAE (ofstream& o, INPSET inset, CENTER center, ROSENUMBER percent, double begin_angle, bool vertical);
+void PS_draw_rose_DATATYPE (vector <GDB> inGBD, ofstream& o, INPSET inset, CENTER center, ROSENUMBER percent, double begin_angle, bool vertical);
 
 void PS_draw_rose_DIPDIR (vector <GDB> inGDB, ofstream& o, INPSET inset, CENTER center);
 void PS_draw_rose_DIP (vector <GDB> inGDB, ofstream& o, INPSET inset, CENTER center);
 
 void PS_draw_rose (vector <GDB> roseGDB, ofstream& o, INPSET inset, CENTER center, PAPER P, bool tilt);
-
-//void PS_draw_rose (vector <GDB> roseGDB, vector <GDB> tiltroseGDB, ofstream& o, INPSET inset, CENTER center, PAPER P);
 
 #endif

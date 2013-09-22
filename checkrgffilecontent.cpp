@@ -10,6 +10,7 @@
 #include <map>
 #include <stdexcept>
 
+#include "allowed_keys.hpp"
 #include "array_to_vector.hpp"
 #include "assertions.hpp"
 #include "checkrgffilecontent.h"
@@ -30,12 +31,13 @@ vector <vector <string> > orig_table;
 
 vector <vector <string> > rgf_to_check;
 
-const string groupcode_allowed [] = {
+/*const string groupcode_allowed [] = {
 		"A", "B", "C", "D", "E", "F", "G", "H", "I", "X",
 		""
 };
 
 const vector<string> allowed_groupcodes(from_array(groupcode_allowed));
+
 
 const string colorcode_allowed [] = {
 		"A", "B", "C", "D", "E", "F", "G", "H", "I", "J",
@@ -148,6 +150,8 @@ const string geodetic_allowed [] = {
 
 const vector<string> allowed_geodetics(from_array(geodetic_allowed));
 
+
+*/
 enum record_name {
 	DATA_ID,
 	GROUP,
@@ -626,10 +630,12 @@ bool is_PITCHcorrect (vector <string> in) {
 	);
 }
 
+/*
 bool is_allowed_groupcode(const string& groupcode) {
 
 	return contains(allowed_groupcodes, groupcode);
 }
+
 
 bool is_allowed_colorcode(const string& colorcode) {
 
@@ -745,6 +751,8 @@ bool is_allowed_geodetic (const string& geodetic) {
 	return contains(allowed_geodetics, geodetic);
 }
 
+
+
 bool is_double (const string& s) {
 
 	bool failed = true;
@@ -753,6 +761,8 @@ bool is_double (const string& s) {
 
 	return (!failed);
 }
+
+*/
 
 bool error_cout (vector <string> bad_records, string recordtype) {
 

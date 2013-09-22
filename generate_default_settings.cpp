@@ -10,612 +10,328 @@
 
 using namespace std;
 
-vector < vector < string > > return_dataconvention () {
+void pushbach_settings_item (vector  < vector <string> >& defitem, string key, string output) {
 
-	vector < vector <string> > out;
+	defitem.clear();
+
+	vector < vector <string> > buf;
 	vector  <string> buf2;
 
-	buf2.push_back("DATARULE:");
-	buf2.push_back("  - Data convention:");
-	out.push_back (buf2);
-	buf2.clear ();
+	buf2.push_back(key);
+	buf2.push_back(output);
 
-	buf2.push_back ("G");
-	buf2.push_back ("  - Data convention.............................: german dipdir-dip");
-	buf2.push_back ("    - german with dip direction.............................[G],  ");
-	out.push_back(buf2);
-	buf2.clear();
-
-	buf2.push_back ("R");
-	buf2.push_back ("  - Data convention ............................: right-hand rule");
-	buf2.push_back ("    - or right-hand rule with strike........................[r]?  ");
-	out.push_back(buf2);
-
-	return out;
+	defitem.push_back(buf2);
 }
 
-vector < vector <string> > return_plot () {
+void pushbach_settings_option (vector < vector <string> >& defitem, string value, string opt1, string opt2) {
 
-	vector < vector <string> > out;
+	vector < vector <string> > buf;
 	vector  <string> buf2;
 
-	buf2.push_back("PLOT:");
-	buf2.push_back("  - Plot type:");
-	out.push_back (buf2);
-	buf2.clear();
+	buf2.push_back(value);
+	buf2.push_back(opt1);
+	buf2.push_back(opt2);
 
-	buf2.push_back ("A");
-	buf2.push_back ("  - Plot type ..................................: Angelier plot");
-	buf2.push_back ("    - Angelier plot with planes.............................[A],  ");
-	out.push_back(buf2);
-	buf2.clear();
-
-	buf2.push_back ("H");
-	buf2.push_back ("  - Plot type ..................................: Hoeppener plot");
-	buf2.push_back ("    - or Hoeppener plot with poles..........................[h]?  ");
-	out.push_back(buf2);
-
-	return out;
+	defitem.push_back(buf2);
 }
 
-vector < vector <string> > return_plottype () {
+void pushbach_settings_range (vector <vector <string> >& defitem, string min, string max, string opt1, string opt2, string opt3, string dflt) {
 
-	vector < vector <string> > out;
+	vector < vector <string> > buf;
 	vector  <string> buf2;
 
-	buf2.push_back("PLOTTYPE:");
-	buf2.push_back("  - Net type:");
-	out.push_back (buf2);
-	buf2.clear();
+	buf2.push_back("999");
+	buf2.push_back(min);
+	buf2.push_back(max);
 
-	buf2.push_back ("S");
-	buf2.push_back ("  - Net type....................................: Schmidt-net");
-	buf2.push_back ("    - equal are Schmidt-net.................................[S],  ");
-	out.push_back(buf2);
-	buf2.clear();
+	buf2.push_back(opt1);
+	buf2.push_back(opt2);
+	buf2.push_back(opt3);
 
-	buf2.push_back ("W");
-	buf2.push_back ("  - Net type....................................: Wulff-net");
-	buf2.push_back ("    - or equal angle Wulff-net..............................[w]?  ");
-	out.push_back(buf2);
+	buf2.push_back(dflt);
 
-	return out;
-}
-
-vector < vector <string> > return_hemisphere () {
-
-	vector < vector <string> > out;
-	vector  <string> buf2;
-
-	buf2.push_back("HEMISPHERE:");
-	buf2.push_back("  - Hemisphere:");
-	out.push_back (buf2);
-	buf2.clear();
-
-	buf2.push_back ("L");
-	buf2.push_back ("  - Hemisphere..................................: lower hemisphere");
-	buf2.push_back ("    - lower hemisphere......................................[L],  ");
-	out.push_back(buf2);
-	buf2.clear();
-
-	buf2.push_back ("U");
-	buf2.push_back ("  - Hemisphere..................................: upper hemisphere");
-	buf2.push_back ("    - or upper hemisphere...................................[u]?  ");
-	out.push_back(buf2);
-
-	return out;
-}
-
-vector < vector <string> > return_tilting () {
-
-	vector < vector <string> > out;
-	vector  <string> buf2;
-
-	buf2.push_back("TILTING:");
-	buf2.push_back("  - Correction of measured data with:");
-	out.push_back (buf2);
-	buf2.clear();
-
-	buf2.push_back ("A");
-	buf2.push_back ("  - Tilting by..................................: bedding and paleo-north");
-	buf2.push_back ("    - bedding and paleo-north direction.....................[A],  ");
-	out.push_back(buf2);
-	buf2.clear();
-
-	buf2.push_back ("B");
-	buf2.push_back ("  - Tilting by..................................: bedding");
-	buf2.push_back ("    - bedding...............................................[b],  ");
-	out.push_back(buf2);
-	buf2.clear();
-
-	buf2.push_back ("P");
-	buf2.push_back ("  - Tilting by..................................: paleo-north direction");
-	buf2.push_back ("    - or paleo-north direction..............................[p]?  ");
-	out.push_back(buf2);
-
-	return out;
-}
-
-vector < vector <string> > return_group () {
-
-	vector < vector <string> > out;
-	vector  <string> buf2;
-
-	buf2.push_back("GROUP:");
-	buf2.push_back("  - Using group codes:");
-	out.push_back (buf2);
-	buf2.clear();
-
-	buf2.push_back ("Y");
-	buf2.push_back ("  - Groupcode...................................: use");
-	buf2.push_back ("    - use and evaluate groups independently.................[Y],  ");
-	out.push_back(buf2);
-	buf2.clear();
-
-	buf2.push_back ("N");
-	buf2.push_back ("  - Groupcode...................................: do not use");
-	buf2.push_back ("    - or do not use and evaluate groups together............[n]?  ");
-	out.push_back(buf2);
-
-	return out;
-}
-
-vector < vector <string> > return_clusternumber () {
-
-	vector < vector <string> > out;
-	vector  <string> buf2;
-
-	buf2.push_back("CLUSTERNUMBER:");
-	buf2.push_back("  - Clustering:");
-
-	out.push_back (buf2);
-	buf2.clear();
-
-	buf2.push_back ("N");
-	buf2.push_back ("  - Clustering..................................: do not use");
-	buf2.push_back ("    - no clustering.........................................[N],  ");
-	out.push_back(buf2);
-	buf2.clear();
-
-	buf2.push_back ("A");
-	buf2.push_back ("  - Clustering..................................: iteration for ideal cluster number");
-	buf2.push_back ("    - automatic cluster number..............................[a],  ");
-	out.push_back(buf2);
-	buf2.clear();
-
-	/*
-	buf2.push_back ("999");
-	buf2.push_back ("  - Clustering..................................: ");
-	buf2.push_back (" clusters");
-	buf2.push_back ("    - or 2..9 clusters...................................[2..9]?  ");
-	buf2.push_back ("");
-	buf2.push_back ("2");
-	buf2.push_back ("9");
-	out.push_back(buf2);
-	*/
-
-
-	buf2.push_back ("999");
-	buf2.push_back ("2");
-	buf2.push_back ("9");
-	buf2.push_back ("  - Clustering..................................: ");
-	buf2.push_back (" clusters");
-	buf2.push_back ("    - or 2..9 clusters...................................[2..9]?  ");
-	buf2.push_back ("");
-	out.push_back(buf2);
-
-
-	return out;
-}
-
-vector < vector <string> > return_labeling () {
-
-	vector < vector <string> > out;
-	vector  <string> buf2;
-
-	buf2.push_back("LABELING:");
-	buf2.push_back("  - Labeling of stereonet:");
-	out.push_back (buf2);
-	buf2.clear();
-
-	buf2.push_back ("N");
-	buf2.push_back ("  - Labeling....................................: do not label");
-	buf2.push_back ("    - none..................................................[N],  ");
-	out.push_back(buf2);
-	buf2.clear();
-
-	buf2.push_back ("Y");
-	buf2.push_back ("  - Labeling....................................: yes");
-	buf2.push_back ("    - or labeling of measured data using data DATA_ID.......[y]?  ");
-	out.push_back(buf2);
-
-	return out;
-}
-
-vector < vector <string> > return_inversion () {
-
-	vector < vector <string> > out;
-	vector  <string> buf2;
-
-	buf2.push_back("INVERSION:");
-	buf2.push_back("  - Inversion of slickenside data:");
-	out.push_back (buf2);
-	buf2.clear();
-
-	buf2.push_back ("D");
-	buf2.push_back ("  - Inversion...................................: using Sprang (1972) method");
-	buf2.push_back ("    - regression using Sprang's (1972) NDA method...........[D],  ");
-	out.push_back(buf2);
-	buf2.clear();
-
-	buf2.push_back ("P");
-	buf2.push_back ("  - Inversion...................................: using Turner's (1953) method");
-	buf2.push_back ("    - regression using Turner's (1953) PTN method...........[p],  ");
-	out.push_back(buf2);
-	buf2.clear();
-
-	buf2.push_back ("M");
-	buf2.push_back ("  - Inversion...................................: using using Michael's (1984) method");
-	buf2.push_back ("    - regression using Michael's (1984) method..............[m],  ");
-	out.push_back(buf2);
-	buf2.clear();
-
-	buf2.push_back ("S");
-	buf2.push_back ("  - Inversion...................................: using Shan et al's (2003) method");
-	buf2.push_back ("    - regression using Shan et al's (2003) method...........[s],  ");
-	out.push_back(buf2);
-	buf2.clear();
-
-	buf2.push_back ("F");
-	buf2.push_back ("  - Inversion...................................: using Fry's (1999) method");
-	buf2.push_back ("    - regression using Fry's (1999) method..................[f],  ");
-	out.push_back(buf2);
-	buf2.clear();
-
-	buf2.push_back ("A");
-	buf2.push_back ("  - Inversion...................................: using Angelier's (1990) method");
-	buf2.push_back ("    - inversion using Angelier's (1984) method..............[a],  ");
-	out.push_back(buf2);
-	buf2.clear();
-
-	buf2.push_back ("O");
-	buf2.push_back ("  - Inversion...................................: using Mostafa's (2005) method");
-	buf2.push_back ("    - inversion Mostafa's (2005) method.....................[o],  ");
-	out.push_back(buf2);
-	buf2.clear();
-
-	buf2.push_back ("N");
-	buf2.push_back ("  - Inversion...................................: none");
-	buf2.push_back ("    - or none...............................................[n]?  ");
-	out.push_back(buf2);
-
-	return out;
-}
-
-vector < vector <string> > return_RUP_clustering () {
-
-	vector < vector <string> > out;
-	vector  <string> buf2;
-
-	buf2.push_back("RUP_CLUSTERING:");
-	buf2.push_back("  - Clustering using stress estimators:");
-	out.push_back (buf2);
-	buf2.clear();
-
-	buf2.push_back ("N");
-	buf2.push_back ("  - Clustering using RUP / ANG values...........: no clustering");
-	buf2.push_back ("    - do not use stress estimators..........................[N],  ");
-	out.push_back(buf2);
-	buf2.clear();
-
-	buf2.push_back ("A");
-	buf2.push_back ("  - Clustering using RUP / ANG values...........: use ANG values");
-	buf2.push_back ("    - use angular misfit (ANG) for clustering...............[a],  ");
-	out.push_back(buf2);
-	buf2.clear();
-
-	buf2.push_back ("R");
-	buf2.push_back ("  - Clustering using RUP / ANG values...........: use RUP values");
-	buf2.push_back ("    - or relative upsilon (RUP) for clustering..............[r]?  ");
-	out.push_back(buf2);
-
-	return out;
-}
-
-vector < vector <string> > return_virtual () {
-
-	vector < vector <string> > out;
-	vector  <string> buf2;
-
-	buf2.push_back("VIRTUAL:");
-	buf2.push_back("  - Virtual symmetric striae set:");
-	out.push_back (buf2);
-	buf2.clear();
-
-	buf2.push_back ("N");
-	buf2.push_back ("  - Virtual symmetrical striae set..............: do not use");
-	buf2.push_back ("    - do not generate virtual symmetric set.................[N],  ");
-	out.push_back(buf2);
-	buf2.clear();
-
-	buf2.push_back ("Y");
-	buf2.push_back ("  - Virtual symmetrical striae set..............: use");
-	buf2.push_back ("    - or use virtual symmetric striae set...................[y]?  ");
-	out.push_back(buf2);
-
-	return out;
-}
-
-vector < vector <string> > return_idealmovement () {
-
-	vector < vector <string> > out;
-	vector  <string> buf2;
-
-	buf2.push_back("IDEALMOVEMENT:");
-	buf2.push_back("  - Ideal movement display for slickensides:");
-	out.push_back (buf2);
-	buf2.clear();
-
-	buf2.push_back ("N");
-	buf2.push_back ("  - Ideal slickenside movement..................: do not display");
-	buf2.push_back ("    - do not display........................................[N],  ");
-	out.push_back(buf2);
-	buf2.clear();
-
-	buf2.push_back ("Y");
-	buf2.push_back ("  - Ideal slickenside movement..................: display");
-	buf2.push_back ("    - or display............................................[y]?  ");
-	out.push_back(buf2);
-
-	return out;
-}
-
-vector < vector <string> > return_stressangle () {
-
-	vector < vector <string> > out;
-	vector  <string> buf2;
-
-	buf2.push_back("STRESSANGLE:");
-	buf2.push_back("  - Angle between s1 and fault plane for regression: ");
-	out.push_back (buf2);
-	buf2.clear();
-
-	buf2.push_back ("999");
-	buf2.push_back ("10");
-	buf2.push_back ("80");
-	buf2.push_back ("  - Angle in degs between s1 and fault plane....: ");
-	buf2.push_back (" degree(s)");
-	buf2.push_back ("    - 10 to 80 degrees.................................[10..80]?  ");
-	buf2.push_back ("");
-	out.push_back(buf2);
-
-	return out;
-}
-
-vector < vector <string> > return_bingham () {
-
-	vector < vector <string> > out;
-	vector  <string> buf2;
-
-	buf2.push_back("BINGHAM:");
-	buf2.push_back("  - Virtual symmetric striae set:");
-	out.push_back (buf2);
-	buf2.clear();
-
-	buf2.push_back ("B");
-	buf2.push_back ("  - Fracture statistics.........................: Bingham statistics");
-	buf2.push_back ("    - Bingham statistics for weight point calculation.......[B],  ");
-	out.push_back(buf2);
-	buf2.clear();
-
-	buf2.push_back ("N");
-	buf2.push_back ("  - Fracture statistics.........................: no statistics");
-	buf2.push_back ("    - or none...............................................[n]?  ");
-	out.push_back(buf2);
-
-	return out;
-}
-
-vector < vector <string> > return_linewidth () {
-
-	vector < vector <string> > out;
-	vector  <string> buf2;
-
-	buf2.push_back("LINEWIDTH:");
-	buf2.push_back("  - Linewidth in points (1/72 inch):");
-	out.push_back (buf2);
-	buf2.clear();
-
-	/*
-	buf2.push_back ("999");
-	buf2.push_back ("0");
-	buf2.push_back ("9");
-	buf2.push_back ("  - Linewidth...................................: ");
-	buf2.push_back (" points");
-	buf2.push_back ("    - 0.1 to 1.0.............................[1...9, 0 for 1.0]?  ");
-	buf2.push_back ("0.6");
-	out.push_back(buf2);
-	*/
-
-
-	buf2.push_back ("999");
-	buf2.push_back ("0");
-	buf2.push_back ("9");
-	buf2.push_back ("  - Linewidth...................................: ");
-	buf2.push_back (" points");
-	buf2.push_back ("    - 0.1 to 1.0.............................[1...9, 0 for 1.0]?  ");
-	buf2.push_back ("0.6");
-	out.push_back(buf2);
-
-
-	return out;
-}
-
-vector < vector <string> > return_rosetype () {
-
-	vector < vector <string> > out;
-	vector  <string> buf2;
-
-	buf2.push_back("ROSETYPE:");
-	buf2.push_back("  - Rose plot for data sets:");
-	out.push_back (buf2);
-	buf2.clear();
-
-	buf2.push_back ("S");
-	buf2.push_back ("  - Rose plot type..............................: symmetrical");
-	buf2.push_back ("    - symmetrical...........................................[S],  ");
-	out.push_back(buf2);
-	buf2.clear();
-
-	buf2.push_back ("A");
-	buf2.push_back ("  - Rose plot type..............................: asymmetrical");
-	buf2.push_back ("    - or asymmetrical.......................................[a]?  ");
-	out.push_back(buf2);
-
-	return out;
-}
-
-/*
- vector < vector <string> > return_rosedirection () {
-
-	vector < vector <string> > out;
-	vector  <string> buf2;
-
-	buf2.push_back("ROSEDIRECTION:");
-	buf2.push_back("  - Roses are indicating:");
-	out.push_back (buf2);
-	buf2.clear();
-
-	buf2.push_back ("S");
-	buf2.push_back ("  - Plot data on rose diagram as:...............: strikes");
-	buf2.push_back ("    - strike directions.....................................[S],  ");
-	out.push_back(buf2);
-	buf2.clear();
-
-	buf2.push_back ("D");
-	buf2.push_back ("  - Plot data on rose diagram as................: dips");
-	buf2.push_back ("    - dip directions........................................[d],  ");
-	out.push_back(buf2);
-
-	return out;
-}
-
- */
-
-vector < vector <string> > return_rosebinning () {
-
-	vector < vector <string> > out;
-	vector  <string> buf2;
-
-	buf2.push_back("ROSEBINNING:");
-	buf2.push_back("  - Bin size on rose plot:");
-	out.push_back (buf2);
-	buf2.clear();
-
-	buf2.push_back ("C");
-	buf2.push_back ("  - Data bin size on rose plot..................: 10.0 deg");
-	buf2.push_back ("    - 10.0 degrees..........................................[C],  ");
-	out.push_back(buf2);
-	buf2.clear();
-
-	buf2.push_back ("A");
-	buf2.push_back ("  - Data bin size on rose plot..................: 2.5 deg");
-	buf2.push_back ("    - 2.5 degrees...........................................[a],  ");
-	out.push_back(buf2);
-	buf2.clear();
-
-	buf2.push_back ("B");
-	buf2.push_back ("  - Data bin size on rose plot..................: 5.0 deg");
-	buf2.push_back ("    - 5.0 degrees...........................................[b],  ");
-	out.push_back(buf2);
-	buf2.clear();
-
-	buf2.push_back ("D");
-	buf2.push_back ("  - Data bin size on rose plot..................: 22.5 deg");
-	buf2.push_back ("    - 22.5 degrees..........................................[d],  ");
-	out.push_back(buf2);
-	buf2.clear();
-
-	return out;
-}
-
-vector < vector <string> > return_contouring () {
-
-	vector < vector <string> > out;
-	vector  <string> buf2;
-
-	buf2.push_back("CONTOURING:");
-	buf2.push_back("  - Data density contouring on stereonet:");
-	out.push_back (buf2);
-	buf2.clear();
-
-	buf2.push_back ("N");
-	buf2.push_back ("  - Contour of input data.......................: no contouring");
-	buf2.push_back ("    - no contouring.........................................[N],  ");
-	out.push_back(buf2);
-	buf2.clear();
-
-	buf2.push_back ("S");
-	buf2.push_back ("  - Contour of input data.......................: Schmidt 1% method");
-	buf2.push_back ("    - Schmidt 1% method.....................................[s],  ");
-	out.push_back(buf2);
-	buf2.clear();
-
-	buf2.push_back ("K");
-	buf2.push_back ("  - Contour of input data.......................: Kamb's (1959) method");
-	buf2.push_back ("    - Kamb's (1959) method..................................[k],  ");
-	out.push_back(buf2);
-
-	return out;
-}
-
-vector < vector <string> > return_grayscale () {
-
-	vector < vector <string> > out;
-	vector  <string> buf2;
-
-	buf2.push_back("GRAYSCALE:");
-	buf2.push_back("  - Color mode of the grapical output:");
-	out.push_back (buf2);
-	buf2.clear();
-
-	buf2.push_back ("N");
-	buf2.push_back ("  - Grayscale mode..............................: RGB coloured");
-	buf2.push_back ("    - coloured output.......................................[N],  ");
-	out.push_back(buf2);
-	buf2.clear();
-
-	buf2.push_back ("Y");
-	buf2.push_back ("  - Grayscale mode..............................: grayscale");
-	buf2.push_back ("    - grayscale output......................................[y],  ");
-	out.push_back(buf2);
-
-	return out;
+	defitem.push_back(buf2);
 }
 
 vector <vector < vector <string> > > return_default_settings_database () {
 
 	vector <vector < vector <string> > > DEF;
+	vector < vector <string> > defitem;
 
-	DEF.push_back(return_dataconvention ());
-	DEF.push_back(return_plot ());
-	DEF.push_back(return_plottype ());
-	DEF.push_back(return_hemisphere ());
-	DEF.push_back(return_tilting ());
-	DEF.push_back(return_group ());
-	DEF.push_back(return_clusternumber ());
-	DEF.push_back(return_labeling ());
-	DEF.push_back(return_inversion ());
-	DEF.push_back(return_RUP_clustering ());
-	DEF.push_back(return_virtual ());
-	DEF.push_back(return_idealmovement ());
-	DEF.push_back(return_stressangle ());
-	DEF.push_back(return_bingham ());
-	DEF.push_back(return_linewidth ());
-	DEF.push_back(return_rosetype ());
-	DEF.push_back(return_rosebinning ());
-	DEF.push_back(return_contouring ());
-	DEF.push_back(return_grayscale ());
+
+	pushbach_settings_item (defitem, "DATARULE:", "  - Data convention:");
+	pushbach_settings_option (defitem,
+			"G",
+			"  - Data convention.............................: german dipdir-dip",
+			"    - german with dip direction.............................[G],  ");
+	pushbach_settings_option (defitem,
+			"R",
+			"  - Data convention ............................: right-hand rule",
+			"    - or right-hand rule with strike........................[r]?  ");
+	DEF.push_back(defitem);
+
+	pushbach_settings_item (defitem, "PLOT:", "  - Plot type:");
+	pushbach_settings_option (defitem,
+			"A",
+			"  - Plot type ..................................: Angelier plot",
+			"    - Angelier plot with planes.............................[A],  ");
+	pushbach_settings_option (defitem,
+			"H",
+			"  - Plot type ..................................: Hoeppener plot",
+			"    - or Hoeppener plot with poles..........................[h]?  ");
+	DEF.push_back(defitem);
+
+	pushbach_settings_item (defitem, "PLOTTYPE:", "  - Net type:");
+	pushbach_settings_option (defitem,
+			"S",
+			"  - Net type....................................: Schmidt-net",
+			"    - equal are Schmidt-net.................................[S],  ");
+	pushbach_settings_option (defitem,
+			"W",
+			"  - Net type....................................: Wulff-net",
+			"    - or equal angle Wulff-net..............................[w]?  ");
+	DEF.push_back(defitem);
+
+	pushbach_settings_item (defitem,"HEMISPHERE:", "  - Hemisphere:");
+	pushbach_settings_option (defitem,
+			"L",
+			"  - Hemisphere..................................: lower hemisphere",
+			"    - lower hemisphere......................................[L],  ");
+	pushbach_settings_option (defitem,
+			"U",
+			"  - Hemisphere..................................: upper hemisphere",
+			"    - or upper hemisphere...................................[u]?  ");
+	DEF.push_back(defitem);
+
+	pushbach_settings_item (defitem, "TILTING:", "  - Correction of measured data with:");
+	pushbach_settings_option (defitem,
+			"A",
+			"  - Tilting by..................................: bedding and paleo-north",
+			"    - bedding and paleo-north direction.....................[A],  ");
+	pushbach_settings_option (defitem,
+			"B",
+			"  - Tilting by..................................: bedding",
+			"    - bedding...............................................[b],  ");
+	pushbach_settings_option (defitem,
+			"P",
+			"  - Tilting by..................................: paleo-north direction",
+			"    - or paleo-north direction..............................[p]?  ");
+	DEF.push_back(defitem);
+
+	pushbach_settings_item (defitem, "GROUP:", "  - Using group codes:");
+	pushbach_settings_option (defitem,
+			"Y",
+			"  - Groupcode...................................: use",
+			"    - use and evaluate groups independently.................[Y],  ");
+	pushbach_settings_option (defitem,
+			"N",
+			"  - Groupcode...................................: do not use",
+			"    - or do not use and evaluate groups together............[n]?  ");
+	DEF.push_back(defitem);
+
+	pushbach_settings_item (defitem, "CLUSTERNUMBER:", "  - Clustering:");
+	pushbach_settings_option (defitem,
+			"N",
+			"  - Clustering..................................: do not use",
+			"    - no clustering.........................................[N],  ");
+	pushbach_settings_option (defitem,
+			"A",
+			"  - Clustering..................................: iteration for ideal cluster number",
+			"    - automatic cluster number..............................[a],  ");
+	pushbach_settings_range (defitem,
+			"2", "9",
+			"  - Clustering..................................: ",
+			" clusters",
+			"    - or 2..9 clusters...................................[2..9]?  ",
+			"");
+	DEF.push_back(defitem);
+
+	pushbach_settings_item (defitem, "LABELING:", "  - Labeling of stereonet:");
+	pushbach_settings_option (defitem,
+			"N",
+			"  - Labeling....................................: do not label",
+			"    - none..................................................[N],  ");
+	pushbach_settings_option (defitem,
+			"Y",
+			"  - Labeling....................................: yes",
+			"    - or labeling of measured data using data DATA_ID.......[y]?  ");
+	DEF.push_back(defitem);
+
+	pushbach_settings_item (defitem, "INVERSION:", "  - Inversion of slickenside data:");
+	pushbach_settings_option (defitem,
+			"D",
+			"  - Inversion...................................: using Sprang (1972) method",
+			"    - regression using Sprang's (1972) NDA method...........[D],  ");
+	pushbach_settings_option (defitem,
+			"P","  - Inversion...................................: using Turner's (1953) method",
+			"    - regression using Turner's (1953) PTN method...........[p],  ");
+	pushbach_settings_option (defitem,
+			"M",
+			"  - Inversion...................................: using using Michael's (1984) method",
+			"    - regression using Michael's (1984) method..............[m],  ");
+	pushbach_settings_option (defitem,
+			"S",
+			"  - Inversion...................................: using Shan et al's (2003) method",
+			"    - regression using Shan et al's (2003) method...........[s],  ");
+	pushbach_settings_option (defitem,
+			"F",
+			"  - Inversion...................................: using Fry's (1999) method",
+			"    - regression using Fry's (1999) method..................[f],  ");
+	pushbach_settings_option (defitem,
+			"A",
+			"  - Inversion...................................: using Angelier's (1990) method",
+			"    - inversion using Angelier's (1984) method..............[a],  ");
+	pushbach_settings_option (defitem,
+			"O",
+			"  - Inversion...................................: using Mostafa's (2005) method",
+			"    - inversion Mostafa's (2005) method.....................[o],  ");
+	pushbach_settings_option (defitem,
+			"B",
+			"  - Inversion...................................: using brute force iteration",
+			"    - inversion using brute force iteration.................[b],  ");
+	pushbach_settings_option (defitem,
+			"N",
+			"  - Inversion...................................: none",
+			"    - or none...............................................[n]?  ");
+	DEF.push_back(defitem);
+
+	pushbach_settings_item (defitem, "RUP_CLUSTERING:", "  - Clustering using stress estimators:");
+	pushbach_settings_option (defitem,
+			"N",
+			"  - Clustering using RUP / ANG values...........: no clustering",
+			"    - do not use stress estimators..........................[N],  ");
+	pushbach_settings_option (defitem,
+			"A",
+			"  - Clustering using RUP / ANG values...........: use ANG values",
+			"    - use angular misfit (ANG) for clustering...............[a],  ");
+	pushbach_settings_option (defitem,
+			"R",
+			"  - Clustering using RUP / ANG values...........: use RUP values",
+			"    - or relative upsilon (RUP) for clustering..............[r]?  ");
+	DEF.push_back(defitem);
+
+	pushbach_settings_item (defitem, "VIRTUAL:", "  - Virtual symmetric striae set:");
+	pushbach_settings_option (defitem,
+			"N",
+			"  - Virtual symmetrical striae set..............: do not use",
+			"    - do not generate virtual symmetric set.................[N],  ");
+	pushbach_settings_option (defitem,
+			"Y",
+			"  - Virtual symmetrical striae set..............: use",
+			"    - or use virtual symmetric striae set...................[y]?  ");
+	DEF.push_back(defitem);
+
+	pushbach_settings_item (defitem, "IDEALMOVEMENT:", "  - Ideal movement display for slickensides:");
+	pushbach_settings_option (defitem,
+			"N",
+			"  - Ideal slickenside movement..................: do not display",
+			"    - do not display........................................[N],  ");
+	pushbach_settings_option (defitem,
+			"Y",
+			"  - Ideal slickenside movement..................: display",
+			"    - or display............................................[y]?  ");
+	DEF.push_back(defitem);
+
+	pushbach_settings_item (defitem, "STRESSANGLE:", "  - Angle between s1 and fault plane for regression: ");
+	pushbach_settings_range (defitem,
+			"10", "80",
+			"  - Angle in degs between s1 and fault plane....: ",
+			" degree(s)",
+			"    - 10 to 80 degrees.................................[10..80]?  ",
+			"");
+	DEF.push_back(defitem);
+
+	pushbach_settings_item (defitem, "BINGHAM:", "  - Virtual symmetric striae set:");
+	pushbach_settings_option (defitem,
+			"B",
+			"  - Fracture statistics.........................: Bingham statistics",
+			"    - Bingham statistics for weight point calculation.......[B],  ");
+	pushbach_settings_option (defitem,
+			"N",
+			"  - Fracture statistics.........................: no statistics",
+			"    - or none...............................................[n]?  ");
+	DEF.push_back(defitem);
+
+	pushbach_settings_item (defitem, "LINEWIDTH:", "  - Linewidth in points (1/72 inch):");
+	pushbach_settings_range (defitem,
+			"0", "10",
+			"  - Linewidth...................................: ",
+			" points",
+			"    - 0.1 to 1.0.............................[1...9, 0 for 1.0]?  ",
+			"0.6");
+	DEF.push_back(defitem);
+
+	pushbach_settings_item (defitem, "ROSETYPE:", "  - Rose plot for data sets:");
+	pushbach_settings_option (defitem,
+			"S",
+			"  - Rose plot type..............................: symmetrical",
+			"    - symmetrical...........................................[S],  ");
+	pushbach_settings_option (defitem,
+			"A",
+			"  - Rose plot type..............................: asymmetrical",
+			"    - or asymmetrical.......................................[a]?  ");
+	DEF.push_back(defitem);
+
+	pushbach_settings_item (defitem, "ROSEDIRECTION:", "  - Roses are indicating:");
+	pushbach_settings_option (defitem,
+			"S",
+			"  - Plot data on rose diagram as:...............: strikes",
+			"    - strike directions.....................................[S],  ");
+	pushbach_settings_option (defitem,
+			"D",
+			"  - Plot data on rose diagram as................: dips",
+			"    - dip directions........................................[d],  ");
+	DEF.push_back(defitem);
+
+	pushbach_settings_item (defitem, "ROSEBINNING:", "  - Bin size on rose plot:");
+	pushbach_settings_option (defitem,
+			"C",
+			"  - Data bin size on rose plot..................: 10.0 deg",
+			"    - 10.0 degrees..........................................[C],  ");
+	pushbach_settings_option (defitem,
+			"A",
+			"  - Data bin size on rose plot..................: 2.5 deg",
+			"    - 2.5 degrees...........................................[a],  ");
+	pushbach_settings_option (defitem,
+			"B",
+			"  - Data bin size on rose plot..................: 5.0 deg",
+			"    - 5.0 degrees...........................................[b],  ");
+	pushbach_settings_option (defitem,
+			"D",
+			"  - Data bin size on rose plot..................: 22.5 deg",
+			"    - 22.5 degrees..........................................[d],  ");
+	DEF.push_back(defitem);
+
+
+	pushbach_settings_item (defitem, "CONTOURING:", "  - Data density contouring on stereonet:");
+	pushbach_settings_option (defitem,
+			"N",
+			"  - Contour of input data.......................: no contouring",
+			"    - no contouring.........................................[N],  ");
+	pushbach_settings_option (defitem,
+			"S",
+			"  - Contour of input data.......................: Schmidt 1% method",
+			"    - Schmidt 1% method.....................................[s],  ");
+	pushbach_settings_option (defitem,
+			"K",
+			"  - Contour of input data.......................: Kamb's (1959) method",
+			"    - Kamb's (1959) method..................................[k],  ");
+	DEF.push_back(defitem);
+
+	pushbach_settings_item (defitem, "GRAYSCALE:", "  - Color mode of the grapical output:");
+	pushbach_settings_option (defitem,
+			"N",
+			"  - Grayscale mode..............................: RGB coloured",
+			"    - coloured output.......................................[N],  ");
+	pushbach_settings_option (defitem,
+			"Y",
+			"  - Grayscale mode..............................: grayscale",
+			"    - grayscale output......................................[y],  ");
+	DEF.push_back(defitem);
+
+	//cout << DEF.size() << endl;
+
+	//dbg_default_settings_database (DEF);
 
 	return DEF;
 }
@@ -633,8 +349,3 @@ void dbg_default_settings_database (vector <vector < vector <string> > > DEF) {
 		cout << "---" << endl;
 	}
 }
-
-
-
-
-

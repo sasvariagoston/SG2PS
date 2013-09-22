@@ -41,6 +41,7 @@ bool is_SCcorrect (vector <string> in);
 bool is_LINEATIONcorrect (vector <string> in);
 bool is_PITCHcorrect (vector <string> in);
 
+/*
 bool is_allowed_groupcode(const string& groupcode);
 bool is_allowed_colorcode(const string& colorcode);
 bool is_allowed_coordinate(const string& coordinate);
@@ -66,11 +67,13 @@ bool is_allowed_bedding_normal_sense(const string& sense);
 bool is_allowed_bedding_none_sense(const string& sense);
 bool is_allowed_bedding_sense(const string& sense);
 
+*/
+
 vector <GDB> create_GDB_from_rgf (const string& file_name);
 
-bool is_allowed_geodetic (const string& geodetic) ;
+//bool is_allowed_geodetic (const string& geodetic) ;
 
-bool is_double (const string& coordinate);
+//bool is_double (const string& coordinate);
 
 bool error_cout (vector <string> bad_records, string recordtype);
 

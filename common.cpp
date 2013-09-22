@@ -89,6 +89,11 @@ double string_to_double( const string& s, bool& failed) {
 	return convert<double>(s, failed);
 }
 
+double string_to_int( const string& s, bool& failed) {
+
+	return convert<int>(s, failed);
+}
+
 template <typename T>
 T to_type(const string& s) {
 

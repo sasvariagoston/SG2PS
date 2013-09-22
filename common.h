@@ -20,6 +20,8 @@ const string int_to_string(int i);
 const string double_to_string(double in, size_t precision);
 const string char_to_string (char i);
 double string_to_double(const string& s, bool& failed);
+double string_to_int( const string& s, bool& failed);
+
 double string_to_double(const string& s); // throws logic_error
 
 int string_to_int(const string& s); // throws logic_error

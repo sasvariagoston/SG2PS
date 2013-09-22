@@ -13,19 +13,9 @@
 #include "generate_default_settings.hpp"
 #include "run_mode.h"
 
-namespace {
-
-bool conv_has_failed;
-
-}
-
 bool has_settings_file_data (string settingfilename) {
 
 	ifstream inputfile (settingfilename.c_str());
-
-	//cout << inputfile.eof() << endl;
-
-	//cout << inputfile.is_open() << endl;
 
 	if (inputfile.eof() || !inputfile.is_open()) return false;
 
@@ -34,16 +24,10 @@ bool has_settings_file_data (string settingfilename) {
 
 vector < vector <string> > read_settingsfile_to_vector (string settingfilename) {
 
-	//cout << settingfilename << endl;
-
-	//cout << "read_settingsfile_to_vector" << endl;
-
 	vector < vector <string> > SET;
 
 	if (!has_settings_file_data (settingfilename)) return SET;
 	else {};
-
-//	cout << has_settings_file_data (settingfilename) << endl;
 
 	ifstream inputfile (settingfilename.c_str());
 
@@ -67,8 +51,6 @@ vector < vector <string> > read_settingsfile_to_vector (string settingfilename) 
 		}
 		else {}
 	}
-
-	//cout << "endl_read_settingsfile_to_vector" << endl;
 
 	return SET;
 }
@@ -101,17 +83,27 @@ bool fit_of_records (vector  <string> SETrecord, size_t j, size_t k) {
 
 	if (actual_key == "LINEWIDTH:" || actual_key == "STRESSANGLE:") {
 
+		bool conv_has_failed = true;
+
 		double min_value = string_to_double (DEF.at(j).at(k).at(1), conv_has_failed);
 		double max_value = string_to_double (DEF.at(j).at(k).at(2), conv_has_failed);
+
+		int int_value = string_to_int (actual_value, conv_has_failed);
+
+		if (actual_key == "LINEWIDTH:" && conv_has_failed) return false;
 
 		double value = string_to_double (actual_value, conv_has_failed);
 
 		//if (actual_key == "LINEWIDTH:") value = value / 10.0;
 
+		//cout << fixed << setprecision(3) << endl;
+
 		//cout << "FIT_OF_RECORDS" << endl;
 		//cout << actual_value << " converted to " << value << " and the conversion " << flush;
 		//if (!conv_has_failed) cout << " is successfull" << endl;
 		//else cout << " has failed" << endl;
+
+		//cout << min_value << '\t' << max_value << endl;
 
 		if (is_in_range(min_value, max_value, value) && !conv_has_failed) return true;
 		else return false;
@@ -125,6 +117,8 @@ bool fit_of_records (vector  <string> SETrecord, size_t j, size_t k) {
 			else return false;
 		}
 		else {
+
+			bool conv_has_failed = true;
 
 			double min_value = string_to_double (DEF.at(j).at(k).at(1), conv_has_failed);
 			double max_value = string_to_double (DEF.at(j).at(k).at(2), conv_has_failed);
@@ -171,12 +165,12 @@ bool is_settings_file_correct (string settingfilename) {
 
 		if (!is_setting_record_correct (SET.at(i))) {
 
-			cout << i << " " << flush;
+			//cout << i << " " << flush;
 
-			cout << SET.at(i).at(0) << " " << flush;
-			cout << SET.at(i).at(1) << " " << flush;
+			//cout << SET.at(i).at(0) << " " << flush;
+			//cout << SET.at(i).at(1) << " " << flush;
 
-			cout << " IS INCORRECT."<< endl;
+			//cout << " IS INCORRECT."<< endl;
 		}
 
 		if (!is_setting_record_correct (SET.at(i))) return false;
@@ -263,9 +257,11 @@ vector <vector <string> > settings_to_vector (INPSET inset) {
 	out.at(13).at(0) = "BINGHAM:";			out.at(13).at(1) = inset.fracture;
 	out.at(14).at(0) = "LINEWIDTH:";		out.at(14).at(1) = double_to_string(inset.linewidth, 1);// double here
 	out.at(15).at(0) = "ROSETYPE:";			out.at(15).at(1) = inset.rosetype;
-	out.at(16).at(0) = "ROSEBINNING:";		out.at(16).at(1) = inset.rosebinning;
-	out.at(17).at(0) = "CONTOURING:";		out.at(17).at(1) = inset.contouring;
-	out.at(18).at(0) = "GRAYSCALE:";		out.at(18).at(1) = inset.grayscale;
+	out.at(16).at(0) = "ROSEDIRECTION:";	out.at(16).at(1) = inset.rosedirection;
+	out.at(17).at(0) = "ROSEBINNING:";		out.at(17).at(1) = inset.rosebinning;
+	out.at(18).at(0) = "CONTOURING:";		out.at(18).at(1) = inset.contouring;
+	out.at(19).at(0) = "GRAYSCALE:";		out.at(19).at(1) = inset.grayscale;
+
 
 	return out;
 }
@@ -292,8 +288,9 @@ INPSET vector_to_settings (vector <vector <string> > SET) {
 		else if (SET.at(i).at(0) == "IDEALMOVEMENT:")	inset.idealmovement			= SET.at(i).at(1);
 		else if (SET.at(i).at(0) == "STRESSANGLE:")		inset.angle					= string_to_double(SET.at(i).at(1), failed);
 		else if (SET.at(i).at(0) == "BINGHAM:")			inset.fracture				= SET.at(i).at(1);
-		else if (SET.at(i).at(0) == "LINEWIDTH:")		inset.linewidth				= string_to_double(SET.at(i).at(1), failed);
+		else if (SET.at(i).at(0) == "LINEWIDTH:")		inset.linewidth				= string_to_double(SET.at(i).at(1), failed) / 10.0;
 		else if (SET.at(i).at(0) == "ROSETYPE:")		inset.rosetype				= SET.at(i).at(1);
+		else if (SET.at(i).at(0) == "ROSEDIRECTION:")	inset.rosedirection			= SET.at(i).at(1);
 		else if (SET.at(i).at(0) == "ROSEBINNING:")		inset.rosebinning			= SET.at(i).at(1);
 		else if (SET.at(i).at(0) == "CONTOURING:")		inset.contouring			= SET.at(i).at(1);
 		else if (SET.at(i).at(0) == "GRAYSCALE:")		inset.grayscale				= SET.at(i).at(1);
@@ -326,8 +323,6 @@ string input_setting_decision () {
 
 vector <vector <string> > decide_setting_status (string projectname) {
 
-	//cout << "decide_setting_status" << endl;
-
 	cout << endl << endl;
 	cout << "CHECK SETTINGS OF '" <<  capslock(projectname) << "' PROJECT"<< endl;
 
@@ -339,7 +334,7 @@ vector <vector <string> > decide_setting_status (string projectname) {
 	}
 	else {
 
-		cout << " +++ +++ INCORRECT SETTINGDS FILE +++ +++" << endl;
+		//cout << " +++ +++ INCORRECT SETTINGDS FILE +++ +++" << endl;
 
 		if (is_settings_file_correct ("sg2ps.set")) {
 
@@ -360,22 +355,16 @@ void list_settings_options (vector <vector <vector <string> > > DEF, size_t k) {
 
 	//cout << DEF.at(k).at(0).at(1) << endl;
 
-	//cout << "list_settings_options" << endl;
-
 	bool is_clustering  = (DEF.at(k).at(0).at(0) == "CLUSTERNUMBER:");
 	bool is_linewidth   = (DEF.at(k).at(0).at(0) == "LINEWIDTH:");
 	bool is_stressangle = (DEF.at(k).at(0).at(0) == "STRESSANGLE:");
 
 	if (is_clustering) {
 
-		//cout << "is_clustering" << endl;
-
 		for (size_t i = 1; i < DEF.at(k).size() - 1; i++) cout << DEF.at(k).at(i).at(2) << endl;
 
 		cout << DEF.at(k).at(DEF.at(k).size() - 1).at(5) << endl;
 	}
-
-
 
 	else if (is_stressangle || is_linewidth) {
 
@@ -417,9 +406,6 @@ vector <vector <string> > inputsettings_manually (string projectname) {
 			buf.push_back(DEF.at(i).at(0).at(0));
 			buf.push_back(c);
 
-
-			//cout << is_setting_record_correct (buf) << endl;
-
 		} while (!is_setting_record_correct (buf));
 
 		OUT.push_back(buf);
@@ -428,13 +414,11 @@ vector <vector <string> > inputsettings_manually (string projectname) {
 	cout << endl << endl;
 	cout << "NEW SETTINGS FOR '" << capslock (projectname) << "' PROJECT"<< endl;
 
-return OUT;
+	return OUT;
 
 }
 
 INPSET manage_settings_batch (string projectname) {
-
-	//cout << "manage_settings_batch" << endl;
 
 	vector <vector <string> > SET = decide_setting_status (projectname);
 
@@ -442,14 +426,10 @@ INPSET manage_settings_batch (string projectname) {
 
 	dump_actual_settings(SET);
 
-	//cout << "endl_manage_settings_batch" << endl;
-
 	return vector_to_settings(SET);
 }
 
 INPSET manage_settings_nobatch (string projectname) {
-
-	//cout << "manage_settings_nobatch" << endl;
 
 	vector <vector <string> > SET = decide_setting_status (projectname);
 
@@ -471,11 +451,7 @@ INPSET manage_settings_nobatch (string projectname) {
 
 	} while (!(c == "S"));
 
-	//cout << "save settings" << endl;
-
 	outputsettingfile (SET, projectname);
-
-	//cout << "endl_manage_settings_nobatch" << endl;
 
 	return vector_to_settings(SET);
 }
@@ -494,16 +470,13 @@ void outputsettingfile (vector <vector <string> > SET, string projectname) {
 
 void dump_actual_settings (vector <vector <string> >SET) {
 
-	//kiirataskor nem mukodik a double to string konverzio,
-	//es ezert a fit_of_recotrds parancs is lukra fut.
-
 	vector <vector <vector <string> > > DEF = return_default_settings_database ();
 
 	for (size_t i = 0; i < SET.size(); i++) {
 		for (size_t j = 0; j < DEF.size(); j++) {
 			for (size_t k = 1; k < DEF.at(j).size(); k++) {
 
-			//	cout << "i: " << i << "j: " << j << "k: " << k << endl;
+				//	cout << "i: " << i << "j: " << j << "k: " << k << endl;
 
 				if (fit_of_records (SET.at(i), j, k)) {
 

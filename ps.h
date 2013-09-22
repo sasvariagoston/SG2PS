@@ -47,7 +47,8 @@ void PS_striaearrow (GDB i, ofstream& o, INPSET inset, CENTER center, bool label
 
 void PS_getstereonet (ofstream& o, INPSET inset, CENTER center);
 
-void PS_rosesegment (ofstream& o, INPSET inset, CENTER center, double percentage, double degree, bool c_plane);
+//void PS_rosesegment (ofstream& o, INPSET inset, CENTER center, double percentage, double degree, bool c_plane);
+void PS_rosesegment (ofstream& o, INPSET inset, CENTER center, double percentage, double degree, bool c_plane, bool vertical);
 void PS_draw_rose_circle_horizontal (ofstream& o, INPSET inset, CENTER center, ROSENUMBER percent);
 void PS_draw_rose_circle_vertical (ofstream& o, INPSET inset, CENTER center, ROSENUMBER percent);
 

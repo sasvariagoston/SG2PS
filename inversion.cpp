@@ -8,6 +8,7 @@
 
 #include "angelier.h"
 #include "assertions.hpp"
+#include "brute_force.hpp"
 #include "bingham.h"
 #include "common.h"
 #include "data_io.h"
@@ -183,6 +184,7 @@ vector <GDB> inversion (vector <GDB> inGDB, ofstream& o, INPSET inset, CENTER ce
 	else if (inGDB.at(0).DATATYPE == "STRIAE" && inset.inversion == "A")	method = "ANGELIER";
 	else if (inGDB.at(0).DATATYPE == "STRIAE" && inset.inversion == "O") 	method = "MOSTAFA";
 	else if (inGDB.at(0).DATATYPE == "STRIAE" && inset.inversion == "D") 	method = "NDA";
+	else if (inGDB.at(0).DATATYPE == "STRIAE" && inset.inversion == "B") 	method = "BRUTEFORCE";
 	else if (inGDB.at(0).DATATYPE == "STRIAE" && inset.inversion == "P") 	method = "PTN";
 	else {};
 
@@ -235,6 +237,15 @@ vector <GDB> inversion (vector <GDB> inGDB, ofstream& o, INPSET inset, CENTER ce
 		st = st_NDA (inGDB, inset);
 
 		sf = sf_NDA (st);
+	}
+
+	else if (method == "BRUTEFORCE") {
+
+		BRUTEFORCE (inGDB, inset);
+
+		//st = st_BRUTEFORCE (inGDB, inset);
+
+		//sf = sf_BRUTEFORCE (st);
 	}
 
 	else if (method == "PTN") {

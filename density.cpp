@@ -1370,7 +1370,11 @@ vector < vector <VCTR> > eliminate_out_circle_curves (vector < vector <VCTR> > i
 
 void contouring (vector <GDB> inGDB, INPSET inset) {
 
-	vector <TRIANGLE> TRI_GRID = generate_net (inGDB, inset);
+	vector <vector <vector <VCTR> > > NET = generate_net ();
+
+	vector <TRIANGLE> TRI_GRID = generate_net_count (inGDB, NET, inset);
+
+	//vector <TRIANGLE> TRI_GRID = generate_net (inGDB, inset);
 
 	vector <GRID_CENTER> TRI_CENTER = generate_triangle_center (TRI_GRID);
 

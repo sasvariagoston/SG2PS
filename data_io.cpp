@@ -10,6 +10,7 @@
 #include <iostream>
 #include <stdexcept>
 
+#include "allowed_keys.hpp"
 #include "array_to_vector.hpp"
 #include "data_io.h"
 #include "density.h"
@@ -61,39 +62,16 @@ PFN createprojectfoldernames (string projectname) {
 	return output;
 }
 
-const string possible_folder_names[] = {
-		"BOUDAIN",
-		"CONTACT",
-		"FOLDAXIS",
-		"FOLDPLANE",
-		"KINK",
-		"LINEATION",
-		"LITHOCLASE",
-		"SC",
-		"BEDDING",
-		"S1",
-		"S2",
-		"S3",
-		"S4",
-		"S5",
-		"FRACTURE",
-		"STRIAE",
-		"CROSSBEDDING",
-		"VEIN",
-		"FOLDSURFACE",
-		"USERPLANE1",
-		"USERPLANE2",
-		"USERPLANE3",
-		"USERPLANE4",
-		"USERPLANE5",
-		"USERLINEATION1",
-		"USERLINEATION2",
-		"USERLINEATION3",
-		"USERLINEATION4",
-		"USERLINEATION5"
-};
+vector <string> possible_folders_name () {
 
-const vector<string> possible_folders = from_array(possible_folder_names);
+	vector <string> OUT = allowed_lineation_datatype_vector();
+
+	OUT = merge_datatypes(OUT, allowed_plane_datatype_vector());
+	OUT = merge_datatypes(OUT, allowed_striae_datatype_vector());
+	OUT = merge_datatypes(OUT, allowed_SC_datatype_vector());
+
+	return OUT;
+}
 
 void make_dir(const string& dir_name) {
 
@@ -122,7 +100,9 @@ void createprojectfolders (PFN output, vector <GDB> inGDB) {
 	make_dir( output.rgfsep        );
 	make_dir( output.pssep         );
 
-	for (size_t i=0; i<possible_folders.size(); ++i) {
+	vector <string> possible_folders = possible_folders_name ();
+
+	for (size_t i = 0; i < possible_folders.size(); ++i) {
 
 		const string& dir = possible_folders.at(i);
 
@@ -524,28 +504,16 @@ void output_to_ps (PFN output, vector <GDB> processGDB, vector <GDB> tiltprocess
 
 	PS_border (processGDB.at(0), output_ps_file, inset, P);
 
-	//originally below one_by_one
+
 	processGDB = 		process_group_by_group (processGDB, output_ps_file, inset, center, P, false);
 	tiltprocessGDB = 	process_group_by_group (tiltprocessGDB, output_ps_file, inset, center, P, true);
 
-
-
-/*	for (size_t j=0; j < processGDB.size(); ++j) {
-
-		process_one_by_one (processGDB.at(j), output_ps_file, inset, center, P, false);
-		process_one_by_one (tiltprocessGDB.at(j), output_ps_file, inset, center, P, true);
-
-		if (j < processGDB.size()-1) output_ps_file << endl;
-	}
-	*/
-
-	//process_group_by_group (processGDB, tiltprocessGDB, output_ps_file, inset, center, P);
 
 	PS_datanumber_averagebedding (processGDB.at(0), output_ps_file, inset, P, center, processGDB.size());
 
 	PS_net (output_ps_file, inset, P);
 
-
+	//output_ps_file.close ();
 
 
 	//contouring (processGDB, inset);
@@ -609,6 +577,8 @@ vector <GDB> process_group_by_group (vector <GDB> inGDB, ofstream& o, INPSET ins
 
 	vector <GDB> outGDB = inGDB;
 
+	//cout << "GROUP " << outGDB.at(0).DIPDIR << endl;
+
 	//process_one_by_one (inGDB, o, inset, center, P, tilt);
 
 	CENTER mohr_center;
@@ -629,16 +599,23 @@ vector <GDB> process_group_by_group (vector <GDB> inGDB, ofstream& o, INPSET ins
 	}
 
 	bool is_correct = (outGDB.size() > 1  && check_dataset_homogenity (outGDB));
+	//BUG!!!
 
 	PS_draw_rose (inGDB, o, inset, center, P, tilt);
 
 	if ((inset.fracture == "B") && (inGDB.at(0).DATATYPE == "FRACTURE") && (inGDB.size() < 2)) return outGDB;
 
-
+	//SAME BUG!!! WILL NOT PLOT DATA ON THE STEREONET IF 1 FRACTURE
+	/*
+	 * bool has to be created;
+	 * to check data set is processible or not;
+	 * 1) homogenity (ready);
+	 * 2) number of data regarding the invetrsion methodology
+	 *
+	 */
 
 	if (inGDB.at(0).DATATYPE == "STRIAE") outGDB = return_striae_with_offset (inGDB);
-
-
+	else {}
 
 	if ((inset.fracture == "B" && outGDB.at(0).DATATYPE == "FRACTURE")
 		||
@@ -684,10 +661,9 @@ void process_one_by_one (vector <GDB> inGDB, ofstream& o, INPSET inset, CENTER c
 		center.Y = P.O2Y;
 	}
 
-	for (size_t i = 0; i < inGDB.size(); i++) {
+	//cout << inGDB.at(0).DIPDIR << endl;
 
-		PS_DRAW_record (inGDB.at(i), o, inset, center);
-	}
+	for (size_t i = 0; i < inGDB.size(); i++) PS_DRAW_record (inGDB.at(i), o, inset, center);
 }
 
 void dbg_cout_RGF_colors (vector <GDB> inGDB) {

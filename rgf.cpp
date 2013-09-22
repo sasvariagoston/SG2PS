@@ -1071,11 +1071,19 @@ vector <GDB> cGc_s0_average (vector <GDB> inGDB) {
 
 			cout << "  - Average bedding were computed for 1 independent data group in " << i << " records." <<  endl;
 		}
+		else {
 
-		else cout << "  - No average bedding were computed" <<  endl;
+			outGDB.at(0).avS0D = declare_vector (0.0, 1.0, 0.0);
+			outGDB.at(0).avS0N = declare_vector (0.0, 0.0, 1.0);
+			outGDB.at(0).avS0d.DIPDIR = 999.99;
+			outGDB.at(0).avS0d.DIP = 99.99;
 
+			cout << "  - No average bedding were computed" <<  endl;
+		}
 		return outGDB;
 	}
+
+	bool bedding_exists = false;
 
 	do {
 
@@ -1086,6 +1094,7 @@ vector <GDB> cGc_s0_average (vector <GDB> inGDB) {
 			if (outGDB.at(i).DATATYPE == "BEDDING") {
 
 				temp = outGDB.at(i).avD;
+				bedding_exists = true;
 			}
 
 			i++;
@@ -1100,16 +1109,26 @@ vector <GDB> cGc_s0_average (vector <GDB> inGDB) {
 
 		do {
 
-			outGDB.at(j).avS0D = temp;
+			if (bedding_exists) {
 
-			avs0 = dipdir_dip_from_DXDYDZ (temp);
+				outGDB.at(j).avS0D = temp;
 
-			temp2 = declare_vector (outGDB.at(j).avS0D.X, outGDB.at(j).avS0D.Y, outGDB.at(j).avS0D.Z);
-			temp2 =  NXNYNZ_from_DXDYDZ (temp2);
+				avs0 = dipdir_dip_from_DXDYDZ (temp);
 
-			outGDB.at(j).avS0N = temp2;
+				temp2 = declare_vector (outGDB.at(j).avS0D.X, outGDB.at(j).avS0D.Y, outGDB.at(j).avS0D.Z);
+				temp2 =  NXNYNZ_from_DXDYDZ (temp2);
 
-			outGDB.at(j).avS0d = avs0;
+				outGDB.at(j).avS0N = temp2;
+
+				outGDB.at(j).avS0d = avs0;
+			}
+			else {
+
+				outGDB.at(j).avS0D = declare_vector (0.0, 1.0, 0.0);
+				outGDB.at(j).avS0N = declare_vector (0.0, 0.0, 1.0);
+				outGDB.at(j).avS0d.DIPDIR = 999.99;
+				outGDB.at(j).avS0d.DIP = 99.99;
+			}
 
 			j++;
 
@@ -1145,7 +1164,8 @@ GDB lineation_tilt (GDB inGDB, bool paleonorht) {
 
 	else {
 
-		angle = outGDB.avS0d.DIP;
+		if (outGDB.avS0d.DIP < 90.0) angle = outGDB.avS0d.DIP;
+		else return outGDB;
 
 		if (outGDB.avS0offset == "OVERTURNED") angle = 180.0 - angle;
 
@@ -1204,7 +1224,8 @@ GDB plane_tilt (GDB inGDB, bool paleonorht) {
 
 	else {
 
-		angle = outGDB.avS0d.DIP;
+		if (outGDB.avS0d.DIP < 90.0) angle = outGDB.avS0d.DIP;
+		else  return outGDB;
 
 		if (outGDB.avS0offset == "OVERTURNED") angle = 180.0 - angle;
 
@@ -1261,7 +1282,8 @@ GDB SC_tilt (GDB inGDB, bool paleonorht) {
 
 	else {
 
-		angle = outGDB.avS0d.DIP;
+		if (outGDB.avS0d.DIP < 90.0) angle = outGDB.avS0d.DIP;
+		else return outGDB;
 
 		if (outGDB.avS0offset == "OVERTURNED") angle = 180.0 - angle;
 
@@ -1345,7 +1367,8 @@ GDB striae_tilt (GDB inGDB, bool paleonorht) {
 
 	else {
 
-		angle = outGDB.avS0d.DIP;
+		if (outGDB.avS0d.DIP < 90.0) angle = outGDB.avS0d.DIP;
+		else return outGDB;
 
 		if (outGDB.avS0offset == "OVERTURNED") angle = 180.0 - angle;
 
