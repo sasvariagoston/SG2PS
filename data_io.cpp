@@ -577,6 +577,8 @@ vector <GDB> process_group_by_group (vector <GDB> inGDB, ofstream& o, INPSET ins
 
 	vector <GDB> outGDB = inGDB;
 
+	//cout << outGDB.size() << endl;
+
 	//cout << "GROUP " << outGDB.at(0).DIPDIR << endl;
 
 	//process_one_by_one (inGDB, o, inset, center, P, tilt);
@@ -598,34 +600,24 @@ vector <GDB> process_group_by_group (vector <GDB> inGDB, ofstream& o, INPSET ins
 		mohr_center.Y = P.O8Y;
 	}
 
-	bool is_correct = (outGDB.size() > 1  && check_dataset_homogenity (outGDB));
-	//BUG!!!
+	bool IS_FRACTURE = (inset.fracture == "B" && outGDB.at(0).DATATYPE == "FRACTURE");
+	bool IS_STRIAE = (inGDB.at(0).DATATYPE == "STRIAE" && inset.inversion != "N");
+	bool IS_FOLD = (inGDB.at(0).DATATYPE == "FOLDSURFACE");
+
+	bool TO_INVERT = (IS_FRACTURE || IS_STRIAE || IS_FOLD);
+
+	bool has_right_data_number = correct_inhomogeneous_number (outGDB, inset);
 
 	PS_draw_rose (inGDB, o, inset, center, P, tilt);
-
-	if ((inset.fracture == "B") && (inGDB.at(0).DATATYPE == "FRACTURE") && (inGDB.size() < 2)) return outGDB;
-
-	//SAME BUG!!! WILL NOT PLOT DATA ON THE STEREONET IF 1 FRACTURE
-	/*
-	 * bool has to be created;
-	 * to check data set is processible or not;
-	 * 1) homogenity (ready);
-	 * 2) number of data regarding the invetrsion methodology
-	 *
-	 */
 
 	if (inGDB.at(0).DATATYPE == "STRIAE") outGDB = return_striae_with_offset (inGDB);
 	else {}
 
-	if ((inset.fracture == "B" && outGDB.at(0).DATATYPE == "FRACTURE")
-		||
-		(inGDB.at(0).DATATYPE == "STRIAE" && inset.inversion != "N")
-		||
-		(inGDB.at(0).DATATYPE == "FOLDSURFACE")) {
+	if (TO_INVERT) {
 
 		if (!tilt) cout_method_text (outGDB, inset);
 
-		if (is_correct) {
+		if (has_right_data_number) {
 
 			cout_original_tilted_text (tilt);
 
@@ -639,7 +631,11 @@ vector <GDB> process_group_by_group (vector <GDB> inGDB, ofstream& o, INPSET ins
 			//dbg_cout_RGF_colors(outGDB);
 		}
 
-		else cout << "less (independent) data than required to the statistics." << endl;
+		else {
+
+			if (!tilt) cout << "less (independent) data than required." << endl;
+			else {}
+		}
 	}
 	else {};
 

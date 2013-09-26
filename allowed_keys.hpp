@@ -40,6 +40,10 @@ bool is_allowed_bedding_sense(const string& sense);
 
 bool is_allowed_geodetic (const string& geodetic);
 
+bool is_allowed_inversion_method (const string& method);
+
+bool is_allowed_BINGHAM_datatype (const string& datatype);
+
 bool is_double (const string& coordinate);
 
 vector <string> merge_datatypes (vector <string> target, vector <string> source);

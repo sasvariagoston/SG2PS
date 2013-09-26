@@ -136,6 +136,26 @@ const string geodetic_allowed [] = {
 };
 const vector<string> allowed_geodetics(from_array(geodetic_allowed));
 
+const string inversion_method_allowed [] = {
+		"ANGELIER",
+		"BINGHAM",
+		"BRUTEFORCE",
+		"FRY",
+		"MICHAEL",
+		"MOSTAFA",
+		"NDA",
+		"PTN",
+		"SHAN",
+
+		"NONE"
+};
+const vector<string> allowed_inversion_methods(from_array(inversion_method_allowed));
+
+const string bingham_datatype_allowed [] = {
+		"FRACTURE"
+};
+const vector<string> allowed_bingham_datatype(from_array(bingham_datatype_allowed));
+
 }
 
 bool is_allowed_groupcode(const string& groupcode) {
@@ -275,6 +295,16 @@ bool is_allowed_bedding_sense(const string& sense) {
 bool is_allowed_geodetic (const string& geodetic) {
 
 	return contains(allowed_geodetics, geodetic);
+}
+
+bool is_allowed_inversion_method (const string& method) {
+
+	return contains(allowed_inversion_methods, method);
+}
+
+bool is_allowed_BINGHAM_datatype (const string& datatype) {
+
+	return contains(allowed_bingham_datatype, datatype);
 }
 
 bool is_double (const string& s) {

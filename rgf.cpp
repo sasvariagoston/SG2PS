@@ -7,6 +7,7 @@
 #include <iostream>
 #include <iomanip>
 
+#include "allowed_keys.hpp"
 #include "bingham.h"
 #include "checkrgffilecontent.h"
 #include "checkxycontent.h"
@@ -756,6 +757,21 @@ bool byiID(const GDB& x, const GDB& y) {
 	return x.iID < y.iID;
 }
 
+bool bycorrDIPDIRcorrDIP(const GDB& x, const GDB& y) {
+
+	if (x.corr.DIPDIR != y.corr.DIPDIR) return x.corr.DIPDIR < y.corr.DIPDIR;
+	return x.corr.DIP < y.corr.DIP;
+}
+
+bool bycorrDIPDIRcorrDIPcorrLDIPDIRcorrLDIP(const GDB& x, const GDB& y) {
+
+	if (x.corr.DIPDIR != y.corr.DIPDIR) return x.corr.DIPDIR < y.corr.DIPDIR;
+	if (x.corr.DIP != y.corr.DIP) return x.corr.DIP < y.corr.DIP;
+	if (x.corrL.DIPDIR != y.corrL.DIPDIR) return x.corrL.DIPDIR < y.corrL.DIPDIR;
+	return x.corrL.DIP < y.corrL.DIP;
+}
+
+/*
 bool bycorrDIPDIR(const GDB& x, const GDB& y) {
 
 	return x.corr.DIPDIR < y.corr.DIPDIR;
@@ -765,6 +781,7 @@ bool bycorrDIP(const GDB& x, const GDB& y) {
 
 	return x.corr.DIP < y.corr.DIP;
 }
+*/
 
 bool byeigenvalue(const sort_jacobi& x, const sort_jacobi& y) {
 
@@ -799,26 +816,99 @@ bool stopcriteria (string prevDATATYPE, string DATATYPE, string prevLOC, string 
 	else return false;
 }
 
+size_t minimum_independent_dataset (INPSET inset) {
+
+	if 		(inset.inversion == "D") return 1;
+	else if (inset.inversion == "P") return 1;
+	else if (inset.inversion == "M") return 4;
+	else if (inset.inversion == "S") return 5;
+	else if (inset.inversion == "F") return 6;
+	else if (inset.inversion == "A") return 4;
+	else if (inset.inversion == "O") return 4;
+	else if (inset.inversion == "B") return 4;
+	else if (inset.fracture == "B") return 4;
+	else return 1;
+}
+
+vector <GDB> return_GDB_with_no_homogeneous_data (vector <GDB> inGDB) {
+
+	vector <GDB> resultGDB;
+
+	//cout << "IN: " << inGDB.size() << endl;
+
+	for (size_t i = 0; i < inGDB.size() - 1; i++) {
+
+		GDB comp1 = inGDB.at(i);
+		GDB comp2 = inGDB.at(i + 1);
+
+	//	cout << comp1.ID << '\t' << comp2.ID << endl;
+
+		vector <GDB> testGDB;
+
+		testGDB.push_back (comp1);
+		testGDB.push_back (comp2);
+
+		if (check_dataset_homogenity(testGDB)) resultGDB.push_back(comp1);
+		if (i == inGDB.size() - 2) resultGDB.push_back(comp2);
+
+		//cout << i << '\t' << resultGDB.size() << endl;
+	}
+
+	//cout << "OUT: "  << resultGDB.size() << endl;
+
+	return resultGDB;
+}
+
+bool correct_inhomogeneous_number (vector <GDB> inGDB, INPSET inset) {
+
+	bool STRIAE = 	(is_allowed_striae_datatype(inGDB.at(0).DATATYPE));
+	bool SC = 		(is_allowed_SC_datatype(inGDB.at(0).DATATYPE));
+	//bool FRACTURE = (is_allowed_BINGHAM_datatype(inGDB.at(0).DATATYPE));
+
+	if (inset.inversion == "N" && STRIAE) return true;
+
+	if (inGDB.size() < 2) return false;
+
+	if (!(check_dataset_homogenity (inGDB))) return false;
+
+	if (SC || STRIAE)	sort(inGDB.begin(), inGDB.end(), bycorrDIPDIRcorrDIPcorrLDIPDIRcorrLDIP);
+	else 				sort(inGDB.begin(), inGDB.end(), bycorrDIPDIRcorrDIP);
+
+	vector <GDB> test = return_GDB_with_no_homogeneous_data (inGDB);
+
+
+	if (test.size() >= minimum_independent_dataset (inset)) return true;
+	return false;
+}
+
 bool check_dataset_homogenity (vector <GDB> inGDB) {
 
-	sort(inGDB.begin(), inGDB.end(), bycorrDIPDIR);
+	bool STRIAE = 	(is_allowed_striae_datatype(inGDB.at(0).DATATYPE));
+	bool SC = 		( is_allowed_SC_datatype(inGDB.at(0).DATATYPE));
+
+	if (SC || STRIAE) 	sort(inGDB.begin(), inGDB.end(), bycorrDIPDIRcorrDIPcorrLDIPDIRcorrLDIP);
+	else 				sort(inGDB.begin(), inGDB.end(), bycorrDIPDIRcorrDIP);
 
 	double minDD = inGDB.at(0).corr.DIPDIR;
 	double maxDD = inGDB.at(inGDB.size() - 1).corr.DIPDIR;
-
 	double var1 = fabs(maxDD - minDD);
-
-
-	sort(inGDB.begin(), inGDB.end(), bycorrDIP);
 
 	double minD = inGDB.at(0).corr.DIP;
 	double maxD = inGDB.at(inGDB.size() - 1).corr.DIP;
-
-	if (fabs(maxD) < 10e-4 && fabs(minD) < 10e-4) return false;
-
 	double var2 = fabs(maxD - minD);
 
-	return (var1 > 0.1 || var2 > 0.1);
+	double minLDD = inGDB.at(0).corrL.DIPDIR;
+	double maxLDD = inGDB.at(inGDB.size() - 1).corrL.DIPDIR;
+	double var3 = fabs(maxLDD - minLDD);
+
+	double minLD = inGDB.at(0).corrL.DIP;
+	double maxLD = inGDB.at(inGDB.size() - 1).corrL.DIP;
+	double var4 = fabs(maxLD - minLD);
+
+	//if (fabs(maxD) < 10e-4 && fabs(minD) < 10e-4) return false;
+
+	if (SC || STRIAE) return (var1 > 0.1 || var2 > 0.1 || var3 > 0.1 || var4 > 0.1);
+	else return (var1 > 0.1 || var2 > 0.1);
 }
 
 void fold_from_planes (vector <GDB> inGDB, ofstream& o, INPSET inset, CENTER center) {

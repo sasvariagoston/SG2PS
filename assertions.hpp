@@ -39,6 +39,12 @@ void throw_std_logic_error(const std::string& message);
 	} \
 }
 
+#define ASSERT_DEAD_END() { \
+		std::ostringstream os; \
+		os  << " Unexpected branch in \'" << FUNCTION_NAME << "\' at "<< __FILE__ << ':' << __LINE__ << '\n'; \
+		throw_std_logic_error(os.str()); \
+}
+
 #define ASSERT_EQ(val_1, val_2) { \
 	if (val_1!=val_2) { \
 		std::ostringstream os; \

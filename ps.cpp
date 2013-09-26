@@ -1819,9 +1819,19 @@ void PS_datanumber_averagebedding (GDB i, ofstream& o, INPSET inset, PAPER P, CE
 		o
 		<< "  " << fixed << setprecision (3) << P.O2X - P.R - 0.2 * P.B
 		<< "  " << fixed << setprecision (3) << P.O2Y + P.R + 1.3 * P.B
-		<< " moveto (Corrected by average bedding "
-		<< setfill ('0') << setw (3) << fixed << setprecision (0) << i.avS0d.DIPDIR << "/"
-		<< setfill ('0') << setw (2) << fixed << setprecision (0) << i.avS0d.DIP ;
+		<< " moveto (Corrected by average bedding " << flush;
+
+
+		if (i.avS0d.DIPDIR > 900.0) {
+
+			o << "no bedding measured";
+		}
+		else {
+			o
+			<< setfill ('0') << setw (3) << fixed << setprecision (0) << i.avS0d.DIPDIR << "/"
+			<< setfill ('0') << setw (2) << fixed << setprecision (0) << i.avS0d.DIP ;
+		}
+
 
 		if (i.avS0offset == "OVERTURNED") o << ", overturned" ;
 
@@ -1871,9 +1881,17 @@ void PS_datanumber_averagebedding (GDB i, ofstream& o, INPSET inset, PAPER P, CE
 	o
 	<< "  " << fixed << setprecision (3) << P.O3X - P.R - 0.2 * P.B
 	<< "  " << fixed << setprecision (3) << P.O3Y + P.R + 1.3 * P.B
-	<< " moveto (Average bedding: "
-	<< setfill ('0') << setw (3) << fixed << setprecision (0) << i.avS0d.DIPDIR << "/"
-	<< setfill ('0') << setw (2) << fixed << setprecision (0) << i.avS0d.DIP ;
+	<< " moveto (Average bedding: " << flush;
+
+	if (i.avS0d.DIPDIR > 900.0) {
+
+		o << "no bedding measured";
+	}
+	else {
+		o
+		<< setfill ('0') << setw (3) << fixed << setprecision (0) << i.avS0d.DIPDIR << "/"
+		<< setfill ('0') << setw (2) << fixed << setprecision (0) << i.avS0d.DIP ;
+	}
 
 	if (i.avS0offset == "OVERTURNED") o << ", overturned" ;
 	o << ") show" << '\n' << '\n';
@@ -1888,9 +1906,17 @@ void PS_datanumber_averagebedding (GDB i, ofstream& o, INPSET inset, PAPER P, CE
 		o
 		<< "  " << fixed << setprecision (3) << P.O4X - P.R - 0.2 * P.B
 		<< "  " << fixed << setprecision (3) << P.O4Y + P.R + 1.3 * P.B
-		<< " moveto (Corrected by average bedding "
-		<< setfill ('0') << setw (3) << fixed << setprecision (0) << i.avS0d.DIPDIR << "/"
-		<< setfill ('0') << setw (2) << fixed << setprecision (0) << i.avS0d.DIP ;
+		<< " moveto (Corrected by average bedding " << flush;
+
+		if (i.avS0d.DIPDIR > 900.0) {
+
+			o << "- no bedding measured";
+		}
+		else {
+			o
+			<< setfill ('0') << setw (3) << fixed << setprecision (0) << i.avS0d.DIPDIR << "/"
+			<< setfill ('0') << setw (2) << fixed << setprecision (0) << i.avS0d.DIP ;
+		}
 
 		if (i.avS0offset == "OVERTURNED") o << ", overturned" ;
 
@@ -1910,9 +1936,17 @@ void PS_datanumber_averagebedding (GDB i, ofstream& o, INPSET inset, PAPER P, CE
 		o
 		<< "  " << fixed << setprecision (3) << P.O4X - P.R - 0.2 * P.B
 		<< "  " << fixed << setprecision (3) << P.O4Y + P.R + 1.3 * P.B
-		<< " moveto (Corrected by average bedding "
-		<< setfill ('0') << setw (3) << fixed << setprecision (0) << i.avS0d.DIPDIR << "/"
-		<< setfill ('0') << setw (2) << fixed << setprecision (0) << i.avS0d.DIP ;
+		<< " moveto (Corrected by average bedding " << flush;
+
+		if (i.avS0d.DIPDIR > 900.0) {
+
+			o << "- no bedding measured";
+		}
+		else {
+			o
+			<< setfill ('0') << setw (3) << fixed << setprecision (0) << i.avS0d.DIPDIR << "/"
+			<< setfill ('0') << setw (2) << fixed << setprecision (0) << i.avS0d.DIP ;
+		}
 
 		if (i.avS0offset == "OVERTURNED") o << ", overturned" ;
 
@@ -1929,7 +1963,7 @@ void PS_datanumber_averagebedding (GDB i, ofstream& o, INPSET inset, PAPER P, CE
 
 void PS_rosesegment (ofstream& o, INPSET inset, CENTER center, double percentage, double degree, bool c_plane, bool vertical) {
 
-	if (!vertical && inset.rosedirection == "S") degree = degree - 90.0;
+	//if (!vertical && inset.rosedirection == "S") degree = degree - 90.0;
 
 	double step_angle = 2.5;
 
