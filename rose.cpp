@@ -94,8 +94,9 @@ void PS_draw_rose_DATATYPE (vector <GDB> inGBD, ofstream& o, INPSET inset, CENTE
 
 	if (!SYMM && !ASYMM) ASSERT_DEAD_END();
 
-	bool DRAW_STRIKE = (inset.rosedirection == "S");
-	bool DRAW_DIP = (inset.rosedirection == "D");
+	bool DRAW_STRIKE = (inset.rosedirection == "S" && !LINEATION);
+	bool DRAW_DIP = (inset.rosedirection == "D" || LINEATION);
+
 
 	if (!DRAW_STRIKE && !DRAW_DIP) ASSERT_DEAD_END();
 
@@ -103,9 +104,14 @@ void PS_draw_rose_DATATYPE (vector <GDB> inGBD, ofstream& o, INPSET inset, CENTE
 
 	if (vertical) {
 
-		if (PLANE || LINEATION) {
+		if (PLANE) {
 
 			PS_rosesegment (o, inset, center, percent.PLN_NUM, 90.0 + begin_angle, false, vertical);
+		}
+
+		else if (LINEATION) {
+
+			PS_rosesegment (o, inset, center, percent.LIN_NUM, 90.0 + begin_angle, false, vertical);
 		}
 		else if (SC || STRIAE) {
 
@@ -116,14 +122,20 @@ void PS_draw_rose_DATATYPE (vector <GDB> inGBD, ofstream& o, INPSET inset, CENTE
 
 		return;
 	}
-	else {} // OK, no assertions needed
+	else {}
 
 	if (ASYMM) {
 
-		if (PLANE || LINEATION) {
+		if (PLANE) {
 
 			if (DRAW_DIP) 			PS_rosesegment (o, inset, center, percent.PLN_NUM, begin_angle, false, vertical);
 			else if (DRAW_STRIKE)	PS_rosesegment (o, inset, center, percent.PLN_NUM, begin_angle - 90.0, false, vertical);
+			else ASSERT_DEAD_END();
+		}
+		else if (LINEATION) {
+
+			if (DRAW_DIP) 			PS_rosesegment (o, inset, center, percent.LIN_NUM, begin_angle, false, vertical);
+			else if (DRAW_STRIKE)	PS_rosesegment (o, inset, center, percent.LIN_NUM, begin_angle - 90.0, false, vertical);
 			else ASSERT_DEAD_END();
 		}
 		else if (SC || STRIAE) {
@@ -144,7 +156,7 @@ void PS_draw_rose_DATATYPE (vector <GDB> inGBD, ofstream& o, INPSET inset, CENTE
 	}
 	else if (SYMM) {
 
-		if (PLANE || LINEATION) {
+		if (PLANE) {
 
 			if (DRAW_DIP) {
 
@@ -155,6 +167,20 @@ void PS_draw_rose_DATATYPE (vector <GDB> inGBD, ofstream& o, INPSET inset, CENTE
 
 				PS_rosesegment (o, inset, center, percent.PLN_NUM, begin_angle + 000.0 - 90.0, false, vertical);
 				PS_rosesegment (o, inset, center, percent.PLN_NUM, begin_angle + 180.0 - 90.0, false, vertical);
+			}
+			else ASSERT_DEAD_END();
+		}
+		else if (LINEATION) {
+
+			if (DRAW_DIP) {
+
+				PS_rosesegment (o, inset, center, percent.LIN_NUM, begin_angle + 000.0, false, vertical);
+				PS_rosesegment (o, inset, center, percent.LIN_NUM, begin_angle + 180.0, false, vertical);
+			}
+			else if (DRAW_STRIKE) {
+
+				PS_rosesegment (o, inset, center, percent.LIN_NUM, begin_angle + 000.0 - 90.0, false, vertical);
+				PS_rosesegment (o, inset, center, percent.LIN_NUM, begin_angle + 180.0 - 90.0, false, vertical);
 			}
 			else ASSERT_DEAD_END();
 		}
@@ -268,10 +294,10 @@ void PS_draw_rose_DIPDIR (vector <GDB> inGDB, ofstream& o, INPSET inset, CENTER 
 	percent.PLN_NUM = mx.PLN_NUM / inGDB.size();
 	percent.LIN_NUM = mx.LIN_NUM / inGDB.size();
 
-	if (inGDB.at(j).DATAGROUP == "LINEATION") {
+	//if (inGDB.at(j).DATAGROUP == "LINEATION") {
 
-		percent.PLN_NUM = percent.LIN_NUM;
-	}
+	//	percent.PLN_NUM = percent.LIN_NUM;
+	//}
 
 	PS_draw_rose_circle_horizontal (o, inset, center, percent);
 

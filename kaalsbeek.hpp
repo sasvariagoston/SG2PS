@@ -25,7 +25,6 @@ vector <GRID_CENTER> generate_triangle_center (vector <TRIANGLE> net);
 
 vector <GRID_CENTER> reduce_triangle_center (vector <GRID_CENTER> in);
 
-
 vector <TRIANGLE> merge_triangle (vector <TRIANGLE> target, vector <TRIANGLE> record);
 
 VCTR create_offnet_point (VCTR A, VCTR B);
@@ -56,7 +55,10 @@ vector <TRIANGLE> add_external_to_internal (vector <TRIANGLE> innet, TRIANGLE of
 
 vector <TRIANGLE> return_count_in_net (vector <GDB> inGDB, vector <TRIANGLE> innet);
 
+
 void dbg_cout_triangle (string method, VCTR A, VCTR B, VCTR C, size_t SC1, size_t AC1, size_t PC1, size_t SC2, size_t AC2, size_t PC2, size_t SC3, size_t AC3, size_t PC3);
+
+void dbg_test_triangle_points_direction (VCTR A, VCTR B, VCTR C, string msg);
 
 void dbg_cout_triangle_coordinates (vector <TRIANGLE> in);
 

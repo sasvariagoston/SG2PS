@@ -94,6 +94,7 @@ vector < double > unitvector (vector < double > in);
 VCTR declare_vector (double a, double b, double c);
 CENTR_VECT declare_vector (double a, double b, double c, double d, double e, double f);
 
+VCTR flip_vector (VCTR in);
 VCTR flip_D_vector (VCTR in);
 VCTR flip_N_vector (VCTR in);
 VCTR flip_ptn_vector (VCTR in);
@@ -119,7 +120,7 @@ bool existence_of_group (int expression, vector <int> whichgroup);
 bool existence_of_group_GDB (string expression, vector <GDB> inGDB);
 bool existence_of_groupcodes (vector <GDB> inGDB);
 
-
+vector <GDB> merge_GDB (vector <GDB> source, vector <GDB> target);
 
 vector <double> quadratic_solution (double A, double B, double C);
 vector <double> cubic_solution (double A, double B, double C, double D);
@@ -129,11 +130,14 @@ STRESSTENSOR fix_stress_tensor_singularity(STRESSTENSOR& st);
 STRESSFIELD eigenvalue_eigenvector (STRESSTENSOR st);
 STRESSTENSOR stresstensor_from_eigenvalue_eigenvector (STRESSFIELD sf);
 
+
 STRESSFIELD computestressfield_DXDYDZ (STRESSFIELD in);
-STRESSFIELD computestressfield_NXNYNZ (STRESSFIELD in);
+//STRESSFIELD computestressfield_NXNYNZ (STRESSFIELD in);
 STRESSFIELD stress_regime (STRESSFIELD in);
 
 STRESSTENSOR invert_stress_tensor (STRESSTENSOR st);
+
+STRESSTENSOR add_stress_tensor (STRESSTENSOR st, STRESSTENSOR T);
 
 VCTR return_stressvector (STRESSTENSOR st, GDB inGDB, bool compression_positive);
 VCTR return_normalstress (STRESSTENSOR st, GDB inGDB, bool compression_positive);

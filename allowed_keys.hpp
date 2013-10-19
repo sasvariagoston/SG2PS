@@ -23,6 +23,8 @@ vector <string> allowed_striae_datatype_vector ();
 bool is_allowed_SC_datatype(const string& datatype);
 vector <string> allowed_SC_datatype_vector ();
 
+bool is_allowed_foldsurface_processing(const string& datatype);
+
 bool is_allowed_dip(const string& dip);
 bool is_allowed_dir(const string& dir);
 
@@ -43,6 +45,8 @@ bool is_allowed_geodetic (const string& geodetic);
 bool is_allowed_inversion_method (const string& method);
 
 bool is_allowed_BINGHAM_datatype (const string& datatype);
+
+bool is_allowed_handle_as_bedding (const string& datatype);
 
 bool is_double (const string& coordinate);
 

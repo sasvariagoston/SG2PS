@@ -1011,7 +1011,7 @@ VCTR unitvector (VCTR in) {
 
 	double vectorlength = sqrt(in.X * in.X + in.Y * in.Y + in.Z * in.Z);
 
-	if ((vectorlength > 10e-10) && (vectorlength < 1.0e+300)) {
+	if ((vectorlength > 10e-20) && (vectorlength < 1.0e+300)) {
 
 		in.X = (in.X / vectorlength);
 		in.Y = (in.Y / vectorlength);
@@ -1074,6 +1074,11 @@ CENTR_VECT declare_vector (double a, double b, double c, double d, double e, dou
 	o.Z = f;
 
 	return o;
+}
+
+VCTR flip_vector (VCTR in) {
+
+	return (declare_vector(-in.X, -in.Y, -in.Z));
 }
 
 VCTR flip_D_vector (VCTR in) {
@@ -1325,6 +1330,14 @@ bool existence_of_groupcodes (vector <GDB> inGDB) {
 	return presence;
 }
 
+vector <GDB> merge_GDB (vector <GDB> source, vector <GDB> target) {
+
+	for (size_t i = 0; i < source.size(); i++) {
+
+		target.push_back(source.at(i));
+	}
+	return target;
+}
 
 vector <double> quadratic_solution (double A, double B, double C) {
 
@@ -1595,6 +1608,14 @@ STRESSFIELD eigenvalue_eigenvector (STRESSTENSOR st) {
 	sf.EIGENVALUE.Y = X.at(1);
 	sf.EIGENVALUE.Z = X.at(0);
 
+	//cout << fixed << setprecision(8) << endl;
+
+	//cout << "EIGENVALUES and EIGENVECTORS in eigenvalue-eigenvector calculation " << endl;
+	//cout << X.at(2) << '\t' << X.at(1) << '\t' << X.at(0) << endl;
+
+	//cout << fixed << setprecision(3) << endl;
+
+
 	a1 = st._11 - sf.EIGENVALUE.X;
 	b1 = st._12;
 	c1=  st._13;
@@ -1647,6 +1668,11 @@ STRESSFIELD eigenvalue_eigenvector (STRESSTENSOR st) {
 	if ((sf.EIGENVECTOR3.Y > 0.9999) &&  (sf.EIGENVECTOR3.Y < 1.0001)) sf.EIGENVECTOR3.Y = 1.0 - 1E-8;
 	if ((sf.EIGENVECTOR3.Z > 0.9999) &&  (sf.EIGENVECTOR3.Z < 1.0001)) sf.EIGENVECTOR3.Z = 1.0 - 1E-8;
 	sf.EIGENVECTOR3 = unitvector (sf.EIGENVECTOR3);
+
+	//cout << "e1: " << sf.EIGENVECTOR1.X << '\t' << sf.EIGENVECTOR1.Y << '\t' << sf.EIGENVECTOR1.Z << endl;
+	//cout << "e2: " << sf.EIGENVECTOR2.X << '\t' << sf.EIGENVECTOR2.Y << '\t' << sf.EIGENVECTOR2.Z << endl;
+	//cout << "e3: " << sf.EIGENVECTOR3.X << '\t' << sf.EIGENVECTOR3.Y << '\t' << sf.EIGENVECTOR3.Z << endl;
+
 
 	return sf;
 }
@@ -1715,7 +1741,10 @@ STRESSFIELD computestressfield_DXDYDZ (STRESSFIELD in) {
 	return sf;
 }
 
+/*
 STRESSFIELD computestressfield_NXNYNZ (STRESSFIELD in) {
+
+	ezt is ki kellene szedni a megfelelo helyekrol
 
 	STRESSFIELD sf = in;
 
@@ -1730,6 +1759,7 @@ STRESSFIELD computestressfield_NXNYNZ (STRESSFIELD in) {
 
 	return sf;
 }
+*/
 
 STRESSTENSOR invert_stress_tensor (STRESSTENSOR st) {
 
@@ -1741,6 +1771,20 @@ STRESSTENSOR invert_stress_tensor (STRESSTENSOR st) {
 	out._22 = - out._22;
 	out._23 = - out._23;
 	out._33 = - out._33;
+
+	return out;
+}
+
+STRESSTENSOR add_stress_tensor (STRESSTENSOR st, STRESSTENSOR T) {
+
+	STRESSTENSOR out;
+
+	out._11 = st._11 + T._11;
+	out._12 = st._12 + T._12;
+	out._13 = st._13 + T._13;
+	out._22 = st._22 + T._22;
+	out._23 = st._23 + T._23;
+	out._33 = st._33 + T._33;
 
 	return out;
 }

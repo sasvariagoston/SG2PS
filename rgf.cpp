@@ -7,18 +7,19 @@
 #include <iostream>
 #include <iomanip>
 
+#include "average.hpp"
 #include "allowed_keys.hpp"
+#include "assertions.hpp"
 #include "bingham.h"
 #include "checkrgffilecontent.h"
 #include "checkxycontent.h"
 #include "data_io.h"
 #include "ps.h"
 #include "random.hpp"
+#include "retilt.hpp"
 #include "rgf.h"
 
-
 using namespace std;
-
 
 vector <GDB> competeRGFcontect (string projectname, string inputxyfilename, INPSET inset) {
 
@@ -172,46 +173,64 @@ GDB cGc_NCDCSC_LINEATION_SC (GDB inGDB) {
 
 vector <GDB> manipulate_N (vector <GDB> inGDB) {
 
-	size_t i = 0;
 	vector <GDB> outGDB = inGDB;
-	double a = 0;
 
 	uniform_generator_reset();
 
-	do {
+	for (size_t i = 0; i < outGDB.size(); i++) {
 
-		a = uniform_0_1();
+		string DT = outGDB.at(i).DATATYPE;
+
+		bool LITHOLOGY (is_allowed_lithology_datatype(DT));
+
+		bool PLANE = (is_allowed_plane_datatype(DT));
+		bool LINEATION = (is_allowed_lineation_datatype(DT));
+
+		bool STRIAE = 	(is_allowed_striae_datatype(DT));
+		bool SC = 		(is_allowed_SC_datatype(DT));
+
+		if (!LITHOLOGY && !PLANE && !LINEATION && !STRIAE && !SC) ASSERT_DEAD_END();
+
+		double SN = 0.01;
+		double a = uniform_0_1();
+
+		SN = a * SN;
 
 		if (a <= 0.33333) {
 
-			if (outGDB.at(i).NC.X > 0.5) 	outGDB.at(i).N.X = outGDB.at(i).N.X - 10e-8;
-			else 							outGDB.at(i).N.X = outGDB.at(i).N.X + 10e-8;
+			if (outGDB.at(i).N.X > 0.5) 	outGDB.at(i).N.X = outGDB.at(i).N.X - SN;
+			else 							outGDB.at(i).N.X = outGDB.at(i).N.X + SN;
 
-			if (outGDB.at(i).NC.X > 0.5) 	outGDB.at(i).NC.X = outGDB.at(i).NC.X - 10e-8;
-			else 							outGDB.at(i).NC.X = outGDB.at(i).NC.X + 10e-8;
+			if (outGDB.at(i).NC.X > 0.5) 	outGDB.at(i).NC.X = outGDB.at(i).NC.X - SN;
+			else 							outGDB.at(i).NC.X = outGDB.at(i).NC.X + SN;
 		}
-
 		else if  (a >= 0.6666) {
 
-			if (outGDB.at(i).N.Z > 0.5) 	outGDB.at(i).N.Z = outGDB.at(i).N.Z - 10e-8;
-			else 							outGDB.at(i).N.Z = outGDB.at(i).N.Z + 10e-8;
+			if (outGDB.at(i).N.Z > 0.5) 	outGDB.at(i).N.Z = outGDB.at(i).N.Z - SN;
+			else 							outGDB.at(i).N.Z = outGDB.at(i).N.Z + SN;
 
-			if (outGDB.at(i).NC.Z > 0.5) 	outGDB.at(i).NC.Z = outGDB.at(i).NC.Z - 10e-8;
-			else 							outGDB.at(i).NC.Z = outGDB.at(i).NC.Z + 10e-8;
+			if (outGDB.at(i).NC.Z > 0.5) 	outGDB.at(i).NC.Z = outGDB.at(i).NC.Z - SN;
+			else 							outGDB.at(i).NC.Z = outGDB.at(i).NC.Z + SN;
 		}
-
 		else {
 
-			if (outGDB.at(i).N.Y > 0.5) 	outGDB.at(i).N.Y = outGDB.at(i).N.Y - 10e-8;
-			else 							outGDB.at(i).N.Y = outGDB.at(i).N.Y + 10e-8;
+			if (outGDB.at(i).N.Y > 0.5) 	outGDB.at(i).N.Y = outGDB.at(i).N.Y - SN;
+			else 							outGDB.at(i).N.Y = outGDB.at(i).N.Y + SN;
 
-			if (outGDB.at(i).NC.Y > 0.5) 	outGDB.at(i).NC.Y = outGDB.at(i).NC.Y - 10e-8;
-			else 							outGDB.at(i).NC.Y = outGDB.at(i).NC.Y + 10e-8;
+			if (outGDB.at(i).NC.Y > 0.5) 	outGDB.at(i).NC.Y = outGDB.at(i).NC.Y - SN;
+			else 							outGDB.at(i).NC.Y = outGDB.at(i).NC.Y + SN;
 		}
 
-		i++;
 
-	} while (i < inGDB.size());
+		if (!LITHOLOGY) {
+
+			outGDB.at(i).N = unitvector (outGDB.at(i).N);
+
+			if (SC || STRIAE) outGDB.at(i).NC = unitvector (outGDB.at(i).NC);
+			else {} // ok
+		}
+		else {} // ok
+	}
 
 	return outGDB;
 }
@@ -861,13 +880,12 @@ vector <GDB> return_GDB_with_no_homogeneous_data (vector <GDB> inGDB) {
 
 bool correct_inhomogeneous_number (vector <GDB> inGDB, INPSET inset) {
 
+	if (inGDB.size() < 2) return false;
+
 	bool STRIAE = 	(is_allowed_striae_datatype(inGDB.at(0).DATATYPE));
 	bool SC = 		(is_allowed_SC_datatype(inGDB.at(0).DATATYPE));
-	//bool FRACTURE = (is_allowed_BINGHAM_datatype(inGDB.at(0).DATATYPE));
 
 	if (inset.inversion == "N" && STRIAE) return true;
-
-	if (inGDB.size() < 2) return false;
 
 	if (!(check_dataset_homogenity (inGDB))) return false;
 
@@ -876,15 +894,15 @@ bool correct_inhomogeneous_number (vector <GDB> inGDB, INPSET inset) {
 
 	vector <GDB> test = return_GDB_with_no_homogeneous_data (inGDB);
 
-
 	if (test.size() >= minimum_independent_dataset (inset)) return true;
 	return false;
 }
 
-bool check_dataset_homogenity (vector <GDB> inGDB) {
+bool check_dataset_geometry_homogenity (vector <GDB> inGDB) {
 
 	bool STRIAE = 	(is_allowed_striae_datatype(inGDB.at(0).DATATYPE));
-	bool SC = 		( is_allowed_SC_datatype(inGDB.at(0).DATATYPE));
+	bool SC = 		(is_allowed_SC_datatype(inGDB.at(0).DATATYPE));
+	bool BEDDING = 	((inGDB.at(0).DATATYPE) == "BEDDING");
 
 	if (SC || STRIAE) 	sort(inGDB.begin(), inGDB.end(), bycorrDIPDIRcorrDIPcorrLDIPDIRcorrLDIP);
 	else 				sort(inGDB.begin(), inGDB.end(), bycorrDIPDIRcorrDIP);
@@ -905,12 +923,31 @@ bool check_dataset_homogenity (vector <GDB> inGDB) {
 	double maxLD = inGDB.at(inGDB.size() - 1).corrL.DIP;
 	double var4 = fabs(maxLD - minLD);
 
-	//if (fabs(maxD) < 10e-4 && fabs(minD) < 10e-4) return false;
-
 	if (SC || STRIAE) return (var1 > 0.1 || var2 > 0.1 || var3 > 0.1 || var4 > 0.1);
+	else if (BEDDING) return (var1 > 0.1 || var2 > 0.1);
 	else return (var1 > 0.1 || var2 > 0.1);
 }
 
+bool check_dataset_offset_homogenity (vector <GDB> inGDB) {
+
+	string ofs1 = inGDB.at(0).OFFSET;
+	string ofs2 = inGDB.at(inGDB.size() - 1).OFFSET;
+	return (ofs1 != ofs2);
+}
+
+bool check_dataset_homogenity (vector <GDB> inGDB) {
+
+	bool STRIAE = 	(is_allowed_striae_datatype(inGDB.at(0).DATATYPE));
+	bool SC = 		(is_allowed_SC_datatype(inGDB.at(0).DATATYPE));
+	bool BEDDING = 	((inGDB.at(0).DATATYPE) == "BEDDING");
+
+	bool OFFSET = check_dataset_offset_homogenity (inGDB);
+	bool GEOMETRY = check_dataset_geometry_homogenity (inGDB);
+
+	if (SC || STRIAE || BEDDING) return (GEOMETRY || OFFSET);
+	else return (GEOMETRY);
+}
+/*
 void fold_from_planes (vector <GDB> inGDB, ofstream& o, INPSET inset, CENTER center) {
 
 	vector <GDB> buffer;
@@ -940,7 +977,15 @@ void fold_from_planes (vector <GDB> inGDB, ofstream& o, INPSET inset, CENTER cen
 
 		if (buffer.at(0).DATATYPE == "FOLDSURFACE") {
 
-			sf = sf_BINGHAM (st_BINGHAM (buffer));
+			//sf = sf_BINGHAM (st_BINGHAM (buffer)); ez volt
+
+			STRESSTENSOR st = st_BINGHAM (inGDB); // ez lett
+
+			sf = eigenvalue_eigenvector (st);
+
+			sf = sf_BINGHAM (sf);
+
+			sf = computestressfield_DXDYDZ (sf); //eddig
 
 			great_circle_normal = flip_D_vector (sf.EIGENVECTOR1);
 
@@ -960,7 +1005,9 @@ void fold_from_planes (vector <GDB> inGDB, ofstream& o, INPSET inset, CENTER cen
 	return;
 }
 
+*/
 
+/*
 GDB init_average (GDB inGDB) {
 
 	inGDB.avD = declare_vector (0.0, 1.0, 0.0);
@@ -973,6 +1020,7 @@ GDB init_average (GDB inGDB) {
 
 	return inGDB;
 }
+
 
 bool is_datatype_processable_for_average (vector <GDB> inGDB) {
 
@@ -1022,7 +1070,7 @@ STRESSFIELD process_for_average_EQ2 (vector <GDB> inGDB) {
 	return sf;
 }
 
-STRESSFIELD process_for_average_EQ1 (vector <GDB> inGDB) {
+STRESSFIELD  (vector <GDB> inGDB) {
 
 	STRESSFIELD sf;
 
@@ -1046,81 +1094,9 @@ vector <GDB> calculate_average_for_1 (vector <GDB> inGDB) {
 
 	return inGDB;
 }
+*/
 
-vector <GDB> cGc_average (vector <GDB> inGDB) {
-
-	vector <GDB> outGDB = inGDB;
-	vector <GDB> to_process_GDB;
-
-	size_t intervalbegin = 0;
-	size_t independentrecordcounter = 0;
-	size_t i = 0;
-	size_t j = 0;
-
-	DIPDIR_DIP dtemp;
-	STRESSFIELD sf;
-
-	VCTR temp = declare_vector (0.0, 0.0, 0.0);
-	VCTR result;
-
-	if (outGDB.size() == 1)  {
-
-		cout << "  - Data set averages were computed for 1 independent data group in " << i << " records." <<  endl;
-
-		return calculate_average_for_1 (inGDB);
-	}
-
-	do {
-
-		to_process_GDB.clear();
-
-		do {
-
-			to_process_GDB.push_back(outGDB.at(i));
-			outGDB.at(i) = init_average (outGDB.at(i));
-
-			i++;
-
-			if (i == outGDB.size()) break;
-
-		} while ((outGDB.at(i-1).DATATYPE == outGDB.at(i).DATATYPE) && (outGDB.at(i-1).LOC == outGDB.at(i).LOC));
-
-		j = intervalbegin;
-		independentrecordcounter++;
-
-
-		if 		(is_processable_for_average_MT2 (to_process_GDB)) 	sf = process_for_average_MT2 (to_process_GDB);
-		else if (is_processable_for_average_EQ2 (to_process_GDB)) 	sf = process_for_average_EQ2 (to_process_GDB);
-		else if (is_processable_for_average_EQ1 (to_process_GDB)) 	sf = process_for_average_EQ1 (to_process_GDB);
-		else if (is_processable_for_average_HOMOG (to_process_GDB)) sf = process_for_average_EQ1 (to_process_GDB);
-		else 	 {}
-
-
-		do {
-
-			if ((outGDB.at(j).DATATYPE != "STRIAE") && (outGDB.at(j).DATATYPE != "SC")) {
-
-				if ((outGDB.at(j).DATATYPE == "BEDDING") && (outGDB.at(j).OFFSET == "OVERTURNED")) outGDB.at(j).avS0offset = "OVERTURNED";
-
-				outGDB.at(j).avD = sf.EIGENVECTOR2;
-				outGDB.at(j).avd = sf.S_2;
-			}
-
-			j++;
-		}
-
-		while (j < i);
-
-		temp = declare_vector (0.0, 0.0, 0.0);
-
-		intervalbegin = i;
-
-	} while (i < outGDB.size());
-
-	cout << "  - Data set averages were computed for " << independentrecordcounter << " independent data group(s) in " << i << " records." <<  endl;
-
-	return outGDB;
-}
+/*
 
 vector <GDB> cGc_s0_average (vector <GDB> inGDB) {
 
@@ -1159,7 +1135,7 @@ vector <GDB> cGc_s0_average (vector <GDB> inGDB) {
 
 			outGDB.at(0).avS0d = avs0;
 
-			cout << "  - Average bedding were computed for 1 independent data group in " << i << " records." <<  endl;
+			cout << "  - Average bedding was computed for 1 independent data group in " << i << " records." <<  endl;
 		}
 		else {
 
@@ -1211,6 +1187,8 @@ vector <GDB> cGc_s0_average (vector <GDB> inGDB) {
 				outGDB.at(j).avS0N = temp2;
 
 				outGDB.at(j).avS0d = avs0;
+
+				//cout << "AVERAGE BEDDING :" << avs0.DIPDIR << "/" << avs0.DIP << endl;
 			}
 			else {
 
@@ -1233,362 +1211,7 @@ vector <GDB> cGc_s0_average (vector <GDB> inGDB) {
 	return outGDB;
 }
 
-GDB lineation_tilt (GDB inGDB, bool paleonorht) {
-
-	GDB outGDB;
-	outGDB = inGDB;
-
-	DIPDIR_DIP dtemp;
-	VCTR result;
-	VCTR input;
-	VCTR input2;
-	VCTR axis;
-
-	double angle = 0.0;
-
-	if (paleonorht) {
-
-		angle = - outGDB.PALEON;
-		axis = declare_vector (0.0, 0.0, -1.0);
-	}
-
-	else {
-
-		if (outGDB.avS0d.DIP < 90.0) angle = outGDB.avS0d.DIP;
-		else return outGDB;
-
-		if (outGDB.avS0offset == "OVERTURNED") angle = 180.0 - angle;
-
-		axis.X = SIN (outGDB.avS0d.DIPDIR + 90.0);
-		axis.Y = COS (outGDB.avS0d.DIPDIR + 90.0);
-		axis.Z = 0.0;
-	}
-
-	if (fabs(angle) > 0.1) {
-
-		axis = unitvector (axis);
-
-		input = outGDB.D;
-		result = ROTATE (axis, input, angle);
-		result = flip_D_vector (result);
-		result = unitvector(result);
-		outGDB.D = result;
-
-		input = outGDB.D;
-		result = NXNYNZ_from_DXDYDZ (input);
-		result = flip_N_vector (result);
-		result = unitvector(result);
-		outGDB.N = result;
-
-		input2 = outGDB.N;
-
-		dtemp = dipdir_dip_from_NXNYNZ (input2);
-		outGDB.corrL.DIPDIR = dtemp.DIPDIR;
-		outGDB.corrL.DIP = dtemp.DIP;
-
-		result = crossproduct (input, input2);
-		outGDB.S = result;
-	}
-
-	return outGDB;
-}
-
-GDB plane_tilt (GDB inGDB, bool paleonorht) {
-
-	GDB outGDB;
-	outGDB = inGDB;
-
-	DIPDIR_DIP dtemp;
-	VCTR result;
-	VCTR input;
-	VCTR input2;
-	VCTR axis;
-
-	double angle = 0.0;
-
-	if (paleonorht) {
-
-		angle = - outGDB.PALEON;
-		axis = declare_vector (0.0, 0.0, -1.0);
-	}
-
-	else {
-
-		if (outGDB.avS0d.DIP < 90.0) angle = outGDB.avS0d.DIP;
-		else  return outGDB;
-
-		if (outGDB.avS0offset == "OVERTURNED") angle = 180.0 - angle;
-
-		axis.X = SIN (outGDB.avS0d.DIPDIR + 90.0);
-		axis.Y = COS (outGDB.avS0d.DIPDIR + 90.0);
-		axis.Z = 0.0;
-	}
-
-	if (fabs(angle) > 0.1)  {
-
-		axis = unitvector (axis);
-
-		input = outGDB.N;
-		result = ROTATE (axis, input, angle);
-		result = flip_N_vector (result);
-		result = unitvector(result);
-		outGDB.N = result;
-
-		input = outGDB.N;
-		result = DXDYDZ_from_NXNYNZ (input);
-		result = flip_D_vector (result);
-		result = unitvector(result);
-		outGDB.D = result;
-
-		input2 = outGDB.D;
-		dtemp = dipdir_dip_from_DXDYDZ (input2);
-		outGDB.corr = dtemp;
-		result = crossproduct (input, input2);
-		outGDB.S = result;
-
-		if (outGDB.DATATYPE == "BEDDING") {
-			outGDB.OFFSET = "";
-			outGDB.avS0offset = "";
-		}
-	}
-
-	return outGDB;
-}
-
-GDB SC_tilt (GDB inGDB, bool paleonorht) {
-
-	GDB outGDB;
-	outGDB = inGDB;
-	DIPDIR_DIP dtemp;
-	VCTR result, input, input2, axis;
-
-	double angle = 0.0;
-
-	if (paleonorht) {
-
-		angle = - outGDB.PALEON;
-		axis = declare_vector (0.0, 0.0, -1.0);
-	}
-
-	else {
-
-		if (outGDB.avS0d.DIP < 90.0) angle = outGDB.avS0d.DIP;
-		else return outGDB;
-
-		if (outGDB.avS0offset == "OVERTURNED") angle = 180.0 - angle;
-
-		axis.X = SIN (outGDB.avS0d.DIPDIR + 90.0);
-		axis.Y = COS (outGDB.avS0d.DIPDIR + 90.0);
-		axis.Z = 0.0;
-	}
-
-	if (fabs(angle) > 0.1) {
-
-		axis = unitvector (axis);
-		input = outGDB.SV;
-		result = ROTATE (axis, input, angle);
-		result = unitvector(result);
-		outGDB.SV = result;
-
-		input = outGDB.NC;
-		result = ROTATE (axis, input, angle);
-		result = flip_N_vector (result);
-		result = unitvector(result);
-		outGDB.NC = result;
-
-		input = outGDB.NC;
-		result = DXDYDZ_from_NXNYNZ (input);
-		result = flip_D_vector (result);
-		result = unitvector(result);
-		outGDB.DC = result;
-
-		input2 = outGDB.DC;
-		dtemp = dipdir_dip_from_DXDYDZ (input2);
-		outGDB.corrL.DIPDIR = dtemp.DIPDIR;
-		outGDB.corrL.DIP = dtemp.DIP;
-		result = crossproduct (input, input2);
-		outGDB.SC = result;
-
-		input = outGDB.N;
-
-		result = ROTATE (axis, input, angle);
-
-		if (result.Z < 0.0) outGDB.SV = declare_vector (- outGDB.SV.X, - outGDB.SV.Y, - outGDB.SV.Z);
-
-		result = flip_N_vector (result);
-		result = unitvector(result);
-		outGDB.N = result;
-
-		input = outGDB.N;
-		result = DXDYDZ_from_NXNYNZ (input);
-		result = flip_D_vector (result);
-		result = unitvector(result);
-		outGDB.D = result;
-
-		input2 = outGDB.D;
-		dtemp = dipdir_dip_from_DXDYDZ (input2);
-		outGDB.corr.DIPDIR = dtemp.DIPDIR;
-		outGDB.corr.DIP = dtemp.DIP;
-		result = crossproduct (input, input2);
-		outGDB.S = result;
-	}
-
-	return outGDB;
-}
-
-GDB striae_tilt (GDB inGDB, bool paleonorht) {
-
-	GDB outGDB;
-	outGDB = inGDB;
-
-	DIPDIR_DIP dtemp;
-	VCTR result;
-	VCTR input;
-	VCTR input2;
-	VCTR axis;
-
-	double angle = 0.0;
-
-	if (paleonorht) {
-
-		angle = - outGDB.PALEON;
-		axis = declare_vector (0.0, 0.0, -1.0);
-	}
-
-	else {
-
-		if (outGDB.avS0d.DIP < 90.0) angle = outGDB.avS0d.DIP;
-		else return outGDB;
-
-		if (outGDB.avS0offset == "OVERTURNED") angle = 180.0 - angle;
-
-		axis.X = SIN (outGDB.avS0d.DIPDIR + 90.0);
-		axis.Y = COS (outGDB.avS0d.DIPDIR + 90.0);
-		axis.Z = 0.0;
-	}
-
-	if (fabs(angle) > 0.1) {
-
-		axis = unitvector (axis);
-
-		input = outGDB.DC;
-		result = ROTATE (axis, input, angle);
-		result = flip_D_vector (result);
-		result = unitvector(result);
-		outGDB.DC = result;
-
-		if (outGDB.OFFSET == "NONE") outGDB.SV = declare_vector (0.0, 0.0, 0.0);
-
-		else {
-
-			input = outGDB.SV;
-			result = ROTATE (axis, input, angle);
-			result = unitvector(result);
-			outGDB.SV = result;
-		}
-
-		input = outGDB.DC;
-		result = NXNYNZ_from_DXDYDZ (input);
-		result = flip_N_vector (result);
-		result = unitvector(result);
-		outGDB.NC = result;
-
-		input2 = outGDB.NC;
-		dtemp = dipdir_dip_from_NXNYNZ (input2);
-		outGDB.corrL = dtemp;
-		result = crossproduct (input, input2);
-		outGDB.SC = result;
-
-		input = outGDB.N;
-
-		result = ROTATE (axis, input, angle);
-
-		if (result.Z < 0.0) outGDB.SV = declare_vector (-outGDB.SV.X, -outGDB.SV.Y, -outGDB.SV.Z);
-
-		result = flip_N_vector (result);
-		result = unitvector(result);
-		outGDB.N = result;
-
-		input = outGDB.N;
-		result = DXDYDZ_from_NXNYNZ (input);
-		result = flip_D_vector (result);
-		result = unitvector(result);
-		outGDB.D = result;
-
-		input2 = outGDB.D;
-		dtemp = dipdir_dip_from_DXDYDZ (input2);
-		outGDB.corr = dtemp;
-		result = crossproduct (input, input2);
-		outGDB.S = result;
-
-	}
-
-	return outGDB;
-}
-
-GDB S0_TILT (GDB inGDB, bool paleonorth) {
-
-	GDB outGDB;
-
-	outGDB.N  = declare_vector (999.99, 999.99, 999.99);
-	outGDB.NC = declare_vector (999.99, 999.99, 999.99);
-	outGDB.D  = declare_vector (999.99, 999.99, 999.99);
-	outGDB.DC = declare_vector (999.99, 999.99, 999.99);
-	outGDB.S  = declare_vector (999.99, 999.99, 999.99);
-	outGDB.SC = declare_vector (999.99, 999.99, 999.99);
-
-	if 		(inGDB.DATAGROUP == "PLANE") 		outGDB = plane_tilt 	(inGDB, paleonorth);
-	else if (inGDB.DATAGROUP == "LINEATION") 	outGDB = lineation_tilt (inGDB, paleonorth);
-	else if (inGDB.DATAGROUP == "STRIAE") 		outGDB = striae_tilt 	(inGDB, paleonorth);
-	else if (inGDB.DATAGROUP == "SC") 			outGDB = SC_tilt 		(inGDB, paleonorth);
-	else 										outGDB = inGDB;
-
-	return outGDB;
-}
-
-vector <GDB> cGc_RETILT (vector <GDB> inGDB, INPSET inSET) {
-
-	vector <GDB> outGDB = inGDB;
-	size_t i = 0;
-
-	if (inSET.tilting == "B") {
-
-		do {
-			outGDB.at(i) = S0_TILT (outGDB.at(i), false);
-			i++;
-		}
-
-		while (i < outGDB.size());
-
-		cout << "  - Retilting all of  " << i << " data records by the bedding has done." <<  endl;
-	}
-
-	else if (inSET.tilting == "P") {
-
-		do {
-			outGDB.at(i) = S0_TILT (outGDB.at(i), true);
-			i++;
-		}
-
-		while (i < outGDB.size());
-
-		cout << "  - Retilting all of  " << i << " data records by the Paleo-North data has done." <<  endl;
-	}
-
-	else {
-
-		do {
-
-			outGDB.at(i) = S0_TILT (outGDB.at(i), false);
-			outGDB.at(i) = S0_TILT (outGDB.at(i), true);
-
-			i++;
-
-		} while (i < outGDB.size());
-	}
-
-	return outGDB;
-}
+*/
 
 vector <GDB> ptn (vector <GDB> inGDB, INPSET inset) {
 
@@ -1696,8 +1319,8 @@ void process_rgf (string inputfilename, string XY_filename, INPSET inset) {
 	else geodatabase = competeRGFcontect(inputfilename, XY_filename, inset);
 
 	geodatabase = cGc_NDS (geodatabase);
-	geodatabase = manipulate_N (geodatabase);
 	geodatabase = cGc_NDS_DCNCSC (geodatabase);
+	geodatabase = manipulate_N (geodatabase);
 	geodatabase = cGc_MISFIT (geodatabase);
 	geodatabase = cGc_striae_correction (geodatabase);
 	geodatabase = cGc_UP (geodatabase);
@@ -1715,7 +1338,7 @@ void process_rgf (string inputfilename, string XY_filename, INPSET inset) {
 
 	cout << "AVERAGE BEDDING COMPUTATION FOR '" << capslock(inputfilename)<< ".RGF' DATABASE FILE" << endl;
 	geodatabase = cGc_average (geodatabase);
-	geodatabase = cGc_s0_average (geodatabase);
+	//geodatabase = cGc_s0_average (geodatabase);
 	geodatabase = ptn (geodatabase, inset);
 
 	cout << "RETILTING OF '" << capslock(inputfilename)<< ".RGF' DATABASE FILE" << endl;
@@ -1724,7 +1347,7 @@ void process_rgf (string inputfilename, string XY_filename, INPSET inset) {
 	tiltgeodatabase = cGc_PITCHANGLE (tiltgeodatabase);
 	tiltgeodatabase = cGc_OFFSET (tiltgeodatabase);
 	tiltgeodatabase = cGc_average (tiltgeodatabase);
-	tiltgeodatabase = cGc_s0_average (tiltgeodatabase);
+	//tiltgeodatabase = cGc_s0_average (tiltgeodatabase);
 	tiltgeodatabase = ptn (tiltgeodatabase, inset);
 
 	cout << "DATA EVALUATION AND EXPORT FROM '" << capslock(inputfilename) << ".RGF' DATABASE FILE" << endl;
@@ -1737,4 +1360,32 @@ void process_rgf (string inputfilename, string XY_filename, INPSET inset) {
 	tiltgeodatabase = sort_by_iID (tiltgeodatabase);
 	outputresultrgf (projectfoldername, geodatabase, false, inset);
 	copy_log(projectfoldername);
+}
+
+void dbg_vctr (vector <GDB> inGDB, string to_dump) {
+
+	bool NORMAL = 	(to_dump == "N");
+	bool DIP = 		(to_dump == "D");
+
+	VCTR DUMP;
+
+	cout
+		<< "DATA_ID" << '\t'
+		<< "DATATYPE" << '\t' << " ---- " << '\t'
+		<< "X" << '\t'
+		<< "Y" << '\t'
+		<< "Z" << '\t'<< endl;
+
+		for (size_t i = 0; i < inGDB.size(); i++) {
+
+			if 		(NORMAL) 	DUMP = inGDB.at(i).N;
+			else if (DIP) 		DUMP = inGDB.at(i).D;
+
+			cout
+			<< inGDB.at(i).ID << '\t'
+			<< inGDB.at(i).DATATYPE << '\t' << " ---- " << '\t'
+			<< DUMP.X << '\t'
+			<< DUMP.Y << '\t'
+			<< DUMP.Z << '\t' << endl;
+		}
 }

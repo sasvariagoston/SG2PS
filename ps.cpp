@@ -8,6 +8,7 @@
 #include <iostream>
 #include <sstream>
 
+#include "allowed_keys.hpp"
 #include "density.h"
 #include "ps.h"
 #include "rgf.h"
@@ -1198,6 +1199,10 @@ void PS_plane (GDB i, ofstream& o, INPSET inset, CENTER center, bool label, stri
 	vector <VCTR> PP;
 	VCTR temp, torotate, axis;
 
+	bool OT = (i.avS0offset == "OVERTURNED" || i.avS0offset == "O");
+
+	bool OTAB = (OT && type == "AV");
+
 	if (inset.plottype == "S") steps = 120;
 
 	if (type == "C") {
@@ -1206,20 +1211,16 @@ void PS_plane (GDB i, ofstream& o, INPSET inset, CENTER center, bool label, stri
 		i.D.Z = i.DC.Z;
 		i.N = i.NC;
 	}
-
 	else if (type == "AV") {
 
-		i.corr = i.avS0d;
-		i.D.Z = i.avS0D.Z;
-		i.N = i.avS0N;
+		i.corr = 	i.avS0d;
+		i.D =  		flip_D_vector(i.avS0D);
+		i.N = 		unitvector(NXNYNZ_from_DXDYDZ (i.D));
 	}
-
 	else if (type == "FOLD") {
 
 		i.corr = i.avd;
-
 		i.D  = 	i.avD;
-
 		i.N    = 	unitvector(NXNYNZ_from_DXDYDZ (i.D));
 	}
 	else {}
@@ -1375,7 +1376,7 @@ void PS_plane (GDB i, ofstream& o, INPSET inset, CENTER center, bool label, stri
 		} while (j < steps + 1);
 	}
 
-	if (i.OFFSET == "OVERTURNED") {
+	if (OTAB) {
 
 		o << "  [6 6] 0 setdash stroke" << '\n';
 		o << "  [   ] 0 setdash " << '\n';
@@ -1439,11 +1440,8 @@ void PS_polepoint (GDB i, ofstream& o, INPSET inset, CENTER center, bool label, 
 
 	if (type == "FOLD") {
 
-		dd = i.corr;
-		temp = NXNYNZ_from_dipdir_dip (dd);
-		in.X = - temp.X;
-		in.Y = - temp.Y;
-		in.Z =   temp.Z;
+		dd = i.avd;
+		in = i.avD;
 	}
 
 	else if (type == "AV")  {
@@ -1775,10 +1773,15 @@ void PS_datanumber_averagebedding (GDB i, ofstream& o, INPSET inset, PAPER P, CE
 
 	o << '\n';
 
-	if (inset.plot == "H") PS_polepoint (i, o, inset, center, false, "AV");
-	else PS_plane (i, o, inset, center, false, "AV");
+	bool HAS_BEDDING = (i.avS0d.DIPDIR < 900.0 && i.avS0d.DIP < 900.0);
 
-	if (inset.datarule == "R") i.avS0d.DIPDIR = german_to_right_hand_rule (i.avS0d.DIPDIR);
+	if (HAS_BEDDING) {
+
+		if (inset.plot == "H") 	PS_polepoint (i, o, inset, center, false, "AV");
+		else 					PS_plane     (i, o, inset, center, false, "AV");
+
+		if (inset.datarule == "R") i.avS0d.DIPDIR = german_to_right_hand_rule (i.avS0d.DIPDIR);
+	}
 
 	o << '\n';
 
@@ -1795,7 +1798,7 @@ void PS_datanumber_averagebedding (GDB i, ofstream& o, INPSET inset, PAPER P, CE
 	<< "  " << fixed << setprecision (3) << P.O1Y + P.R + 1.3 * P.B
 	<< " moveto (Average bedding: " << flush;
 
-	if (i.avS0d.DIPDIR > 900.0) {
+	if (!HAS_BEDDING) {
 
 		o << "no bedding measured";
 	}
@@ -1822,7 +1825,7 @@ void PS_datanumber_averagebedding (GDB i, ofstream& o, INPSET inset, PAPER P, CE
 		<< " moveto (Corrected by average bedding " << flush;
 
 
-		if (i.avS0d.DIPDIR > 900.0) {
+		if (!HAS_BEDDING) {
 
 			o << "no bedding measured";
 		}
@@ -1853,7 +1856,7 @@ void PS_datanumber_averagebedding (GDB i, ofstream& o, INPSET inset, PAPER P, CE
 		<< "  " << fixed << setprecision (3) << P.O2Y + P.R + 1.3 * P.B
 		<< " moveto (Corrected by average bedding " << flush;
 
-		if (i.avS0d.DIPDIR > 900.0) {
+		if (!HAS_BEDDING) {
 
 			o << "- no bedding measured";
 		}
@@ -1883,7 +1886,7 @@ void PS_datanumber_averagebedding (GDB i, ofstream& o, INPSET inset, PAPER P, CE
 	<< "  " << fixed << setprecision (3) << P.O3Y + P.R + 1.3 * P.B
 	<< " moveto (Average bedding: " << flush;
 
-	if (i.avS0d.DIPDIR > 900.0) {
+	if (!HAS_BEDDING) {
 
 		o << "no bedding measured";
 	}
@@ -1908,7 +1911,7 @@ void PS_datanumber_averagebedding (GDB i, ofstream& o, INPSET inset, PAPER P, CE
 		<< "  " << fixed << setprecision (3) << P.O4Y + P.R + 1.3 * P.B
 		<< " moveto (Corrected by average bedding " << flush;
 
-		if (i.avS0d.DIPDIR > 900.0) {
+		if (!HAS_BEDDING) {
 
 			o << "- no bedding measured";
 		}
@@ -1938,7 +1941,7 @@ void PS_datanumber_averagebedding (GDB i, ofstream& o, INPSET inset, PAPER P, CE
 		<< "  " << fixed << setprecision (3) << P.O4Y + P.R + 1.3 * P.B
 		<< " moveto (Corrected by average bedding " << flush;
 
-		if (i.avS0d.DIPDIR > 900.0) {
+		if (!HAS_BEDDING) {
 
 			o << "- no bedding measured";
 		}
@@ -2471,8 +2474,11 @@ void PS_SYMBOLS_PLANE (vector <GDB> inGDB, ofstream& o, INPSET inset, PAPER P) {
 	o  << "  " << arrow_X  + 5.0 << " " << arrow_Y + (0.22 * P.A) << " moveto (Overturned) 0 0 0 setrgbcolor show"  << '\n';
 
 	PS_SYMBOL_draw_plane (1.0 * P.A, 1.00 * P.A, o, inset, P, "", "");
-	if (type == "BEDDING")
-	PS_SYMBOL_draw_plane (1.0 * P.A, 1.20 * P.A, o, inset, P, "O", "");
+
+	if (type == "BEDDING") {
+
+		PS_SYMBOL_draw_plane (1.0 * P.A, 1.20 * P.A, o, inset, P, "O", "");
+	}
 
 	PS_SYMBOL_draw_plane (1.0 * P.A, 1.40 * P.A, o, inset, P, "AV", "");
 	PS_SYMBOL_draw_plane (1.0 * P.A, 1.60 * P.A, o, inset, P, "AV_O", "");

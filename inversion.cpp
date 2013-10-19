@@ -27,6 +27,51 @@
 
 using namespace std;
 
+bool is_method_BINGHAM (vector <GDB> inGDB, INPSET inset) {
+
+	return (inGDB.at(0).DATATYPE == "FRACTURE" && inset.fracture == "B");
+}
+
+bool is_method_FRY (vector <GDB> inGDB, INPSET inset) {
+
+	return (inGDB.at(0).DATATYPE == "STRIAE" && inset.inversion == "F");
+}
+
+bool is_method_MICHAEL (vector <GDB> inGDB, INPSET inset) {
+
+	return (inGDB.at(0).DATATYPE == "STRIAE" && inset.inversion == "M");
+}
+
+bool is_method_SHAN (vector <GDB> inGDB, INPSET inset) {
+
+	return (inGDB.at(0).DATATYPE == "STRIAE" && inset.inversion == "S");
+}
+
+bool is_method_ANGELIER (vector <GDB> inGDB, INPSET inset) {
+
+	return (inGDB.at(0).DATATYPE == "STRIAE" && inset.inversion == "A");
+}
+
+bool is_method_MOSTAFA (vector <GDB> inGDB, INPSET inset) {
+
+	return (inGDB.at(0).DATATYPE == "STRIAE" && inset.inversion == "O");
+}
+
+bool is_method_NDA (vector <GDB> inGDB, INPSET inset) {
+
+	return (inGDB.at(0).DATATYPE == "STRIAE" && inset.inversion == "D");
+}
+
+bool is_method_BRUTEFORCE (vector <GDB> inGDB, INPSET inset) {
+
+	return (inGDB.at(0).DATATYPE == "STRIAE" && inset.inversion == "B");
+}
+
+bool is_method_PTN (vector <GDB> inGDB, INPSET inset) {
+
+	return (inGDB.at(0).DATATYPE == "STRIAE" && inset.inversion == "P");
+}
+
 size_t useful_striae_number (vector <GDB> inGDB) {
 
 	size_t useful_striae_number = 0;
@@ -113,20 +158,58 @@ vector <GDB> generate_virtual_striae (vector <GDB> inGDB) {
 	return outGDB;
 }
 
-void ps_inversion (string method, STRESSTENSOR st, STRESSFIELD sf, vector <GDB> inGDB, vector <VALLEY> V, INPSET inset, ofstream& o, CENTER center, CENTER mohr_center, PAPER P) {
+string inversion_method (vector <GDB> inGDB, INPSET inset) {
 
+	bool ANGELIER = 	is_method_ANGELIER(inGDB, inset);
+	bool BINGHAM = 		is_method_BINGHAM(inGDB, inset);
+	bool BRUTEFORCE = 	is_method_BRUTEFORCE(inGDB, inset);
+	bool FRY = 			is_method_FRY(inGDB, inset);
+	bool MICHAEL = 		is_method_MICHAEL(inGDB, inset);
+	bool MOSTAFA = 		is_method_MOSTAFA(inGDB, inset);
+	bool NDA = 			is_method_NDA(inGDB, inset);
+	bool PTN = 			is_method_PTN(inGDB, inset);
+	bool SHAN = 		is_method_SHAN(inGDB, inset);
+
+	if (!ANGELIER && !BINGHAM && !BRUTEFORCE && !FRY &&!MICHAEL && !MOSTAFA && !NDA && !PTN && !SHAN) ASSERT_DEAD_END();
+
+	if (ANGELIER) return "ANGELIER";
+	else if (BINGHAM) return "BINGHAM";
+	else if (BRUTEFORCE) return "BRUTEFORCE";
+	else if (FRY) return "FRY";
+	else if (MICHAEL) return "MICHAEL";
+	else if (MOSTAFA) return "MOSTAFA";
+	else if (NDA) return "NDA";
+	else if (PTN) return "PTN";
+	else return "SHAN";
+}
+
+void ps_inversion (STRESSTENSOR st, STRESSFIELD sf, vector <GDB> inGDB, vector <VALLEY> V, INPSET inset, ofstream& o, CENTER center, CENTER mohr_center, PAPER P) {
+
+	bool ANGELIER = 	is_method_ANGELIER(inGDB, inset);
+	bool BINGHAM = 		is_method_BINGHAM(inGDB, inset);
+	bool BRUTEFORCE = 	is_method_BRUTEFORCE(inGDB, inset);
+	bool FRY = 			is_method_FRY(inGDB, inset);
+	bool MICHAEL = 		is_method_MICHAEL(inGDB, inset);
+	bool MOSTAFA = 		is_method_MOSTAFA(inGDB, inset);
+	bool NDA = 			is_method_NDA(inGDB, inset);
+	bool PTN = 			is_method_PTN(inGDB, inset);
+	bool SHAN = 		is_method_SHAN(inGDB, inset);
+
+	if (!ANGELIER && !BINGHAM && !BRUTEFORCE && !FRY &&!MICHAEL && !MOSTAFA && !NDA && !PTN && !SHAN) ASSERT_DEAD_END();
+
+	string method = inversion_method (inGDB, inset);
 	PS_stressdata (o, center, P, sf, method);
-	if (method == "BINGHAM") return;
+
+	if (BINGHAM) return;
+	else {}
 
 	PS_stressarrows (o, center, P,  sf);
 
-	if (method == "PTN") 	PS_mohr_circle (inGDB, o, inset, mohr_center, P, sf, st, true);
-	else 					PS_mohr_circle (inGDB, o, inset, mohr_center, P, sf, st, false);
+	if (PTN)	PS_mohr_circle (inGDB, o, inset, mohr_center, P, sf, st, true);
+	else 		PS_mohr_circle (inGDB, o, inset, mohr_center, P, sf, st, false);
 
-	if (method == "ANGELIER" || method == "MOSTAFA" || method == "SHAN" || method == "FRY") {
-
-		PS_RUP_ANG_distribution (inGDB, inset, V, o, center, P, "RUP");
-	}
+	if (ANGELIER || MOSTAFA || SHAN || FRY) PS_RUP_ANG_distribution (inGDB, inset, V, o, center, P, "RUP");
+	else {}
 
 	PS_RUP_ANG_distribution (inGDB, inset, V, o, center, P, "ANG");
 
@@ -167,7 +250,7 @@ void inversion_result_output (STRESSFIELD sf, double average_misfit) {
 	<< " deg." << endl;
 }
 
-vector <GDB> inversion (vector <GDB> inGDB, ofstream& o, INPSET inset, CENTER center, CENTER mohr_center, PAPER P) {
+void inversion (vector <GDB> inGDB, ofstream& o, INPSET inset, CENTER center, CENTER mohr_center, PAPER P) {
 
 	bool is_ANG = (inset.clustering_RUP_ANG == "A");
 	bool is_RUP = (inset.clustering_RUP_ANG == "R");
@@ -175,101 +258,115 @@ vector <GDB> inversion (vector <GDB> inGDB, ofstream& o, INPSET inset, CENTER ce
 	STRESSFIELD sf;
 	STRESSTENSOR st;
 
-	string method = "";
+	bool ANGELIER = 	is_method_ANGELIER(inGDB, inset);
+	bool BINGHAM = 		is_method_BINGHAM(inGDB, inset);
+	bool BRUTEFORCE = 	is_method_BRUTEFORCE(inGDB, inset);
+	bool FRY = 			is_method_FRY(inGDB, inset);
+	bool MICHAEL = 		is_method_MICHAEL(inGDB, inset);
+	bool MOSTAFA = 		is_method_MOSTAFA(inGDB, inset);
+	bool NDA = 			is_method_NDA(inGDB, inset);
+	bool PTN = 			is_method_PTN(inGDB, inset);
+	bool SHAN = 		is_method_SHAN(inGDB, inset);
 
-	if 		(inGDB.at(0).DATATYPE == "FRACTURE" && inset.fracture == "B")	method = "BINGHAM";
-	else if (inGDB.at(0).DATATYPE == "STRIAE" && inset.inversion == "F")	method = "FRY";
-	else if (inGDB.at(0).DATATYPE == "STRIAE" && inset.inversion == "M")	method = "MICHAEL";
-	else if (inGDB.at(0).DATATYPE == "STRIAE" && inset.inversion == "S")	method = "SHAN";
-	else if (inGDB.at(0).DATATYPE == "STRIAE" && inset.inversion == "A")	method = "ANGELIER";
-	else if (inGDB.at(0).DATATYPE == "STRIAE" && inset.inversion == "O") 	method = "MOSTAFA";
-	else if (inGDB.at(0).DATATYPE == "STRIAE" && inset.inversion == "D") 	method = "NDA";
-	else if (inGDB.at(0).DATATYPE == "STRIAE" && inset.inversion == "B") 	method = "BRUTEFORCE";
-	else if (inGDB.at(0).DATATYPE == "STRIAE" && inset.inversion == "P") 	method = "PTN";
-	else {};
+	if (!ANGELIER && !BINGHAM && !BRUTEFORCE && !FRY &&!MICHAEL && !MOSTAFA && !NDA && !PTN && !SHAN) ASSERT_DEAD_END();
+
 
 	bool successfull = false;
 	double average_misfit;
 	vector <VALLEY> V;
 
-	if (method == "ANGELIER") {
+	if (ANGELIER) {
 
 		st = st_ANGELIER (inGDB, inset);
 
 		sf = sf_ANGELIER (st);
-	}
 
-	else if (method == "BINGHAM") {
+		sf = computestressfield_DXDYDZ (sf);
+
+		sf =  stress_regime (sf);
+	}
+	else if (BINGHAM) {
 
 		st = st_BINGHAM (inGDB);
 
-		sf = sf_BINGHAM (st);
-	}
+		sf = eigenvalue_eigenvector (st);
 
-	else if (method == "FRY") {
+		sf = sf_BINGHAM (sf);
+
+		sf = computestressfield_DXDYDZ (sf);
+	}
+	else if (FRY) {
 
 		if (fry_correct (inGDB, inset)) {
 
 			st = st_FRY (inGDB);
 
 			sf = sf_FRY (st);
-		}
 
+			sf = computestressfield_DXDYDZ (sf);
+
+			sf = stress_regime (sf);
+		}
 		else successfull = false;
 	}
-
-	else if (method == "MICHAEL") {
+	else if (MICHAEL) {
 
 		st = st_MICHAEL (inGDB, inset);
 
 		sf = sf_MICHAEL (st);
-	}
 
-	else if (method == "MOSTAFA") {
+		sf = computestressfield_DXDYDZ (sf);
+
+		sf = stress_regime (sf);
+	}
+	else if (MOSTAFA) {
 
 		sf = sf_MOSTAFA (inGDB, o, inset, center);
 
 		st = st_MOSTAFA ();
 	}
-
-	else if (method == "NDA") {
+	else if (NDA) {
 
 		st = st_NDA (inGDB, inset);
 
 		sf = sf_NDA (st);
+
+		sf = computestressfield_DXDYDZ (sf);
+
+		sf =  stress_regime (sf);
 	}
+	else if (BRUTEFORCE) {
 
-	else if (method == "BRUTEFORCE") {
-
-		BRUTEFORCE (inGDB, inset);
+		//BRUTEFORCE (inGDB, inset);
 
 		//st = st_BRUTEFORCE (inGDB, inset);
 
 		//sf = sf_BRUTEFORCE (st);
 	}
-
-	else if (method == "PTN") {
+	else if (PTN) {
 
 		sf = sf_PTN (inGDB, inset);
 
 		st = st_PTN (sf);
 	}
-
-	else if (method == "SHAN") {
+	else if (SHAN) {
 
 		st = st_SHAN (inGDB, inset);
 
 		sf = sf_SHAN (st);
-	}
 
-	else {}
+		sf = computestressfield_DXDYDZ (sf);
+
+		sf = stress_regime (sf);
+	}
+	else ASSERT_DEAD_END()
 
 
 	successfull = check_correct_stressfield (sf);
 
 
-	if 		(method == "MOSTAFA") 							inGDB = return_stressvector_estimators (st, inGDB, "MOSTAFA", false);
-	else if (method != "MOSTAFA" && method != "BINGHAM") 	inGDB = return_stressvector_estimators (st, inGDB, "ANGELIER", false);
+	if 		(MOSTAFA) 				inGDB = return_stressvector_estimators (st, inGDB, "MOSTAFA", false);
+	else if (!MOSTAFA && !BINGHAM) 	inGDB = return_stressvector_estimators (st, inGDB, "ANGELIER", false);
 	else {};
 
 
@@ -278,7 +375,7 @@ vector <GDB> inversion (vector <GDB> inGDB, ofstream& o, INPSET inset, CENTER ce
 
 		average_misfit = return_average_misfit (st, inGDB, false);
 
-		if (method == "BINGHAM") bingham_result_output (sf);
+		if (BINGHAM) bingham_result_output (sf);
 
 		else {
 
@@ -304,7 +401,7 @@ vector <GDB> inversion (vector <GDB> inGDB, ofstream& o, INPSET inset, CENTER ce
 			PS_idealmovement (inGDB, o, inset, center);
 		}
 
-		ps_inversion (method, st, sf, inGDB, V, inset, o, center, mohr_center, P);
+		ps_inversion (st, sf, inGDB, V, inset, o, center, mohr_center, P);
 
 		PS_lineation (inGDB.at(0), o, inset, center, sf, false, "S1");
 		PS_lineation (inGDB.at(0), o, inset, center, sf, false, "S2");
@@ -314,5 +411,5 @@ vector <GDB> inversion (vector <GDB> inGDB, ofstream& o, INPSET inset, CENTER ce
 
 	//dbg_cout_RGF_colors(inGDB);
 
-	return inGDB;
+	return; //inGDB;
 }

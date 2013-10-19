@@ -77,7 +77,6 @@ const vector<string> allowed_plane_datatypes(from_array(datatype_plane_allowed))
 
 
 const string datatype_striae_allowed [] = {
-
 		"STRIAE"
 };
 const vector<string> allowed_striae_datatypes(from_array(datatype_striae_allowed));
@@ -86,6 +85,11 @@ const string datatype_SC_allowed [] = {
 		"SC"
 };
 const vector<string> allowed_SC_datatypes(from_array(datatype_SC_allowed));
+
+const string foldsurface_processing_allowed [] = {
+		"FOLDSURFACE"
+};
+const vector<string> allowed_foldsurface_processing(from_array(foldsurface_processing_allowed));
 
 const string striae_inverse_sense_allowed [] = {
 		"+", "THRUST", "UP", "INVERSE", "U", "I"
@@ -146,7 +150,6 @@ const string inversion_method_allowed [] = {
 		"NDA",
 		"PTN",
 		"SHAN",
-
 		"NONE"
 };
 const vector<string> allowed_inversion_methods(from_array(inversion_method_allowed));
@@ -155,6 +158,26 @@ const string bingham_datatype_allowed [] = {
 		"FRACTURE"
 };
 const vector<string> allowed_bingham_datatype(from_array(bingham_datatype_allowed));
+
+const string handle_as_bedding_allowed [] = {
+		"BEDDING"
+		"FOLDSURFACE"
+};
+const vector<string> allowed_handle_as_bedding (from_array(handle_as_bedding_allowed));
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 }
 
@@ -218,13 +241,18 @@ vector <string> allowed_SC_datatype_vector () {
 	return allowed_SC_datatypes;
 }
 
+bool is_allowed_foldsurface_processing(const string& datatype) {
+
+	return (contains(allowed_foldsurface_processing, datatype));
+}
+
 bool is_allowed_dir(const string& s){
 
 	bool failed = true;
 
 	double value = string_to_double (s, failed);
 
-	return ((value >= 0.0) && (value <= 360.0) && !failed);
+	return (is_in_range(0.0, 360.0, value) && !failed);
 }
 
 bool is_allowed_dip(const string& s) {
@@ -233,7 +261,7 @@ bool is_allowed_dip(const string& s) {
 
 	double value = string_to_double (s, failed);
 
-	return ((value >= 0.0) && (value <= 90.0) && !failed);
+	return (is_in_range(0.0, 90.0, value) && !failed);
 }
 
 bool is_allowed_striae_inverse_sense(const string& sense) {
@@ -307,6 +335,11 @@ bool is_allowed_BINGHAM_datatype (const string& datatype) {
 	return contains(allowed_bingham_datatype, datatype);
 }
 
+bool is_allowed_handle_as_bedding (const string& datatype) {
+
+	return contains(allowed_handle_as_bedding, datatype);
+}
+
 bool is_double (const string& s) {
 
 	bool failed = true;
@@ -315,7 +348,6 @@ bool is_double (const string& s) {
 
 	return (!failed);
 }
-
 
 vector <string> merge_datatypes (vector <string> target, vector <string> source) {
 

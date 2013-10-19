@@ -27,6 +27,8 @@ vector < vector <GRID_CENTER> > generate_rectangular_grid_from_triange_center (s
 
 vector < vector <GRID_CENTER> > calculate_grid_cell_values_from_triangle (vector < vector <GRID_CENTER> > rect_grid, vector <GRID_CENTER> tri_center);
 
+double return_rect_grid_max_count (vector < vector <GRID_CENTER > > rect_grid);
+
 vector < vector <GRID_CENTER> > normalize_grid_cell_values (vector < vector <GRID_CENTER> > rect_grid, vector <GRID_CENTER> tri_center);
 
 
@@ -105,6 +107,9 @@ void contouring (vector <GDB> inGDB, INPSET inset);
 
 
 
+
+
+void dbg_cout_triangle_center (vector <GRID_CENTER> TRI_CENTER);
 
 void dbg_cout_rect_grid (vector < vector <GRID_CENTER> > rect_grid);
 

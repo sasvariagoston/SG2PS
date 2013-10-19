@@ -8,6 +8,7 @@
 #include <iomanip>
 #include <iostream>
 
+#include "assertions.hpp"
 #include "common.h"
 #include "kaalsbeek.hpp"
 #include "density.h"
@@ -27,7 +28,6 @@ XY stereonet_coordinate_from_DIPDIR_DIP (DIPDIR_DIP in, CENTER center, INPSET in
 		out.X = (D.X / sqrt (1.00 - D.Z)) * center.radius;
 		out.Y = (D.Y / sqrt (1.00 - D.Z)) * center.radius;
 	}
-
 	else {
 
 		out.X = (D.X / (1.00 - D.Z)) * center.radius;
@@ -39,8 +39,7 @@ XY stereonet_coordinate_from_DIPDIR_DIP (DIPDIR_DIP in, CENTER center, INPSET in
 		out.X = - out.X;
 		out.Y = - out.Y;
 	}
-
-	else {} // that's OK
+	else {} //OK
 
 	out.X = out.X + center.X;
 	out.Y = out.Y + center.Y;
@@ -69,17 +68,20 @@ DENSITY density_in_cell (vector <GDB> in, size_t search_dipdir, size_t search_di
 
 	size_t counter = 0;
 
-	double min_dipdir = search_dipdir - radius;
-	double max_dipdir = search_dipdir + radius;
-	double min_dip = search_dip - radius;
-	double max_dip = search_dip + radius;
+	double min_dipdir =		search_dipdir - radius;
+	double max_dipdir = 	search_dipdir + radius;
+	double min_dip = 		search_dip - radius;
+	double max_dip = 		search_dip + radius;
 
 	for (size_t i = 0; i < in.size(); i++) {
 
 		double DD = in.at(i).corr.DIPDIR;
 		double D = in.at(i).corr.DIP;
 
-		if ((DD >= min_dipdir && DD < max_dipdir) && (D >= min_dip && D < max_dip)) counter++;
+		bool DD_IN_RANGE = (is_in_range(min_dipdir, max_dipdir, DD));
+		bool D_IN_RANGE = (is_in_range(min_dip, max_dip, D));
+
+		if (DD_IN_RANGE && D_IN_RANGE) counter++;
 		else {};
 	}
 
@@ -225,13 +227,12 @@ vector < vector <GRID_CENTER> > calculate_grid_cell_values_from_triangle (vector
 
 	size_t cell_number = rect_grid.at(0).size();
 
-	//cout << cell_number << endl;
-
 	for (size_t k = 0; k < cell_number; k++) {
 
 		for (size_t j = 0; j < cell_number; j++) {
 
-			double cml_value = 0;
+			double cml_value = 0.0;
+
 			double R_X = rect_grid.at(k).at(j).CENTER.X;
 			double R_Y = rect_grid.at(k).at(j).CENTER.Y;
 
@@ -245,11 +246,10 @@ vector < vector <GRID_CENTER> > calculate_grid_cell_values_from_triangle (vector
 				cml_value = cml_value + (tri_center.at(i).COUNT / (distance * distance));
 			}
 
-			bool in = (sqrt((R_X * R_X) + (R_Y * R_Y)) <= 1.0);
+			bool IN_RECT_CELL = (sqrt((R_X * R_X) + (R_Y * R_Y)) <= 1.0);
 
-			if (in)
-				rect_grid.at(k).at(j).COUNT = cml_value;
-			else {}
+			if (IN_RECT_CELL)	rect_grid.at(k).at(j).COUNT = cml_value;
+			else {} // OK
 		}
 	}
 
@@ -270,15 +270,15 @@ vector <GRID_CENTER> sort_by_GRID_COUNT (vector <GRID_CENTER> GC) {
 	return GC;
 }
 
-size_t return_rect_grid_max_count (vector < vector <GRID_CENTER > > rect_grid) {
+double return_rect_grid_max_count (vector < vector <GRID_CENTER > > rect_grid) {
 
-	size_t rect_max = 0;
+	double rect_max = 0;
 
-	for (size_t j = 0; j < rect_grid.at(0).size(); j++) {
+	for (size_t i = 0; i < rect_grid.size(); i++) { // was rect_grid.at(0).size()
 
-		for (size_t i = 0; i < rect_grid.at(0).size(); i++) {
+		for (size_t j = 0; j < rect_grid.at(0).size(); j++) {
 
-			if (rect_grid.at(j).at(i).COUNT > rect_max) rect_max = rect_grid.at(j).at(i).COUNT;
+			if (rect_grid.at(i).at(j).COUNT > rect_max) rect_max = rect_grid.at(i).at(j).COUNT;
 		}
 	}
 
@@ -291,39 +291,35 @@ vector < vector <GRID_CENTER> > normalize_grid_cell_values (vector < vector <GRI
 
 	size_t max_count = tri_center.at(tri_center.size() - 1).COUNT;
 
-	double rect_max = 0.0;
-
-	rect_max = return_rect_grid_max_count(rect_grid);
+	double rect_max = return_rect_grid_max_count(rect_grid);
 
 	//cout << "TRI_CENTER_MAX: " << max_count << endl;
 	//cout << "RECT_MAX: " << rect_max << endl;
 
-	for (size_t j = 0; j < rect_grid.at(0).size(); j++) {
+	for (size_t i = 0; i < rect_grid.size(); i++) {
 
-		for (size_t i = 0; i < rect_grid.at(0).size(); i++) {
+		for (size_t j = 0; j < rect_grid.at(0).size(); j++) {
 
-			rect_grid.at(j).at(i).COUNT = (rect_grid.at(j).at(i).COUNT / rect_max) * max_count * 50;
+			rect_grid.at(i).at(j).COUNT = (rect_grid.at(i).at(j).COUNT / rect_max) * max_count;
 		}
 	}
-
-	//dbg_cout_rect_grid (rect_grid);
 
 	return rect_grid;
 }
 
 size_t return_contour_step (double max_COUNT) {
 
-	if (max_COUNT < 10.0) return 1;
+	if (max_COUNT < 10.0) return 10;
 	else {
 
-		if (max_COUNT < 20.0) return 1;
+		if (max_COUNT < 20.0) return 10;
 		else {
 
-			if (max_COUNT < 40.0) return 2;
+			if (max_COUNT < 40.0) return 10;
 			else {
 
-				if (max_COUNT < 100.0) return 2;
-				else return max_COUNT / 20;
+				if (max_COUNT < 100.0) return 10;
+				else return max_COUNT / 100;
 			}
 		}
 	}
@@ -973,42 +969,47 @@ vector < vector <VCTR> > fit_to_circle_I (vector < vector <VCTR> > inBZ) {
 
 VCTR interpolate_between_points (VCTR inA, VCTR inB, bool linestart) {
 
-	double W = (inB.Y - inA.Y) / (inB.X - inA.X);
+	double X = 0.0;
+	double Y = 0.0;
 
-	double A = (W * W) + 1;
-	double B = 2.0 * W * W * inA.X + 2.0 * W * inA.Y;
-	double C = W * W * inA.X * inA.X  +  inA.Y * inA.Y  -  2.0 * inA.Y * inA.X * W - 1.0;
+	double m = (inA.Y - inB.Y) / (inA.X - inB.X);
+	double b = inA.Y - m * inA.X;
+
+	double A = 1.0 + (m * m);
+	double B = 2.0 * m * b;
+	double C = (b * b) - 1.0;
 
 	vector <double> QUAD_SOL = quadratic_solution(A, B, C);
-
-
 
 	double X1 = QUAD_SOL.at(0);
 	double X2 = QUAD_SOL.at(1);
 
-	//cout << "----QUADRATIC" << endl;
-	//cout << X1 << '\t' << X2 << endl;
+	ASSERT(!isnan(X1));
+	ASSERT(!isnan(X2));
 
-	double Y1 = sqrt(1.0 - (X1 * X1));
-	double Y2 = sqrt(1.0 - (X2 * X2));
+	bool X1_FIT = false;
+	bool X2_FIT = false;
 
-	//cout << "----INTERPOLATION" << endl;
-	//cout << inA.X << '\t' << inA.Y << endl;
-	//cout << inB.X << '\t' << inB.Y << endl;
+	if (inA.X < inB.X) 	{
 
-
-
-
-	if (
-			(is_in_range(inA.X, inB.X, X1) && is_in_range(inA.Y, inB.Y, Y1))
-			||
-			(is_in_range(inB.X, inA.X, X1) && is_in_range(inB.Y, inA.Y, Y1))
-	)
-	{
-
-		return declare_vector(X1, Y1, NaN());
+		X1_FIT = is_in_range(inA.X, inB.X, X1);
+		X2_FIT = is_in_range(inA.X, inB.X, X2);
 	}
-	else return declare_vector(X2, Y2, NaN());
+	else {
+
+		X1_FIT = is_in_range(inB.X, inA.X, X1);
+		X2_FIT = is_in_range(inB.X, inA.X, X2);
+	}
+
+	if (X1_FIT) X = X1;
+	else if (X2_FIT) X = X2;
+	else ASSERT_DEAD_END();
+
+	Y = sqrt(1.0 - (X * X));
+
+	ASSERT(!isnan(Y));
+
+	return declare_vector(X, Y, NaN());
 }
 
 VCTR generate_new_start (VCTR A) {
@@ -1374,37 +1375,32 @@ void contouring (vector <GDB> inGDB, INPSET inset) {
 
 	vector <TRIANGLE> TRI_GRID = generate_net_count (inGDB, NET, inset);
 
-	//vector <TRIANGLE> TRI_GRID = generate_net (inGDB, inset);
-
 	vector <GRID_CENTER> TRI_CENTER = generate_triangle_center (TRI_GRID);
 
-	size_t cell_number = sqrt (TRI_CENTER.size()) / 0.78;
+	size_t cell_number = sqrt (TRI_CENTER.size() / 0.78);
 
 	TRI_CENTER = reduce_triangle_center(TRI_CENTER);
 
-	vector < vector <GRID_CENTER> > RECT_GRID = generate_rectangular_grid_from_triange_center (cell_number);
+	vector < vector <GRID_CENTER> > RECT_GRID = generate_rectangular_grid_from_triange_center (cell_number);  //ez allitja elo azt a negyzetes gridet, amire a haromszog-gridet normaljuk at - a cellak szama ugy van beallitva, hogy nagyjabol azonos adatsuruseg legyren benne, mint a tringular grid-ben
+	//dbg_cout_rect_grid(RECT_GRID);
 
 	RECT_GRID = calculate_grid_cell_values_from_triangle (RECT_GRID, TRI_CENTER);
-	//dbg_cout_rect_grid(RECT_grid);
-
+	//dbg_cout_rect_grid(RECT_GRID);
 
 	double max_COUNT = return_rect_grid_max_count (RECT_GRID);
 	//cout << max_COUNT << endl;
 
-	string outputfilename = "LINE.PS";
+	RECT_GRID = normalize_grid_cell_values (RECT_GRID, TRI_CENTER);
+	//dbg_cout_rect_grid(RECT_GRID);
+	// **** eddig ellenorizve, ertheto, mit csinal ****
 
-	ofstream o (outputfilename.c_str());
-
-	cout_line_to_ps_header (o);
+	//string outputfilename = "LINE2.PS";
+	//ofstream o (outputfilename.c_str());
+	//cout_line_to_ps_header (o);
 
 	//cout_rect_grid_to_ps (RECT_GRID, o, inset, max_COUNT);
 
-
-
-	RECT_GRID = normalize_grid_cell_values (RECT_GRID, TRI_CENTER);
-	//dbg_cout_rect_grid(RECT_GRID);
-
-
+	// **** eddig ellenorizve, ertheto, amit csinal ****
 
 
 
@@ -1415,16 +1411,16 @@ void contouring (vector <GDB> inGDB, INPSET inset) {
 
 
 
-	size_t isoline = 10;
+	//size_t isoline = 1;
+
+
+	//cout << max_COUNT << endl;
 
 
 
+	for (size_t k = 0; k < 30; k++) {
 
-
-
-	//for (size_t k = 0; k < 5; k++) {
-
-		//size_t isoline = return_isoline (max_COUNT, k);
+		size_t isoline = return_isoline (max_COUNT, k);
 
 		vector < vector <GRID_CENTER_S> > BIN_GRID = generate_binary_rect_grid (RECT_GRID, isoline);
 
@@ -1483,13 +1479,35 @@ void contouring (vector <GDB> inGDB, INPSET inset) {
 
 
 
-		cout_bezier_to_ps(BZ, o, isoline, max_COUNT);
+		//cout_bezier_to_ps(BZ, o, isoline, max_COUNT);
 		//cout_line_to_ps (C_LINE, o, isoline, max_COUNT);
 
 		//cout << C_LINE.size() << endl;
-	//}
+	}
 }
 
+/*vector <TRIANGLE> TRI = generate_net (processGDB, inset);
+
+//cout << TRI.size() << endl;
+
+vector <GRID_CENTER> tri_center = generate_triangle_center (TRI);
+
+//cout << tri_center.size() << endl;
+
+size_t cell_number = sqrt (tri_center.size()) / 0.78;
+
+//cout << cell_number << endl;
+
+tri_center = reduce_triangle_center(tri_center);
+
+vector < vector <GRID_CENTER> > RECT_grid = generate_rectangular_grid_from_triange_center (cell_number);
+
+
+
+RECT_grid = calculate_grid_cell_values_from_triangle (RECT_grid, tri_center);
+
+RECT_grid = normalize_grid_cell_values (RECT_grid, tri_center);
+*/
 
 
 
@@ -1497,10 +1515,25 @@ void contouring (vector <GDB> inGDB, INPSET inset) {
 
 
 
+void dbg_cout_triangle_center (vector <GRID_CENTER> TRI_CENTER) {
 
+	cout << fixed << setprecision(3) << endl;
 
+	cout
+	<< "  X  " << '\t'
+	<< "  Y  " << '\t'
+	<< "  Z  " << '\t'
+	<< "COUNT" << endl;
 
+	for (size_t i = 0; i < TRI_CENTER.size(); i++) {
 
+		cout
+		<< TRI_CENTER.at(i).CENTER.X << '\t'
+		<< TRI_CENTER.at(i).CENTER.Y << '\t'
+		<< TRI_CENTER.at(i).CENTER.Z << '\t'
+		<< TRI_CENTER.at(i).COUNT << endl;
+	}
+}
 
 void dbg_cout_rect_grid (vector < vector <GRID_CENTER> > rect_grid) {
 
@@ -1511,8 +1544,8 @@ void dbg_cout_rect_grid (vector < vector <GRID_CENTER> > rect_grid) {
 		for (size_t i = 0; i < cell_number; i++) {
 
 			cout
-			//<< rect_grid.at(j).at(i).CENTER.X << '\t'
-			//<< rect_grid.at(j).at(i).CENTER.Y << '\t'
+			<< rect_grid.at(j).at(i).CENTER.X << '\t'
+			<< rect_grid.at(j).at(i).CENTER.Y << '\t'
 			<< rect_grid.at(j).at(i).COUNT << '\t' << flush;
 		}
 
@@ -1634,16 +1667,11 @@ void dbg_bezier_points (vector < vector <VCTR> > BZ) {
 
 void cout_rect_grid_to_ps (vector <vector < GRID_CENTER> > rect_grid, ofstream& o, INPSET inset, double max_COUNT) {
 
-	o << "%!PS-Adobe-3.0 EPSF-3.0" << endl;
-	o << "%%BoundingBox:  0 0 440 440" << endl;
+	//size_t cell_number = rect_grid.at(0).size();
 
-	o << "  220.0 220.0 200.0 0.0 360.0 arc stroke"	<< endl;
+	for (size_t j = 0; j < rect_grid.size() - 1; j++) {
 
-	size_t cell_number = rect_grid.at(0).size();
-
-	for (size_t j = 0; j < cell_number - 1; j++) {
-
-		for (size_t i = 0; i < cell_number - 1; i++) {
+		for (size_t i = 0; i < rect_grid.at(0).size() - 1; i++) {
 
 			double AX = rect_grid.at(j + 1).at(i + 0).CENTER.X;
 			double BX = rect_grid.at(j + 1).at(i + 1).CENTER.X;
@@ -1660,7 +1688,10 @@ void cout_rect_grid_to_ps (vector <vector < GRID_CENTER> > rect_grid, ofstream& 
 			double CW = rect_grid.at(j + 0).at(i + 1).COUNT;
 			double DW = rect_grid.at(j + 0).at(i + 0).COUNT;
 
-			double COUNT = 30.0 * (AW + BW + CW + DW) / (4.0 * max_COUNT);
+			//double COUNT = 30.0 * (AW + BW + CW + DW) / (4.0 * max_COUNT);
+			double COUNT = ((AW + BW + CW + DW) / 4.0);
+
+			//cout << COUNT << endl;
 
 			inset.grayscale = "N";
 

@@ -14,6 +14,7 @@
 #include "array_to_vector.hpp"
 #include "data_io.h"
 #include "density.h"
+#include "foldsurface.hpp"
 #include "kaalsbeek.hpp"
 #include "platform_dep.hpp"
 #include "ps.h"
@@ -273,9 +274,12 @@ void outputrecord (GDB i, ofstream& o, INPSET inpset) {
 	if (i.corrL.DIP > 360.0) o << "" << '\t' << flush;
 	else o << i.corrL.DIP << '\t' << flush;
 
-	if ((i.DATATYPE == "STRIAE") || (i.DATATYPE == "BEDDING")) {
+	bool is_STRIAE = 	is_allowed_striae_datatype(i.DATATYPE);
+	bool is_BEDDING = 	is_allowed_foldsurface_processing(i.DATATYPE);
 
-		if (((i.DATATYPE == "BEDDING")) && (i.corrOFFSET == "NONE")) o << '\t' << flush;
+	if (is_STRIAE || is_BEDDING) {
+
+		if (is_BEDDING && (i.corrOFFSET == "NONE")) o << '\t' << flush;
 		else o << i.corrOFFSET << '\t' << flush;
 	}
 
@@ -505,44 +509,14 @@ void output_to_ps (PFN output, vector <GDB> processGDB, vector <GDB> tiltprocess
 	PS_border (processGDB.at(0), output_ps_file, inset, P);
 
 
-	processGDB = 		process_group_by_group (processGDB, output_ps_file, inset, center, P, false);
-	tiltprocessGDB = 	process_group_by_group (tiltprocessGDB, output_ps_file, inset, center, P, true);
-
+	process_group_by_group (processGDB, output_ps_file, inset, center, P, false);
+	process_group_by_group (tiltprocessGDB, output_ps_file, inset, center, P, true);
 
 	PS_datanumber_averagebedding (processGDB.at(0), output_ps_file, inset, P, center, processGDB.size());
 
 	PS_net (output_ps_file, inset, P);
 
-	//output_ps_file.close ();
-
-
 	//contouring (processGDB, inset);
-
-
-
-
-	/*vector <TRIANGLE> TRI = generate_net (processGDB, inset);
-
-	//cout << TRI.size() << endl;
-
-	vector <GRID_CENTER> tri_center = generate_triangle_center (TRI);
-
-	//cout << tri_center.size() << endl;
-
-	size_t cell_number = sqrt (tri_center.size()) / 0.78;
-
-	//cout << cell_number << endl;
-
-	tri_center = reduce_triangle_center(tri_center);
-
-	vector < vector <GRID_CENTER> > RECT_grid = generate_rectangular_grid_from_triange_center (cell_number);
-
-
-
-	RECT_grid = calculate_grid_cell_values_from_triangle (RECT_grid, tri_center);
-
-	RECT_grid = normalize_grid_cell_values (RECT_grid, tri_center);
-	*/
 }
 
 void cout_method_text (vector <GDB> inGDB, INPSET inset) {
@@ -573,15 +547,7 @@ void cout_original_tilted_text (bool tilt) {
 	else 		cout << "    - Corrected: " << flush;
 }
 
-vector <GDB> process_group_by_group (vector <GDB> inGDB, ofstream& o, INPSET inset, CENTER center, PAPER P, bool tilt) {
-
-	vector <GDB> outGDB = inGDB;
-
-	//cout << outGDB.size() << endl;
-
-	//cout << "GROUP " << outGDB.at(0).DIPDIR << endl;
-
-	//process_one_by_one (inGDB, o, inset, center, P, tilt);
+void process_group_by_group (vector <GDB> inGDB, ofstream& o, INPSET inset, CENTER center, PAPER P, bool tilt) {
 
 	CENTER mohr_center;
 
@@ -600,48 +566,66 @@ vector <GDB> process_group_by_group (vector <GDB> inGDB, ofstream& o, INPSET ins
 		mohr_center.Y = P.O8Y;
 	}
 
-	bool IS_FRACTURE = (inset.fracture == "B" && outGDB.at(0).DATATYPE == "FRACTURE");
-	bool IS_STRIAE = (inGDB.at(0).DATATYPE == "STRIAE" && inset.inversion != "N");
-	bool IS_FOLD = (inGDB.at(0).DATATYPE == "FOLDSURFACE");
 
-	bool TO_INVERT = (IS_FRACTURE || IS_STRIAE || IS_FOLD);
+	bool IS_FRACTURE = 	(inset.fracture == "B" && inGDB.at(0).DATATYPE == "FRACTURE");
+	bool IS_STRIAE = 	(inGDB.at(0).DATATYPE == "STRIAE" && inset.inversion != "N");
+	bool IS_FOLD = 		(is_allowed_foldsurface_processing(inGDB.at(0).DATATYPE));
 
-	bool has_right_data_number = correct_inhomogeneous_number (outGDB, inset);
+	bool TO_INVERT = (IS_FRACTURE || IS_STRIAE);  // was followed by "|| IS_FOLD"
+
+
+	vector <GDB> processGDB = inGDB;;
+
+	if (inGDB.at(0).DATATYPE == "STRIAE") processGDB = return_striae_with_offset (inGDB);
+	else {}
+
+	bool has_right_data_number = correct_inhomogeneous_number (processGDB, inset);
+
+	/*
+	if (inGDB.at(0).DATATYPE == "FOLDAXIS") {
+
+		cout
+		<< inGDB.at(0).corr.DIPDIR << " "
+		<< inGDB.at(0).corr.DIP << endl;
+	}
+	*/
 
 	PS_draw_rose (inGDB, o, inset, center, P, tilt);
 
-	if (inGDB.at(0).DATATYPE == "STRIAE") outGDB = return_striae_with_offset (inGDB);
+
+	for (size_t i = 0; i < inGDB.size(); i++) inGDB.at(i).PSCOLOR = complete_colorcode (inGDB.at(i).COLOR);
+
+	process_one_by_one (inGDB, o, inset, center, P, tilt);
+
+
+	if (IS_FOLD) calculate_foldsurface (inGDB, o, inset, center);
 	else {}
+
+
+
+
 
 	if (TO_INVERT) {
 
-		if (!tilt) cout_method_text (outGDB, inset);
+		if (!tilt) cout_method_text (inGDB, inset);
 
 		if (has_right_data_number) {
 
 			cout_original_tilted_text (tilt);
 
-			outGDB = inversion (outGDB, o, inset, center, mohr_center, P);
-
-			for (size_t i = 0; i < outGDB.size(); i++) {
-
-				outGDB.at(i).PSCOLOR = complete_colorcode (outGDB.at(i).COLOR);
-			}
-
-			//dbg_cout_RGF_colors(outGDB);
+			inversion (processGDB, o, inset, center, mohr_center, P);
 		}
-
 		else {
 
 			if (!tilt) cout << "less (independent) data than required." << endl;
 			else {}
 		}
 	}
-	else {};
+	else {}
 
-	process_one_by_one (outGDB, o, inset, center, P, tilt);
+	//for (size_t i = 0; i < inGDB.size(); i++) inGDB.at(i).PSCOLOR = complete_colorcode (inGDB.at(i).COLOR);
 
-	return outGDB;
+	//process_one_by_one (inGDB, o, inset, center, P, tilt);
 }
 
 void process_one_by_one (vector <GDB> inGDB, ofstream& o, INPSET inset, CENTER center, PAPER P, bool tilt) {
@@ -656,8 +640,6 @@ void process_one_by_one (vector <GDB> inGDB, ofstream& o, INPSET inset, CENTER c
 		center.X = P.O2X;
 		center.Y = P.O2Y;
 	}
-
-	//cout << inGDB.at(0).DIPDIR << endl;
 
 	for (size_t i = 0; i < inGDB.size(); i++) PS_DRAW_record (inGDB.at(i), o, inset, center);
 }

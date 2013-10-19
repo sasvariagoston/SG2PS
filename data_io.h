@@ -32,7 +32,7 @@ void outputselected_ps_rgf (PFN output, vector <GDB> outGDB, vector <GDB> tiltou
 void output_to_rgf (PFN output, vector <GDB> processGDB, INPSET inset, bool tilted);
 void output_to_ps (PFN output, vector <GDB> processGDB, vector <GDB> tiltprocessGDB, INPSET inset, PAPER P, CENTER center);
 
-vector <GDB> process_group_by_group (vector <GDB> outGDB, ofstream& o, INPSET inset, CENTER center, PAPER P, bool tilt);
+void process_group_by_group (vector <GDB> outGDB, ofstream& o, INPSET inset, CENTER center, PAPER P, bool tilt);
 void process_one_by_one (vector <GDB> inGDB, ofstream& o, INPSET inset, CENTER center, PAPER P, bool tilt);
 
 void dbg_cout_RGF_colors (vector <GDB> inGDB);

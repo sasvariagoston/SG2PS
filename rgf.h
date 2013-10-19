@@ -8,21 +8,8 @@
 #include "cluster.h"
 #include "common.h"
 
-
-
-//string GC_from_tempGC (string GCtemp);
-//double DIPDIR_from_DIPDIRtemp (string DIPDIRtemp, INPSET inset, string DATAGROUP);
-//double corrDIPDIR_from_DIPDIR (double DIPDIR, INPSET inset, string DATAGROUP);
-
-//double DIP_from_DIPtemp (string DIPtemp, string DATAGROUP);
-//double corrDIP_from_DIP (double DIP, string DATAGROUP);
-
-//double LDIR_from_LDIRtemp (string LDIRtemp, string DATAGROUP);
-//double corrLDIR_from_LDIR (double LDIR, string DATAGROUP);
-
-//string produce_LINEATION (string LDIRtemp, string LDIPtemp);
 vector <GDB> produce_OFFSET (vector <GDB> inGDB);
-//string produce_OFFSET (string SENSEtemp);
+
 string complete_colorcode (string in);
 vector <GDB> black_colorcode (vector <GDB> inGDB);
 vector <GDB> colorcode_grom_groupcode (vector <GDB> inGDB, INPSET inset);
@@ -75,37 +62,40 @@ size_t minimum_independent_dataset (INPSET inset);
 vector <GDB> return_GDB_with_no_homogeneous_data (vector <GDB> inGDB);
 
 bool correct_inhomogeneous_number (vector <GDB> inGDB, INPSET inset);
+bool check_dataset_geometry_homogenity (vector <GDB> inGDB);
+bool check_dataset_offset_homogenity (vector <GDB> inGDB);
 bool check_dataset_homogenity (vector <GDB> inGDB);
 
 void fold_from_planes (vector <GDB> inGDB, ofstream& o, INPSET inset, CENTER center);
 
-GDB init_average (GDB inGDB);
+//GDB init_average (GDB inGDB);
 
-bool is_datatype_processable_for_average (vector <GDB> inGDB);
-bool is_processable_for_average_MT2 (vector <GDB> inGDB);
-bool is_processable_for_average_EQ2 (vector <GDB> inGDB);
-bool is_processable_for_average_EQ1 (vector <GDB> inGDB);
-bool is_processable_for_average_HOMOG (vector <GDB> inGDB);
-STRESSFIELD process_for_average_MT2 (vector <GDB> inGDB);
-STRESSFIELD process_for_average_EQ2 (vector <GDB> inGDB);
-STRESSFIELD process_for_average_EQ1 (vector <GDB> inGDB);
+//bool is_datatype_processable_for_average (vector <GDB> inGDB);
+//bool is_processable_for_average_MT2 (vector <GDB> inGDB);
+//bool is_processable_for_average_EQ2 (vector <GDB> inGDB);
+//bool is_processable_for_average_EQ1 (vector <GDB> inGDB);
+//bool is_processable_for_average_HOMOG (vector <GDB> inGDB);
+//STRESSFIELD process_for_average_MT2 (vector <GDB> inGDB);
+//STRESSFIELD process_for_average_EQ2 (vector <GDB> inGDB);
+//STRESSFIELD process_for_average_EQ1 (vector <GDB> inGDB);
 
-vector <GDB> calculate_average_for_1 (vector <GDB> inGDB);
+//vector <GDB> calculate_average_for_1 (vector <GDB> inGDB);
 
-vector <GDB> cGc_average (vector <GDB> inGDB);
-vector <GDB> cGc_s0_average (vector <GDB> inGDB);
+//vector <GDB> cGc_average (vector <GDB> inGDB);
+//vector <GDB> cGc_s0_average (vector <GDB> inGDB);
 
-GDB plane_tilt (GDB inGDB, bool paleonorth);
-GDB lineation_tilt (GDB inGDB, bool paleonorth);
-GDB SC_tilt (GDB inGDB, bool paleonorth);
-GDB striae_tilt (GDB inGDB, bool paleonorth);
-GDB S0_TILT (GDB inGDB, bool paleonorth);
-vector <GDB> cGc_RETILT (vector <GDB> inGDB, INPSET inSET);
+//GDB plane_tilt (GDB inGDB, bool paleonorth);
+//GDB lineation_tilt (GDB inGDB, bool paleonorth);
+//GDB SC_tilt (GDB inGDB, bool paleonorth);
+//GDB striae_tilt (GDB inGDB, bool paleonorth);
 
 vector <GDB> ptn (vector <GDB> inGDB, INPSET inset);
 
 vector <GDB> clustering_GBD (INPSET inset, vector <GDB> inGDB);
 
 void process_rgf (string inputfilename, string XY_filename, INPSET inset);
+
+void dbg_vctr (vector <GDB> inGDB, string to_dump);
+
 
 #endif

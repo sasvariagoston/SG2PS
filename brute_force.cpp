@@ -34,13 +34,13 @@ vector <vector <double> > DIR_MX1_from_n1 (VCTR n1, double angle) {
 
 	n3 = unitvector(n3);
 
-	cout << fixed << setprecision (5) << endl;
+	//cout << fixed << setprecision (5) << endl;
 
-	cout << " ------------------ " << endl;
-	cout << angle << endl;
-	cout << n1.X << '\t' << n1.Y << '\t' << n1.Z << endl;
-	cout << n2.X << '\t' << n2.Y << '\t' << n2.Z << endl;
-	cout << n3.X << '\t' << n3.Y << '\t' << n3.Z << endl;
+	//cout << " ------------------ " << endl;
+	//cout << angle << endl;
+	//cout << n1.X << '\t' << n1.Y << '\t' << n1.Z << endl;
+	//cout << n2.X << '\t' << n2.Y << '\t' << n2.Z << endl;
+	//cout << n3.X << '\t' << n3.Y << '\t' << n3.Z << endl;
 
 	return (declare_3x3_matrix (
 			n1.X, n1.X, n1.Z,
@@ -142,10 +142,10 @@ void BRUTEFORCE (vector <GDB> inGDB, INPSET inset) {
 			}
 		}
 
-		cout << "-------------" << i << "-------------" << endl;
+		//cout << "-------------" << i << "-------------" << endl;
 	}
 
-	cout << counter << endl;
+	//cout << counter << endl;
 }
 
 

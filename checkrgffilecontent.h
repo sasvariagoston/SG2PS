@@ -31,9 +31,9 @@ vector <string> check_rgf_inputs (vector <string> inputfilename_vector);
 
 bool rgffile_correct (string projectname);
 
-bool is_STRIAE (const string DATATYPE);
-bool is_SC (const string DATATYPE);
-bool is_BEDDING (const string DATATYPE);
+//bool is_STRIAE (const string DATATYPE);
+//bool is_SC (const string DATATYPE);
+//bool is_BEDDING (const string DATATYPE);
 
 bool is_OTHERcorrect (vector <string> in);
 bool is_BEDDINGcorrect (vector <string> in);

@@ -556,6 +556,8 @@ bool rgffile_correct (string projectname) {
 	return true;
 }
 
+
+/*
 bool is_STRIAE (const string DATATYPE) {
 
 	return DATATYPE == "STRIAE";
@@ -565,18 +567,22 @@ bool is_SC (const string DATATYPE) {
 
 	return DATATYPE == "SC";
 }
+*/
+
+/*
 
 bool is_BEDDING (const string DATATYPE) {
 
 	return DATATYPE == "BEDDING";
 }
+*/
 
 bool is_OTHERcorrect (vector <string> in) {
 
 	return (
-			!is_SC (in.at(DATATYPE)) &&
-			!is_STRIAE (in.at(DATATYPE)) &&
-			!is_BEDDING (in.at(DATATYPE)) &&
+			!is_allowed_SC_datatype(in.at(DATATYPE)) &&
+			!is_allowed_striae_datatype(in.at(DATATYPE)) &&
+			!(in.at(DATATYPE) == "BEDDING") &&
 			in.at(LDIR) == "" &&
 			in.at(LDIP) == "" &&
 			in.at(SENSE) == ""
@@ -586,7 +592,7 @@ bool is_OTHERcorrect (vector <string> in) {
 bool is_BEDDINGcorrect (vector <string> in) {
 
 	return (
-			is_BEDDING (in.at(DATATYPE)) &&
+			(in.at(DATATYPE) == "BEDDING") &&
 			is_allowed_dir (in.at(DIR)) &&
 			is_allowed_dip (in.at(DIP)) &&
 			in.at(LDIR) == "" &&
@@ -598,7 +604,7 @@ bool is_BEDDINGcorrect (vector <string> in) {
 bool is_SCcorrect (vector <string> in) {
 
 	return (
-			is_SC (in.at(DATATYPE)) &&
+			is_allowed_SC_datatype (in.at(DATATYPE)) &&
 			is_allowed_dir (in.at(DIR)) &&
 			is_allowed_dip (in.at(DIP)) &&
 			is_allowed_dir (in.at(LDIR)) &&
@@ -610,7 +616,7 @@ bool is_SCcorrect (vector <string> in) {
 bool is_LINEATIONcorrect (vector <string> in) {
 
 	return (
-			is_STRIAE (in.at(DATATYPE)) &&
+			is_allowed_striae_datatype (in.at(DATATYPE)) &&
 			is_allowed_dir (in.at(DIR)) &&
 			is_allowed_dip (in.at(DIP)) &&
 			is_allowed_dir (in.at(LDIR)) &&
@@ -621,7 +627,7 @@ bool is_LINEATIONcorrect (vector <string> in) {
 bool is_PITCHcorrect (vector <string> in) {
 
 	return (
-			is_STRIAE (in.at(DATATYPE)) &&
+			is_allowed_striae_datatype (in.at(DATATYPE)) &&
 			is_allowed_dir (in.at(DIR)) &&
 			is_allowed_dip (in.at(DIP)) &&
 			is_allowed_dip (in.at(LDIR)) &&
@@ -883,13 +889,13 @@ vector <GDB> create_GDB_from_rgf (const string& file_name) {
 		if (is_allowed_striae_datatype (row.at(DATATYPE))) 		buffer.DATAGROUP = "STRIAE";
 		if (is_allowed_SC_datatype (row.at(DATATYPE))) 			buffer.DATAGROUP = "SC";
 
-		if (row.at(DATATYPE) == "BEDDING") {
+		if ((row.at(DATATYPE)) == "BEDDING") {
 
 			if (is_allowed_bedding_overturned_sense(row.at(SENSE))) 	buffer.OFFSET = "OVERTURNED";
 			if (is_allowed_bedding_normal_sense(row.at(SENSE))) 		buffer.OFFSET = "NORMAL";
 		}
 
-		if (row.at(DATATYPE) == "STRIAE") {
+		if (is_allowed_striae_datatype(row.at(DATATYPE))) {
 
 			if (is_allowed_striae_inverse_sense(row.at(SENSE)))		buffer.OFFSET = "INVERSE";
 			if (is_allowed_striae_normal_sense(row.at(SENSE))) 		buffer.OFFSET = "NORMAL";

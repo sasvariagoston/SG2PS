@@ -8,6 +8,7 @@
 #include <math.h>
 #include <vector>
 
+#include "assertions.hpp"
 #include "common.h"
 #include "kaalsbeek.hpp"
 
@@ -77,16 +78,6 @@ vector <vector <vector <VCTR> > > generate_net () {
 vector <TRIANGLE>  generate_net_count (vector <GDB> inGDB, vector <vector <vector <VCTR> > > NET, INPSET inset) {
 
 	vector <vector <VCTR> > buf;
-	//vector <vector <vector <VCTR> > > net;
-
-	/*
-	for (size_t seg_cnt = 0; seg_cnt < 6; seg_cnt++) {
-
-		buf = generate_segment(seg_cnt);
-
-		net.push_back(buf);
-	}
-	 */
 
 	vector <TRIANGLE> TRI = generate_triangle (NET, inset);
 
@@ -111,11 +102,12 @@ vector <GRID_CENTER> generate_triangle_center (vector <TRIANGLE> net) {
 
 		buf.COUNT = net.at(i).COUNT;
 
-		double X = buf.CENTER.X;
-		double Y = buf.CENTER.Y;
+		//double X = buf.CENTER.X;
+		//double Y = buf.CENTER.Y;
 
-		if (sqrt((X * X) + (Y * Y)) <= 1.0) out.push_back(buf);
-		else {}
+		//if (sqrt((X * X) + (Y * Y)) <= 1.0)
+		out.push_back(buf);
+		//else {}
 	}
 
 	return out;
@@ -174,6 +166,8 @@ vector <TRIANGLE> generate_triangle_offnet(vector <vector <vector <VCTR> > > net
 		buf.GROUP = 6;
 		buf.COUNT = 0;
 
+		//generates CCW triangles
+		dbg_test_triangle_points_direction (buf.A, buf.B, buf.C, "6th arc");
 		//dbg_cout_triangle ("6 - OFFNET", buf.A, buf.B, buf.C, SEG_CNT, 0, p_cnt + 0, SEG_CNT, 0, p_cnt + 1, 33, 33, 33);
 
 		out.push_back(buf);
@@ -209,6 +203,8 @@ vector <TRIANGLE> generate_triangle_offnet_between_segments (vector <vector <vec
 	buf.GROUP = 7;
 	buf.COUNT = 0;
 
+	//generates CCW triangles
+	dbg_test_triangle_points_direction (buf.A, buf.B, buf.C, "7th arc");
 	//dbg_cout_triangle ("7 - OFF, BTW SEG", buf.A, buf.B, buf.C, SEG_L, 0, 9, SEG_U, 0, 0, 55, 55, 55);
 
 	out.push_back(buf);
@@ -232,6 +228,8 @@ vector <TRIANGLE> generate_triangle_in_arc (vector <vector <vector <VCTR> > > ne
 		buf.GROUP = 1;
 		buf.COUNT = 0;
 
+		//generates CCW triangles
+		dbg_test_triangle_points_direction (buf.A, buf.B, buf.C, "1st arc");
 		//dbg_cout_triangle ("1 - IN_ARC_I", buf.A, buf.B, buf.C, SEG_CNT, ARC_CNT + 0, p_cnt + 1, SEG_CNT, ARC_CNT + 0, p_cnt + 0, SEG_CNT, ARC_CNT + 1, p_cnt + 0);
 
 		out.push_back(buf);
@@ -256,6 +254,8 @@ vector <TRIANGLE> generate_triangle_in_arc_II (vector <vector <vector <VCTR> > >
 		buf.GROUP = 2;
 		buf.COUNT = 0;
 
+		//generates CCW triangles
+		dbg_test_triangle_points_direction (buf.A, buf.B, buf.C, "2nd arc");
 		//dbg_cout_triangle ("2 - IN_ARC_II",	buf.A, buf.B, buf.C, SEG_CNT, ARC_CNT + 0, p_cnt + 1, SEG_CNT, ARC_CNT + 1, p_cnt + 0, SEG_CNT, ARC_CNT + 1, p_cnt + 1);
 
 		out.push_back(buf);
@@ -292,6 +292,8 @@ vector <TRIANGLE> generate_triangle_between_arcs (vector <vector <vector <VCTR> 
 	buf.GROUP = 3;
 	buf.COUNT = 0;
 
+	//generates CCW triangles
+	dbg_test_triangle_points_direction (buf.A, buf.B, buf.C, "3rd arc");
 	//dbg_cout_triangle ("3 - BTW_ARC_I",	buf.A, buf.B, buf.C, SEG_U, ARC_CNT + 0, 0, SEG_L, ARC_CNT + 0, p_max, SEG_U, ARC_CNT + 1, 0);
 
 	out.push_back(buf);
@@ -303,6 +305,8 @@ vector <TRIANGLE> generate_triangle_between_arcs (vector <vector <vector <VCTR> 
 	buf.GROUP = 4;
 	buf.COUNT = 0;
 
+	//generates CCW triangles
+	dbg_test_triangle_points_direction (buf.A, buf.B, buf.C, "4th arc");
 	//dbg_cout_triangle ("4 - BTW_ARC_II", buf.A, buf.B, buf.C, SEG_U, ARC_CNT + 1, 0, SEG_L, ARC_CNT + 0, p_max, SEG_L, ARC_CNT + 1, p_max - 1);
 
 	out.push_back(buf);
@@ -336,6 +340,8 @@ vector <TRIANGLE> generate_central_triangles (vector <vector <vector <VCTR> > > 
 	buf.GROUP = 5;
 	buf.COUNT = 0;
 
+	//generates CCW triangles
+	dbg_test_triangle_points_direction (buf.A, buf.B, buf.C, "5th arc");
 	//dbg_cout_triangle ("5 - CENTRAL", buf.A, buf.B, buf.C, SEG_U, 9, 0, SEG_L, 9, 0, 11, 11, 11);
 
 	out.push_back(buf);
@@ -396,7 +402,7 @@ vector <TRIANGLE> generate_triangle (vector <vector <vector <VCTR> > > net, INPS
 
 	//out = increase_triange_density(out);
 
-	out = convert_S_W_net (out, inset);
+	//out = convert_S_W_net (out, inset);
 
 	return out;
 }
@@ -526,20 +532,15 @@ vector <TRIANGLE> increase_triange_density (vector <TRIANGLE> in) {
 
 bool is_data_in_triangle (TRIANGLE in, VCTR D) {
 
-	double AX = in.A.X;
-	double AY = in.A.Y;
-	double BX = in.B.X;
-	double BY = in.B.Y;
-	double CX = in.C.X;
-	double CY = in.C.Y;
+	VCTR A = in.A;
+	VCTR B = in.B;
+	VCTR C = in.C;
 
-	vector <vector < double > > test = declare_3x3_matrix(
-			AX - D.X, AY - D.Y, (AX * AX - D.X * D.X) + (AY * AY - D.Y * D.Y),
-			BX - D.X, BY - D.Y, (BX * BX - D.X * D.X) + (BY * BY - D.Y * D.Y),
-			CX - D.X, CY - D.Y, (CX * CX - D.X * D.X) + (CY * CY - D.Y * D.Y)
-	);
+	bool B1 = ((D.X - B.X) * (A.Y - B.Y) - (A.X - B.X) * (D.Y - B.Y) < 0.0);
+	bool B2 = ((D.X - C.X) * (B.Y - C.Y) - (B.X - C.X) * (D.Y - C.Y) < 0.0);
+	bool B3 = ((D.X - A.X) * (C.Y - A.Y) - (C.X - A.X) * (D.Y - A.Y) < 0.0);
 
-	return (det_3 (test) > 0.0);
+	return (B1 == B2 && B2 == B3);
 }
 
 bool is_neighbouring_internal_triange (TRIANGLE inTRI, TRIANGLE offTRI) {
@@ -572,6 +573,8 @@ vector <TRIANGLE> add_external_to_internal (vector <TRIANGLE> innet, TRIANGLE of
 
 vector <TRIANGLE> return_count_in_net (vector <GDB> inGDB, vector <TRIANGLE> innet) {
 
+	//cout << fixed << setprecision(3) << endl;
+
 	for (size_t i = 0; i < innet.size(); i++) {
 
 		size_t counter = 0;
@@ -589,7 +592,19 @@ vector <TRIANGLE> return_count_in_net (vector <GDB> inGDB, vector <TRIANGLE> inn
 
 			VCTR pole = DXDYDZ_from_dipdir_dip(DD);
 
+
 			if (is_data_in_triangle(innet.at(i), pole)) {
+
+/*
+				cout << "POLE: " << pole.X << '\t' << pole.Y << endl;
+				cout << "I (NET TRIANGLE): " << i << " J (GDB RECORD): " << j << endl;
+				cout << "DIPDIR: " << DD.DIPDIR << " DIP: " << DD.DIP << endl;
+				cout << innet.at(i).A.X << '\t' << innet.at(i).A.Y << endl;
+				cout << innet.at(i).B.X << '\t' << innet.at(i).B.Y << endl;
+				cout << innet.at(i).C.X << '\t' << innet.at(i).C.Y << endl;
+				cout << innet.at(i).GROUP << endl;
+				cout << " -------------------------------------- " << endl;
+*/
 
 				if (innet.at(i).GROUP < 6) counter++;
 				else innet = add_external_to_internal (innet, innet.at(i));
@@ -616,14 +631,44 @@ void dbg_cout_triangle (string method, VCTR A, VCTR B, VCTR C, size_t SC1, size_
 	<< SC3 << AC3 << PC3 << endl;
 }
 
+void dbg_test_triangle_points_direction (VCTR A, VCTR B, VCTR C, string msg) {
+
+	TRIANGLE T;
+
+	T.A = A;
+	T.B = B;
+	T.C = C;
+
+	VCTR pole = declare_vector(-2.0, -2.0, NaN());
+
+	cout << fixed << setprecision(5) << endl;
+
+	if (is_data_in_triangle(T, pole)) ASSERT3(msg);
+
+	return;
+}
+
 void dbg_cout_triangle_coordinates (vector <TRIANGLE> in) {
+
+	//660 triangles are in the normal Kaalsbeek grid
+
+	cout << fixed << setprecision(3) << flush;
+
+	cout
+	<< "GROUP" 		<< '\t' << "|" << '\t'
+	<< "  VCTR A" 	<< '\t' << "|" << '\t'
+	<< "  VCTR B" 	<< '\t' << "|" << '\t'
+	<< "  VCTR C" 	<< '\t' << "|" << '\t'
+	<< "  COUNT" << endl;
 
 	for (size_t i = 0; i < in.size(); i++) {
 
 		cout
-		<< in.at(i).A.X << '\t' << in.at(i).A.Y
-		<< in.at(i).B.X << '\t' << in.at(i).B.Y
-		<< in.at(i).C.X << '\t' << in.at(i).C.Y
+		<< in.at(i).GROUP << '\t' << "|" << '\t'
+		<< in.at(i).A.X << '\t' << in.at(i).A.Y << '\t' << "|" << '\t'
+		<< in.at(i).B.X << '\t' << in.at(i).B.Y << '\t' << "|" << '\t'
+		<< in.at(i).C.X << '\t' << in.at(i).C.Y << '\t' << "|" << '\t'
+		<< in.at(i).COUNT
 		<< endl;
 	}
 }

@@ -90,9 +90,9 @@ STRESSTENSOR st_FRY (vector <GDB> inGDB) {
 
 STRESSFIELD sf_FRY (STRESSTENSOR st) {
 
-	STRESSFIELD sf = eigenvalue_eigenvector (st);
+	return eigenvalue_eigenvector (st);
 
-	sf = computestressfield_DXDYDZ (sf);
+	//sf = computestressfield_DXDYDZ (sf);
 
-	return stress_regime (sf);
+	//return stress_regime (sf);
 }
