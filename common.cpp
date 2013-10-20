@@ -1022,10 +1022,7 @@ VCTR unitvector (VCTR in) {
 		cout << endl;
 
 		ASSERT2(false,"Problem with vector length, [X, Y, Z] = [ "<<in.X<<", "<<in.Y<<", "<<in.Z<<"]");
-
-
 	}
-
 	return in;
 }
 
@@ -1540,15 +1537,23 @@ vector <double>  quartic_solution (double A, double B, double C, double D, doubl
 	return result;
 }
 
+double stresstensor_determinant (const STRESSTENSOR& st) {
+
+	return	(st._11 * st._22 * st._33) +
+			(st._12 * st._23 * st._13) +
+			(st._13 * st._12 * st._23) -
+			(st._13 * st._22 * st._13) -
+			(st._12 * st._12 * st._33) -
+			(st._11 * st._23 * st._23);
+}
+
 void check_stress_tensor_singularity(const STRESSTENSOR& st) {
 
-	double det =
-	(st._11 * st._22 * st._33) +
-	(st._12 * st._23 * st._13) +
-	(st._13 * st._12 * st._23) -
-	(st._13 * st._22 * st._13) -
-	(st._12 * st._12 * st._33) -
-	(st._11 * st._23 * st._23);
+	double det = stresstensor_determinant (st);
+
+	//cout << "EIGEN : "<< flush;
+
+	//cout << fixed << setprecision (25) << det << endl;
 
 	ASSERT2(fabs(det) > 1.0e-25, "Stress tensor nearly singluar, determinant = "<< det);
 }

@@ -42,6 +42,8 @@ double dotproduct (VCTR in1, VCTR in2, bool normalisation=false);
 
 double det_3 (vector <vector <double> > in);
 
+double stresstensor_determinant (const STRESSTENSOR& st);
+
 void check_stress_tensor_singularity(const STRESSTENSOR& st);
 
 vector <vector <double> >  declare_3x3_matrix (double a, double b, double c, double d, double e, double f, double g, double h, double i);

@@ -33,6 +33,8 @@ STRESSTENSOR st_BINGHAM (vector <GDB> inGDB) {
 
 	for (size_t i = 0; i < inGDB.size(); i++) {
 
+		//cout << "BINGHAM " << inGDB.at(i).ID << " " << inGDB.at(i).DATATYPE << endl;
+
 		STRESSTENSOR T;
 
 		VCTR PN = inGDB.at(i).N;
@@ -57,14 +59,7 @@ STRESSTENSOR st_BINGHAM (vector <GDB> inGDB) {
 		st = add_stress_tensor (st, T);
 	}
 
-	//cout << "BINGHAM TENSOR AFTER DOTPRODUCT" << endl;
-	//cout << inGDB.at(0).ID << endl;
-
-	//cout << fixed << setprecision(3) << endl;
-	//cout << st._11 << '\t' << st._12 << '\t' << st._13 << '\t' << endl;
-	//cout << st._12 << '\t' << st._22 << '\t' << st._23 << '\t' << endl;
-	//cout << st._13 << '\t' << st._23 << '\t' << st._33 << '\t' << endl;
-
+	//cout << "END BINGHAM" << endl;
 	return st;
 }
 

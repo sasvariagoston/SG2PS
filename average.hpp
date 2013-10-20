@@ -18,11 +18,15 @@ bool is_overturned (GDB in);
 //bool is_BEDDING (GDB in);
 bool is_bedding_present (vector <GDB> to_process);
 
+bool is_plane_dataset_singular (vector <GDB> inGDB, string METHOD);
+
 bool is_datatype_processable_for_average (vector <GDB> inGDB);
 bool is_processable_for_average_MT2 (vector <GDB> inGDB);
 bool is_processable_for_average_EQ2 (vector <GDB> inGDB);
 bool is_processable_for_average_EQ1 (vector <GDB> inGDB);
 bool is_processable_for_average_HMG (vector <GDB> inGDB);
+
+vector <GDB> generate_Bingham_dataset (vector <GDB> inGDB, string method);
 
 VCTR process_for_average_MT2 (vector <GDB> inGDB, string method);
 VCTR process_for_average_EQ2 (vector <GDB> inGDB);
