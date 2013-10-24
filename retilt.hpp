@@ -21,7 +21,7 @@ bool SV_has_to_invert (VCTR N, VCTR AXIS, double ANGLE);
 
 VCTR invert_VCTR (VCTR in);
 
-GDB TILT_DATA (GDB in, INPSET inset);
+GDB TILT_DATA (GDB in, INPSET inset, bool by_paleonorth);
 
 GDB S0_TILT (GDB inGDB, INPSET inSET);
 

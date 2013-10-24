@@ -3,6 +3,7 @@
 // This code is published under the GNU Lesser General Public License.
 
 #include <iostream>
+#include <math.h>
 
 #include "allowed_keys.hpp"
 #include "assertions.hpp"
@@ -91,7 +92,7 @@ VCTR invert_VCTR (VCTR in) {
 	return (declare_vector( -in.X, -in.Y, -in.Z));
 }
 
-GDB TILT_DATA (GDB in, INPSET inset) {
+GDB TILT_DATA (GDB in, INPSET inset, bool by_paleonorth) {
 
 	GDB OUT = in;
 
@@ -100,19 +101,25 @@ GDB TILT_DATA (GDB in, INPSET inset) {
 	bool IS_SC = 			is_allowed_SC_datatype			(in.DATATYPE);
 	bool IS_STRIAE = 		is_allowed_striae_datatype		(in.DATATYPE);
 
+	//cout << "TILT_DATA" << endl;
+
+	//cout << in.DATATYPE << endl;
+
 	if (!IS_PLANE && !IS_LINEATION && !IS_SC && !IS_STRIAE) ASSERT_DEAD_END();
 
-	bool TILT_BY_PALEONORTH = 	(inset.tilting == "P");
+	bool TILT_BY_PALEONORTH = by_paleonorth;
 
 	bool OVERTURNED = is_allowed_bedding_overturned_sense(in.avS0offset);
 	bool NO_DIRECTION = is_allowed_striae_none_sense(in.OFFSET);
 
-	double ANGLE = 	return_tilting_angle (in,  inset);
+	double ANGLE = 	return_tilting_angle (in, inset);
 	VCTR AXIS = 	return_tilting_axis(in, TILT_BY_PALEONORTH);
 
-	if (ANGLE < 0.01 || ANGLE > 900.00) return in;
+	if (fabs(ANGLE) < 0.01 || fabs(ANGLE) > 900.00) return in;
 
-	if (OVERTURNED) ANGLE = 180.0 - ANGLE;
+	if (OVERTURNED && !TILT_BY_PALEONORTH) ANGLE = 180.0 + ANGLE;
+
+	//cout << ANGLE << endl;
 
 	if (IS_PLANE) {
 
@@ -182,7 +189,18 @@ GDB S0_TILT (GDB inGDB, INPSET inSET) {
 	outGDB.S  = declare_vector (999.99, 999.99, 999.99);
 	outGDB.SC = declare_vector (999.99, 999.99, 999.99);
 
-	outGDB = TILT_DATA(inGDB, inSET);
+	bool TILT_BY_BEDDING = 		(inSET.tilting == "B");
+	bool TILT_BY_PALEONORTH = 	(inSET.tilting == "P");
+	bool TILT_BY_ALL = 			(inSET.tilting == "A");
+	if (!TILT_BY_BEDDING && !TILT_BY_PALEONORTH && !TILT_BY_ALL) ASSERT_DEAD_END();
+
+	if (TILT_BY_ALL) {
+		outGDB = TILT_DATA (inGDB, inSET, false);
+		outGDB = TILT_DATA (outGDB, inSET, true);
+	}
+	else if (TILT_BY_BEDDING) outGDB = TILT_DATA (inGDB, inSET, false);
+	else if (TILT_BY_PALEONORTH)outGDB = TILT_DATA (inGDB, inSET, true);
+	else ASSERT_DEAD_END();
 
 	return outGDB;
 }

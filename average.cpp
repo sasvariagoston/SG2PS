@@ -82,11 +82,17 @@ bool is_plane_dataset_singular (vector <GDB> inGDB, string METHOD) {
 
 	vector <GDB> temp_for_Bingham = generate_Bingham_dataset (inGDB, METHOD);
 
+	//dbg_averages(temp_for_Bingham);
+
 	STRESSTENSOR st = st_BINGHAM (temp_for_Bingham);
 
 	double det = stresstensor_determinant (st);
 
-	if (fabs(det) < 10e-25) {
+	cout << temp_for_Bingham.at(0).DATATYPE << endl;
+	cout << fixed << setprecision (15) << det << endl;
+
+
+	if (fabs(det) < 10e-15) {
 
 		//cout << temp_for_Bingham.at(0).ID << endl;
 
@@ -97,7 +103,7 @@ bool is_plane_dataset_singular (vector <GDB> inGDB, string METHOD) {
 		//cout << "SINGULAR" << endl;
 	}
 
-	return (fabs(det) < 10e-25);
+	return (fabs(det) < 10e-15);
 }
 
 bool is_datatype_processable_for_average (vector <GDB> inGDB) {
@@ -132,8 +138,6 @@ bool is_processable_for_average_HMG (vector <GDB> inGDB) {
 	return (!check_dataset_homogenity (inGDB));
 }
 
-
-
 vector <GDB> generate_Bingham_dataset (vector <GDB> inGDB, string method) {
 
 	vector <GDB> temp_for_Bingham;
@@ -142,7 +146,9 @@ vector <GDB> generate_Bingham_dataset (vector <GDB> inGDB, string method) {
 	bool FOR_BEDDING_AVERAGE = 	(method == "BEDDING_AVERAGE");
 	bool FOR_FOLDSURFACE = 		(method == "FOLDSURFACE");
 
-	//cout << method << endl;
+	//cout << "BINGHAM TENSOR GENERATION" << endl;
+	//cout << inGDB.size() << endl;
+	//cout << inGDB.at(0).DATATYPE << endl;
 
 	if (!FOR_AVERAGE && !FOR_FOLDSURFACE && !FOR_BEDDING_AVERAGE) ASSERT_DEAD_END();
 
@@ -533,25 +539,29 @@ vector <GDB> DATATYPE_AVERAGE (vector <GDB> inGDB, vector <size_t> length_contai
 
 		bool PROCESSABE = (is_datatype_processable_for_average(to_process));
 
-		bool SNG = is_plane_dataset_singular (to_process, "AVERAGE");
+		bool MT2 = (to_process.size() > 2);
+
+		bool SNG = MT2 && is_plane_dataset_singular (to_process, "AVERAGE");
 
 
-		//cout << "PROCESS  " << to_process.at(0).ID << endl;
-
-
-		//cout << "---------------SNG END  " << SNG << endl;
+		//cout << "LOC  " << to_process.at(0).LOC << endl;
+		//cout << "---------------proc END  " << PROCESSABE << endl;
 
 		if (FOR_DATA_AVERAGE && PROCESSABE && !SNG) {
 
 			VCTR AV_D = calculate_data_average_vector (to_process, "AVERAGE");
 
 			//cout << to_process.at(0).ID;
+			//dbg_averages(to_process);
 
 			to_process = apply_data_average_vector (to_process, AV_D, "DATA_AVERAGE");
 		}
-		else if (FOR_BEDDING_AVERAGE && PROCESSABE && !SNG) {
+		else if (FOR_BEDDING_AVERAGE && PROCESSABE) {
 
 			VCTR AV_D = calculate_bedding_average_vector (to_process);
+
+			//cout << "USE BEDDING DATA" << endl;
+			//cout << to_process.at(0).avd.DIPDIR << endl;
 
 			to_process = apply_data_average_vector (to_process, AV_D, "BEDDING_AVERAGE");
 		}
@@ -621,8 +631,12 @@ vector <GDB> cGc_average (vector <GDB> inGDB) {
 	length_container = generate_block_length (outGDB, "DATA_AVERAGE");
 	outGDB = DATATYPE_AVERAGE (outGDB, length_container, "DATA_AVERAGE");
 
+	//dbg_averages(outGDB);
+
 	length_container = generate_block_length (outGDB, "BEDDING_AVERAGE");
 	outGDB = DATATYPE_AVERAGE (outGDB, length_container, "BEDDING_AVERAGE");
+
+	//dbg_averages(outGDB);
 
 	cout << "  - Data set averages were computed for " << outGDB.size() << " records." << endl;
 

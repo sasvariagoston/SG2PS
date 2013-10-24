@@ -54,9 +54,26 @@ STRESSTENSOR st_BINGHAM (vector <GDB> inGDB) {
 		T._23 = (dotproduct (PN, N, false) * dotproduct (PN, U, false));
 		T._33 = (dotproduct (PN, U, false) * dotproduct (PN, U, false));
 
+
+		cout << fixed << setprecision(3) << endl;
+
+		//cout << " ---- BINGHAM TENSOR ---- " << endl;
+
+		//cout << T._11 << '\t' << T._12 << '\t' << T._13 << endl;
+		//cout << T._12 << '\t' << T._22 << '\t' << T._23 << endl;
+		//cout << T._13 << '\t' << T._23 << '\t' << T._33 << endl;
+
+
 		if (OTB) T = invert_stress_tensor(T);
 
 		st = add_stress_tensor (st, T);
+
+		//cout << " ---- BINGHAM TENSOR ---- " << endl;
+
+		//cout << st._11 << '\t' << st._12 << '\t' << st._13 << endl;
+		//cout << st._12 << '\t' << st._22 << '\t' << st._23 << endl;
+		//cout << st._13 << '\t' << st._23 << '\t' << st._33 << endl;
+
 	}
 
 	//cout << "END BINGHAM" << endl;

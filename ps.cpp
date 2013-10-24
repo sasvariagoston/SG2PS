@@ -1200,6 +1200,7 @@ void PS_plane (GDB i, ofstream& o, INPSET inset, CENTER center, bool label, stri
 	VCTR temp, torotate, axis;
 
 	bool OT = (i.avS0offset == "OVERTURNED" || i.avS0offset == "O");
+	bool OTB = (i.OFFSET == "OVERTURNED" || i.OFFSET == "O");
 
 	bool OTAB = (OT && type == "AV");
 
@@ -1387,7 +1388,11 @@ void PS_plane (GDB i, ofstream& o, INPSET inset, CENTER center, bool label, stri
 		o << "  [3 3] 0 setdash stroke" << '\n';
 		o << "  [   ] 0 setdash " << '\n';
 	}
+	else if (OTB) {
 
+			o << "  [3 3] 0 setdash stroke" << '\n';
+			o << "  [   ] 0 setdash " << '\n';
+		}
 	else if (type == "C") {
 
 		o << "  [3 3] 0 setdash stroke" << '\n';

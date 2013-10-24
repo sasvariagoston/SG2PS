@@ -470,6 +470,8 @@ void outputsettingfile (vector <vector <string> > SET, string projectname) {
 
 void dump_actual_settings (vector <vector <string> >SET) {
 
+	//dbg_generate_settings_file_list ();
+
 	vector <vector <vector <string> > > DEF = return_default_settings_database ();
 
 	for (size_t i = 0; i < SET.size(); i++) {

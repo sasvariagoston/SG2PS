@@ -18,4 +18,6 @@ vector <vector < vector <string> > > return_default_settings_database ();
 
 void dbg_default_settings_database (vector <vector < vector <string> > > DEF);
 
+void dbg_generate_settings_file_list ();
+
 #endif
