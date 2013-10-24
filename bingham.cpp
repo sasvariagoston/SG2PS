@@ -55,7 +55,7 @@ STRESSTENSOR st_BINGHAM (vector <GDB> inGDB) {
 		T._33 = (dotproduct (PN, U, false) * dotproduct (PN, U, false));
 
 
-		cout << fixed << setprecision(3) << endl;
+		//cout << fixed << setprecision(3) << endl;
 
 		//cout << " ---- BINGHAM TENSOR ---- " << endl;
 

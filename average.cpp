@@ -88,8 +88,8 @@ bool is_plane_dataset_singular (vector <GDB> inGDB, string METHOD) {
 
 	double det = stresstensor_determinant (st);
 
-	cout << temp_for_Bingham.at(0).DATATYPE << endl;
-	cout << fixed << setprecision (15) << det << endl;
+	//cout << temp_for_Bingham.at(0).DATATYPE << endl;
+	//cout << fixed << setprecision (15) << det << endl;
 
 
 	if (fabs(det) < 10e-15) {
@@ -316,37 +316,31 @@ VCTR process_for_average_EQ2 (vector <GDB> inGDB) {
 	bool OTB_1 = (is_overturned (inGDB.at(0)) && (inGDB.at(0).DATATYPE) == "BEDDING");
 	bool OTB_2 = (is_overturned (inGDB.at(1)) && (inGDB.at(1).DATATYPE) == "BEDDING");
 
-	//cout << "OTB: " << inGDB.at(0).ID << " " << OTB_1 << OTB_2 << endl;
-	//cout << "N1: "  << N1.X << " " << N1.Y << " " << N1.Z << endl;
-	//cout << "N2: "  << N2.X << " " << N2.Y << " " << N2.Z << endl;
-
 	if (OTB_1) N1 = flip_vector(N1);
 	if (OTB_2) N2 = flip_vector(N2);
 
-	//cout << "N1: "  << N1.X << " " << N1.Y << " " << N1.Z << endl;
-	//cout << "N2: "  << N2.X << " " << N2.Y << " " << N2.Z << endl;
+	bool is_SYMMETRICAL =
+			is_in_range(N1.X, N1.X, -N2.X) &&
+			is_in_range(N1.Y, N1.Y, -N2.Y) &&
+			is_in_range(N1.Z, N1.Z,  N2.Z);
 
+	if (!data_EQ2_homogeneous_and_one_overturned (inGDB)) return (declare_vector (0.0, 1.0, 0.0));
 
-	if (!data_EQ2_homogeneous_and_one_overturned (inGDB)) {
+	//cout << fixed << setprecision (8) << endl;
 
-		//cout << "OPPOSITE DIPS!!!" << endl;
-		//cout << inGDB.at(0).ID << "  -  " << inGDB.at(1).ID << endl;
+	//cout << inGDB.at(0).DATATYPE << endl;
 
-		return (declare_vector (0.0, 1.0, 0.0));
-	}
+	//cout << "SYMM: " << is_SYMMETRICAL << endl;
 
-	//rossz eredmenyt ad vissza, mert a lentebbi konverzio soran elvesz, hogy at volt bilentve!
+	//cout << N1.X << '\t' << N1.Y << '\t' << N1.Z << endl;
+	//cout << N2.X << '\t' << N2.Y << '\t' << N2.Z << endl;
 
-	//kulon fuggvenyt kell irni erre, ami kozvetlenu szamon a D-bol N-et!!!
-
-	//megnezni, hol lett meg meghivva a DXDYDZ_from NXNYNZ
+	if (is_SYMMETRICAL) return inGDB.at(0).S;
 
 	VCTR OUT = N_to_D(unitvector (declare_vector (
 			N1.X + N2.X,
 			N1.Y + N2.Y,
 			N1.Z + N2.Z)));
-
-	//cout << "OUT: "  << OUT.X << " " << OUT.Y << " " << OUT.Z << endl;
 
 	return OUT;
 }
