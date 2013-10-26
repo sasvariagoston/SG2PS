@@ -43,9 +43,9 @@ vector < vector <string> > read_settingsfile_to_vector (string settingfilename) 
 
 		if (!is_whitecharacter(key) && !is_whitecharacter(value)) {
 
-			buf.push_back(key);
+			buf.push_back(to_uppercase(key));
 
-			buf.push_back(value);
+			buf.push_back(to_uppercase(value));
 
 			SET.push_back(buf);
 		}

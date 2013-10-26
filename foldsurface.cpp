@@ -25,8 +25,8 @@ void plot_fold_great_circle (VCTR GR_CRC, ofstream& o, INPSET inset, CENTER cent
 	tempGDB.avD = DXDYDZ_from_NXNYNZ(GR_CRC);
 	tempGDB.avd = dipdir_dip_from_DXDYDZ (tempGDB.avD);
 
-	cout << "plot_fold_great_circle: " << flush;
-	cout << tempGDB.avd.DIPDIR << "/" << tempGDB.avd.DIP << endl;
+	//cout << "plot_fold_great_circle: " << flush;
+	//cout << tempGDB.avd.DIPDIR << "/" << tempGDB.avd.DIP << endl;
 
 	if (inset.plot == "H") 	PS_polepoint (tempGDB, o, inset, center, false, "FOLD");
 	else 					PS_plane     (tempGDB, o, inset, center, false, "FOLD");

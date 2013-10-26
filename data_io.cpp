@@ -581,15 +581,6 @@ void process_group_by_group (vector <GDB> inGDB, ofstream& o, INPSET inset, CENT
 
 	bool has_right_data_number = correct_inhomogeneous_number (processGDB, inset);
 
-	/*
-	if (inGDB.at(0).DATATYPE == "FOLDAXIS") {
-
-		cout
-		<< inGDB.at(0).corr.DIPDIR << " "
-		<< inGDB.at(0).corr.DIP << endl;
-	}
-	*/
-
 	PS_draw_rose (inGDB, o, inset, center, P, tilt);
 
 

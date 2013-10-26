@@ -62,13 +62,6 @@ bool is_overturned (GDB in){
 	return is_allowed_bedding_overturned_sense(in.OFFSET);
 }
 
-/*
-bool is_BEDDING (GDB in){
-
-	return (in.DATATYPE == "BEDDING" || in.DATATYPE == "FOLDSURFACE");
-}
-*/
-
 bool is_bedding_present (vector <GDB> to_process) {
 
 	for (size_t i = 0; i < to_process.size(); i++) {
@@ -82,26 +75,9 @@ bool is_plane_dataset_singular (vector <GDB> inGDB, string METHOD) {
 
 	vector <GDB> temp_for_Bingham = generate_Bingham_dataset (inGDB, METHOD);
 
-	//dbg_averages(temp_for_Bingham);
-
 	STRESSTENSOR st = st_BINGHAM (temp_for_Bingham);
 
 	double det = stresstensor_determinant (st);
-
-	//cout << temp_for_Bingham.at(0).DATATYPE << endl;
-	//cout << fixed << setprecision (15) << det << endl;
-
-
-	if (fabs(det) < 10e-15) {
-
-		//cout << temp_for_Bingham.at(0).ID << endl;
-
-		//cout << temp_for_Bingham.at(0).DATATYPE << endl;
-
-		//cout << fixed << setprecision (25) << det << endl;
-
-		//cout << "SINGULAR" << endl;
-	}
 
 	return (fabs(det) < 10e-15);
 }
@@ -525,28 +501,17 @@ vector <GDB> DATATYPE_AVERAGE (vector <GDB> inGDB, vector <size_t> length_contai
 
 		for (size_t k = RANGE_START; k < RANGE_END; k++) to_process.push_back(inGDB.at(k));
 
-		bool is_DATA_FOLDSURFACE = is_allowed_foldsurface_processing(to_process.at(0).DATATYPE);
-
 		RANGE_START = RANGE_START + length_container.at(i);
 
-		//cout << "---------------SNG STRART  " << endl;
 
+		bool is_DATA_FOLDSURFACE = is_allowed_foldsurface_processing(to_process.at(0).DATATYPE);
 		bool PROCESSABE = (is_datatype_processable_for_average(to_process));
-
 		bool MT2 = (to_process.size() > 2);
-
 		bool SNG = MT2 && is_plane_dataset_singular (to_process, "AVERAGE");
-
-
-		//cout << "LOC  " << to_process.at(0).LOC << endl;
-		//cout << "---------------proc END  " << PROCESSABE << endl;
 
 		if (FOR_DATA_AVERAGE && PROCESSABE && !SNG) {
 
 			VCTR AV_D = calculate_data_average_vector (to_process, "AVERAGE");
-
-			//cout << to_process.at(0).ID;
-			//dbg_averages(to_process);
 
 			to_process = apply_data_average_vector (to_process, AV_D, "DATA_AVERAGE");
 		}
@@ -554,18 +519,11 @@ vector <GDB> DATATYPE_AVERAGE (vector <GDB> inGDB, vector <size_t> length_contai
 
 			VCTR AV_D = calculate_bedding_average_vector (to_process);
 
-			//cout << "USE BEDDING DATA" << endl;
-			//cout << to_process.at(0).avd.DIPDIR << endl;
-
 			to_process = apply_data_average_vector (to_process, AV_D, "BEDDING_AVERAGE");
 		}
 		else if (is_DATA_FOLDSURFACE && FOR_FOLD_SURFACE && PROCESSABE && !SNG) {
 
 			VCTR GR_CRC = calculate_data_average_vector (to_process, "FOLDSURFACE");
-
-			//cout << "FOLD CIRCLE: " << flush;
-			//cout << fixed << setprecision (3) << flush;
-			//cout << GR_CRC.X << '\t' << GR_CRC.Y << '\t' << GR_CRC.Z << endl;
 
 			to_process = apply_data_average_vector (to_process, GR_CRC, "DATA_AVERAGE");
 		}
@@ -625,12 +583,8 @@ vector <GDB> cGc_average (vector <GDB> inGDB) {
 	length_container = generate_block_length (outGDB, "DATA_AVERAGE");
 	outGDB = DATATYPE_AVERAGE (outGDB, length_container, "DATA_AVERAGE");
 
-	//dbg_averages(outGDB);
-
 	length_container = generate_block_length (outGDB, "BEDDING_AVERAGE");
 	outGDB = DATATYPE_AVERAGE (outGDB, length_container, "BEDDING_AVERAGE");
-
-	//dbg_averages(outGDB);
 
 	cout << "  - Data set averages were computed for " << outGDB.size() << " records." << endl;
 

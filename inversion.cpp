@@ -268,8 +268,7 @@ void inversion (vector <GDB> inGDB, ofstream& o, INPSET inset, CENTER center, CE
 	bool PTN = 			is_method_PTN(inGDB, inset);
 	bool SHAN = 		is_method_SHAN(inGDB, inset);
 
-	if (!ANGELIER && !BINGHAM && !BRUTEFORCE && !FRY &&!MICHAEL && !MOSTAFA && !NDA && !PTN && !SHAN) ASSERT_DEAD_END();
-
+	if (!ANGELIER && !BINGHAM && !BRUTEFORCE && !FRY && !MICHAEL && !MOSTAFA && !NDA && !PTN && !SHAN) ASSERT_DEAD_END();
 
 	bool successfull = false;
 	double average_misfit;

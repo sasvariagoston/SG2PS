@@ -35,7 +35,6 @@ vector <GDB> competeRGFcontect (string projectname, string inputxyfilename, INPS
 
 		if (capslock(inputxyfilename) != "NONE")  outGDB.at(i) = insertxy (outGDB.at(i));
 	}
-
 	return outGDB;
 }
 
@@ -504,7 +503,6 @@ vector <GDB> cGc_striae_correction (vector <GDB> inGDB) {
 			corrSTR_DIPcor.MISFIT = 0.0;
 			corrSTR_DIPDIRcor.MISFIT = 0.0;
 		}
-
 		else {
 
 			corrSTR_DIPcor.MISFIT = 999.99;
@@ -538,7 +536,6 @@ vector <GDB> cGc_striae_correction (vector <GDB> inGDB) {
 				outGDB.at(i).DC.Z 	= corrSTR_DIPcor.Z;
 				misfitangle 		= corrSTR_DIPcor.MISFIT;
 			}
-
 			else {
 
 				outGDB.at(i).DC.X 	= corrSTR_DIPDIRcor.X;
@@ -790,18 +787,6 @@ bool bycorrDIPDIRcorrDIPcorrLDIPDIRcorrLDIP(const GDB& x, const GDB& y) {
 	return x.corrL.DIP < y.corrL.DIP;
 }
 
-/*
-bool bycorrDIPDIR(const GDB& x, const GDB& y) {
-
-	return x.corr.DIPDIR < y.corr.DIPDIR;
-}
-
-bool bycorrDIP(const GDB& x, const GDB& y) {
-
-	return x.corr.DIP < y.corr.DIP;
-}
-*/
-
 bool byeigenvalue(const sort_jacobi& x, const sort_jacobi& y) {
 
 	return x.eigenvalue < y.eigenvalue;
@@ -821,7 +806,6 @@ bool stopcriteria (string prevDATATYPE, string DATATYPE, string prevLOC, string 
 		if ((prevDATATYPE == DATATYPE) && (prevLOC == LOC) && (prevGC == GC)) return true;
 		else return false;
 	}
-
 	else {
 
 		if ((prevDATATYPE == DATATYPE) && (prevLOC == LOC)) return true;
@@ -947,271 +931,6 @@ bool check_dataset_homogenity (vector <GDB> inGDB) {
 	if (SC || STRIAE || BEDDING) return (GEOMETRY || OFFSET);
 	else return (GEOMETRY);
 }
-/*
-void fold_from_planes (vector <GDB> inGDB, ofstream& o, INPSET inset, CENTER center) {
-
-	vector <GDB> buffer;
-	GDB tempGDB;
-
-	size_t i = 0;
-
-	STRESSFIELD sf;
-
-	VCTR great_circle_normal;
-
-	do {
-
-		buffer.clear();
-
-		do {
-
-			buffer.push_back(inGDB.at(i));
-
-			i++;
-
-			if (i == inGDB.size()) break;
-
-		} while ((inGDB.at(i - 1).DATATYPE == inGDB.at(i).DATATYPE) && (inGDB.at(i - 1).LOC == inGDB.at(i).LOC));
-
-
-
-		if (buffer.at(0).DATATYPE == "FOLDSURFACE") {
-
-			//sf = sf_BINGHAM (st_BINGHAM (buffer)); ez volt
-
-			STRESSTENSOR st = st_BINGHAM (inGDB); // ez lett
-
-			sf = eigenvalue_eigenvector (st);
-
-			sf = sf_BINGHAM (sf);
-
-			sf = computestressfield_DXDYDZ (sf); //eddig
-
-			great_circle_normal = flip_D_vector (sf.EIGENVECTOR1);
-
-			tempGDB = buffer.at(0);
-
-			tempGDB.avD = unitvector (DXDYDZ_from_NXNYNZ (great_circle_normal));
-			tempGDB.avd = dipdir_dip_from_DXDYDZ (tempGDB.avD);
-
-			if (inset.plot == "H") 	PS_polepoint (tempGDB, o, inset, center, false, "FOLD");
-			else 					PS_plane     (tempGDB, o, inset, center, false, "FOLD");
-
-			PS_folddata (tempGDB, o, center);
-		}
-
-	} while (i < inGDB.size());
-
-	return;
-}
-
-*/
-
-/*
-GDB init_average (GDB inGDB) {
-
-	inGDB.avD = declare_vector (0.0, 1.0, 0.0);
-	inGDB.avS0D = declare_vector (0.0, 1.0, 0.0);
-
-	inGDB.avd.DIPDIR = 0.0;
-	inGDB.avd.DIP = 0.0;
-	inGDB.avS0d.DIPDIR = 0.0;
-	inGDB.avS0d.DIP = 0.0;
-
-	return inGDB;
-}
-
-
-bool is_datatype_processable_for_average (vector <GDB> inGDB) {
-
-	string DT = inGDB.at(0).DATATYPE;
-
-	return ((DT != "STRIAE") && (DT != "LITHOLOGY") && (DT != "SC"));
-}
-
-bool is_processable_for_average_MT2 (vector <GDB> inGDB) {
-
-	return ((inGDB.size() > 2) && is_datatype_processable_for_average (inGDB) && check_dataset_homogenity (inGDB));
-}
-
-bool is_processable_for_average_EQ2 (vector <GDB> inGDB) {
-
-	return ((inGDB.size() == 2) && is_datatype_processable_for_average (inGDB) && check_dataset_homogenity (inGDB));
-}
-
-bool is_processable_for_average_EQ1 (vector <GDB> inGDB) {
-
-	return ((inGDB.size() == 1) && is_datatype_processable_for_average (inGDB) && check_dataset_homogenity (inGDB));
-}
-
-bool is_processable_for_average_HOMOG (vector <GDB> inGDB) {
-
-	return (is_datatype_processable_for_average (inGDB) &&  !check_dataset_homogenity (inGDB));
-}
-
-STRESSFIELD process_for_average_MT2 (vector <GDB> inGDB) {
-
-	return sf_BINGHAM (st_BINGHAM (inGDB));
-}
-
-STRESSFIELD process_for_average_EQ2 (vector <GDB> inGDB) {
-
-	STRESSFIELD sf;
-
-	sf.EIGENVECTOR2 = declare_vector (
-			inGDB.at(0).D.X + inGDB.at(1).D.X,
-			inGDB.at(0).D.Y + inGDB.at(1).D.Y,
-			inGDB.at(0).D.Z + inGDB.at(1).D.Z);
-
-	sf.EIGENVECTOR2 = unitvector (sf.EIGENVECTOR2);
-
-	sf.S_2 = dipdir_dip_from_DXDYDZ(sf.EIGENVECTOR2);
-
-	return sf;
-}
-
-STRESSFIELD  (vector <GDB> inGDB) {
-
-	STRESSFIELD sf;
-
-	sf.EIGENVECTOR2 = inGDB.at(0).D;
-	sf.S_2 = inGDB.at(0).corr;
-
-	return sf;
-}
-
-vector <GDB> calculate_average_for_1 (vector <GDB> inGDB) {
-
-	VCTR N = inGDB.at(0).N;
-
-	inGDB.at(0) = init_average (inGDB.at(0));
-
-	inGDB.at(0).avD = unitvector(flip_D_vector (DXDYDZ_from_NXNYNZ (N)));
-
-	inGDB.at(0).avd = dipdir_dip_from_DXDYDZ (inGDB.at(0).avD);
-
-	if ((inGDB.at(0).DATATYPE == "BEDDING") && (inGDB.at(0).OFFSET == "OVERTURNED")) inGDB.at(0).avS0offset = "OVERTURNED";
-
-	return inGDB;
-}
-*/
-
-/*
-
-vector <GDB> cGc_s0_average (vector <GDB> inGDB) {
-
-	vector <GDB> outGDB;
-
-	outGDB = inGDB;
-
-	size_t intervalbegin = 0;
-	size_t independentrecordcounter = 0;
-	size_t i = 0;
-	size_t j = 0;
-
-	VCTR temp, temp2;
-	DIPDIR_DIP avs0;
-
-	if (outGDB.size() == 1) {
-
-		outGDB.at(0).avS0D = declare_vector (10e-8, 1.0 - 10e-8, 10e-8);
-		outGDB.at(0).avS0N = declare_vector (10e-8, 10e-8, 1.0 - 10e-8);
-
-		outGDB.at(0).avS0d.DIPDIR 	= 10e-8;
-		outGDB.at(0).avS0d.DIP    	= 10e-8;
-
-		if (outGDB.at(0).DATATYPE == "BEDDING") {
-
-			outGDB.at(0).avS0D = outGDB.at(0).avD;
-
-			temp = declare_vector (outGDB.at(0).avS0D.X, outGDB.at(0).avS0D.Y, outGDB.at(0).avS0D.Z);
-			temp =  NXNYNZ_from_DXDYDZ (temp);
-
-			outGDB.at(0).avS0N = temp;
-
-			temp = outGDB.at(0).avS0D;
-
-			avs0 = dipdir_dip_from_DXDYDZ (temp);
-
-			outGDB.at(0).avS0d = avs0;
-
-			cout << "  - Average bedding was computed for 1 independent data group in " << i << " records." <<  endl;
-		}
-		else {
-
-			outGDB.at(0).avS0D = declare_vector (0.0, 1.0, 0.0);
-			outGDB.at(0).avS0N = declare_vector (0.0, 0.0, 1.0);
-			outGDB.at(0).avS0d.DIPDIR = 999.99;
-			outGDB.at(0).avS0d.DIP = 99.99;
-
-			cout << "  - No average bedding were computed" <<  endl;
-		}
-		return outGDB;
-	}
-
-	bool bedding_exists = false;
-
-	do {
-
-		temp = declare_vector (10e-8, 1.0 - 10e-8, 10e-8);
-
-		do {
-
-			if (outGDB.at(i).DATATYPE == "BEDDING") {
-
-				temp = outGDB.at(i).avD;
-				bedding_exists = true;
-			}
-
-			i++;
-
-			if (i == outGDB.size()) break;
-
-		} while ((outGDB.at(i-1).LOC == outGDB.at(i).LOC));
-
-		j = intervalbegin;
-		independentrecordcounter++;
-		temp = unitvector (temp);
-
-		do {
-
-			if (bedding_exists) {
-
-				outGDB.at(j).avS0D = temp;
-
-				avs0 = dipdir_dip_from_DXDYDZ (temp);
-
-				temp2 = declare_vector (outGDB.at(j).avS0D.X, outGDB.at(j).avS0D.Y, outGDB.at(j).avS0D.Z);
-				temp2 =  NXNYNZ_from_DXDYDZ (temp2);
-
-				outGDB.at(j).avS0N = temp2;
-
-				outGDB.at(j).avS0d = avs0;
-
-				//cout << "AVERAGE BEDDING :" << avs0.DIPDIR << "/" << avs0.DIP << endl;
-			}
-			else {
-
-				outGDB.at(j).avS0D = declare_vector (0.0, 1.0, 0.0);
-				outGDB.at(j).avS0N = declare_vector (0.0, 0.0, 1.0);
-				outGDB.at(j).avS0d.DIPDIR = 999.99;
-				outGDB.at(j).avS0d.DIP = 99.99;
-			}
-
-			j++;
-
-		} while (j < i);
-
-		intervalbegin = i;
-
-	} while (i < outGDB.size());
-
-	cout << "  - Average bedding was computed for " << independentrecordcounter << " independent data group(s) in " << i << " records." <<  endl;
-
-	return outGDB;
-}
-
-*/
 
 vector <GDB> ptn (vector <GDB> inGDB, INPSET inset) {
 
@@ -1338,7 +1057,6 @@ void process_rgf (string inputfilename, string XY_filename, INPSET inset) {
 
 	cout << "AVERAGE BEDDING COMPUTATION FOR '" << capslock(inputfilename)<< ".RGF' DATABASE FILE" << endl;
 	geodatabase = cGc_average (geodatabase);
-	//geodatabase = cGc_s0_average (geodatabase);
 	geodatabase = ptn (geodatabase, inset);
 
 	cout << "RETILTING OF '" << capslock(inputfilename)<< ".RGF' DATABASE FILE" << endl;
@@ -1347,7 +1065,6 @@ void process_rgf (string inputfilename, string XY_filename, INPSET inset) {
 	tiltgeodatabase = cGc_PITCHANGLE (tiltgeodatabase);
 	tiltgeodatabase = cGc_OFFSET (tiltgeodatabase);
 	tiltgeodatabase = cGc_average (tiltgeodatabase);
-	//tiltgeodatabase = cGc_s0_average (tiltgeodatabase);
 	tiltgeodatabase = ptn (tiltgeodatabase, inset);
 
 	cout << "DATA EVALUATION AND EXPORT FROM '" << capslock(inputfilename) << ".RGF' DATABASE FILE" << endl;
