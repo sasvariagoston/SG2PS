@@ -1,13 +1,7 @@
+// Copyright (C) 2012, 2013 Ágoston Sasvári
+// All rights reserved.
+// This code is published under the GNU Lesser General Public License.
 
-//#include "array_to_vector.hpp"
-
-
-//#include "assertions.hpp"
-//#include "checkrgffilecontent.h"
-//#include "exceptions.hpp"
-//#include "read_csv.hpp"
-//#include "ReservedColumnNames.hpp"
-//#include "run_mode.h"
 #include <algorithm>
 
 #include "allowed_keys.hpp"
@@ -164,20 +158,6 @@ const string handle_as_bedding_allowed [] = {
 		"FOLDSURFACE"
 };
 const vector<string> allowed_handle_as_bedding (from_array(handle_as_bedding_allowed));
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 }
 

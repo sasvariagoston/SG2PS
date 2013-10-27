@@ -9,7 +9,6 @@
 
 #include "structs.h"
 
-
 vector <CENTR_VECT>  init_centriod (size_t cluster_number, vector <GDB> inGDB);
 vector <vector <double> > init_distance_matrix (size_t cluster_number, vector <GDB> inGDB);
 vector <int> init_whichgroup (size_t cluster_number, vector <GDB> inGDB);

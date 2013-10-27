@@ -1,3 +1,7 @@
+// Copyright (C) 2012, 2013 Ágoston Sasvári
+// All rights reserved.
+// This code is published under the GNU Lesser General Public License.
+
 #ifndef ALLOWED_KEYS_HPP_
 #define ALLOWED_KEYS_HPP_
 

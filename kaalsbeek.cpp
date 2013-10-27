@@ -79,11 +79,9 @@ vector <TRIANGLE>  generate_net_count (vector <GDB> inGDB, vector <vector <vecto
 
 	vector <vector <VCTR> > buf;
 
-	vector <TRIANGLE> TRI = generate_triangle (NET, inset);
+	vector <TRIANGLE> TRI = generate_triangle (NET);
 
 	TRI = return_count_in_net (inGDB, TRI);
-
-	//dbg_cout_kaalsbeek_ps(TRI);
 
 	return TRI;
 }
@@ -102,12 +100,7 @@ vector <GRID_CENTER> generate_triangle_center (vector <TRIANGLE> net) {
 
 		buf.COUNT = net.at(i).COUNT;
 
-		//double X = buf.CENTER.X;
-		//double Y = buf.CENTER.Y;
-
-		//if (sqrt((X * X) + (Y * Y)) <= 1.0)
 		out.push_back(buf);
-		//else {}
 	}
 
 	return out;
@@ -203,7 +196,6 @@ vector <TRIANGLE> generate_triangle_offnet_between_segments (vector <vector <vec
 	buf.GROUP = 7;
 	buf.COUNT = 0;
 
-	//generates CCW triangles
 	dbg_test_triangle_points_direction (buf.A, buf.B, buf.C, "7th arc");
 	//dbg_cout_triangle ("7 - OFF, BTW SEG", buf.A, buf.B, buf.C, SEG_L, 0, 9, SEG_U, 0, 0, 55, 55, 55);
 
@@ -228,7 +220,6 @@ vector <TRIANGLE> generate_triangle_in_arc (vector <vector <vector <VCTR> > > ne
 		buf.GROUP = 1;
 		buf.COUNT = 0;
 
-		//generates CCW triangles
 		dbg_test_triangle_points_direction (buf.A, buf.B, buf.C, "1st arc");
 		//dbg_cout_triangle ("1 - IN_ARC_I", buf.A, buf.B, buf.C, SEG_CNT, ARC_CNT + 0, p_cnt + 1, SEG_CNT, ARC_CNT + 0, p_cnt + 0, SEG_CNT, ARC_CNT + 1, p_cnt + 0);
 
@@ -254,7 +245,6 @@ vector <TRIANGLE> generate_triangle_in_arc_II (vector <vector <vector <VCTR> > >
 		buf.GROUP = 2;
 		buf.COUNT = 0;
 
-		//generates CCW triangles
 		dbg_test_triangle_points_direction (buf.A, buf.B, buf.C, "2nd arc");
 		//dbg_cout_triangle ("2 - IN_ARC_II",	buf.A, buf.B, buf.C, SEG_CNT, ARC_CNT + 0, p_cnt + 1, SEG_CNT, ARC_CNT + 1, p_cnt + 0, SEG_CNT, ARC_CNT + 1, p_cnt + 1);
 
@@ -292,7 +282,6 @@ vector <TRIANGLE> generate_triangle_between_arcs (vector <vector <vector <VCTR> 
 	buf.GROUP = 3;
 	buf.COUNT = 0;
 
-	//generates CCW triangles
 	dbg_test_triangle_points_direction (buf.A, buf.B, buf.C, "3rd arc");
 	//dbg_cout_triangle ("3 - BTW_ARC_I",	buf.A, buf.B, buf.C, SEG_U, ARC_CNT + 0, 0, SEG_L, ARC_CNT + 0, p_max, SEG_U, ARC_CNT + 1, 0);
 
@@ -305,7 +294,6 @@ vector <TRIANGLE> generate_triangle_between_arcs (vector <vector <vector <VCTR> 
 	buf.GROUP = 4;
 	buf.COUNT = 0;
 
-	//generates CCW triangles
 	dbg_test_triangle_points_direction (buf.A, buf.B, buf.C, "4th arc");
 	//dbg_cout_triangle ("4 - BTW_ARC_II", buf.A, buf.B, buf.C, SEG_U, ARC_CNT + 1, 0, SEG_L, ARC_CNT + 0, p_max, SEG_L, ARC_CNT + 1, p_max - 1);
 
@@ -340,7 +328,6 @@ vector <TRIANGLE> generate_central_triangles (vector <vector <vector <VCTR> > > 
 	buf.GROUP = 5;
 	buf.COUNT = 0;
 
-	//generates CCW triangles
 	dbg_test_triangle_points_direction (buf.A, buf.B, buf.C, "5th arc");
 	//dbg_cout_triangle ("5 - CENTRAL", buf.A, buf.B, buf.C, SEG_U, 9, 0, SEG_L, 9, 0, 11, 11, 11);
 
@@ -372,7 +359,7 @@ vector <TRIANGLE> generate_triangle_in_segment (vector <vector <vector <VCTR> > 
 	return out;
 }
 
-vector <TRIANGLE> generate_triangle (vector <vector <vector <VCTR> > > net, INPSET inset) {
+vector <TRIANGLE> generate_triangle (vector <vector <vector <VCTR> > > net) {
 
 	vector <TRIANGLE> buf;
 	vector <TRIANGLE> out;
@@ -396,20 +383,10 @@ vector <TRIANGLE> generate_triangle (vector <vector <vector <VCTR> > > net, INPS
 		out = merge_triangle(out, buf);
 	}
 
-	//dbg_cout_triangle_coordinates (out);
-
-	//out = increase_triange_density(out);
-
-	//out = increase_triange_density(out);
-
-	//out = convert_S_W_net (out, inset);
-
 	return out;
 }
 
 vector <TRIANGLE> convert_S_W_net (vector <TRIANGLE> in, INPSET inset) {
-
-	//cout << inset.plottype << endl;
 
 	for (size_t i = 0; i < in.size(); i++) {
 
@@ -573,15 +550,11 @@ vector <TRIANGLE> add_external_to_internal (vector <TRIANGLE> innet, TRIANGLE of
 
 vector <TRIANGLE> return_count_in_net (vector <GDB> inGDB, vector <TRIANGLE> innet) {
 
-	//cout << fixed << setprecision(3) << endl;
-
 	for (size_t i = 0; i < innet.size(); i++) {
 
 		size_t counter = 0;
 
 		for (size_t j = 0; j < inGDB.size(); j++) {
-
-			//cout << i << " " << j << endl;
 
 			DIPDIR_DIP DD = dipdir_dip_from_DXDYDZ(inGDB.at(j).D);
 
@@ -594,17 +567,6 @@ vector <TRIANGLE> return_count_in_net (vector <GDB> inGDB, vector <TRIANGLE> inn
 
 
 			if (is_data_in_triangle(innet.at(i), pole)) {
-
-/*
-				cout << "POLE: " << pole.X << '\t' << pole.Y << endl;
-				cout << "I (NET TRIANGLE): " << i << " J (GDB RECORD): " << j << endl;
-				cout << "DIPDIR: " << DD.DIPDIR << " DIP: " << DD.DIP << endl;
-				cout << innet.at(i).A.X << '\t' << innet.at(i).A.Y << endl;
-				cout << innet.at(i).B.X << '\t' << innet.at(i).B.Y << endl;
-				cout << innet.at(i).C.X << '\t' << innet.at(i).C.Y << endl;
-				cout << innet.at(i).GROUP << endl;
-				cout << " -------------------------------------- " << endl;
-*/
 
 				if (innet.at(i).GROUP < 6) counter++;
 				else innet = add_external_to_internal (innet, innet.at(i));

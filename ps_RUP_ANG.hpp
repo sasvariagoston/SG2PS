@@ -11,7 +11,6 @@
 #include <iostream>
 #include <vector>
 
-
 #include "rup_clustering.hpp"
 #include "structs.h"
 #include "valley_method.hpp"
@@ -31,9 +30,9 @@ double return_step (double DATA_max);
 void ps_draw_histogram_bars (vector <GDB> inGDB, vector <line_RUP_ANG> L_R_A, INPSET inset, ofstream& o, CENTER center, PAPER P, double DATA_min, double DATA_max, size_t bin_number, double binsize, string method);
 
 void ps_RUP_ANG_header (ofstream& o, CENTER center, PAPER P, string method);
-void ps_percentage (ofstream& o, CENTER center, PAPER P, string method, double DATA_min, double DATA_max);
+void ps_percentage (ofstream& o, CENTER center, PAPER P, string method, double DATA_max);
 void ps_percentage_max (ofstream& o, CENTER center, PAPER P, string method, double DATA_max);
 
-vector <line_RUP_ANG> generate_graph_histogram (vector <HISTOGRAM> H, vector <VALLEY> V, INPSET inset, string method, double DATA_MIN, double DATA_MAX);
+vector <line_RUP_ANG> generate_graph_histogram (vector <HISTOGRAM> H, vector <VALLEY> V, double DATA_MAX);
 
 #endif

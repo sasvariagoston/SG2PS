@@ -49,8 +49,6 @@ XY stereonet_coordinate_from_DIPDIR_DIP (DIPDIR_DIP in, CENTER center, INPSET in
 
 VCTR density_color_from_percentage (double percentage) {
 
-	//ASSERT_GE(1.00, percentage);
-
 	VCTR minimum = declare_vector(1.00, 1.00, 1.00);
 	VCTR maximum = declare_vector(1.00, 0.00, 1.00);
 
@@ -61,8 +59,6 @@ VCTR density_color_from_percentage (double percentage) {
 }
 
 DENSITY density_in_cell (vector <GDB> in, size_t search_dipdir, size_t search_dip, size_t radius) {
-
-	//ASSERT_GE(radius, search_dip);
 
 	DENSITY out;
 
@@ -92,105 +88,13 @@ DENSITY density_in_cell (vector <GDB> in, size_t search_dipdir, size_t search_di
 	return out;
 }
 
-/*
-
-vector <DENSITY> normalize_density (vector <DENSITY> in) {
-
-	size_t max = 0;
-
-	for (size_t i = 0; i < in.size(); i++ ) {
-
-		if (in.at(i).percentage > max) max = in.at(i).percentage;
-	}
-
-
-	for (size_t i = 0; i < in.size(); i++ ) {
-
-		in.at(i).percentage = in.at(i).percentage / max;
-	}
-
-	return in;
-}
-
- vector <DENSITY> generate_density_vector (vector <GDB> in, size_t radius) {
-
-	vector <DENSITY> out;
-
-	size_t dipdir_step = 2 * radius;
-	size_t    dip_step = 2 * radius;
-
-	for (size_t search_dip = radius; search_dip < 90; search_dip += dip_step) {
-
-		for (size_t search_dipdir = radius; search_dipdir < 360; search_dipdir += dipdir_step) {
-
-			//if 		((search_dip >   0) && (search_dip < 40)) 	dipdir_step =  2 * radius;
-			////else if ((search_dip >= 40) && (search_dip < 60)) 	dipdir_step =  3 * radius;
-			//else if ((search_dip >= 60) && (search_dip < 80)) 	dipdir_step =  5 * radius;
-			//else 												dipdir_step = 10 * radius;
-
-			DENSITY buffer = density_in_cell (in, search_dipdir, search_dip, radius);
-
-			//cout << search_dipdir << " / " << search_dip << " / " << buffer.percentage << endl;
-
-			if (buffer.percentage > 10e-4) out.push_back(buffer);
-		}
-	}
-
-	out = normalize_density (out);
-
-	return out;
-}
-
-void plot_densities (vector <GDB> inGDB, vector <GDB> tiltinGDB, ofstream& o, INPSET inset, CENTER center, PAPER P) {
-
-	vector <DENSITY> dens;
-
-	size_t radius = 5;
-
-	center.X = P.O1X;
-	center.Y = P.O1Y;
-	dens = generate_density_vector (inGDB, radius);
-
-	cout << fixed << setprecision (3) << endl;
-	cout << dens.size() << endl;
-
-	for (size_t i = 0; i < dens.size(); i++) {
-
-
-		cout << dens.at(i).percentage / dens.size() << endl;
-
-		ps_plot_densities (dens.at(i), radius, o, inset, center, P);
-	}
-
-
-	center.X = P.O2X;
-	center.Y = P.O2Y;
-	dens = generate_density_vector (tiltinGDB, radius);
-
-	for (size_t i = 0; i < dens.size(); i++) {
-
-		//ps_plot_densities (dens.at(i), radius, o, inset, center, P);
-	}
-}
-
-
-
-*/
-
-
-
-
 vector < vector <GRID_CENTER> > generate_rectangular_grid_from_triange_center (size_t cell_number) {
 
 	vector < vector <GRID_CENTER> > out;
 
 	double step = 2.1 / cell_number;
-	//was: double step = 2.1 / cell_number;
 
 	double min = -1.05 + (step / 2.0);
-	//was: double min = -1.0 + (step / 2.0);
-
-	//cout << "step: " << step << endl;
 
 	double counter_Y = min;
 
@@ -207,8 +111,6 @@ vector < vector <GRID_CENTER> > generate_rectangular_grid_from_triange_center (s
 			buf.CENTER.X = counter_X;
 			buf.CENTER.Y = counter_Y;
 			buf.COUNT = 0;
-
-			//cout << counter_X << '\t' << counter_Y << endl;
 
 			grid_buf.push_back(buf);
 
@@ -252,9 +154,6 @@ vector < vector <GRID_CENTER> > calculate_grid_cell_values_from_triangle (vector
 			else {} // OK
 		}
 	}
-
-	//dbg_cout_rect_grid(rect_grid);
-
 	return rect_grid;
 }
 
@@ -293,9 +192,6 @@ vector < vector <GRID_CENTER> > normalize_grid_cell_values (vector < vector <GRI
 
 	double rect_max = return_rect_grid_max_count(rect_grid);
 
-	//cout << "TRI_CENTER_MAX: " << max_count << endl;
-	//cout << "RECT_MAX: " << rect_max << endl;
-
 	for (size_t i = 0; i < rect_grid.size(); i++) {
 
 		for (size_t j = 0; j < rect_grid.at(0).size(); j++) {
@@ -319,7 +215,7 @@ size_t return_contour_step (double max_COUNT) {
 			else {
 
 				if (max_COUNT < 100.0) return 10;
-				else return max_COUNT / 100;
+				else return max_COUNT / 100.0;
 			}
 		}
 	}
@@ -328,11 +224,11 @@ size_t return_contour_step (double max_COUNT) {
 
 size_t return_isoline (double max_COUNT, size_t k) {
 
-	if (k == 0) return max_COUNT / 500;
-	else if (k == 1) return max_COUNT / 300;
-	else if (k == 2) return max_COUNT / 200;
-	else if (k == 3) return max_COUNT / 100;
-	else return max_COUNT / 50;
+	if (k == 0) return max_COUNT / 500.0;
+	else if (k == 1) return max_COUNT / 300.0;
+	else if (k == 2) return max_COUNT / 200.0;
+	else if (k == 3) return max_COUNT / 100.0;
+	else return max_COUNT / 50.0;
 }
 
 vector < vector <GRID_CENTER_S> > generate_empty_binary_rect_grid (size_t cell_number) {
@@ -749,8 +645,6 @@ vector <LINE> generate_raw_lines (vector <vector <GRID_CENTER_S> > m_sq, vector 
 			if (m_sq.at(j).at(i).COUNT != 0 && m_sq.at(j).at(i).COUNT != 15) {
 
 				buf = return_line_from_m_sq_number (m_sq, rect_grid, j, i, isoline);
-
-				//cout << j << " " << i << endl;
 			}
 
 			out.insert(out.end(), buf.begin(), buf.end());
@@ -1022,11 +916,6 @@ VCTR generate_new_start (VCTR A) {
 	out.Y = A.Y / length;
 	out.Z = A.Z / length;
 
-	//cout << "----NEW START----" << endl;
-
-	//cout << A.X << '\t' << A.Y << endl;
-	//cout << out.X << '\t' << out.Y << endl;
-
 	return out;
 }
 
@@ -1178,7 +1067,6 @@ vector < vector <VCTR> > fit_to_circle_II (vector < vector <VCTR> > inBZ) {
 	return out;
 }
 
-
 vector < vector <VCTR> > shorten_bezier (vector < vector <VCTR> > inBZ) {
 
 	vector < vector <VCTR> > out;
@@ -1237,11 +1125,6 @@ vector < vector <VCTR> > generate_final_bezier (vector < vector <VCTR> > inBZ) {
 
 		for (size_t j = 0; j < inBZ.at(i).size() - 2; j++) {
 
-			//   0  1  1  1-2
-			// 1-2  2  2  2-3 -- E  B  B  F
-
-			//azt kezelni kell, hogy zart!!!
-
 			VCTR A = inBZ.at(i).at(j);
 			VCTR B = inBZ.at(i).at(j + 1);
 			VCTR C = inBZ.at(i).at(j + 2);
@@ -1261,15 +1144,11 @@ vector < vector <VCTR> > generate_final_bezier (vector < vector <VCTR> > inBZ) {
 				if (closed_line) {
 
 					buf.push_back(G);
-					//buf.push_back(A); original
-					//buf.push_back(A);
 					buf.push_back(vctr_average(G, A));
 					buf.push_back(vctr_average(A, E));
 					buf.push_back(E);
 
 					buf.push_back(E);
-					//buf.push_back(B); original
-					//buf.push_back(B);
 					buf.push_back(vctr_average(E, B));
 					buf.push_back(vctr_average(B, F));
 					buf.push_back(F);
@@ -1277,8 +1156,6 @@ vector < vector <VCTR> > generate_final_bezier (vector < vector <VCTR> > inBZ) {
 				else {
 
 					buf.push_back(line_start);
-					//buf.push_back(B); original
-					//buf.push_back(B);
 					buf.push_back(vctr_average(line_start, B));
 					buf.push_back(vctr_average(B, F));
 					buf.push_back(F);
@@ -1288,8 +1165,6 @@ vector < vector <VCTR> > generate_final_bezier (vector < vector <VCTR> > inBZ) {
 			else if (j == inBZ.at(i).size() - 3 && !closed_line)  {
 
 				buf.push_back(E);
-				//buf.push_back(B); original
-				//buf.push_back(B);
 				buf.push_back(vctr_average(E, B));
 				buf.push_back(vctr_average(B, C));
 				buf.push_back(C);
@@ -1297,14 +1172,11 @@ vector < vector <VCTR> > generate_final_bezier (vector < vector <VCTR> > inBZ) {
 			else {
 
 				buf.push_back(E);
-				//buf.push_back(B); original
-				//buf.push_back(B);
 				buf.push_back(vctr_average(E, B));
 				buf.push_back(vctr_average(B, F));
 				buf.push_back(F);
 			}
 		}
-
 		out.push_back(buf);
 	}
 
@@ -1664,8 +1536,7 @@ void dbg_bezier_points (vector < vector <VCTR> > BZ) {
 	}
 }
 
-
-void cout_rect_grid_to_ps (vector <vector < GRID_CENTER> > rect_grid, ofstream& o, INPSET inset, double max_COUNT) {
+void cout_rect_grid_to_ps (vector <vector < GRID_CENTER> > rect_grid, ofstream& o, INPSET inset) {
 
 	//size_t cell_number = rect_grid.at(0).size();
 
@@ -1714,6 +1585,3 @@ void cout_rect_grid_to_ps (vector <vector < GRID_CENTER> > rect_grid, ofstream& 
 		cout << endl;
 	}
 }
-
-
-

@@ -453,8 +453,6 @@ void PS_net (ofstream& o, INPSET inset, PAPER P) {
 
 	int angle;
 
-	//string filename = LOC + "_" + DATATYPE + ".EPS";
-
 	string nethemisphere = "Schmidt-net,";
 
 	if (inset.plottype == "W")	nethemisphere = "Wulff-net,";
@@ -965,7 +963,7 @@ void PS_RUP_ANG_distribution (vector <GDB> inGDB, INPSET inset, vector <VALLEY> 
 	double DATA_min = return_datamin (inGDB, method);
 	double DATA_max = return_datamax (inGDB, method);
 
-	double bin_number = return_DATA_ideal_bin_number (GDB_to_table(inGDB, method));
+	size_t bin_number = return_DATA_ideal_bin_number (GDB_to_table(inGDB, method));
 
 	double binsize = (DATA_max - DATA_min) / bin_number;
 
@@ -973,13 +971,13 @@ void PS_RUP_ANG_distribution (vector <GDB> inGDB, INPSET inset, vector <VALLEY> 
 
 	H = sort_by_COUNT (H);
 
-	vector <line_RUP_ANG> L_R_A = generate_graph_histogram (H, V, inset, method, DATA_min, DATA_max);
+	vector <line_RUP_ANG> L_R_A = generate_graph_histogram (H, V, DATA_max);
 
 	ps_RUP_ANG_header (o, center, P, method);
 
 	ps_draw_histogram_bars (inGDB, L_R_A, inset, o, center, P, DATA_min, DATA_max, bin_number, binsize, method);
 
-	ps_percentage (o, center, P, method, DATA_min, DATA_max);
+	ps_percentage (o, center, P, method, DATA_max);
 
 	ps_percentage_max (o, center, P, method, DATA_max);
 }
@@ -1969,9 +1967,7 @@ void PS_datanumber_averagebedding (GDB i, ofstream& o, INPSET inset, PAPER P, CE
 	}
 }
 
-void PS_rosesegment (ofstream& o, INPSET inset, CENTER center, double percentage, double degree, bool c_plane, bool vertical) {
-
-	//if (!vertical && inset.rosedirection == "S") degree = degree - 90.0;
+void PS_rosesegment (ofstream& o, INPSET inset, CENTER center, double percentage, double degree, bool c_plane) {
 
 	double step_angle = 2.5;
 
@@ -2820,7 +2816,7 @@ void PS_SYMBOLS (vector <GDB> inGDB, ofstream& o, INPSET inset, PAPER P) {
 	}
 }
 
-void ps_plot_densities (DENSITY dens, size_t radius, ofstream& o, INPSET inset, CENTER center, PAPER P) {
+void ps_plot_densities (DENSITY dens, size_t radius, ofstream& o, INPSET inset, CENTER center) {
 
 	const size_t min_dipdir = dens.direction.DIPDIR - radius;
 	const size_t max_dipdir = dens.direction.DIPDIR + radius;
@@ -2843,25 +2839,25 @@ void ps_plot_densities (DENSITY dens, size_t radius, ofstream& o, INPSET inset, 
 
 	for (act_DD.DIPDIR = min_dipdir + 1; act_DD.DIPDIR < max_dipdir + 1; act_DD.DIPDIR++) {
 
-		XY act_xy = stereonet_coordinate_from_DIPDIR_DIP (act_DD, center, inset);
+		act_xy = stereonet_coordinate_from_DIPDIR_DIP (act_DD, center, inset);
 		o << "  "  <<  act_xy.X << " " << act_xy.Y << " lineto" << '\n';
 	}
 
 	for (act_DD.DIP = min_dip + 1; act_DD.DIP < max_dip + 1; act_DD.DIP++) {
 
-		XY act_xy = stereonet_coordinate_from_DIPDIR_DIP (act_DD, center, inset);
+		act_xy = stereonet_coordinate_from_DIPDIR_DIP (act_DD, center, inset);
 		o << "  "  <<  act_xy.X << " " << act_xy.Y << " lineto" << '\n';
 	}
 
 	for (act_DD.DIPDIR = max_dipdir - 1; act_DD.DIPDIR > min_dipdir - 1; act_DD.DIPDIR--) {
 
-		XY act_xy = stereonet_coordinate_from_DIPDIR_DIP (act_DD, center, inset);
+		act_xy = stereonet_coordinate_from_DIPDIR_DIP (act_DD, center, inset);
 		o << "  "  <<  act_xy.X << " " << act_xy.Y << " lineto" << '\n';
 	}
 
 	for (act_DD.DIP = min_dip - 1; act_DD.DIP > max_dip - 1; act_DD.DIP--) {
 
-		XY act_xy = stereonet_coordinate_from_DIPDIR_DIP (act_DD, center, inset);
+		act_xy = stereonet_coordinate_from_DIPDIR_DIP (act_DD, center, inset);
 		o << "  "  <<  act_xy.X << " " << act_xy.Y << " lineto" << '\n';
 	}
 
@@ -2877,292 +2873,3 @@ void ps_plot_densities (DENSITY dens, size_t radius, ofstream& o, INPSET inset, 
 	<< (density_color_from_percentage(dens.percentage)).Z << " "
 	<< "setrgbcolor fill stroke" << '\n' << '\n';
 }
-
-/*
- * void PS_RUP_distribution (vector <GDB>  inGDB, ofstream& o, CENTER center, PAPER P) {
-
-	double RUP_max = 0.0;
-
-	size_t i = 0;
-	size_t j = 0;
-
-	double step = 0.0;
-	double counter = 0.0;
-
-	int data_counter;
-
-	do {
-
-		if (inGDB.at(i).RUP > RUP_max) RUP_max = inGDB.at(i).RUP;
-
-		i++;
-
-	} while (i < inGDB.size());
-
-	step = RUP_max / 10.0;
-	counter = 0.0;
-	i = 0;
-
-	o << "/ArialNarrow-Bold findfont 8 scalefont setfont" << '\n';
-
-	o
-	<< "  " << fixed << setprecision (3) << center.X + P.R + 2.0 * P.B + 5.0
-	<< " "  << fixed << setprecision (3) << center.Y + P.R + 7.0
-	<< "  moveto (RUP) 	0 0 0 setrgbcolor show " << '\n';
-
-	do {
-
-		data_counter = 0;
-		i = 0;
-
-		do {
-
-			if ((inGDB.at(i).RUP > counter) && (inGDB.at(i).RUP <= counter + step)) data_counter++;
-			i++;
-
-		} while (i < inGDB.size());
-
-		o << "  0.8 0.8 0.8 setrgbcolor " << data_counter << " setlinewidth" << '\n';
-
-		o
-		<< "  newpath "
-		<< fixed << setprecision (3) << center.X + P.R + 2.0 * P.B + data_counter / 2.0 << " " << center.Y - P.R + 2.0 * P.R * (counter / RUP_max) << " moveto "
-		<< fixed << setprecision (3) << center.X + P.R + 2.0 * P.B + data_counter / 2.0 << " " << center.Y - P.R + 2.0 * P.R * ((counter + step) / RUP_max)  << " lineto stroke" << '\n';
-
-		counter = counter + step;
-
-		j++;
-
-	} while (j < 10);
-
-	counter = 0.0;
-	step = 0.0;
-
-	if (RUP_max < 1.0) step = 0.2;
-	else {
-
-		if (RUP_max < 5.0) step = 1;
-		else {
-
-			if (RUP_max < 10) step = 2;
-			else {
-
-				if (RUP_max < 20) step = 4;
-				else {
-
-					if (RUP_max < 50) step = 10;
-					else {
-
-						if (RUP_max < 100) step = 20;
-						else {
-
-							if (RUP_max < 250) step = 50;
-							else step = RUP_max / 5.0;
-						}
-					}
-				}
-			}
-		}
-	}
-
-	o << fixed << setprecision (0) << '\n';
-
-	o << "/ArialNarrow-Bold findfont 6 scalefont setfont" << '\n';
-	o << "  0.0 0.0 0.0 setrgbcolor 0.5 setlinewidth" << '\n';
-
-	do {
-
-		o << "  0.0 0.0 0.0 setrgbcolor 0.5 setlinewidth" << '\n';
-		o
-		<< "  newpath "
-		<< fixed << setprecision (3) << center.X + P.R + 2.0 * P.B << " " << center.Y - P.R + 2.0 * P.R * (counter / RUP_max) << " moveto "
-		<< fixed << setprecision (3) << center.X + P.R + 2.2 * P.B << " " << center.Y - P.R + 2.0 * P.R * (counter / RUP_max)  << " lineto stroke" << '\n';
-
-		o
-		<< "  " << fixed << setprecision (3) << center.X + P.R + 2.4 * P.B
-		<< " "  << fixed << setprecision (3) << center.Y - P.R + 2.0 * P.R * (counter / RUP_max) - 1.0
-		<< fixed << setprecision (0)
-		<< "  moveto (" << counter << "%) 0 0 0 setrgbcolor show " << '\n';
-
-		counter = counter + step;
-
-	} while (counter < RUP_max);
-
-	o
-	<< "  newpath "
-	<< fixed << setprecision (3) << center.X + P.R + 2.0 * P.B << " " << center.Y - P.R + 2.0 * P.R  << " moveto "
-	<< fixed << setprecision (3) << center.X + P.R + 2.2 * P.B << " " << center.Y - P.R + 2.0 * P.R  << " lineto stroke" << '\n';
-
-	o
-	<< "  " << fixed << setprecision (3) << center.X + P.R + 2.4 * P.B
-	<< " "  << fixed << setprecision (3) << center.Y - P.R + 2.0 * P.R - 1.0
-	<< fixed << setprecision (0)
-	<< "  moveto (" << RUP_max << "%) 0 0 0 setrgbcolor show " << '\n';
-
-	i = 0;
-
-	do {
-
-		o
-		<< "newpath "
-		<< fixed << setprecision (3) << center.X + P.R + 2.0 * P.B << " "
-		<< fixed << setprecision (3) << center.Y - P.R + 2.0 * P.R * (inGDB.at(i).RUP / RUP_max)
-		<< " 0.7 0 360 arc 3 setlinewidth 1 1 1 setrgbcolor stroke" << '\n';
-
-		o
-		<< "newpath "
-		<< fixed << setprecision (3) << center.X + P.R + 2.0 * P.B << " "
-		<< fixed << setprecision (3) << center.Y - P.R + 2.0 * P.R * (inGDB.at(i).RUP / RUP_max)
-		<< " 0.7 0 360 arc 2 setlinewidth 0 0 0 setrgbcolor stroke" << '\n';
-
-		i++;
-
-		} while (i < inGDB.size());
-}
- *
- */
-
-
-
-/*void PS_ANG_distribution (vector <GDB>  inGDB, ofstream& o, CENTER center, PAPER P) {
-
-	double ANG_max = 0.0;
-
-	size_t i = 0;
-	size_t j = 0;
-
-	double step = 0.0;
-	double  counter = 0.0;
-	int data_counter;
-
-	do {
-
-		if (inGDB.at(i).ANG > ANG_max) ANG_max = inGDB.at(i).ANG;
-
-		i++;
-
-	} while (i < inGDB.size());
-
-	step = ANG_max / 10.0;
-
-	counter = 0.0;
-	i = 0;
-
-	o << "/ArialNarrow-Bold findfont 8 scalefont setfont" << '\n';
-
-		o
-		<< "  " << fixed << setprecision (3) << center.X + P.R + 4.0 * P.B + 5.0
-		<< " "  << fixed << setprecision (3) << center.Y + P.R + 7.0
-		<< "  moveto (ANG) 	0 0 0 setrgbcolor show " << '\n';
-
-	do {
-
-		data_counter = 0;
-		i = 0;
-
-		do {
-
-			if ((inGDB.at(i).ANG > counter) && (inGDB.at(i).ANG <= counter + step)) data_counter++;
-			i++;
-
-		} while (i < inGDB.size());
-
-		o << "  0.8 0.8 0.8 setrgbcolor " << data_counter << " setlinewidth" << '\n';
-
-		o
-		<< "  newpath "
-		<< fixed << setprecision (3) << center.X + P.R + 4.0 * P.B + data_counter / 2.0 << " " << center.Y - P.R + 2.0 * P.R * (counter / ANG_max) << " moveto "
-		<< fixed << setprecision (3) << center.X + P.R + 4.0 * P.B + data_counter / 2.0 << " " << center.Y - P.R + 2.0 * P.R * ((counter + step) / ANG_max)  << " lineto stroke" << '\n';
-
-		counter = counter + step;
-
-		j++;
-
-	} while (j < 10);
-
-	counter = 0.0;
-	step = 0.0;
-
-	if (ANG_max < 1.0) step = 0.2;
-	else {
-
-		if (ANG_max < 5.0) step = 1;
-		else {
-
-			if (ANG_max < 10) step = 2;
-			else {
-
-				if (ANG_max < 20) step = 4;
-				else {
-
-					if (ANG_max < 50) step = 10;
-					else {
-
-						if (ANG_max < 100) step = 20;
-						else {
-
-							if (ANG_max < 250) step = 50;
-							else step = ANG_max / 5.0;
-						}
-					}
-				}
-			}
-		}
-	}
-
-	o << fixed << setprecision (0) << '\n';
-
-	o << "/ArialNarrow-Bold findfont 6 scalefont setfont" << '\n';
-	o << "  0.0 0.0 0.0 setrgbcolor 0.5 setlinewidth" << '\n';
-
-	do {
-
-		o << "  0.0 0.0 0.0 setrgbcolor 0.5 setlinewidth" << '\n';
-
-		o
-		<< "  newpath "
-		<< fixed << setprecision (3) << center.X + P.R + 4.0 * P.B << " " << center.Y - P.R + 2.0 * P.R * (counter / ANG_max) << " moveto "
-		<< fixed << setprecision (3) << center.X + P.R + 4.2 * P.B << " " << center.Y - P.R + 2.0 * P.R * (counter / ANG_max)  << " lineto stroke" << '\n';
-
-		o
-		<< "  " << fixed << setprecision (3) << center.X + P.R + 4.4 * P.B
-		<< " "  << fixed << setprecision (3) << center.Y - P.R + 2.0 * P.R * (counter / ANG_max) - 1.0
-		<< fixed << setprecision (0)
-		<< "  moveto (" << counter << " deg) 0 0 0 setrgbcolor show " << '\n';
-
-		counter = counter + step;
-
-	} while (counter < ANG_max);
-
-	o
-	<< "  newpath "
-	<< fixed << setprecision (3) << center.X + P.R + 4.0 * P.B << " " << center.Y - P.R + 2.0 * P.R  << " moveto "
-	<< fixed << setprecision (3) << center.X + P.R + 4.2 * P.B << " " << center.Y - P.R + 2.0 * P.R  << " lineto stroke" << '\n';
-
-	o
-	<< "  " << fixed << setprecision (3) << center.X + P.R + 4.4 * P.B
-	<< " "  << fixed << setprecision (3) << center.Y - P.R + 2.0 * P.R - 1.0
-	<< fixed << setprecision (0)
-	<< "  moveto (" << ANG_max << " deg) 0 0 0 setrgbcolor show " << '\n';
-
-	i = 0;
-
-	do {
-
-		o
-		<< "newpath "
-		<< fixed << setprecision (3) << center.X + P.R + 4.0 * P.B << " "
-		<< fixed << setprecision (3) << center.Y - P.R + 2.0 * P.R * (inGDB.at(i).ANG / ANG_max)
-		<< " 0.7 0 360 arc 3 setlinewidth 1 1 1 setrgbcolor stroke" << '\n';
-
-		o
-		<< "newpath "
-		<< fixed << setprecision (3) << center.X + P.R + 4.0 * P.B << " "
-		<< fixed << setprecision (3) << center.Y - P.R + 2.0 * P.R * (inGDB.at(i).ANG / ANG_max)
-		<< " 0.7 0 360 arc 2 setlinewidth 0 0 0 setrgbcolor stroke" << '\n';
-
-		i++;
-
-		} while (i < inGDB.size());
-}
-*/

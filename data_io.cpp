@@ -535,7 +535,7 @@ void cout_method_text (vector <GDB> inGDB, INPSET inset) {
 	else if (inGDB.at(0).DATATYPE == "STRIAE" && inset.inversion == "O") 	cout << "inversion after Mostafa (2005): " << flush;
 	else if (inGDB.at(0).DATATYPE == "STRIAE" && inset.inversion == "D") 	cout << "regression after Sprang (1972): " << flush;
 	else if (inGDB.at(0).DATATYPE == "STRIAE" && inset.inversion == "P") 	cout << " regression after Turner (1953): " << flush;
-	else if (inGDB.at(0).DATATYPE == "FOLDSURFACE")cout << " fold axis calculation: " << endl;
+	else if (inGDB.at(0).DATATYPE == "FOLDSURFACE")cout << " fold axis calculation: " << flush;
 	else {};
 }
 
@@ -609,14 +609,10 @@ void process_group_by_group (vector <GDB> inGDB, ofstream& o, INPSET inset, CENT
 		else {
 
 			if (!tilt) cout << "less (independent) data than required." << endl;
-			else {}
+			else {} //ok
 		}
 	}
-	else {}
-
-	//for (size_t i = 0; i < inGDB.size(); i++) inGDB.at(i).PSCOLOR = complete_colorcode (inGDB.at(i).COLOR);
-
-	//process_one_by_one (inGDB, o, inset, center, P, tilt);
+	else {}	//ok
 }
 
 void process_one_by_one (vector <GDB> inGDB, ofstream& o, INPSET inset, CENTER center, PAPER P, bool tilt) {

@@ -70,8 +70,4 @@ STRESSTENSOR st_SHAN (vector <GDB> inGDB, INPSET inset) {
 STRESSFIELD sf_SHAN (STRESSTENSOR st) {
 
 	return eigenvalue_eigenvector (st);
-
-	//sf = computestressfield_DXDYDZ (sf);
-
-	//return stress_regime (sf);
 }

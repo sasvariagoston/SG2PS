@@ -176,26 +176,6 @@ double ATAN (double in) {
 	return (in * 180.0) / 3.1415926535;
 }
 
-/*double rounding (double in) { // TODO What is going on?
-
-	double fract_part, int_part;
-
-	if (in == 0.0) return 0;
-	fract_part = modf (in , &int_part);
-
-	if (in > 0.0) {
-
-		if (fract_part >= 0.5) return ceil (in);
-		else return floor (in);
-	}
-
-	else {
-
-		if (fract_part >= 0.5) return floor (in);
-		else return ceil (in);
-	}
-}*/
-
 double mm_to_point (int i) {
 
 	return i * 0.03937 * 72.0;
@@ -598,14 +578,6 @@ int return_first_eigenvalue (vector <vector< double > > in) {
 vector <vector <double> > jacobi (vector <vector <double> > in) {
 
 	vector <vector <double> > out;
-
-	/*in = init_matrix (4);
-
-	in[0][0] =  8; in[1][0] = -1; in[2][0] =  3; in[3][0] = -1;
-	in[0][1] = -1; in[1][1] =  6; in[2][1] =  2; in[3][1] =  0;
-	in[0][2] =  3; in[1][2] =  2; in[2][2] =  9; in[3][2] =  1;
-	in[0][3] = -1; in[1][3] =  0; in[2][3] =  1; in[3][3] =  7;
-	*/
 
 	vector <vector <double> > A = in;
 	vector <vector <double> > R1 = init_matrix (in.size());
@@ -1551,10 +1523,6 @@ void check_stress_tensor_singularity(const STRESSTENSOR& st) {
 
 	double det = stresstensor_determinant (st);
 
-	//cout << "EIGEN : "<< flush;
-
-	//cout << fixed << setprecision (25) << det << endl;
-
 	ASSERT2(fabs(det) > 1.0e-25, "Stress tensor nearly singluar, determinant = "<< det);
 }
 
@@ -1613,14 +1581,6 @@ STRESSFIELD eigenvalue_eigenvector (STRESSTENSOR st) {
 	sf.EIGENVALUE.Y = X.at(1);
 	sf.EIGENVALUE.Z = X.at(0);
 
-	//cout << fixed << setprecision(8) << endl;
-
-	//cout << "EIGENVALUES and EIGENVECTORS in eigenvalue-eigenvector calculation " << endl;
-	//cout << X.at(2) << '\t' << X.at(1) << '\t' << X.at(0) << endl;
-
-	//cout << fixed << setprecision(3) << endl;
-
-
 	a1 = st._11 - sf.EIGENVALUE.X;
 	b1 = st._12;
 	c1=  st._13;
@@ -1673,11 +1633,6 @@ STRESSFIELD eigenvalue_eigenvector (STRESSTENSOR st) {
 	if ((sf.EIGENVECTOR3.Y > 0.9999) &&  (sf.EIGENVECTOR3.Y < 1.0001)) sf.EIGENVECTOR3.Y = 1.0 - 1E-8;
 	if ((sf.EIGENVECTOR3.Z > 0.9999) &&  (sf.EIGENVECTOR3.Z < 1.0001)) sf.EIGENVECTOR3.Z = 1.0 - 1E-8;
 	sf.EIGENVECTOR3 = unitvector (sf.EIGENVECTOR3);
-
-	//cout << "e1: " << sf.EIGENVECTOR1.X << '\t' << sf.EIGENVECTOR1.Y << '\t' << sf.EIGENVECTOR1.Z << endl;
-	//cout << "e2: " << sf.EIGENVECTOR2.X << '\t' << sf.EIGENVECTOR2.Y << '\t' << sf.EIGENVECTOR2.Z << endl;
-	//cout << "e3: " << sf.EIGENVECTOR3.X << '\t' << sf.EIGENVECTOR3.Y << '\t' << sf.EIGENVECTOR3.Z << endl;
-
 
 	return sf;
 }
@@ -1745,26 +1700,6 @@ STRESSFIELD computestressfield_DXDYDZ (STRESSFIELD in) {
 
 	return sf;
 }
-
-/*
-STRESSFIELD computestressfield_NXNYNZ (STRESSFIELD in) {
-
-	ezt is ki kellene szedni a megfelelo helyekrol
-
-	STRESSFIELD sf = in;
-
-	sf.EIGENVECTOR1 = flip_N_vector (in.EIGENVECTOR1);
-	sf.S_1 = dipdir_dip_from_NXNYNZ (unitvector(in.EIGENVECTOR1));
-
-	sf.EIGENVECTOR2 = flip_N_vector (in.EIGENVECTOR2);
-	sf.S_2 = dipdir_dip_from_NXNYNZ (unitvector(in.EIGENVECTOR2));
-
-	sf.EIGENVECTOR3 = flip_N_vector (in.EIGENVECTOR3);
-	sf.S_3 = dipdir_dip_from_NXNYNZ (unitvector(in.EIGENVECTOR3));
-
-	return sf;
-}
-*/
 
 STRESSTENSOR invert_stress_tensor (STRESSTENSOR st) {
 

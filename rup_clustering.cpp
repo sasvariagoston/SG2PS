@@ -104,8 +104,6 @@ RUP_table return_cost_function_member (vector <double> in, size_t bin_number) {
 
 	out.C = ((2.0 * out.k) - out.v) / (out.delta * out.delta);
 
-	//dbg_cout_GDB_RUP (inGDB);
-
 	return out;
 }
 
@@ -171,8 +169,6 @@ size_t return_DATA_ideal_bin_number (vector <double> in) {
 	}
 
 	RT = sort_by_C (RT);
-
-	//dbg_cout_RUP_table (RT);
 
 	return RT.at(0).clusternumber;
 }
@@ -256,8 +252,6 @@ vector <GDB> associate_GDB_DATA_clusters (vector <GDB> inGDB, vector <VALLEY> V,
 	bool is_ANG = (method == "ANG");
 	bool is_RUP_clustering = (inset.clustering_RUP_ANG == "R");
 	bool is_ANG_clustering = (inset.clustering_RUP_ANG == "A");
-
-	//dbg_cout_V(V);
 
 	for (size_t j = 0; j < inGDB.size(); j++) {
 

@@ -211,9 +211,5 @@ STRESSTENSOR st_ANGELIER (vector <GDB> inGDB, INPSET inset) {
 STRESSFIELD sf_ANGELIER (STRESSTENSOR st) {
 
 	return eigenvalue_eigenvector (st);
-
-	//sf = computestressfield_DXDYDZ (sf);
-
-	//return stress_regime (sf);
 }
 

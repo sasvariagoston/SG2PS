@@ -102,8 +102,6 @@ vector <GDB> colorcode_grom_groupcode (vector <GDB> inGDB, INPSET inset) {
 			if (inGDB.at(i).GC == "I") outGDB.at(i).PSCOLOR = "0.50 0.50 0.50";
 		}
 	}
-
-
 	return outGDB;
 }
 
@@ -113,7 +111,6 @@ vector <GDB> black_colorcode (vector <GDB> inGDB) {
 
 		inGDB.at(j).PSCOLOR = "0.00 0.00 0.00";
 	}
-
 	return inGDB;
 }
 
@@ -159,11 +156,19 @@ GDB cGc_NCDCSC_LINEATION_SC (GDB inGDB) {
 
 	outGDB.NC = NXNYNZ_from_dipdir_dip (outGDB.corrL);
 
-	if ((outGDB.N.X == outGDB.NC.X) && (outGDB.N.Y == outGDB.NC.Y) && (outGDB.N.Z == outGDB.NC.Z)) outGDB.N.X = outGDB.N.X + 10e-8;
+	bool NCX_EQ_NX (is_in_range(outGDB.NC.X, outGDB.NC.X, outGDB.N.X));
+	bool NCY_EQ_NY (is_in_range(outGDB.NC.Y, outGDB.NC.Y, outGDB.N.Y));
+	bool NCZ_EQ_NZ (is_in_range(outGDB.NC.Z, outGDB.NC.Z, outGDB.N.Z));
+
+	if (NCX_EQ_NX && NCY_EQ_NY && NCZ_EQ_NZ) outGDB.N.X = outGDB.N.X + 10e-8;
 
 	outGDB.DC = DXDYDZ_from_dipdir_dip (outGDB.corrL);
 
-	if ((outGDB.D.X == outGDB.DC.X) && (outGDB.D.Y == outGDB.DC.Y) && (outGDB.D.Z == outGDB.DC.Z)) outGDB.D.X = outGDB.D.X + 10e-8;
+	bool DCX_EQ_DX (is_in_range(outGDB.DC.X, outGDB.DC.X, outGDB.D.X));
+	bool DCY_EQ_DY (is_in_range(outGDB.DC.Y, outGDB.DC.Y, outGDB.D.Y));
+	bool DCZ_EQ_DZ (is_in_range(outGDB.DC.Z, outGDB.DC.Z, outGDB.D.Z));
+
+	if (DCX_EQ_DX && DCY_EQ_DY && DCZ_EQ_DZ) outGDB.D.X = outGDB.D.X + 10e-8;
 
 	outGDB.SC = crossproduct (outGDB.NC, outGDB.DC);
 
@@ -230,7 +235,6 @@ vector <GDB> manipulate_N (vector <GDB> inGDB) {
 		}
 		else {} // ok
 	}
-
 	return outGDB;
 }
 
@@ -425,7 +429,12 @@ CORRECTSTRIAE cGc_correct_striae_DIPcor (GDB inGDB) {
 	VCTR cSTR;
 	double misfit;
 
-	if ((inGDB.N.X == inGDB.SC.X) && (inGDB.N.Y == inGDB.SC.Y) && (inGDB.N.Z == inGDB.SC.Z)) inGDB.N.X = inGDB.N.X + 10e-8;
+
+	bool NX_EQ_SCX (is_in_range(inGDB.N.X, inGDB.N.X, inGDB.SC.X));
+	bool NY_EQ_SCY (is_in_range(inGDB.N.Y, inGDB.N.Y, inGDB.SC.Y));
+	bool NZ_EQ_SCZ (is_in_range(inGDB.N.Z, inGDB.N.Z, inGDB.SC.Z));
+
+	if (NX_EQ_SCX && NY_EQ_SCY && NZ_EQ_SCZ) inGDB.N.X = inGDB.N.X + 10e-8;
 
 	cSTR = crossproduct (inGDB.SC, inGDB.N);
 
@@ -494,9 +503,6 @@ vector <GDB> cGc_striae_correction (vector <GDB> inGDB) {
 	do {
 
 		tempGDB = outGDB.at(i);
-
-
-		outGDB.at(i).corr.DIPDIR;
 
 		if (outGDB.at(i).LINEATION != "LINEATION") {
 
@@ -837,14 +843,10 @@ vector <GDB> return_GDB_with_no_homogeneous_data (vector <GDB> inGDB) {
 
 	vector <GDB> resultGDB;
 
-	//cout << "IN: " << inGDB.size() << endl;
-
 	for (size_t i = 0; i < inGDB.size() - 1; i++) {
 
 		GDB comp1 = inGDB.at(i);
 		GDB comp2 = inGDB.at(i + 1);
-
-	//	cout << comp1.ID << '\t' << comp2.ID << endl;
 
 		vector <GDB> testGDB;
 
@@ -853,12 +855,7 @@ vector <GDB> return_GDB_with_no_homogeneous_data (vector <GDB> inGDB) {
 
 		if (check_dataset_homogenity(testGDB)) resultGDB.push_back(comp1);
 		if (i == inGDB.size() - 2) resultGDB.push_back(comp2);
-
-		//cout << i << '\t' << resultGDB.size() << endl;
 	}
-
-	//cout << "OUT: "  << resultGDB.size() << endl;
-
 	return resultGDB;
 }
 

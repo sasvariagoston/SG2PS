@@ -15,14 +15,6 @@ XY stereonet_coordinate_from_DIPDIR_DIP (DIPDIR_DIP in, CENTER center, INPSET in
 
 VCTR density_color_from_percentage (double percentage);
 
-//DENSITY density_in_cell (vector <GDB> in, size_t search_dipdir, size_t search_dip, size_t radius);
-
-//vector <DENSITY> generate_density_vector (vector <GDB> in, size_t radius);
-
-//void plot_densities (vector <GDB> inGDB, vector <GDB> tiltinGDB, ofstream& o, INPSET inset, CENTER center, PAPER P);
-
-
-
 vector < vector <GRID_CENTER> > generate_rectangular_grid_from_triange_center (size_t cell_number);
 
 vector < vector <GRID_CENTER> > calculate_grid_cell_values_from_triangle (vector < vector <GRID_CENTER> > rect_grid, vector <GRID_CENTER> tri_center);
@@ -30,9 +22,6 @@ vector < vector <GRID_CENTER> > calculate_grid_cell_values_from_triangle (vector
 double return_rect_grid_max_count (vector < vector <GRID_CENTER > > rect_grid);
 
 vector < vector <GRID_CENTER> > normalize_grid_cell_values (vector < vector <GRID_CENTER> > rect_grid, vector <GRID_CENTER> tri_center);
-
-
-
 
 size_t return_contour_step (double max_COUNT);
 
@@ -45,9 +34,6 @@ vector < vector <GRID_CENTER_S> > generate_binary_rect_grid (vector < vector <GR
 vector < vector <GRID_CENTER_S> > generate_marching_squares (vector < vector <GRID_CENTER_S> > bin_grid);
 
 vector < vector <GRID_CENTER_S> > check_saddle (vector < vector <GRID_CENTER_S> > m_sq, vector < vector <GRID_CENTER> > bin_grid, size_t isoline);
-
-
-
 
 vector <LINE> generate_raw_lines (vector <vector <GRID_CENTER_S> > m_sq, vector <vector <GRID_CENTER> > rect_grid, size_t isoline);
 
@@ -62,9 +48,6 @@ vector <LINE> flip_line (vector <LINE> L);
 vector <vector <LINE> > connect_vectors(vector <vector <LINE> > LV);
 
 vector <vector <LINE> > tidy_vectors(vector <vector <LINE> > LV);
-
-
-
 
 vector < vector <VCTR> > generate_bezier_points (vector <vector <LINE> > LV);
 
@@ -99,11 +82,9 @@ vector < vector <VCTR> > eliminate_out_circle_curves (vector < vector <VCTR> > i
 
 
 
-
-
-
-
 void contouring (vector <GDB> inGDB, INPSET inset);
+
+
 
 
 
@@ -125,8 +106,6 @@ void dbg_cout_line_vctr (vector <vector <LINE> > LV);
 
 void dbg_bezier_points (vector < vector <VCTR> > BZ);
 
-void cout_rect_grid_to_ps (vector <vector < GRID_CENTER> > rect_grid, ofstream& o, INPSET inset, double max_COUNT);
-
-
+void cout_rect_grid_to_ps (vector <vector < GRID_CENTER> > rect_grid, ofstream& o, INPSET inset);
 
 #endif

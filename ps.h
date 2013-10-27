@@ -28,12 +28,7 @@ void PS_mohr_circle (vector <GDB> inGDB, ofstream& o, INPSET inset, CENTER mohr_
 bool by_border (const BRDR& x, const BRDR& y);
 vector <BRDR> sort_by_border (vector <BRDR> in);
 
-vector <line_RUP_ANG> generate_graph_histogram (vector <HISTOGRAM> H, vector <VALLEY> V, INPSET inset, string method, double DATA_MIN, double DATA_MAX);
-
 void PS_RUP_ANG_distribution (vector <GDB> inGDB, INPSET inset, vector <VALLEY> V, ofstream& o, CENTER center, PAPER P, string method);
-
-//void PS_RUP_distribution (vector <GDB> inGDB, INPSET inset, vector <VALLEY> V, ofstream& o, CENTER center, PAPER P);
-//void PS_ANG_distribution (vector <GDB> inGDB, ofstream& o, CENTER center, PAPER P);
 
 void PS_stress_state (ofstream& o, PAPER P, CENTER center, STRESSFIELD sf);
 
@@ -48,8 +43,7 @@ void PS_striaearrow (GDB i, ofstream& o, INPSET inset, CENTER center, bool label
 
 void PS_getstereonet (ofstream& o, INPSET inset, CENTER center);
 
-//void PS_rosesegment (ofstream& o, INPSET inset, CENTER center, double percentage, double degree, bool c_plane);
-void PS_rosesegment (ofstream& o, INPSET inset, CENTER center, double percentage, double degree, bool c_plane, bool vertical);
+void PS_rosesegment (ofstream& o, INPSET inset, CENTER center, double percentage, double degree, bool c_plane);
 void PS_draw_rose_circle_horizontal (ofstream& o, INPSET inset, CENTER center, ROSENUMBER percent);
 void PS_draw_rose_circle_vertical (ofstream& o, INPSET inset, CENTER center, ROSENUMBER percent);
 
@@ -82,6 +76,6 @@ void PS_SYMBOLS_LABEL (ofstream& o, INPSET inset, PAPER P);
 
 void PS_SYMBOLS (vector <GDB> inGDB, ofstream& o, INPSET inset, PAPER P);
 
-void ps_plot_densities (DENSITY dens, size_t radius, ofstream&  o, INPSET inset, CENTER center, PAPER P);
+void ps_plot_densities (DENSITY dens, size_t radius, ofstream&  o, INPSET inset, CENTER center);
 
 #endif

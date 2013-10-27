@@ -2,8 +2,6 @@
 // All rights reserved.
 // This code is published under the GNU Lesser General Public License.
 
-//#include <algorithm>
-//#include <cmath>
 #include <iostream>
 #include <iomanip>
 #include <math.h>
@@ -12,18 +10,11 @@
 #include "allowed_keys.hpp"
 #include "assertions.hpp"
 #include "bingham.h"
-//#include "checkrgffilecontent.h"
-//#include "checkxycontent.h"
 #include "common.h"
-//#include "data_io.h"
 #include "foldsurface.hpp"
-//#include "ps.h"
-//#include "random.hpp"
-//#include "retilt.hpp"
 #include "rgf.h"
 
 using namespace std;
-
 
 VCTR N_to_S (VCTR in) {
 
@@ -31,31 +22,12 @@ VCTR N_to_S (VCTR in) {
 	else 			return (unitvector(declare_vector(-in.Y,  in.X, 0.0)));
 }
 
-/*
-
-VCTR D_to_S (VCTR in) {
-
-	if (in.Z > 0.0) return (unitvector(declare_vector( in.Y, -in.X, 0.0)));
-	else 			return (unitvector(declare_vector(-in.Y, in.X, 0.0)));
-}
-
-VCTR D_to_N (VCTR in) {
-
-	VCTR S = D_to_S (in);
-
-	return crossproduct(in, S);
-}
-*/
-
 VCTR N_to_D (VCTR in) {
 
 	VCTR S = N_to_S (in);
 
-	//cout << "S: " << S.X << "  " << S.Y << endl;
-
 	return crossproduct(S, in);
 }
-
 
 bool is_overturned (GDB in){
 
@@ -122,10 +94,6 @@ vector <GDB> generate_Bingham_dataset (vector <GDB> inGDB, string method) {
 	bool FOR_BEDDING_AVERAGE = 	(method == "BEDDING_AVERAGE");
 	bool FOR_FOLDSURFACE = 		(method == "FOLDSURFACE");
 
-	//cout << "BINGHAM TENSOR GENERATION" << endl;
-	//cout << inGDB.size() << endl;
-	//cout << inGDB.at(0).DATATYPE << endl;
-
 	if (!FOR_AVERAGE && !FOR_FOLDSURFACE && !FOR_BEDDING_AVERAGE) ASSERT_DEAD_END();
 
 	for (size_t i = 0; i < inGDB.size(); i++) {
@@ -150,11 +118,8 @@ vector <GDB> generate_Bingham_dataset (vector <GDB> inGDB, string method) {
 			}
 			else ASSERT_DEAD_END()
 		}
-
 	return temp_for_Bingham;
 }
-
-
 
 VCTR process_for_average_MT2 (vector <GDB> inGDB, string method) {
 
@@ -165,114 +130,25 @@ VCTR process_for_average_MT2 (vector <GDB> inGDB, string method) {
 
 	if (!FOR_AVERAGE && !FOR_FOLDSURFACE) ASSERT_DEAD_END();
 
-	//vector <GDB> temp_for_Bingham;
+	STRESSTENSOR st = st_BINGHAM (temp_for_Bingham);
 
-	/*
-	for (size_t i = 0; i < inGDB.size(); i++) {
+	STRESSFIELD sf = eigenvalue_eigenvector (st);
 
-		bool OTB = (is_overturned (inGDB.at(i)) && is_allowed_foldsurface_processing(inGDB.at(i).DATATYPE));
+	bool OVERTURNED = (fabs(sf.EIGENVALUE.Z) > fabs(sf.EIGENVALUE.X));
 
-		GDB buf;
+	sf = sf_BINGHAM (sf);
 
-		temp_for_Bingham.push_back(buf);
-		temp_for_Bingham.at(i) = inGDB.at(i);
+	if (FOR_AVERAGE) {
 
 
-		if (FOR_AVERAGE) {
-
-			if (OTB) 	temp_for_Bingham.at(i).N = flip_vector(inGDB.at(i).D);
-			else 		temp_for_Bingham.at(i).N =             inGDB.at(i).D;
-		}
-		else if (FOR_FOLDSURFACE) {
-
-			if (OTB) 	temp_for_Bingham.at(i).N = flip_vector(inGDB.at(i).N);
-			else 		temp_for_Bingham.at(i).N =             inGDB.at(i).N;
-		}
-		else ASSERT_DEAD_END()
+		if (OVERTURNED) return (sf.EIGENVECTOR3);
+		else return flip_vector(sf.EIGENVECTOR3);
 	}
-*/
-		//cout << fixed << setprecision(3) << endl;
-		//cout << " -------------BINGHAM----OF" << flush;
-		//cout << inGDB.at(0).ID << flush;
-		//cout << "---------- " << endl;
+	else {
 
-		//STRESSFIELD sf = sf_BINGHAM (st_BINGHAM (temp_for_Bingham)); // volt
-
-		STRESSTENSOR st = st_BINGHAM (temp_for_Bingham); // ez lett
-
-		STRESSFIELD sf = eigenvalue_eigenvector (st);
-
-		bool OVERTURNED = (fabs(sf.EIGENVALUE.Z) > fabs(sf.EIGENVALUE.X));
-
-		//cout << "OVERTURNED?  " << OVERTURNED << endl;
-
-		sf = sf_BINGHAM (sf);
-
-
-		//cout << " -------------BEFORE N_TO_D " << endl;
-		//cout << "E1: " << sf.EIGENVALUE.X << " " << sf.EIGENVECTOR1.X << " " << sf.EIGENVECTOR1.Y << " " << sf.EIGENVECTOR1.Z << endl;
-		//cout << "E2: " << sf.EIGENVALUE.Y << " " << sf.EIGENVECTOR2.X << " " << sf.EIGENVECTOR2.Y << " " << sf.EIGENVECTOR2.Z << endl;
-		//cout << "E3: " << sf.EIGENVALUE.Z << " " << sf.EIGENVECTOR3.X << " " << sf.EIGENVECTOR3.Y << " " << sf.EIGENVECTOR3.Z << endl;
-		VCTR D1 =  (sf.EIGENVECTOR1);
-		VCTR D2 =  (sf.EIGENVECTOR2);
-		VCTR D3 =  (sf.EIGENVECTOR3);
-		//cout << " ------------- EIGENVALUE AND EIGENVECTOR ------------- " << endl;
-		//cout << "E1: " << '\t' << sf.EIGENVALUE.X << '\t' << D1.X << '\t' << D1.Y << '\t' << D1.Z << endl;
-		//cout << "E2: " << '\t' << sf.EIGENVALUE.Y << '\t' << D2.X << '\t' << D2.Y << '\t' << D2.Z << endl;
-		//cout << "E3: " << '\t' << sf.EIGENVALUE.Z << '\t' << D3.X << '\t' << D3.Y << '\t' << D3.Z << endl;
-
-		//DIPDIR_DIP DD1 = dipdir_dip_from_DXDYDZ(D1);
-		//cout << DD1.DIPDIR << "/" << DD1.DIP << endl;
-		//DIPDIR_DIP DD2 = dipdir_dip_from_DXDYDZ(D2);
-		//cout << DD2.DIPDIR << "/" << DD2.DIP << endl;
-		//DIPDIR_DIP DD3 = dipdir_dip_from_DXDYDZ(D3);
-		//cout << DD3.DIPDIR << "/" << DD3.DIP << endl;
-
-		if (FOR_AVERAGE) {
-
-
-			if (OVERTURNED) return (sf.EIGENVECTOR3); //alapjaraton ez fut
-			else return flip_vector(sf.EIGENVECTOR3);
-		}
-		else {
-
-
-			/*
-			if (OVERTURNED) {
-
-				sf.EIGENVECTOR1 = flip_vector(sf.EIGENVECTOR1);
-				sf.EIGENVECTOR2 = flip_vector(sf.EIGENVECTOR2);
-				sf.EIGENVECTOR3 = flip_vector(sf.EIGENVECTOR3);
-			}
-
-			sf.EIGENVECTOR1 = flip_N_vector(sf.EIGENVECTOR1);
-			sf.EIGENVECTOR2 = flip_N_vector(sf.EIGENVECTOR2);
-			sf.EIGENVECTOR3 = flip_N_vector(sf.EIGENVECTOR3);
-			 */
-
-
-			//cout << "FOLD SURFACE EIGENVECTORS" << endl;
-
-			//cout << fixed << setprecision(3) << endl;
-
-
-
-			//DIPDIR_DIP DD1 = dipdir_dip_from_NXNYNZ(D1);
-			//cout << "E1: " << '\t' << sf.EIGENVALUE.X << '\t' << D1.X << '\t' << D1.Y << '\t' << D1.Z << endl;
-			//cout << "E1: " << DD1.DIPDIR << "/" << DD1.DIP << endl;
-
-			//plane normal returned!!!!
-
-			//DIPDIR_DIP DD2 = dipdir_dip_from_NXNYNZ(D2);
-			//cout << "E2: " << '\t' << sf.EIGENVALUE.Y << '\t' << D2.X << '\t' << D2.Y << '\t' << D2.Z << endl;
-			//cout << "E2: " << DD2.DIPDIR << "/" << DD2.DIP << endl;
-			//DIPDIR_DIP DD3 = dipdir_dip_from_NXNYNZ(D3);
-			//cout << "E3: " << '\t' << sf.EIGENVALUE.Z << '\t' << D3.X << '\t' << D3.Y << '\t' << D3.Z << endl;
-			//cout << "E3: " << DD3.DIPDIR << "/" << DD3.DIP << endl;
-
-			if (!OVERTURNED) return (sf.EIGENVECTOR1); // ez meg a foldsurfce eseten
-			else return flip_vector(sf.EIGENVECTOR1);
-		}
+		if (!OVERTURNED) return (sf.EIGENVECTOR1);
+		else return flip_vector(sf.EIGENVECTOR1);
+	}
 }
 
 bool data_EQ2_homogeneous_and_one_overturned (vector <GDB> inGDB) {
@@ -301,15 +177,6 @@ VCTR process_for_average_EQ2 (vector <GDB> inGDB) {
 			is_in_range(N1.Z, N1.Z,  N2.Z);
 
 	if (!data_EQ2_homogeneous_and_one_overturned (inGDB)) return (declare_vector (0.0, 1.0, 0.0));
-
-	//cout << fixed << setprecision (8) << endl;
-
-	//cout << inGDB.at(0).DATATYPE << endl;
-
-	//cout << "SYMM: " << is_SYMMETRICAL << endl;
-
-	//cout << N1.X << '\t' << N1.Y << '\t' << N1.Z << endl;
-	//cout << N2.X << '\t' << N2.Y << '\t' << N2.Z << endl;
 
 	if (is_SYMMETRICAL) return inGDB.at(0).S;
 
@@ -441,8 +308,6 @@ vector <GDB> apply_data_average_vector (vector <GDB> to_process, VCTR AV_D, stri
 	bool IS_BEDDING = (to_process.at(0).DATATYPE == "BEDDING");
 
 	bool OTB = (IS_OVERTURNED && IS_BEDDING);
-
-	//cout << "OTB: " << to_process.at(0).ID << "  " << IS_OVERTURNED << IS_BEDDING << endl;
 
 	for (size_t i = 0; i < to_process.size(); i++) {
 

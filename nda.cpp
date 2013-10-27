@@ -94,8 +94,4 @@ STRESSTENSOR st_NDA (vector <GDB> inGDB, INPSET inset) {
 STRESSFIELD sf_NDA (STRESSTENSOR st) {
 
 	return eigenvalue_eigenvector (st);
-
-	//sf = computestressfield_DXDYDZ (sf);
-
-	//return stress_regime (sf);
 }

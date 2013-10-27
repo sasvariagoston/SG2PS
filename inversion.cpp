@@ -408,7 +408,5 @@ void inversion (vector <GDB> inGDB, ofstream& o, INPSET inset, CENTER center, CE
 	}
 	else cout << "unable to compute stress field for the data set." << endl;
 
-	//dbg_cout_RGF_colors(inGDB);
-
-	return; //inGDB;
+	return;
 }

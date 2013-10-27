@@ -331,8 +331,6 @@ vector <vector < vector <string> > > return_default_settings_database () {
 			"    - grayscale output......................................[y],  ");
 	DEF.push_back(defitem);
 
-	//dbg_default_settings_database (DEF);
-
 	return DEF;
 }
 
@@ -355,103 +353,100 @@ void dbg_generate_settings_file_list () {
 
 	vector <vector <vector <string> > > DEF = return_default_settings_database();
 
-	cout << "LIS1T" << endl;
-
-
 	for (size_t i00 = 1; i00 < DEF.at(0).size(); i00++) {
-	for (size_t i01 = 1; i01 < DEF.at(1).size(); i01++) {
-	for (size_t i02 = 1; i02 < DEF.at(2).size(); i02++) {
-	for (size_t i03 = 1; i03 < DEF.at(3).size(); i03++) {
-	for (size_t i04 = 1; i04 < DEF.at(4).size(); i04++) {
-	for (size_t i05 = 1; i05 < DEF.at(5).size(); i05++) {
-	for (size_t i06 = 1; i06 < DEF.at(6).size(); i06++) {
-	for (size_t i07 = 1; i07 < DEF.at(7).size(); i07++) {
-	for (size_t i08 = 1; i08 < DEF.at(8).size(); i08++) {
-	for (size_t i09 = 1; i09 < DEF.at(9).size(); i09++) {
-	for (size_t i10 = 1; i10 < DEF.at(10).size(); i10++) {
-	for (size_t i11 = 1; i11 < DEF.at(11).size(); i11++) {
-	for (size_t i12 = 1; i12 < DEF.at(12).size(); i12++) {
-	for (size_t i13 = 1; i13 < DEF.at(13).size(); i13++) {
-	for (size_t i14 = 1; i14 < DEF.at(14).size(); i14++) {
-	for (size_t i15 = 1; i15 < DEF.at(15).size(); i15++) {
-	for (size_t i16 = 1; i16 < DEF.at(16).size(); i16++) {
-	for (size_t i17 = 1; i17 < DEF.at(17).size(); i17++) {
-	for (size_t i18 = 1; i18 < DEF.at(18).size(); i18++) {
-	for (size_t i19 = 1; i19 < DEF.at(19).size(); i19++) {
+		for (size_t i01 = 1; i01 < DEF.at(1).size(); i01++) {
+			for (size_t i02 = 1; i02 < DEF.at(2).size(); i02++) {
+				for (size_t i03 = 1; i03 < DEF.at(3).size(); i03++) {
+					for (size_t i04 = 1; i04 < DEF.at(4).size(); i04++) {
+						for (size_t i05 = 1; i05 < DEF.at(5).size(); i05++) {
+							for (size_t i06 = 1; i06 < DEF.at(6).size(); i06++) {
+								for (size_t i07 = 1; i07 < DEF.at(7).size(); i07++) {
+									for (size_t i08 = 1; i08 < DEF.at(8).size(); i08++) {
+										for (size_t i09 = 1; i09 < DEF.at(9).size(); i09++) {
+											for (size_t i10 = 1; i10 < DEF.at(10).size(); i10++) {
+												for (size_t i11 = 1; i11 < DEF.at(11).size(); i11++) {
+													for (size_t i12 = 1; i12 < DEF.at(12).size(); i12++) {
+														for (size_t i13 = 1; i13 < DEF.at(13).size(); i13++) {
+															for (size_t i14 = 1; i14 < DEF.at(14).size(); i14++) {
+																for (size_t i15 = 1; i15 < DEF.at(15).size(); i15++) {
+																	for (size_t i16 = 1; i16 < DEF.at(16).size(); i16++) {
+																		for (size_t i17 = 1; i17 < DEF.at(17).size(); i17++) {
+																			for (size_t i18 = 1; i18 < DEF.at(18).size(); i18++) {
+																				for (size_t i19 = 1; i19 < DEF.at(19).size(); i19++) {
 
-		ofstream o;
+																					ofstream o;
 
-		string filename =
+																					string filename =
 
-				DEF.at(0).at(i00).at(0) +
-				DEF.at(1).at(i01).at(0) +
-				DEF.at(2).at(i02).at(0) +
-				DEF.at(3).at(i03).at(0) +
-				DEF.at(4).at(i04).at(0) +
-				DEF.at(5).at(i05).at(0) +
-				DEF.at(6).at(i06).at(0) +
-				DEF.at(7).at(i07).at(0) +
-				DEF.at(8).at(i08).at(0) +
-				DEF.at(9).at(i09).at(0) +
-				DEF.at(10).at(i10).at(0) +
-				DEF.at(11).at(i11).at(0) +
-				DEF.at(12).at(i12).at(0) +
-				DEF.at(13).at(i13).at(0) +
-				DEF.at(14).at(i14).at(0) +
-				DEF.at(15).at(i15).at(0) +
-				DEF.at(16).at(i16).at(0) +
-				DEF.at(17).at(i17).at(0) +
-				DEF.at(18).at(i18).at(0);
-
-
-		cout << filename << endl;
-
-		o.open ((filename + ".set").c_str());
+																							DEF.at(0).at(i00).at(0) +
+																							DEF.at(1).at(i01).at(0) +
+																							DEF.at(2).at(i02).at(0) +
+																							DEF.at(3).at(i03).at(0) +
+																							DEF.at(4).at(i04).at(0) +
+																							DEF.at(5).at(i05).at(0) +
+																							DEF.at(6).at(i06).at(0) +
+																							DEF.at(7).at(i07).at(0) +
+																							DEF.at(8).at(i08).at(0) +
+																							DEF.at(9).at(i09).at(0) +
+																							DEF.at(10).at(i10).at(0) +
+																							DEF.at(11).at(i11).at(0) +
+																							DEF.at(12).at(i12).at(0) +
+																							DEF.at(13).at(i13).at(0) +
+																							DEF.at(14).at(i14).at(0) +
+																							DEF.at(15).at(i15).at(0) +
+																							DEF.at(16).at(i16).at(0) +
+																							DEF.at(17).at(i17).at(0) +
+																							DEF.at(18).at(i18).at(0);
 
 
-		o << DEF.at(0).at(0).at(0) << '\t' << DEF.at(0).at(i00).at(0) << endl;
-		o << DEF.at(1).at(0).at(0) << '\t' << DEF.at(1).at(i01).at(0) << endl;
-		o << DEF.at(2).at(0).at(0) << '\t' << DEF.at(2).at(i02).at(0) << endl;
-		o << DEF.at(3).at(0).at(0) << '\t' << DEF.at(3).at(i03).at(0) << endl;
-		o << DEF.at(4).at(0).at(0) << '\t' << DEF.at(4).at(i04).at(0) << endl;
-		o << DEF.at(5).at(0).at(0) << '\t' << DEF.at(5).at(i05).at(0) << endl;
-		o << DEF.at(6).at(0).at(0) << '\t' << DEF.at(6).at(i06).at(0) << endl;
-		o << DEF.at(7).at(0).at(0) << '\t' << DEF.at(7).at(i07).at(0) << endl;
-		o << DEF.at(8).at(0).at(0) << '\t' << DEF.at(8).at(i08).at(0) << endl;
-		o << DEF.at(9).at(0).at(0) << '\t' << DEF.at(9).at(i09).at(0) << endl;
-		o << DEF.at(10).at(0).at(0) << '\t' << DEF.at(10).at(i10).at(0) << endl;
-		o << DEF.at(11).at(0).at(0) << '\t' << DEF.at(11).at(i11).at(0) << endl;
-		o << DEF.at(12).at(0).at(0) << '\t' << DEF.at(12).at(i12).at(0) << endl;
-		o << DEF.at(13).at(0).at(0) << '\t' << DEF.at(13).at(i13).at(0) << endl;
-		o << DEF.at(14).at(0).at(0) << '\t' << DEF.at(14).at(i14).at(0) << endl;
-		o << DEF.at(15).at(0).at(0) << '\t' << DEF.at(15).at(i15).at(0) << endl;
-		o << DEF.at(16).at(0).at(0) << '\t' << DEF.at(16).at(i16).at(0) << endl;
-		o << DEF.at(17).at(0).at(0) << '\t' << DEF.at(17).at(i17).at(0) << endl;
-		o << DEF.at(18).at(0).at(0) << '\t' << DEF.at(18).at(i18).at(0) << endl;
-		o << DEF.at(19).at(0).at(0) << '\t' << DEF.at(19).at(i19).at(0) << endl;
+																					cout << filename << endl;
 
-		o.close();
+																					o.open ((filename + ".set").c_str());
 
 
-	}
-	}
-	}
-	}
-	}
-	}
-	}
-	}
-	}
-	}
-	}
-	}
-	}
-	}
-	}
-	}
-	}
-	}
-	}
+																					o << DEF.at(0).at(0).at(0) << '\t' << DEF.at(0).at(i00).at(0) << endl;
+																					o << DEF.at(1).at(0).at(0) << '\t' << DEF.at(1).at(i01).at(0) << endl;
+																					o << DEF.at(2).at(0).at(0) << '\t' << DEF.at(2).at(i02).at(0) << endl;
+																					o << DEF.at(3).at(0).at(0) << '\t' << DEF.at(3).at(i03).at(0) << endl;
+																					o << DEF.at(4).at(0).at(0) << '\t' << DEF.at(4).at(i04).at(0) << endl;
+																					o << DEF.at(5).at(0).at(0) << '\t' << DEF.at(5).at(i05).at(0) << endl;
+																					o << DEF.at(6).at(0).at(0) << '\t' << DEF.at(6).at(i06).at(0) << endl;
+																					o << DEF.at(7).at(0).at(0) << '\t' << DEF.at(7).at(i07).at(0) << endl;
+																					o << DEF.at(8).at(0).at(0) << '\t' << DEF.at(8).at(i08).at(0) << endl;
+																					o << DEF.at(9).at(0).at(0) << '\t' << DEF.at(9).at(i09).at(0) << endl;
+																					o << DEF.at(10).at(0).at(0) << '\t' << DEF.at(10).at(i10).at(0) << endl;
+																					o << DEF.at(11).at(0).at(0) << '\t' << DEF.at(11).at(i11).at(0) << endl;
+																					o << DEF.at(12).at(0).at(0) << '\t' << DEF.at(12).at(i12).at(0) << endl;
+																					o << DEF.at(13).at(0).at(0) << '\t' << DEF.at(13).at(i13).at(0) << endl;
+																					o << DEF.at(14).at(0).at(0) << '\t' << DEF.at(14).at(i14).at(0) << endl;
+																					o << DEF.at(15).at(0).at(0) << '\t' << DEF.at(15).at(i15).at(0) << endl;
+																					o << DEF.at(16).at(0).at(0) << '\t' << DEF.at(16).at(i16).at(0) << endl;
+																					o << DEF.at(17).at(0).at(0) << '\t' << DEF.at(17).at(i17).at(0) << endl;
+																					o << DEF.at(18).at(0).at(0) << '\t' << DEF.at(18).at(i18).at(0) << endl;
+																					o << DEF.at(19).at(0).at(0) << '\t' << DEF.at(19).at(i19).at(0) << endl;
+
+																					o.close();
+
+
+																				}
+																			}
+																		}
+																	}
+																}
+															}
+														}
+													}
+												}
+											}
+										}
+									}
+								}
+							}
+						}
+					}
+				}
+			}
+		}
 	}
 	return;
 }

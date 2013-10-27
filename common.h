@@ -134,7 +134,6 @@ STRESSTENSOR stresstensor_from_eigenvalue_eigenvector (STRESSFIELD sf);
 
 
 STRESSFIELD computestressfield_DXDYDZ (STRESSFIELD in);
-//STRESSFIELD computestressfield_NXNYNZ (STRESSFIELD in);
 STRESSFIELD stress_regime (STRESSFIELD in);
 
 STRESSTENSOR invert_stress_tensor (STRESSTENSOR st);

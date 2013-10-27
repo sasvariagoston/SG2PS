@@ -101,10 +101,6 @@ GDB TILT_DATA (GDB in, INPSET inset, bool by_paleonorth) {
 	bool IS_SC = 			is_allowed_SC_datatype			(in.DATATYPE);
 	bool IS_STRIAE = 		is_allowed_striae_datatype		(in.DATATYPE);
 
-	//cout << "TILT_DATA" << endl;
-
-	//cout << in.DATATYPE << endl;
-
 	if (!IS_PLANE && !IS_LINEATION && !IS_SC && !IS_STRIAE) ASSERT_DEAD_END();
 
 	bool TILT_BY_PALEONORTH = by_paleonorth;
@@ -118,8 +114,6 @@ GDB TILT_DATA (GDB in, INPSET inset, bool by_paleonorth) {
 	if (fabs(ANGLE) < 0.01 || fabs(ANGLE) > 900.00) return in;
 
 	if (OVERTURNED && !TILT_BY_PALEONORTH) ANGLE = 180.0 + ANGLE;
-
-	//cout << ANGLE << endl;
 
 	if (IS_PLANE) {
 
@@ -216,7 +210,6 @@ vector <GDB> cGc_RETILT (vector <GDB> inGDB, INPSET inSET) {
 	bool TILT_BY_ALL = 			(inSET.tilting == "A");
 
 	if (!TILT_BY_BEDDING && !TILT_BY_PALEONORTH && !TILT_BY_ALL) ASSERT_DEAD_END();
-
 
 	for (i = 0; i < inGDB.size(); i++) outGDB.at(i) = S0_TILT (inGDB.at(i), inSET);
 

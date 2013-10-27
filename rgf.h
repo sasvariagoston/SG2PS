@@ -49,8 +49,6 @@ bool byiID(const GDB& x, const GDB& y);
 bool bycorrDIPDIRcorrDIP(const GDB& x, const GDB& y);
 bool bycorrDIPDIRcorrDIPcorrLDIPDIRcorrLDIP(const GDB& x, const GDB& y);
 
-//bool bycorrDIPDIR(const GDB& x, const GDB& y);
-//bool bycorrDIP(const GDB& x, const GDB& y);
 bool byeigenvalue(const sort_jacobi& x, const sort_jacobi& y);
 vector <GDB> sort_by_iID (vector <GDB> inGDB);
 
@@ -68,27 +66,6 @@ bool check_dataset_homogenity (vector <GDB> inGDB);
 
 void fold_from_planes (vector <GDB> inGDB, ofstream& o, INPSET inset, CENTER center);
 
-//GDB init_average (GDB inGDB);
-
-//bool is_datatype_processable_for_average (vector <GDB> inGDB);
-//bool is_processable_for_average_MT2 (vector <GDB> inGDB);
-//bool is_processable_for_average_EQ2 (vector <GDB> inGDB);
-//bool is_processable_for_average_EQ1 (vector <GDB> inGDB);
-//bool is_processable_for_average_HOMOG (vector <GDB> inGDB);
-//STRESSFIELD process_for_average_MT2 (vector <GDB> inGDB);
-//STRESSFIELD process_for_average_EQ2 (vector <GDB> inGDB);
-//STRESSFIELD process_for_average_EQ1 (vector <GDB> inGDB);
-
-//vector <GDB> calculate_average_for_1 (vector <GDB> inGDB);
-
-//vector <GDB> cGc_average (vector <GDB> inGDB);
-//vector <GDB> cGc_s0_average (vector <GDB> inGDB);
-
-//GDB plane_tilt (GDB inGDB, bool paleonorth);
-//GDB lineation_tilt (GDB inGDB, bool paleonorth);
-//GDB SC_tilt (GDB inGDB, bool paleonorth);
-//GDB striae_tilt (GDB inGDB, bool paleonorth);
-
 vector <GDB> ptn (vector <GDB> inGDB, INPSET inset);
 
 vector <GDB> clustering_GBD (INPSET inset, vector <GDB> inGDB);
@@ -96,6 +73,5 @@ vector <GDB> clustering_GBD (INPSET inset, vector <GDB> inGDB);
 void process_rgf (string inputfilename, string XY_filename, INPSET inset);
 
 void dbg_vctr (vector <GDB> inGDB, string to_dump);
-
 
 #endif

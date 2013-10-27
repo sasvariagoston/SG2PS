@@ -34,8 +34,6 @@ vector <HISTOGRAM> generate_DATA_histogram (vector <double> in, size_t bin_numbe
 
 	if (H.size() == 1) H.at(0).COUNT = 999;
 
-	//dbg_cout_H(H);
-
 	return H;
 }
 
@@ -61,9 +59,6 @@ vector <VALLEY> generate_valley_graph (vector <HISTOGRAM> H) {
 
 		V.push_back(buffer);
 	}
-
-	//dbg_cout_V (V);
-
 	return V;
 }
 
@@ -86,9 +81,6 @@ vector <VALLEY> reduce_N_valley_graph (vector <VALLEY> inV) {
 		}
 		else {};
 	}
-
-	//dbg_cout_V (outV);
-
 	return outV;
 }
 
@@ -116,9 +108,6 @@ vector <VALLEY> reduce_UD_valley_graph (vector <VALLEY> inV) {
 		}
 		else {};
 	}
-
-	//dbg_cout_V (outV);
-
 	return outV;
 }
 
@@ -148,9 +137,6 @@ vector <VALLEY> create_valley_graph (vector <VALLEY> V) {
 			}
 		}
 	}
-
-	//dbg_cout_V (out);
-
 	return out;
 }
 
@@ -176,8 +162,6 @@ vector <VALLEY> return_valleys (vector <double> in, size_t bin_number) {
 	V = generate_valley_graph (H);
 
 	V = reduce_N_valley_graph (V);
-
-	//V = reduce_UD_valley_graph (V);
 
 	return create_valley_graph (V);
 }

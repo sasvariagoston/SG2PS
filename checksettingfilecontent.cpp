@@ -94,17 +94,6 @@ bool fit_of_records (vector  <string> SETrecord, size_t j, size_t k) {
 
 		double value = string_to_double (actual_value, conv_has_failed);
 
-		//if (actual_key == "LINEWIDTH:") value = value / 10.0;
-
-		//cout << fixed << setprecision(3) << endl;
-
-		//cout << "FIT_OF_RECORDS" << endl;
-		//cout << actual_value << " converted to " << value << " and the conversion " << flush;
-		//if (!conv_has_failed) cout << " is successfull" << endl;
-		//else cout << " has failed" << endl;
-
-		//cout << min_value << '\t' << max_value << endl;
-
 		if (is_in_range(min_value, max_value, value) && !conv_has_failed) return true;
 		else return false;
 	}
@@ -124,11 +113,6 @@ bool fit_of_records (vector  <string> SETrecord, size_t j, size_t k) {
 			double max_value = string_to_double (DEF.at(j).at(k).at(2), conv_has_failed);
 
 			double value = string_to_double (actual_value, conv_has_failed);
-
-			//cout << "FIT_OF_RECORDS" << endl;
-			//cout << actual_value << " converted to " << value << " and the conversion is " << flush;
-			//if (!conv_has_failed) cout << " is successfull" << endl;
-			//else cout << " has failed" << endl;
 
 			if (is_in_range(min_value, max_value, value) && !conv_has_failed) return true;
 			else return false;
@@ -162,16 +146,6 @@ bool is_settings_file_correct (string settingfilename) {
 	if (SET.size() == 0) return false;
 
 	for (size_t i = 0; i < SET.size(); i++) {
-
-		if (!is_setting_record_correct (SET.at(i))) {
-
-			//cout << i << " " << flush;
-
-			//cout << SET.at(i).at(0) << " " << flush;
-			//cout << SET.at(i).at(1) << " " << flush;
-
-			//cout << " IS INCORRECT."<< endl;
-		}
 
 		if (!is_setting_record_correct (SET.at(i))) return false;
 	}
@@ -334,8 +308,6 @@ vector <vector <string> > decide_setting_status (string projectname) {
 	}
 	else {
 
-		//cout << " +++ +++ INCORRECT SETTINGDS FILE +++ +++" << endl;
-
 		if (is_settings_file_correct ("sg2ps.set")) {
 
 			cout << "  - No valid setting found, using 'SG2PS.SET' setting file." << endl;
@@ -353,8 +325,6 @@ vector <vector <string> > decide_setting_status (string projectname) {
 
 void list_settings_options (vector <vector <vector <string> > > DEF, size_t k) {
 
-	//cout << DEF.at(k).at(0).at(1) << endl;
-
 	bool is_clustering  = (DEF.at(k).at(0).at(0) == "CLUSTERNUMBER:");
 	bool is_linewidth   = (DEF.at(k).at(0).at(0) == "LINEWIDTH:");
 	bool is_stressangle = (DEF.at(k).at(0).at(0) == "STRESSANGLE:");
@@ -365,12 +335,10 @@ void list_settings_options (vector <vector <vector <string> > > DEF, size_t k) {
 
 		cout << DEF.at(k).at(DEF.at(k).size() - 1).at(5) << endl;
 	}
-
 	else if (is_stressangle || is_linewidth) {
 
 		for (size_t i = 1; i < DEF.at(k).size(); i++) cout << DEF.at(k).at(i).at(5) << endl;
 	}
-
 	else {
 
 		for (size_t i = 1; i < DEF.at(k).size(); i++) cout << DEF.at(k).at(i).at(2) << endl;
@@ -470,15 +438,11 @@ void outputsettingfile (vector <vector <string> > SET, string projectname) {
 
 void dump_actual_settings (vector <vector <string> >SET) {
 
-	//dbg_generate_settings_file_list ();
-
 	vector <vector <vector <string> > > DEF = return_default_settings_database ();
 
 	for (size_t i = 0; i < SET.size(); i++) {
 		for (size_t j = 0; j < DEF.size(); j++) {
 			for (size_t k = 1; k < DEF.at(j).size(); k++) {
-
-				//	cout << "i: " << i << "j: " << j << "k: " << k << endl;
 
 				if (fit_of_records (SET.at(i), j, k)) {
 
@@ -493,14 +457,12 @@ void dump_actual_settings (vector <vector <string> >SET) {
 						cout << fixed << setprecision (1) << LW / 10.0 << flush;
 						cout << DEF.at(j).at(k).at(4) << endl;
 					}
-
 					else if (actual_key == "STRESSANGLE:") {
 
 						cout << DEF.at(j).at(k).at(3) << flush;
 						cout << SET.at(i).at(1) << flush;
 						cout << DEF.at(j).at(k).at(4) << endl;
 					}
-
 					else if (actual_key == "CLUSTERNUMBER:") {
 
 						if (actual_value == "A" || actual_value == "N") cout << DEF.at(j).at(k).at(1) << endl;
@@ -511,7 +473,6 @@ void dump_actual_settings (vector <vector <string> >SET) {
 							cout << DEF.at(j).at(k).at(4) << endl;
 						}
 					}
-
 					else cout << DEF.at(j).at(k).at(1) << endl;
 				}
 			}

@@ -5,19 +5,7 @@
 #ifndef INVERSION_H
 #define INVERSION_H
 
-/*#include "angelier.h"
-#include "assertions.hpp"
-#include "bingham.h"*/
 #include "common.h"
-/*#include "fry.h"
-#include "inversion.h"
-#include "michael.h"
-#include "mostafa.h"
-#include "nda.h"
-#include "ps.h"
-#include "ptn.h"
-#include "rgf.h"
-#include "shan.h"*/
 #include "structs.h"
 
 using namespace std;

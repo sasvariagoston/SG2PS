@@ -38,24 +38,4 @@ void dump_actual_settings (vector <vector <string> >SET);
 void dbg_cout_settings_vector (vector < vector <string> > IN);
 void dbg_cout_inpset (INPSET inset);
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 #endif

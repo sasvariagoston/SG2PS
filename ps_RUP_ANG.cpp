@@ -171,13 +171,11 @@ void ps_RUP_ANG_header (ofstream& o, CENTER center, PAPER P, string method){
 	else 					o << "  moveto (ANG) 0 0 0 setrgbcolor show " << endl;
 }
 
-void ps_percentage (ofstream& o, CENTER center, PAPER P, string method, double DATA_min, double DATA_max) {
+void ps_percentage (ofstream& o, CENTER center, PAPER P, string method, double DATA_max) {
 
 	double X1, X2, Y;
 
 	double step =  return_step (DATA_max);
-
-	//double counter = DATA_min;
 
 	double counter = 0;
 
@@ -265,7 +263,7 @@ void ps_percentage_max (ofstream& o, CENTER center, PAPER P, string method, doub
 	else 					o << "  moveto (" << DATA_max << " deg) 0 0 0 setrgbcolor show " << endl;
 }
 
-vector <line_RUP_ANG> generate_graph_histogram (vector <HISTOGRAM> H, vector <VALLEY> V, INPSET inset, string method, double DATA_MIN, double DATA_MAX) {
+vector <line_RUP_ANG> generate_graph_histogram (vector <HISTOGRAM> H, vector <VALLEY> V, double DATA_MAX) {
 
 	double SN = 10e-8;
 
@@ -312,8 +310,6 @@ vector <line_RUP_ANG> generate_graph_histogram (vector <HISTOGRAM> H, vector <VA
 	BORDERS = sort_by_border(BORDERS);
 
 	size_t col_cntr = 0;
-
-	//dbg_cout_V (V);
 
 	for (size_t i = 0; i < BORDERS.size() - 1; i++) {
 

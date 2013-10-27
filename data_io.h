@@ -1,6 +1,7 @@
 // Copyright (C) 2012, 2013  Ágoston Sasvári
 // All rights reserved.
 // This code is published under the GNU Lesser General Public License.
+
 #ifndef DATA_IO_HPP_
 #define DATA_IO_HPP_
 
