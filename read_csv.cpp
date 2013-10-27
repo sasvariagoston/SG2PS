@@ -43,6 +43,13 @@ size_t read_csv(const string& file_name, str_table& table) {
 
 		++lines_read;
 
+		size_t len = line.size();
+
+		if (len > 0 && line.at(len-1)=='\r') { // on Linux/Mac, reading files from Windows
+
+		    line.erase(len-1);
+		}
+
 		push_to_table(table, line+'\t'); // so that we don't loose trailing tabs
 
 	}

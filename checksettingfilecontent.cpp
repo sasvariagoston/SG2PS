@@ -69,9 +69,7 @@ bool is_whitecharacter (string in) {
 	return is_character_white;
 }
 
-bool fit_of_records (vector  <string> SETrecord, size_t j, size_t k) {
-
-	vector < vector < vector <string> > > DEF = return_default_settings_database ();
+bool fit_of_records (const vector<string>& SETrecord, const vector<vector<vector<string> > >& DEF, size_t j, size_t k) {
 
 	string actual_key = SETrecord.at(0);
 	string list_key = DEF.at(j).at(0).at(0);
@@ -88,7 +86,7 @@ bool fit_of_records (vector  <string> SETrecord, size_t j, size_t k) {
 		double min_value = string_to_double (DEF.at(j).at(k).at(1), conv_has_failed);
 		double max_value = string_to_double (DEF.at(j).at(k).at(2), conv_has_failed);
 
-		int int_value = string_to_int (actual_value, conv_has_failed);
+		string_to_int (actual_value, conv_has_failed);
 
 		if (actual_key == "LINEWIDTH:" && conv_has_failed) return false;
 
@@ -132,7 +130,7 @@ bool is_setting_record_correct (vector <string> SETrecord) {
 	for (size_t j = 0; j < DEF.size(); j++) {
 		for (size_t k = 1; k < DEF.at(j).size(); k++) {
 
-			if (fit_of_records (SETrecord, j, k)) return true;
+			if (fit_of_records (SETrecord, DEF, j, k)) return true;
 		}
 	}
 
@@ -444,7 +442,7 @@ void dump_actual_settings (vector <vector <string> >SET) {
 		for (size_t j = 0; j < DEF.size(); j++) {
 			for (size_t k = 1; k < DEF.at(j).size(); k++) {
 
-				if (fit_of_records (SET.at(i), j, k)) {
+				if (fit_of_records (SET.at(i), DEF, j, k)) {
 
 					string actual_key = SET.at(i).at(0);
 					string actual_value = SET.at(i).at(1);

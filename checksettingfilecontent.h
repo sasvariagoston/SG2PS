@@ -13,7 +13,7 @@ bool has_settings_file_data (string settingfilename);
 vector < vector <string> > read_settingsfile_to_vector (string settingfilename);
 
 bool is_whitecharacter (string in);
-bool fit_of_records (vector  <string> SETrecord, size_t j, size_t k);
+bool fit_of_records (const vector<string>& SETrecord, const vector<vector<vector<string> > >& DEFconst, size_t j, size_t k);
 bool is_setting_record_correct (vector <string> SET);
 bool is_settings_file_correct (string settingfilename);
 
