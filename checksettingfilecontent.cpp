@@ -41,6 +41,13 @@ vector < vector <string> > read_settingsfile_to_vector (string settingfilename) 
 
 		getline(inputfile, value);
 
+        size_t len = value.size();
+
+        if (len > 0 && value.at(len-1)=='\r') { // on Linux/Mac, reading files from Windows
+
+            value.erase(len-1);
+        }
+
 		if (!is_whitecharacter(key) && !is_whitecharacter(value)) {
 
 			buf.push_back(to_uppercase(key));
