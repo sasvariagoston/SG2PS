@@ -119,8 +119,8 @@ VCTR ROTATE (VCTR axis, VCTR torotate, double A);
 
 bool existence (string expression, vector<GDB> inGDB);
 bool existence_of_group (int expression, vector <int> whichgroup);
-bool existence_of_group_GDB (string expression, vector <GDB> inGDB);
-bool existence_of_groupcodes (vector <GDB> inGDB);
+//bool existence_of_group_GDB (string expression, vector <GDB> inGDB);
+//bool existence_of_groupcodes (vector <GDB> inGDB);
 
 vector <GDB> merge_GDB (vector <GDB> source, vector <GDB> target);
 

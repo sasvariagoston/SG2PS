@@ -250,7 +250,7 @@ void inversion_result_output (STRESSFIELD sf, double average_misfit) {
 	<< " deg." << endl;
 }
 
-void inversion (vector <GDB> inGDB, ofstream& o, INPSET inset, CENTER center, CENTER mohr_center, PAPER P) {
+vector <GDB> inversion (vector <GDB> inGDB, ofstream& o, INPSET inset, CENTER center, CENTER mohr_center, PAPER P) {
 
 	bool is_ANG = (inset.clustering_RUP_ANG == "A");
 	bool is_RUP = (inset.clustering_RUP_ANG == "R");
@@ -408,5 +408,5 @@ void inversion (vector <GDB> inGDB, ofstream& o, INPSET inset, CENTER center, CE
 	}
 	else cout << "unable to compute stress field for the data set." << endl;
 
-	return;
+	return inGDB;
 }

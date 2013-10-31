@@ -27,9 +27,7 @@ vector <GDB> competeRGFcontect (string projectname, string inputxyfilename, INPS
 
 	for (size_t i = 0; i < outGDB.size(); i++) {
 
-		if (outGDB.at(i).GC == "") outGDB.at(i).GC = "X";
-
-		outGDB.at(i).PSCOLOR = complete_colorcode (outGDB.at(i).COLOR);
+		if (is_allowed_groupcode_empty(outGDB.at(i).GC)) outGDB.at(i).GC = "X";
 
 		if (inset.datarule == "R") outGDB.at(i).corr.DIPDIR = right_hand_rule_to_german (outGDB.at(i).corr.DIPDIR);
 
@@ -38,81 +36,6 @@ vector <GDB> competeRGFcontect (string projectname, string inputxyfilename, INPS
 	return outGDB;
 }
 
-string complete_colorcode (string in) {
-
-	if 		(in == "B" || in == "1") 	return "0.00 0.00 1.00";
-	else if (in == "C" || in == "2")	return "1.00 0.00 0.67";
-	else if (in == "D" || in == "3")	return "1.00 0.00 0.00";
-	else if (in == "E" || in == "4")	return "1.00 0.50 0.00";
-	else if (in == "F" || in == "5")	return "1.00 1.00 0.00";
-	else if (in == "G" || in == "6")	return "0.00 1.00 0.00";
-	else if (in == "H" || in == "7")	return "0.67 0.00 0.67";
-	else if (in == "I" || in == "8")	return "0.50 1.00 1.00";
-	else if (in == "J" || in == "9")	return "0.50 0.50 0.50";
-	else 								return "0.00 0.00 0.00";
-}
-
-vector <GDB> colorcode_grom_groupcode (vector <GDB> inGDB, INPSET inset) {
-
-	vector <GDB> outGDB = inGDB;
-
-	if (inset.grayscale == "Y") {
-
-		for (size_t i = 0; i < inGDB.size(); i++) {
-
-			if (inGDB.at(i).GC == "X") outGDB.at(i).PSCOLOR = "0.20 0.20 0.20";
-			if (inGDB.at(i).GC == "A") outGDB.at(i).PSCOLOR = "0.20 0.20 0.20";
-			if (inGDB.at(i).GC == "B") outGDB.at(i).PSCOLOR = "0.20 0.20 0.20";
-			if (inGDB.at(i).GC == "C") outGDB.at(i).PSCOLOR = "0.40 0.40 0.40";
-			if (inGDB.at(i).GC == "D") outGDB.at(i).PSCOLOR = "0.40 0.40 0.40";
-			if (inGDB.at(i).GC == "E") outGDB.at(i).PSCOLOR = "0.40 0.40 0.40";
-			if (inGDB.at(i).GC == "F") outGDB.at(i).PSCOLOR = "0.40 0.40 0.40";
-			if (inGDB.at(i).GC == "G") outGDB.at(i).PSCOLOR = "0.60 0.60 0.60";
-			if (inGDB.at(i).GC == "H") outGDB.at(i).PSCOLOR = "0.60 0.60 0.60";
-			if (inGDB.at(i).GC == "I") outGDB.at(i).PSCOLOR = "0.60 0.60 0.60";
-		}
-
-		for (size_t i = 0; i < inGDB.size(); i++) {
-
-			if (inGDB.at(i).GC == "X") outGDB.at(i).DASHED = "   ";
-			if (inGDB.at(i).GC == "A") outGDB.at(i).DASHED = "3 3";
-			if (inGDB.at(i).GC == "B") outGDB.at(i).DASHED = "6 6";
-			if (inGDB.at(i).GC == "C") outGDB.at(i).DASHED = "   ";
-			if (inGDB.at(i).GC == "D") outGDB.at(i).DASHED = "3 3";
-			if (inGDB.at(i).GC == "E") outGDB.at(i).DASHED = "3 6";
-			if (inGDB.at(i).GC == "F") outGDB.at(i).DASHED = "6 6";
-			if (inGDB.at(i).GC == "G") outGDB.at(i).DASHED = "   ";
-			if (inGDB.at(i).GC == "H") outGDB.at(i).DASHED = "3 3";
-			if (inGDB.at(i).GC == "I") outGDB.at(i).DASHED = "6 6";
-		}
-	}
-	else {
-
-		for (size_t i = 0; i < inGDB.size(); i++) {
-
-			if (inGDB.at(i).GC == "X") outGDB.at(i).PSCOLOR = "0.00 0.00 0.00";
-			if (inGDB.at(i).GC == "A") outGDB.at(i).PSCOLOR = "0.00 0.00 1.00";
-			if (inGDB.at(i).GC == "B") outGDB.at(i).PSCOLOR = "1.00 0.00 0.67";
-			if (inGDB.at(i).GC == "C") outGDB.at(i).PSCOLOR = "1.00 0.00 0.00";
-			if (inGDB.at(i).GC == "D") outGDB.at(i).PSCOLOR = "1.00 0.50 0.00";
-			if (inGDB.at(i).GC == "E") outGDB.at(i).PSCOLOR = "1.00 1.00 0.00";
-			if (inGDB.at(i).GC == "F") outGDB.at(i).PSCOLOR = "0.00 1.00 0.00";
-			if (inGDB.at(i).GC == "G") outGDB.at(i).PSCOLOR = "0.67 0.00 0.67";
-			if (inGDB.at(i).GC == "H") outGDB.at(i).PSCOLOR = "0.50 1.00 1.00";
-			if (inGDB.at(i).GC == "I") outGDB.at(i).PSCOLOR = "0.50 0.50 0.50";
-		}
-	}
-	return outGDB;
-}
-
-vector <GDB> black_colorcode (vector <GDB> inGDB) {
-
-	for (size_t j = 0; j < inGDB.size(); j++) {
-
-		inGDB.at(j).PSCOLOR = "0.00 0.00 0.00";
-	}
-	return inGDB;
-}
 
 vector <GDB> cGc_NDS (vector <GDB> inGDB) {
 
@@ -1050,7 +973,7 @@ void process_rgf (string inputfilename, string XY_filename, INPSET inset) {
 
 
 	sort(geodatabase.begin(), geodatabase.end(), byLocTypeGc);
-	if (!(inset.clusternumber == "N"))  geodatabase = colorcode_grom_groupcode(geodatabase, inset);
+	//if (!(inset.clusternumber == "N"))  geodatabase = colorcode_grom_groupcode(geodatabase, inset);
 
 	cout << "AVERAGE BEDDING COMPUTATION FOR '" << capslock(inputfilename)<< ".RGF' DATABASE FILE" << endl;
 	geodatabase = cGc_average (geodatabase);

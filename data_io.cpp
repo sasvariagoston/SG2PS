@@ -12,6 +12,7 @@
 
 #include "allowed_keys.hpp"
 #include "array_to_vector.hpp"
+#include "color_management.hpp"
 #include "data_io.h"
 #include "density.h"
 #include "foldsurface.hpp"
@@ -252,44 +253,41 @@ void outputrecord (GDB i, ofstream& o, INPSET inpset) {
 	<< fixed << setprecision (6) << i.LOCX << '\t'
 	<< fixed << setprecision (6) << i.LOCY << '\t'
 	<< i.FORMATION << '\t'
-	<< i.DATATYPE << '\t' << flush;
+	<< i.DATATYPE << '\t';
 
-	o << fixed << setprecision (1) << flush;
+	o << fixed << setprecision (1);
 
-	if ((i.corr.DIPDIR > 361.0) || (i.DATATYPE == "LITHOLOGY")) o << "" << '\t' << flush;
+	if ((i.corr.DIPDIR > 361.0) || (i.DATATYPE == "LITHOLOGY")) o << "" << '\t';
 	else {
 
-		if (inpset.datarule == "R" ) 	o << german_to_right_hand_rule (i.corr.DIPDIR) << '\t' << flush;
-		else							o << i.corr.DIPDIR << '\t' << flush;
+		if (inpset.datarule == "R" ) 	o << german_to_right_hand_rule (i.corr.DIPDIR) << '\t';
+		else							o << i.corr.DIPDIR << '\t';
 	}
 
-	if ((i.corr.DIP > 360.0) || (i.DATATYPE == "LITHOLOGY")) o << "" << '\t' << flush;
-	else o << fixed << setprecision (1) << i.corr.DIP << '\t' << flush;
+	if ((i.corr.DIP > 360.0) || (i.DATATYPE == "LITHOLOGY")) o << "" << '\t';
+	else o << fixed << setprecision (1) << i.corr.DIP << '\t';
 
 
-	if (i.corrL.DIPDIR > 360.0) o << "" << '\t' << flush;
-	else o << i.corrL.DIPDIR << '\t' << flush;
+	if (i.corrL.DIPDIR > 360.0) o << "" << '\t';
+	else o << i.corrL.DIPDIR << '\t';
 
-
-	if (i.corrL.DIP > 360.0) o << "" << '\t' << flush;
-	else o << i.corrL.DIP << '\t' << flush;
+	if (i.corrL.DIP > 360.0) o << "" << '\t';
+	else o << i.corrL.DIP << '\t';
 
 	bool is_STRIAE = 	is_allowed_striae_datatype(i.DATATYPE);
 	bool is_BEDDING = 	is_allowed_foldsurface_processing(i.DATATYPE);
 
 	if (is_STRIAE || is_BEDDING) {
 
-		if (is_BEDDING && (i.corrOFFSET == "NONE")) o << '\t' << flush;
-		else o << i.corrOFFSET << '\t' << flush;
+		if (is_BEDDING && (i.corrOFFSET == "NONE")) o << '\t';
+		else o << i.corrOFFSET << '\t';
 	}
 
-	else o << "" << '\t' << flush;
+	else o << "" << '\t';
 
 	o
 	<< i.PALEON	<< '\t'
-	<< i.COMMENT<<
-
-	flush;
+	<< i.COMMENT;
 }
 
 void outputveragerecord (GDB i, ofstream& o) {
@@ -302,19 +300,19 @@ void outputveragerecord (GDB i, ofstream& o) {
 	<< setprecision (6) << i.LOCX << '\t'
 	<< setprecision (6) << i.LOCY << '\t'
 	<< i.FORMATION << '\t'
-	<< i.DATATYPE << '\t' << flush;
+	<< i.DATATYPE << '\t';
 
-	if (i.avd.DIPDIR > 361.0) o << "" << '\t' << flush;
-	else o << i.avd.DIPDIR << '\t' << flush;
+	if (i.avd.DIPDIR > 361.0) o << "" << '\t';
+	else o << i.avd.DIPDIR << '\t';
 
-	if (i.avd.DIP > 361.0) o << "" << '\t' << flush;
-	else o << i.avd.DIP << '\t' << flush;
+	if (i.avd.DIP > 361.0) o << "" << '\t';
+	else o << i.avd.DIP << '\t';
 
-	o << "" << '\t' << flush;
-	o << "" << '\t' << flush;
-	o << "" << '\t' << flush;
-	o << "" << '\t' << flush;
-	o << i.COMMENT<< '\t' << flush;
+	o << "" << '\t';
+	o << "" << '\t';
+	o << "" << '\t';
+	o << "" << '\t';
+	o << i.COMMENT<< '\t';
 }
 
 void outputresultrgf (PFN output, vector <GDB> outGDB, bool tilted, INPSET inset) {
@@ -425,23 +423,7 @@ void outputselected_ps_rgf (PFN output, vector <GDB> outGDB, vector <GDB> tiltou
 
 		independentrecordcounter++;
 
-		if (processGDB.at(0).DATATYPE != "LITHOLOGY") {
-
-			if (inset.group == "N") {
-
-				if (existence_of_groupcodes (processGDB)) {
-
-					processGDB = 		colorcode_grom_groupcode (processGDB, inset);
-					tiltprocessGDB = 	colorcode_grom_groupcode (tiltprocessGDB, inset);
-				}
-				else {}
-			}
-
-			else {
-
-				processGDB = 		black_colorcode (processGDB);
-				tiltprocessGDB = 	black_colorcode (tiltprocessGDB);
-			}
+		if (! is_allowed_lithology_datatype(processGDB.at(0).DATATYPE)) {
 
 			output_to_rgf (output, processGDB, inset, false);
 
@@ -541,10 +523,15 @@ void cout_method_text (vector <GDB> inGDB, INPSET inset) {
 
 void cout_original_tilted_text (bool tilt) {
 
-	cout << endl;
+	if (!tilt) 	{
 
-	if (!tilt) 	cout << "    - Original : " << flush;
-	else 		cout << "    - Corrected: " << flush;
+		cout << endl;
+		cout << "    - Original : " << flush;
+	}
+	else {
+
+		cout << "    - Corrected: " << flush;
+	}
 }
 
 void process_group_by_group (vector <GDB> inGDB, ofstream& o, INPSET inset, CENTER center, PAPER P, bool tilt) {
@@ -584,16 +571,8 @@ void process_group_by_group (vector <GDB> inGDB, ofstream& o, INPSET inset, CENT
 	PS_draw_rose (inGDB, o, inset, center, P, tilt);
 
 
-	for (size_t i = 0; i < inGDB.size(); i++) inGDB.at(i).PSCOLOR = complete_colorcode (inGDB.at(i).COLOR);
-
-	process_one_by_one (inGDB, o, inset, center, P, tilt);
-
-
 	if (IS_FOLD) calculate_foldsurface (inGDB, o, inset, center);
 	else {}
-
-
-
 
 
 	if (TO_INVERT) {
@@ -604,15 +583,22 @@ void process_group_by_group (vector <GDB> inGDB, ofstream& o, INPSET inset, CENT
 
 			cout_original_tilted_text (tilt);
 
-			inversion (processGDB, o, inset, center, mohr_center, P);
+			processGDB = inversion (processGDB, o, inset, center, mohr_center, P);
+
+			process_one_by_one (processGDB, o, inset, center, P, tilt);
 		}
 		else {
+
+			process_one_by_one (processGDB, o, inset, center, P, tilt);
 
 			if (!tilt) cout << "less (independent) data than required." << endl;
 			else {} //ok
 		}
 	}
-	else {}	//ok
+	else {
+
+		process_one_by_one (processGDB, o, inset, center, P, tilt);
+	}
 }
 
 void process_one_by_one (vector <GDB> inGDB, ofstream& o, INPSET inset, CENTER center, PAPER P, bool tilt) {
@@ -628,7 +614,12 @@ void process_one_by_one (vector <GDB> inGDB, ofstream& o, INPSET inset, CENTER c
 		center.Y = P.O2Y;
 	}
 
-	for (size_t i = 0; i < inGDB.size(); i++) PS_DRAW_record (inGDB.at(i), o, inset, center);
+	inGDB = colorcode_grom_groupcode(inGDB, inset);
+
+	for (size_t i = 0; i < inGDB.size(); i++) {
+
+		PS_DRAW_record (inGDB.at(i), o, inset, center);
+	}
 }
 
 void dbg_cout_RGF_colors (vector <GDB> inGDB) {

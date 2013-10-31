@@ -214,7 +214,13 @@ bool GCcheck () {
 
 	for (size_t i = 0; i < rgf_to_check.size(); i++) {
 
-		if (!is_allowed_groupcode (rgf_to_check.at(i).at(GROUP))) bad_records.push_back(rgf_to_check.at(i).at(DATA_ID));
+		string GC = rgf_to_check.at(i).at(GROUP);
+
+		bool GC_STR = is_allowed_groupcode_str		(GC);
+		bool GC_EMP = is_allowed_groupcode_empty	(GC);
+
+
+		if (!GC_EMP && ! GC_STR) bad_records.push_back(rgf_to_check.at(i).at(DATA_ID));
 	}
 
 	return error_cout (bad_records, "group code");
@@ -226,7 +232,15 @@ bool COLORcheck () {
 
 	for (size_t i = 0; i < rgf_to_check.size(); i++) {
 
-		if (!is_allowed_colorcode (rgf_to_check.at(i).at(COLOR))) bad_records.push_back(rgf_to_check.at(i).at(DATA_ID));
+		string CLR = rgf_to_check.at(i).at(COLOR);
+
+		bool CLR_NUM = is_allowed_colorcode_num		(CLR);
+		bool CLR_STR = is_allowed_colorcode_str		(CLR);
+		bool CLR_EMP = is_allowed_colorcode_empty 	(CLR);
+
+		bool CORR_CLR = CLR_NUM || CLR_STR || CLR_EMP;
+
+		if (!CORR_CLR) bad_records.push_back(rgf_to_check.at(i).at(DATA_ID));
 	}
 
 	return error_cout (bad_records, "color code");

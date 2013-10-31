@@ -36,6 +36,6 @@ void bingham_result_output (STRESSFIELD sf);
 
 void inversion_result_output (STRESSFIELD sf, double average_misfit);
 
-void inversion (vector <GDB> inGDB, ofstream& o, INPSET inset, CENTER center, CENTER mohr_center, PAPER P);
+vector <GDB> inversion (vector <GDB> inGDB, ofstream& o, INPSET inset, CENTER center, CENTER mohr_center, PAPER P);
 
 #endif

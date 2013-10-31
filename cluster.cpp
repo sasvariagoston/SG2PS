@@ -5,6 +5,8 @@
 #include <iomanip>
 #include <iostream>
 
+#include "allowed_keys.hpp"
+#include "color_management.hpp"
 #include "common.h"
 #include "cluster.h"
 #include "data_io.h"
@@ -296,30 +298,7 @@ vector <CENTR_VECT> compute_centroid_from_which_group (size_t cluster_number, ve
 	return new_centroid;
 }
 
-vector <GDB> attach_group_codes (vector <int> which_group, vector <GDB> inGDB) {
 
-	vector <GDB> outGDB = inGDB;
-	size_t i = 0;
-
-	do {
-
-		if 		(which_group.at(i) == 1) outGDB.at(i).GC = "A";
-		else if (which_group.at(i) == 2) outGDB.at(i).GC = "B";
-		else if (which_group.at(i) == 3) outGDB.at(i).GC = "C";
-		else if (which_group.at(i) == 4) outGDB.at(i).GC = "D";
-		else if (which_group.at(i) == 5) outGDB.at(i).GC = "E";
-		else if (which_group.at(i) == 6) outGDB.at(i).GC = "F";
-		else if (which_group.at(i) == 7) outGDB.at(i).GC = "G";
-		else if (which_group.at(i) == 8) outGDB.at(i).GC = "H";
-		else if (which_group.at(i) == 9) outGDB.at(i).GC = "I";
-		else inGDB.at(i).GC = "X";
-
-		i++;
-
-	} while (i < outGDB.size());
-
-	return outGDB;
-}
 
 double cumulative_distance (vector <vector <double> > distance_matrix, vector <int> which_group) {
 

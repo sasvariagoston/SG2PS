@@ -4,6 +4,7 @@
 #include <iostream>
 #include <vector>
 
+#include "allowed_keys.hpp"
 #include "common.h"
 #include "math.h"
 #include "structs.h"
@@ -242,11 +243,7 @@ void dbg_cout_RUP_table (vector <RUP_table> RT) {
 
 vector <GDB> associate_GDB_DATA_clusters (vector <GDB> inGDB, vector <VALLEY> V, INPSET inset, string method) {
 
-	vector <string> GC;
-
-	GC.push_back("X");	GC.push_back("A");	GC.push_back("B");	GC.push_back("C");
-	GC.push_back("D");	GC.push_back("E");	GC.push_back("F");	GC.push_back("G");
-	GC.push_back("H");	GC.push_back("I");
+	vector <string> GC = allowed_groupcode_str_vector();
 
 	bool is_RUP = (method == "RUP");
 	bool is_ANG = (method == "ANG");
@@ -255,16 +252,16 @@ vector <GDB> associate_GDB_DATA_clusters (vector <GDB> inGDB, vector <VALLEY> V,
 
 	for (size_t j = 0; j < inGDB.size(); j++) {
 
-		if ((is_RUP_clustering || is_ANG_clustering) && (V.size() == 0))	inGDB.at(j).COLOR = GC.at(0);
-		else if (is_RUP && !is_RUP_clustering) 								inGDB.at(j).COLOR = GC.at(0);
-		else if (is_ANG && !is_ANG_clustering) 								inGDB.at(j).COLOR = GC.at(0);
+		if ((is_RUP_clustering || is_ANG_clustering) && (V.size() == 0))	inGDB.at(j).GC = GC.at(0);
+		else if (is_RUP && !is_RUP_clustering) 								inGDB.at(j).GC = GC.at(0);
+		else if (is_ANG && !is_ANG_clustering) 								inGDB.at(j).GC = GC.at(0);
 		else {
 
 			for (size_t i = 0; i < V.size(); i++) {
 
-				if 	(inGDB.at(j).RUP < V.at(0).BIN_CENTER) inGDB.at(j).COLOR = GC.at(0);
-				else if (inGDB.at(j).RUP > V.at(V.size()-1).BIN_CENTER) inGDB.at(j).COLOR = GC.at(i+2);
-				else if (i > 0 && is_in_range (V.at(i-1).BIN_CENTER, V.at(i).BIN_CENTER, inGDB.at(j).RUP)) inGDB.at(j).COLOR = GC.at(i+1);
+				if 	(inGDB.at(j).RUP < V.at(0).BIN_CENTER) inGDB.at(j).GC = GC.at(0);
+				else if (inGDB.at(j).RUP > V.at(V.size()-1).BIN_CENTER) inGDB.at(j).GC = GC.at(i+1);  //was i+=2
+				else if (i > 0 && is_in_range (V.at(i-1).BIN_CENTER, V.at(i).BIN_CENTER, inGDB.at(j).RUP)) inGDB.at(j).GC = GC.at(i);  //was i+1
 				else {}
 			}
 		}

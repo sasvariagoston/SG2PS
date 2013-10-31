@@ -10,6 +10,7 @@
 #include <sstream>
 #include <stdexcept>
 
+#include "allowed_keys.hpp"
 #include "array_to_vector.hpp"
 #include "assertions.hpp"
 #include "common.h"
@@ -1266,38 +1267,6 @@ bool existence_of_group (int expression, vector <int> whichgroup) {
 	return presence;
 }
 
-bool existence_of_group_GDB (string expression, vector <GDB> inGDB) {
-
-	bool presence = false;
-
-	size_t i = 0;
-
-	while (i < inGDB.size()) {
-
-		if (inGDB.at(i).GC == expression) presence = true;
-		i++;
-	}
-
-	return presence;
-}
-
-bool existence_of_groupcodes (vector <GDB> inGDB) {
-
-	bool presence = false;
-
-	size_t i = 0;
-
-	do {
-
-		if (!(inGDB.at(i).GC == "X")) return true;
-
-		i++;
-	}
-
-	while (i < inGDB.size());
-
-	return presence;
-}
 
 vector <GDB> merge_GDB (vector <GDB> source, vector <GDB> target) {
 

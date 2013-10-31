@@ -14,18 +14,30 @@ bool contains(const vector<T>& vec, const T& elem) {
 }
 
 namespace {
-const string groupcode_allowed [] = {
-		"A", "B", "C", "D", "E", "F", "G", "H", "I", "X",
-		""
+const string groupcode_allowed_str [] = {
+		"X", "A", "B", "C", "D", "E", "F", "G", "H", "I"
 };
-const vector<string> allowed_groupcodes(from_array(groupcode_allowed));
+const vector<string> allowed_groupcodes_str(from_array(groupcode_allowed_str));
 
-const string colorcode_allowed [] = {
-		"A", "B", "C", "D", "E", "F", "G", "H", "I", "J",
-		"0", "1", "2", "3", "4", "5", "6", "7", "8", "9",
+const string groupcode_allowed_empty [] = {
 		""
 };
-const vector<string> allowed_colorcodes(from_array(colorcode_allowed));
+const vector<string> allowed_groupcodes_empty(from_array(groupcode_allowed_empty));
+
+const string colorcode_allowed_str [] = {
+		"A", "B", "C", "D", "E", "F", "G", "H", "I", "J"
+};
+const vector<string> allowed_colorcodes_str(from_array(colorcode_allowed_str));
+
+const string colorcode_allowed_num [] = {
+		"0", "1", "2", "3", "4", "5", "6", "7", "8", "9"
+};
+const vector<string> allowed_colorcodes_num(from_array(colorcode_allowed_num));
+
+const string colorcode_allowed_empty [] = {
+		""
+};
+const vector<string> allowed_colorcodes_empty(from_array(colorcode_allowed_empty));
 
 const string datatype_lithology_allowed [] = {
 		"LITHOLOGY"
@@ -161,14 +173,99 @@ const vector<string> allowed_handle_as_bedding (from_array(handle_as_bedding_all
 
 }
 
-bool is_allowed_groupcode(const string& groupcode) {
+const string pscolor_rgb_allowed [] = {
 
-	return contains(allowed_groupcodes, groupcode);
+		"0.00 0.00 0.00",
+		"0.00 0.00 1.00",
+		"1.00 0.00 0.67",
+		"1.00 0.00 0.00",
+		"1.00 0.50 0.00",
+		"1.00 1.00 0.00",
+		"0.00 1.00 0.00",
+		"0.67 0.00 0.67",
+		"0.50 1.00 1.00",
+		"0.50 0.50 0.50"
+};
+const vector<string> allowed_pscolor_rgb(from_array(pscolor_rgb_allowed));
+
+const string pscolor_gray_allowed [] = {
+
+		"0.20 0.20 0.20",
+		"0.20 0.20 0.20",
+		"0.20 0.20 0.20",
+		"0.40 0.40 0.40",
+		"0.40 0.40 0.40",
+		"0.40 0.40 0.40",
+		"0.40 0.40 0.40",
+		"0.60 0.60 0.60",
+		"0.60 0.60 0.60",
+		"0.60 0.60 0.60"
+};
+const vector<string> allowed_pscolor_gray(from_array(pscolor_gray_allowed));
+
+const string dash_allowed [] = {
+
+		"   ",
+		"3 3",
+		"6 6",
+		"   ",
+		"3 3",
+		"3 6",
+		"6 6",
+		"   ",
+		"3 3",
+		"6 6"
+};
+const vector<string> allowed_dash(from_array(dash_allowed));
+
+bool is_allowed_groupcode_str(const string& groupcode) {
+
+	return contains(allowed_groupcodes_str, groupcode);
 }
 
-bool is_allowed_colorcode(const string& colorcode) {
+vector <string> allowed_groupcode_str_vector () {
 
-	return contains(allowed_colorcodes, colorcode);
+	return allowed_groupcodes_str;
+}
+
+bool is_allowed_groupcode_empty(const string& groupcode) {
+
+	return contains(allowed_groupcodes_empty, groupcode);
+}
+
+vector <string> allowed_groupcode_empty_vector () {
+
+	return allowed_groupcodes_empty;
+}
+
+bool is_allowed_colorcode_str(const string& colorcode) {
+
+	return contains(allowed_colorcodes_str, colorcode);
+}
+
+vector <string> allowed_colorcode_str_vector () {
+
+	return allowed_colorcodes_str;
+}
+
+bool is_allowed_colorcode_num(const string& colorcode) {
+
+	return contains(allowed_colorcodes_num, colorcode);
+}
+
+vector <string> allowed_colorcode_num_vector () {
+
+	return allowed_colorcodes_num;
+}
+
+bool is_allowed_colorcode_empty(const string& colorcode) {
+
+	return contains(allowed_colorcodes_empty, colorcode);
+}
+
+vector <string> allowed_colorcode_empty_vector () {
+
+	return allowed_colorcodes_empty;
 }
 
 bool is_allowed_coordinate(const string& coordinate){
@@ -319,6 +416,45 @@ bool is_allowed_handle_as_bedding (const string& datatype) {
 
 	return contains(allowed_handle_as_bedding, datatype);
 }
+
+bool is_allowed_pscolor_rgb (const string& datatype) {
+
+	return contains(allowed_pscolor_rgb, datatype);
+}
+
+vector <string> allowed_pscolor_rgb_vector () {
+
+	return allowed_pscolor_rgb;
+}
+
+bool is_allowed_pscolor_gray (const string& datatype) {
+
+	return contains(allowed_pscolor_gray, datatype);
+}
+
+vector <string> allowed_pscolor_gray_vector () {
+
+	return allowed_pscolor_gray;
+}
+
+bool is_allowed_dash (const string& datatype) {
+
+	return contains(allowed_dash, datatype);
+}
+
+vector <string> allowed_dash_vector () {
+
+	return allowed_dash;
+}
+
+
+
+
+
+
+
+
+
 
 bool is_double (const string& s) {
 
