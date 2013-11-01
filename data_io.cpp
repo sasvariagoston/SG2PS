@@ -583,9 +583,9 @@ void process_group_by_group (vector <GDB> inGDB, ofstream& o, INPSET inset, CENT
 
 			cout_original_tilted_text (tilt);
 
-			processGDB = inversion (processGDB, o, inset, center, mohr_center, P);
+			//process_one_by_one (processGDB, o, inset, center, P, tilt);
 
-			process_one_by_one (processGDB, o, inset, center, P, tilt);
+			processGDB = inversion (processGDB, o, inset, center, mohr_center, P, tilt);
 		}
 		else {
 

@@ -27,7 +27,7 @@ vector <GDB> competeRGFcontect (string projectname, string inputxyfilename, INPS
 
 	for (size_t i = 0; i < outGDB.size(); i++) {
 
-		if (is_allowed_groupcode_empty(outGDB.at(i).GC)) outGDB.at(i).GC = "X";
+		//if (is_allowed_groupcode_empty(outGDB.at(i).GC)) outGDB.at(i).GC = "X";
 
 		if (inset.datarule == "R") outGDB.at(i).corr.DIPDIR = right_hand_rule_to_german (outGDB.at(i).corr.DIPDIR);
 

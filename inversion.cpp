@@ -250,7 +250,7 @@ void inversion_result_output (STRESSFIELD sf, double average_misfit) {
 	<< " deg." << endl;
 }
 
-vector <GDB> inversion (vector <GDB> inGDB, ofstream& o, INPSET inset, CENTER center, CENTER mohr_center, PAPER P) {
+vector <GDB> inversion (vector <GDB> inGDB, ofstream& o, INPSET inset, CENTER center, CENTER mohr_center, PAPER P, bool tilt) {
 
 	bool is_ANG = (inset.clustering_RUP_ANG == "A");
 	bool is_RUP = (inset.clustering_RUP_ANG == "R");
@@ -399,6 +399,8 @@ vector <GDB> inversion (vector <GDB> inGDB, ofstream& o, INPSET inset, CENTER ce
 
 			PS_idealmovement (inGDB, o, inset, center);
 		}
+
+		process_one_by_one (inGDB, o, inset, center, P, tilt);
 
 		ps_inversion (st, sf, inGDB, V, inset, o, center, mohr_center, P);
 
