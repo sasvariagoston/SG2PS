@@ -14,10 +14,12 @@
 
 using namespace std;
 
-vector <VCTR> generate_arc (size_t SEG_CNT, size_t ARC_CNT) {
+vector <VCTR> generate_arc (const size_t& SEG_CNT, const size_t& ARC_CNT, const size_t& POINTS_DISTANCE) {
 
 	VCTR buf;
 	vector <VCTR> arc;
+
+	ASSERT2(POINTS_DISTANCE <= 9, "size_t POINTS_DISTANCE variable must be less than 10!")
 
 	DIPDIR_DIP DD;
 
@@ -26,7 +28,13 @@ vector <VCTR> generate_arc (size_t SEG_CNT, size_t ARC_CNT) {
 	if (DD.DIPDIR > 360.0) DD.DIPDIR = DD.DIPDIR - 360.0;
 	else {}
 
-	DD.DIP = ARC_CNT * 9.0;
+	//arccont runs 0..9
+
+	//DD.DIP = ARC_CNT * 9.0; - original
+
+	//DD.DIP = 90.0 - (POINTS_DISTANCE * (ARC_CNT + 1));
+
+	DD.DIP = 90.0 - (10.0  * POINTS_DISTANCE) + (POINTS_DISTANCE * ARC_CNT);
 
 	size_t cnt_max = 10 - ARC_CNT;
 
@@ -44,14 +52,14 @@ vector <VCTR> generate_arc (size_t SEG_CNT, size_t ARC_CNT) {
 	return arc;
 }
 
-vector <vector <VCTR> > generate_segment (size_t SEG_CNT) {
+vector <vector <VCTR> > generate_segment (const size_t& SEG_CNT, const size_t& POINTS_DISTANCE) {
 
 	vector <VCTR > buf;
 	vector <vector <VCTR> > out;
 
 	for (size_t arc_cnt = 0; arc_cnt < 10; arc_cnt++) {
 
-		buf = generate_arc(SEG_CNT, arc_cnt);
+		buf = generate_arc(SEG_CNT, arc_cnt, POINTS_DISTANCE);
 
 		out.push_back(buf);
 	}
@@ -59,7 +67,7 @@ vector <vector <VCTR> > generate_segment (size_t SEG_CNT) {
 	return out;
 }
 
-vector <vector <vector <VCTR> > > generate_net () {
+vector <vector <vector <VCTR> > > generate_net (const size_t& POINTS_DISTANCE) {
 
 	vector <vector <vector <VCTR> > > NET;
 
@@ -67,11 +75,10 @@ vector <vector <vector <VCTR> > > generate_net () {
 
 		vector <vector <VCTR> > buf;
 
-		buf = generate_segment(seg_cnt);
+		buf = generate_segment(seg_cnt, POINTS_DISTANCE);
 
 		NET.push_back(buf);
 	}
-
 	return NET;
 }
 
@@ -80,6 +87,8 @@ vector <TRIANGLE>  generate_net_count (vector <GDB> inGDB, vector <vector <vecto
 	vector <vector <VCTR> > buf;
 
 	vector <TRIANGLE> TRI = generate_triangle (NET);
+
+	//TRI = increase_triange_density(TRI);
 
 	TRI = return_count_in_net (inGDB, TRI);
 
@@ -115,7 +124,6 @@ vector <GRID_CENTER> reduce_triangle_center (vector <GRID_CENTER> in) {
 		if (in.at(i).COUNT > 0) out.push_back(in.at(i));
 		else {}
 	}
-
 	return out;
 }
 

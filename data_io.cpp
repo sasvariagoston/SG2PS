@@ -498,7 +498,7 @@ void output_to_ps (PFN output, vector <GDB> processGDB, vector <GDB> tiltprocess
 
 	PS_net (output_ps_file, inset, P);
 
-	//contouring (processGDB, inset);
+	contouring (processGDB, inset);
 }
 
 void cout_method_text (vector <GDB> inGDB, INPSET inset) {

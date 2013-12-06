@@ -37,7 +37,7 @@ double ATAN (double in);
 double rounding (double in);
 double mm_to_point (int i);
 
-VCTR  crossproduct (VCTR in1, VCTR in2);
+VCTR  crossproduct (const VCTR& in1, const VCTR& in2);
 double dotproduct (VCTR in1, VCTR in2, bool normalisation=false);
 
 double det_3 (vector <vector <double> > in);
@@ -89,7 +89,8 @@ VCTR generate_stress_colors (double value, INPSET inset);
 
 
 double vectorlength (VCTR in);
-VCTR unitvector (VCTR in);
+VCTR unitvector (const VCTR& in);
+VCTR invert_VCTR (VCTR in);
 CENTR_VECT unitvector (CENTR_VECT in);
 vector < double > unitvector (vector < double > in);
 
@@ -115,7 +116,7 @@ VCTR NXNYNZ_from_DXDYDZ (VCTR i);
 DIPDIR_DIP dipdir_dip_from_DXDYDZ (VCTR i);
 DIPDIR_DIP dipdir_dip_from_NXNYNZ (VCTR i);
 
-VCTR ROTATE (VCTR axis, VCTR torotate, double A);
+VCTR ROTATE (const VCTR& ax, const VCTR& torotate, const double& A);
 
 bool existence (string expression, vector<GDB> inGDB);
 bool existence_of_group (int expression, vector <int> whichgroup);
@@ -140,15 +141,21 @@ STRESSTENSOR invert_stress_tensor (STRESSTENSOR st);
 
 STRESSTENSOR add_stress_tensor (STRESSTENSOR st, STRESSTENSOR T);
 
-VCTR return_stressvector (STRESSTENSOR st, GDB inGDB, bool compression_positive);
-VCTR return_normalstress (STRESSTENSOR st, GDB inGDB, bool compression_positive);
-VCTR return_shearstress (STRESSTENSOR st, GDB inGDB, bool compression_positive);
-VCTR return_upsilon (STRESSTENSOR st, GDB inGDB, string method, bool compression_positive);
 
-double return_ANG (STRESSTENSOR st, GDB inGDB, bool compression_positive);
-double return_RUP (STRESSTENSOR st, GDB inGDB, bool compression_positive);
 
-double return_average_misfit (STRESSTENSOR st, vector <GDB> inGDB, bool compression_positive);
+
+VCTR return_stressvector (const STRESSTENSOR& st, const GDB& inGDB, const bool& compression_positive);
+VCTR return_normalstress (const STRESSTENSOR& st, const GDB& inGDB, const bool& compression_positive);
+VCTR return_shearstress (const STRESSTENSOR& st, const GDB& inGDB, const bool& compression_positive);
+VCTR return_upsilon (const STRESSTENSOR& st, const GDB& inGDB, const string& method, const bool& compression_positive);
+
+double return_ANG (const STRESSTENSOR& st, const GDB& inGDB, const bool& compression_positive);
+double return_RUP (const STRESSTENSOR& st, const GDB& inGDB, const bool& compression_positive);
+
+double return_average_misfit (const STRESSTENSOR& st, const vector <GDB>& inGDB, const bool& compression_positive);
+
+
+
 
 vector <double> hyperplane_from_GDB (GDB inGDB);
 vector < vector <double> > shan_matrix_from_GDB (GDB inGDB);
@@ -168,5 +175,7 @@ string version_id();
 bool is_in_range (double range_min, double range_max, double in);
 
 double points_distance (VCTR a, VCTR b);
+
+vector <VCTR> convert_vectors_to_S_or_W (vector <VCTR> in, INPSET inset);
 
 #endif

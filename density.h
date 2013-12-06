@@ -19,25 +19,27 @@ vector < vector <GRID_CENTER> > generate_rectangular_grid_from_triange_center (s
 
 vector < vector <GRID_CENTER> > calculate_grid_cell_values_from_triangle (vector < vector <GRID_CENTER> > rect_grid, vector <GRID_CENTER> tri_center);
 
-double return_rect_grid_max_count (vector < vector <GRID_CENTER > > rect_grid);
+size_t return_TRI_GRID_max_count (vector <GRID_CENTER> TRI_CENTER);
+
+size_t return_RECT_GRID_max_count (vector < vector <GRID_CENTER> > RECT_GRID);
 
 vector < vector <GRID_CENTER> > normalize_grid_cell_values (vector < vector <GRID_CENTER> > rect_grid, vector <GRID_CENTER> tri_center);
 
-size_t return_contour_step (double max_COUNT);
+double return_contour_step (double TRI_MAX_COUNT);
 
-size_t return_isoline (double max_COUNT, size_t k);
+vector <size_t> return_isoline (vector <vector <GRID_CENTER> > RECT_GRID);
 
-vector < vector <GRID_CENTER_S> > generate_empty_binary_rect_grid (size_t cell_number);
+vector < vector <GRID_CENTER> > generate_empty_binary_rect_grid (size_t cell_number);
 
-vector < vector <GRID_CENTER_S> > generate_binary_rect_grid (vector < vector <GRID_CENTER> > rect_grid, size_t COUNT);
+vector < vector <GRID_CENTER> > generate_binary_rect_grid (vector < vector <GRID_CENTER> > rect_grid, size_t COUNT);
 
-vector < vector <GRID_CENTER_S> > generate_marching_squares (vector < vector <GRID_CENTER_S> > bin_grid);
+vector < vector <GRID_CENTER> > generate_marching_squares (vector < vector <GRID_CENTER> > bin_grid);
 
-vector < vector <GRID_CENTER_S> > check_saddle (vector < vector <GRID_CENTER_S> > m_sq, vector < vector <GRID_CENTER> > bin_grid, size_t isoline);
+vector < vector <GRID_CENTER> > check_saddle (vector < vector <GRID_CENTER> > m_sq, vector < vector <GRID_CENTER> > bin_grid, size_t isoline);
 
-vector <LINE> generate_raw_lines (vector <vector <GRID_CENTER_S> > m_sq, vector <vector <GRID_CENTER> > rect_grid, size_t isoline);
+vector <LINE> generate_raw_lines (vector <vector <GRID_CENTER> > m_sq, vector <vector <GRID_CENTER> > rect_grid, size_t isoline);
 
-vector <LINE> return_line_from_m_sq_number (vector <vector <GRID_CENTER_S> > m_sq, vector <vector <GRID_CENTER> > rect_grid, size_t j, size_t i, size_t isoline);
+vector <LINE> return_line_from_m_sq_number (vector <vector <GRID_CENTER> > m_sq, vector <vector <GRID_CENTER> > rect_grid, size_t j, size_t i, size_t isoline);
 
 vector <vector <LINE> > generate_line_vector (vector <LINE> in);
 
@@ -94,13 +96,11 @@ void dbg_cout_triangle_center (vector <GRID_CENTER> TRI_CENTER);
 
 void dbg_cout_rect_grid (vector < vector <GRID_CENTER> > rect_grid);
 
-void dbg_cout_rect_grid (vector < vector <GRID_CENTER_S> > rect_grid);
-
 void cout_line_to_ps_header (ofstream& o);
 
-void cout_line_to_ps (vector <LINE> l, ofstream& o, size_t isoline, double max_COUNT);
+void cout_line_to_ps (vector <LINE> l, ofstream& o, size_t isoline, size_t max_COUNT);
 
-void cout_bezier_to_ps (vector < vector <VCTR> > BZ, ofstream& o, size_t isoline, double max_COUNT);
+void cout_bezier_to_ps (vector < vector <VCTR> > BZ, ofstream& o, size_t isoline, size_t max_COUNT);
 
 void dbg_cout_line_vctr (vector <vector <LINE> > LV);
 

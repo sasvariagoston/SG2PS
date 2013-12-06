@@ -11,10 +11,12 @@
 #include "allowed_keys.hpp"
 #include "assertions.hpp"
 #include "bingham.h"
+#include "brute_force.hpp"
 #include "checkrgffilecontent.h"
 #include "checkxycontent.h"
 #include "data_io.h"
 #include "ps.h"
+#include "rakhmanov.hpp"
 #include "random.hpp"
 #include "retilt.hpp"
 #include "rgf.h"
@@ -508,155 +510,128 @@ vector <GDB> cGc_striae_correction (vector <GDB> inGDB) {
 
 vector <GDB> cGc_UP (vector <GDB> inGDB) {
 
-	vector <GDB> outGDB;
-	outGDB = inGDB;
+	for (size_t i = 0; i < inGDB.size(); i++) {
 
-	VCTR D, DC, R, d;
-	bool p;
-	string o, to;
-	size_t i = 0;
+		inGDB.at(i).SV = declare_vector (999.99, 999.99, 999.99);
 
-	do {
+		bool STRIAE = 	is_allowed_striae_datatype 	(inGDB.at(i).DATATYPE);
+		bool SC = 		is_allowed_SC_datatype 		(inGDB.at(i).DATATYPE);
 
-		outGDB.at(i).SV = declare_vector (999.99, 999.99, 999.99);
 
-		if ((outGDB.at(i).DATATYPE == "STRIAE")  || (outGDB.at(i).DATATYPE == "SC")) {
+		if (STRIAE || SC) {
 
-			outGDB.at(i).UP = true;
+			inGDB.at(i).UP = true;
 
-			if (outGDB.at(i).DATATYPE == "STRIAE") {
+			VCTR D  = inGDB.at(i).D;
+			VCTR DC = inGDB.at(i).DC;
+			VCTR R  = crossproduct(D, DC);
+			string OFFSET = inGDB.at(i).OFFSET;
 
-				D  = outGDB.at(i).D;
-				DC = outGDB.at(i).DC;
-				R = crossproduct(D, DC);
+			bool NRM = is_allowed_striae_normal_sense(OFFSET);
+			bool SIN = is_allowed_striae_sinistral_sense(OFFSET);
+			bool DXT = is_allowed_striae_dextral_sense(OFFSET);
+			bool NON = is_allowed_striae_none_sense(OFFSET);
 
-				if (R.Z > 0.0) 	p = true;
-				else p = false;
+			bool p = false;
+			if (R.Z > 0.0) 	p = true;
 
-				o = outGDB.at(i).OFFSET;
+			if (STRIAE) {
 
-				if ((p) && (o == "NORMAL")) 	outGDB.at(i).UP = false;
-				if ((p) && (o == "SINISTRAL"))	outGDB.at(i).UP = false;
-				if ((!p) && (o == "NORMAL")) 	outGDB.at(i).UP = false;
-				if ((!p) && (o == "DEXTRAL")) 	outGDB.at(i).UP = false;
+				if (p && NRM) 	inGDB.at(i).UP = false;
+				if (p && SIN)	inGDB.at(i).UP = false;
+				if (!p && NRM) 	inGDB.at(i).UP = false;
+				if (!p && DXT) 	inGDB.at(i).UP = false;
 
-				outGDB.at(i).SV = outGDB.at(i).DC;
+				inGDB.at(i).SV = inGDB.at(i).DC;
 			}
-
 			else {
 
-				d = compute_d_for_SC (inGDB.at(i));
-
-				outGDB.at(i).SV = d;
-
-				D  = outGDB.at(i).D;
-				DC = outGDB.at(i).SV;
-				R = crossproduct(D, DC);
-
-				if (R.Z > 0.0) 	p = true;
-				else p = false;
-
-				if (outGDB.at(i).SV.Z < 0.0) outGDB.at(i).UP = false;
+				inGDB.at(i).SV = compute_d_for_SC (inGDB.at(i));
+				if (inGDB.at(i).SV.Z < 0.0) inGDB.at(i).UP = false;
 			}
 
-			if (outGDB.at(i).UP) outGDB.at(i).SV = declare_vector (- outGDB.at(i).SV.X, - outGDB.at(i).SV.Y, - outGDB.at(i).SV.Z);
+			if (inGDB.at(i).UP) inGDB.at(i).SV = flip_vector(inGDB.at(i).SV);
 
-			if ((outGDB.at(i).OFFSET == "NONE") && (outGDB.at(i).DATATYPE == "STRIAE")) outGDB.at(i).SV = declare_vector (0.0, 0.0, 0.0);
+			if (NON && STRIAE) inGDB.at(i).SV = declare_vector (0.0, 0.0, 0.0);
 		}
-
-		i++;
+		else {}; //ok
 	}
 
-	while (i < outGDB.size());
-
-	return outGDB;
+	return inGDB;
 }
 
 vector <GDB> cGc_tilted_UP (vector <GDB> inGDB) {
 
-	vector <GDB> outGDB;
-	outGDB = inGDB;
+	for (size_t i = 0; i < inGDB.size(); i++) {
 
-	string o, to;
-	size_t i = 0;
+		bool STRIAE = 	is_allowed_striae_datatype 	(inGDB.at(i).DATATYPE);
+		bool SC = 		is_allowed_SC_datatype 		(inGDB.at(i).DATATYPE);
 
-	do {
+		if (STRIAE || SC) {
 
-		if ((outGDB.at(i).DATATYPE == "STRIAE")  || (outGDB.at(i).DATATYPE == "SC")) {
-
-			if (outGDB.at(i).SV.Z < 0.0) 	outGDB.at(i).UP = false;
-			else 							outGDB.at(i).UP = true;
+			if (inGDB.at(i).SV.Z < 0.0) 	inGDB.at(i).UP = false;
+			else 							inGDB.at(i).UP = true;
 		}
-
-		i++;
+		else {}; //ok
 	}
-
-	while (i < outGDB.size());
-
-	return outGDB;
+	return inGDB;
 }
 
 vector <GDB> cGc_OFFSET (vector <GDB> inGDB) {
 
-	vector <GDB> outGDB;
-	outGDB = inGDB;
-
-	double dp, pa;
-
-	string o, to;
-	size_t i = 0;
-
-	int corrected_striae = 0;
+	size_t corrected_striae = 0;
 
 	cout << "  - Striae offset correction" << endl;
 
-	do {
+	for (size_t i = 0; i < inGDB.size(); i++) {
 
-		if (outGDB.at(i).DATATYPE == "STRIAE") {
+		bool STRIAE = is_allowed_striae_datatype (inGDB.at(i).DATATYPE);
 
-			o = outGDB.at(i).OFFSET;
-			dp = outGDB.at(i).corr.DIP;
-			pa = outGDB.at(i).PITCHANGLE;
 
-			if (dp <= 15.0) {
+		if (STRIAE) {
 
-				if (outGDB.at(i).UP)	to = "INVERSE";
-				else 					to = "NORMAL";
+			string o = inGDB.at(i).OFFSET;
+			double DIP = inGDB.at(i).corr.DIP;
+			double PITCH = inGDB.at(i).PITCHANGLE;
+
+			string TEMP_OFFSET = "";
+
+			if (DIP <= 15.0) {
+
+				if (inGDB.at(i).UP)	TEMP_OFFSET = "INVERSE";
+				else 				TEMP_OFFSET = "NORMAL";
 			}
-
 			else {
 
-				if 		((pa > -180.0) && (pa <= -135.0)) 	to = "DEXTRAL";
-
-				else if ((pa > -135.0) && (pa <= - 45.0)) 	to = "INVERSE";
-
-				else if ((pa > - 45.0) && (pa <=   45.0)) 	to = "SINISTRAL";
-
-				else if ((pa >   45.0) && (pa <=  135.0)) 	to = "NORMAL";
-
-				else										to = "DEXTRAL";
+				if		(is_in_range( -180.0, -135.0, PITCH)) TEMP_OFFSET = "DEXTRAL";
+				else if	(is_in_range( -135.0, -045.0, PITCH)) TEMP_OFFSET = "INVERSE";
+				else if (is_in_range( -045.0,  045.0, PITCH)) TEMP_OFFSET = "SINISTRAL";
+				else if (is_in_range(  045.0,  135.0, PITCH)) TEMP_OFFSET = "NORMAL";
+				else if (is_in_range(  135.0,  180.0, PITCH)) TEMP_OFFSET = "DEXTRAL";
+				else {}; //ok
 			}
 
-			if (o == "NONE") to = "NONE";
+			if (is_allowed_striae_none_sense(o)) TEMP_OFFSET = "NONE";
 
-			if (to != outGDB.at(i).OFFSET) {
+			bool OFFSET_CHANGE = (TEMP_OFFSET != inGDB.at(i).OFFSET);
 
-				cout << "    - Striae offset in record '" << outGDB.at(i).ID << "' has change from " << outGDB.at(i).OFFSET << " to " << to << "." << endl;
-				outGDB.at(i).corrOFFSET = to;
+			if (OFFSET_CHANGE) {
+
+				cout
+				<< "    - Striae offset in record '" << inGDB.at(i).ID
+				<< "' has change from " << o << " to " << TEMP_OFFSET << "." << endl;
+
+				inGDB.at(i).corrOFFSET = TEMP_OFFSET;
 				corrected_striae++;
 			}
 
-			else outGDB.at(i).corrOFFSET = outGDB.at(i).OFFSET;
+			else inGDB.at(i).corrOFFSET = inGDB.at(i).OFFSET;
 		}
-
-		i++;
+		else {}; //ok
 	}
-
-	while (i < outGDB.size());
-
 	if (corrected_striae == 0) cout << "    - No striae offset to correct." << endl;
 
-	return outGDB;
+	return inGDB;
 }
 
 vector <GDB> cGc_LAMBDA_STRESSVECTOR_ESTIMATORS (vector <GDB> inGDB) {

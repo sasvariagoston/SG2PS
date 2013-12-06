@@ -182,7 +182,7 @@ double mm_to_point (int i) {
 	return i * 0.03937 * 72.0;
 }
 
-VCTR crossproduct (VCTR in1, VCTR in2) {
+VCTR crossproduct (const VCTR& in1, const VCTR& in2) {
 
 	VCTR out;
 
@@ -973,7 +973,7 @@ double vectorlength (VCTR in) {
 	return sqrt(in.X * in.X + in.Y * in.Y + in.Z * in.Z);
 }
 
-VCTR unitvector (VCTR in) {
+VCTR unitvector (const VCTR& in) {
 
 	if (isnan(in.X)||isnan(in.Y)||isnan(in.Z)) {
 
@@ -982,21 +982,28 @@ VCTR unitvector (VCTR in) {
 		ASSERT2(false,"NaN detected, [X, Y, Z] = [ "<<in.X<<", "<<in.Y<<", "<<in.Z<<"]");
 	}
 
+	VCTR OUT;
+
 	double vectorlength = sqrt(in.X * in.X + in.Y * in.Y + in.Z * in.Z);
 
 	if ((vectorlength > 10e-20) && (vectorlength < 1.0e+300)) {
 
-		in.X = (in.X / vectorlength);
-		in.Y = (in.Y / vectorlength);
-		in.Z = (in.Z / vectorlength);
+		OUT.X = (in.X / vectorlength);
+		OUT.Y = (in.Y / vectorlength);
+		OUT.Z = (in.Z / vectorlength);
 	}
 	else {
 
 		cout << endl;
 
-		ASSERT2(false,"Problem with vector length, [X, Y, Z] = [ "<<in.X<<", "<<in.Y<<", "<<in.Z<<"]");
+		ASSERT2(false,"Problem with vector length, [X, Y, Z] = [ "<<OUT.X<<", "<<OUT.Y<<", "<<OUT.Z<<"]");
 	}
-	return in;
+	return OUT;
+}
+
+VCTR invert_VCTR (VCTR in) {
+
+	return (declare_vector( -in.X, -in.Y, -in.Z));
 }
 
 CENTR_VECT unitvector (CENTR_VECT in) {
@@ -1213,7 +1220,7 @@ DIPDIR_DIP dipdir_dip_from_NXNYNZ (VCTR i) {
 	return actual;
 }
 
-VCTR ROTATE (VCTR ax, VCTR torotate, double A) {
+VCTR ROTATE (const VCTR& ax, const VCTR& torotate, const double& A) {
 
 	VCTR result;
 	VCTR A_1, A_2, A_3;
@@ -1523,11 +1530,19 @@ STRESSTENSOR fix_stress_tensor_singularity(STRESSTENSOR& st) {
 
 STRESSFIELD eigenvalue_eigenvector (STRESSTENSOR st) {
 
+	//st._11 = -0.222668;
+	//	st._12 = -0.128558;
+	//	st._13 =  0.906418;
+	//	st._22 = -0.127125;
+	//	st._23 =  0.222668;
+	//	st._33 =  0.128558;
+
 	st =  fix_stress_tensor_singularity(st);
 
 	check_stress_tensor_singularity( st );
 
 	STRESSFIELD sf;
+
 
 	double A, B, C, D;
 	double a1, a2, b1, b2, c1, c2;
@@ -1543,6 +1558,14 @@ STRESSFIELD eigenvalue_eigenvector (STRESSTENSOR st) {
 	D = - ((st._11 * st._22 * st._33) + (2.0 * st._12 * st._23 * st._13) - (st._12 * st._12 * st._33) - (st._23 * st._23 * st._11) - (st._13 * st._13 * st._22));
 
 	X = cubic_solution (A, B, C, D);
+
+//	cout << fixed << setprecision(6) << endl;
+
+	//cout << "ROOTS" << endl;
+	//cout << X.at(0) << endl;
+	//cout << X.at(1) << endl;
+	//cout << X.at(2) << endl;
+	//cout << X.at(3) << endl;
 
 	sort(X.begin(), X.begin()+3);
 
@@ -1562,10 +1585,12 @@ STRESSFIELD eigenvalue_eigenvector (STRESSTENSOR st) {
 	sf.EIGENVECTOR1.Y = - ((a1 * sf.EIGENVECTOR1.X) + c1) / b1;
 	sf.EIGENVECTOR1 = unitvector (sf.EIGENVECTOR1);
 
-	if ((sf.EIGENVECTOR1.X > 0.9999) &&  (sf.EIGENVECTOR1.X < 1.0001)) sf.EIGENVECTOR1.X = 1.0 - 1E-8;
-	if ((sf.EIGENVECTOR1.Y > 0.9999) &&  (sf.EIGENVECTOR1.Y < 1.0001)) sf.EIGENVECTOR1.Y = 1.0 - 1E-8;
-	if ((sf.EIGENVECTOR1.Z > 0.9999) &&  (sf.EIGENVECTOR1.Z < 1.0001)) sf.EIGENVECTOR1.Z = 1.0 - 1E-8;
+	if (is_in_range(0.9999, 1.0001, sf.EIGENVECTOR1.X)) sf.EIGENVECTOR1.X = 1.0 - 1E-8;
+	if (is_in_range(0.9999, 1.0001, sf.EIGENVECTOR1.Y)) sf.EIGENVECTOR1.Y = 1.0 - 1E-8;
+	if (is_in_range(0.9999, 1.0001, sf.EIGENVECTOR1.Z)) sf.EIGENVECTOR1.Z = 1.0 - 1E-8;
 	sf.EIGENVECTOR1 = unitvector (sf.EIGENVECTOR1);
+
+
 
 	a1 = st._11 - sf.EIGENVALUE.Y;
 	b2 = st._22 - sf.EIGENVALUE.Y;
@@ -1585,10 +1610,12 @@ STRESSFIELD eigenvalue_eigenvector (STRESSTENSOR st) {
 
 	sf.EIGENVECTOR2 = unitvector (sf.EIGENVECTOR2);
 
-	if ((sf.EIGENVECTOR2.X > 0.9999) &&  (sf.EIGENVECTOR2.X < 1.0001)) sf.EIGENVECTOR2.X = 1.0 - 1E-8;
-	if ((sf.EIGENVECTOR2.Y > 0.9999) &&  (sf.EIGENVECTOR2.Y < 1.0001)) sf.EIGENVECTOR2.Y = 1.0 - 1E-8;
-	if ((sf.EIGENVECTOR2.Z > 0.9999) &&  (sf.EIGENVECTOR2.Z < 1.0001)) sf.EIGENVECTOR2.Z = 1.0 - 1E-8;
+	if (is_in_range(0.9999, 1.0001, sf.EIGENVECTOR2.X)) sf.EIGENVECTOR2.X = 1.0 - 1E-8;
+	if (is_in_range(0.9999, 1.0001, sf.EIGENVECTOR2.Y)) sf.EIGENVECTOR2.Y = 1.0 - 1E-8;
+	if (is_in_range(0.9999, 1.0001, sf.EIGENVECTOR2.Z)) sf.EIGENVECTOR2.Z = 1.0 - 1E-8;
 	sf.EIGENVECTOR2 = unitvector (sf.EIGENVECTOR2);
+
+
 
 	a1 = st._11 - sf.EIGENVALUE.Z;
 	b2 = st._22 - sf.EIGENVALUE.Z;
@@ -1598,9 +1625,9 @@ STRESSFIELD eigenvalue_eigenvector (STRESSTENSOR st) {
 	sf.EIGENVECTOR3.Y = - ((a1 * sf.EIGENVECTOR3.X) + c1) / b1;
 	sf.EIGENVECTOR3 = unitvector (sf.EIGENVECTOR3);
 
-	if ((sf.EIGENVECTOR3.X > 0.9999) &&  (sf.EIGENVECTOR3.X < 1.0001)) sf.EIGENVECTOR3.X = 1.0 - 1E-8;
-	if ((sf.EIGENVECTOR3.Y > 0.9999) &&  (sf.EIGENVECTOR3.Y < 1.0001)) sf.EIGENVECTOR3.Y = 1.0 - 1E-8;
-	if ((sf.EIGENVECTOR3.Z > 0.9999) &&  (sf.EIGENVECTOR3.Z < 1.0001)) sf.EIGENVECTOR3.Z = 1.0 - 1E-8;
+	if (is_in_range(0.9999, 1.0001, sf.EIGENVECTOR3.X)) sf.EIGENVECTOR3.X = 1.0 - 1E-8;
+	if (is_in_range(0.9999, 1.0001, sf.EIGENVECTOR3.X)) sf.EIGENVECTOR3.Y = 1.0 - 1E-8;
+	if (is_in_range(0.9999, 1.0001, sf.EIGENVECTOR3.X)) sf.EIGENVECTOR3.Z = 1.0 - 1E-8;
 	sf.EIGENVECTOR3 = unitvector (sf.EIGENVECTOR3);
 
 	return sf;
@@ -1698,7 +1725,7 @@ STRESSTENSOR add_stress_tensor (STRESSTENSOR st, STRESSTENSOR T) {
 	return out;
 }
 
-VCTR return_stressvector (STRESSTENSOR st, GDB inGDB, bool compression_positive) {
+VCTR return_stressvector (const STRESSTENSOR& st, const GDB& inGDB, const bool& compression_positive) {
 
 	VCTR N = inGDB.N;
 
@@ -1712,7 +1739,7 @@ VCTR return_stressvector (STRESSTENSOR st, GDB inGDB, bool compression_positive)
 	return out;
 }
 
-VCTR return_normalstress (STRESSTENSOR st, GDB inGDB, bool compression_positive) {
+VCTR return_normalstress (const STRESSTENSOR& st, const GDB& inGDB, const bool& compression_positive) {
 
 	VCTR N = inGDB.N;
 	VCTR stressvector = return_stressvector (st, inGDB, compression_positive);
@@ -1724,9 +1751,10 @@ VCTR return_normalstress (STRESSTENSOR st, GDB inGDB, bool compression_positive)
 	return out;
 }
 
-VCTR return_shearstress (STRESSTENSOR st, GDB inGDB, bool compression_positive) {
+VCTR return_shearstress (const STRESSTENSOR& st, const GDB& inGDB, const bool& compression_positive) {
 
 	VCTR stressvector = return_stressvector (st, inGDB, compression_positive);
+
 	VCTR normalstress = return_normalstress (st, inGDB, compression_positive);
 
 	VCTR out = declare_vector(
@@ -1737,7 +1765,7 @@ VCTR return_shearstress (STRESSTENSOR st, GDB inGDB, bool compression_positive) 
 	return out;
 }
 
-VCTR return_upsilon (STRESSTENSOR st, GDB inGDB, string method, bool compression_positive) {
+VCTR return_upsilon (const STRESSTENSOR& st, const GDB& inGDB, const string& method, const bool& compression_positive) {
 
 	VCTR shearstress = return_shearstress (st, inGDB, compression_positive);
 	VCTR out;
@@ -1759,15 +1787,16 @@ VCTR return_upsilon (STRESSTENSOR st, GDB inGDB, string method, bool compression
 	return out;
 }
 
-double return_ANG (STRESSTENSOR st, GDB inGDB, bool compression_positive) {
+double return_ANG (const STRESSTENSOR& st, const GDB& inGDB, const bool& compression_positive) {
 
 	VCTR slipvector = inGDB.SV;
+
 	VCTR shearstress = return_shearstress (st, inGDB, compression_positive);
 
 	return ACOS (dotproduct (slipvector, shearstress, true));
 }
 
-double return_RUP (STRESSTENSOR st, GDB inGDB, bool compression_positive) {
+double return_RUP (const STRESSTENSOR& st, const GDB& inGDB, const bool& compression_positive) {
 
 	VCTR shearstress  = return_shearstress (st, inGDB, compression_positive);
 	VCTR stressvector = return_stressvector (st, inGDB, compression_positive);
@@ -1785,7 +1814,7 @@ double return_RUP (STRESSTENSOR st, GDB inGDB, bool compression_positive) {
 	return ((sqrt(out * out)) / inGDB.lambda) * 100.0;
 }
 
-double return_average_misfit (STRESSTENSOR st, vector <GDB> inGDB, bool compression_positive) {
+double return_average_misfit (const STRESSTENSOR& st, const vector <GDB>& inGDB, const bool& compression_positive) {
 
 	double misfit = 0.0;
 	double ang = 0.0;
@@ -2121,4 +2150,35 @@ double points_distance (VCTR a, VCTR b) {
 			(b.Y - a.Y) * (b.Y - a.Y) +
 			(b.Z - a.Z) * (b.Z - a.Z)
 			);
+}
+
+vector <VCTR> convert_vectors_to_S_or_W (vector <VCTR> in, INPSET inset) {
+
+	bool SCHMIDT = (inset.plot == "S");
+	bool WULFF   = (inset.plot == "W");
+
+	if (!SCHMIDT && !WULFF) ASSERT_DEAD_END();
+
+	for (size_t i = 0; i < in.size(); i++) {
+
+		double X = 0.0;
+		double Y = 0.0;
+
+		if (SCHMIDT) {
+
+			X = in.at(i).X / sqrt (1.00 + in.at(i).Z);
+			Y = in.at(i).Y / sqrt (1.00 + in.at(i).Z);
+		}
+
+		else {
+
+			X = in.at(i).X / (1.00 + in.at(i).Z);
+			Y = in.at(i).Y / (1.00 + in.at(i).Z);
+		}
+
+		in.at(i).X = X;
+		in.at(i).Y = Y;
+		in.at(i).Z = NaN();
+	}
+	return in;
 }

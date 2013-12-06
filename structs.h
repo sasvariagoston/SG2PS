@@ -270,18 +270,26 @@ struct TRIANGLE {
 struct GRID_CENTER {
 
 	VCTR CENTER;
-	double COUNT;
+	size_t COUNT;
 };
 
-struct GRID_CENTER_S {
+/*struct GRID_CENTER_S {
 
 	VCTR CENTER;
 	size_t COUNT;
-};
+};*/
 
 struct LINE {
 
 	VCTR A;
 	VCTR B;
+};
+
+struct BRUTEFORCE_RESULT {
+
+	VCTR NRM;
+	double ANG;
+	double PHI;
+	double MISFIT;
 };
 #endif

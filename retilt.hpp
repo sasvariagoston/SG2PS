@@ -19,7 +19,7 @@ VCTR ROT_generate_D_vector_lineation (VCTR D, VCTR AXIS, double ANGLE);
 
 bool SV_has_to_invert (VCTR N, VCTR AXIS, double ANGLE);
 
-VCTR invert_VCTR (VCTR in);
+//VCTR invert_VCTR (VCTR in);
 
 GDB TILT_DATA (GDB in, INPSET inset, bool by_paleonorth);
 

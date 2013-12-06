@@ -87,11 +87,6 @@ bool SV_has_to_invert (VCTR N, VCTR AXIS, double ANGLE) {
 	return (out.Z < 0.0);
 }
 
-VCTR invert_VCTR (VCTR in) {
-
-	return (declare_vector( -in.X, -in.Y, -in.Z));
-}
-
 GDB TILT_DATA (GDB in, INPSET inset, bool by_paleonorth) {
 
 	GDB OUT = in;

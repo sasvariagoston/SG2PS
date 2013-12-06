@@ -11,11 +11,12 @@
 
 using namespace std;
 
-vector <VCTR> generate_arc (size_t SEG_CNT, size_t ARC_CNT);
+vector <VCTR> generate_arc (const size_t& SEG_CNT, const size_t& ARC_CNT, const size_t& POINTS_DISTANCE);
 
-vector <vector <VCTR> > generate_segment (size_t SEG_CNT);
+vector <vector <VCTR> > generate_segment (const size_t& SEG_CNT, const size_t& POINTS_DISTANCE);
 
-vector <vector <vector <VCTR> > > generate_net ();
+vector <vector <vector <VCTR> > > generate_net (const size_t& POINTS_DISTANCE);
+
 
 vector <TRIANGLE>  generate_net_count (vector <GDB> inGDB, vector <vector <vector <VCTR> > > NET, INPSET inset);
 

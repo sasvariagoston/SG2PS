@@ -24,7 +24,7 @@ size_t useful_striae_number (vector <GDB> inGDB);
 
 vector <GDB> return_striae_with_offset (vector <GDB> inGDB);
 
-vector <GDB> return_stressvector_estimators (STRESSTENSOR st, vector <GDB> inGDB, string method, bool compression_positive);
+vector <GDB> return_stressvector_estimators (const STRESSTENSOR& st, vector <GDB> inGDB, const string& method, const bool& compression_positive);
 
 vector <GDB> generate_virtual_striae (vector <GDB> inGDB);
 
