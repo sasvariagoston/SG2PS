@@ -229,11 +229,20 @@ vector <BRUTEFORCE_RESULT> return_minimum_misfits (vector <BRUTEFORCE_RESULT> IN
 	return OUT;
 }
 
+STRESSTENSOR return_stresstensor_from_n1_ang_phi (const VCTR& N1, const double& ANG, const double& PHI) {
+
+	vector <vector <double> > M1 = DIR_MX1_from_n1 (N1, ANG);
+
+	vector <vector <double> > T = st_from_reduced_stresstensor (M1, PHI);
+
+	return convert_matrix_to_stresstensor (T);
+}
+
 vector <BRUTEFORCE_RESULT> BRUTEFORCE_ENGINE (const vector <GDB>& inGDB, const vector <VCTR>& CNTRVCTR, const vector <double>& ANGVCTR, const vector <double>& PHIVCTR, const INPSET& inset) {
 
 	int counter = 0;
 
-	cout << "BF_START" << endl;
+	//cout << "BF_START" << endl;
 
 	size_t CNT_MAX = CNTRVCTR.size();
 	size_t ANG_MAX = ANGVCTR.size();
@@ -249,11 +258,7 @@ vector <BRUTEFORCE_RESULT> BRUTEFORCE_ENGINE (const vector <GDB>& inGDB, const v
 		for (size_t ang = 0; ang < ANG_MAX; ang++) {
 			for (size_t phi = 0; phi < PHI_MAX; phi++) {
 
-				vector <vector <double> > M1 = DIR_MX1_from_n1 (CNTRVCTR.at(cntr), ANGVCTR.at(ang));
-
-				vector <vector <double> > T = st_from_reduced_stresstensor (M1, PHIVCTR.at(phi));
-
-				STRESSTENSOR st = convert_matrix_to_stresstensor (T);
+				STRESSTENSOR st =  return_stresstensor_from_n1_ang_phi (CNTRVCTR.at(cntr), ANGVCTR.at(ang), PHIVCTR.at(phi));
 
 				vector <GDB> tempGDB = return_stressvector_estimators (st, inGDB, "BRUTEFORCE", false);
 
@@ -261,7 +266,7 @@ vector <BRUTEFORCE_RESULT> BRUTEFORCE_ENGINE (const vector <GDB>& inGDB, const v
 
 				if (MISFIT < MIN_MISFIT) {
 
-					cout << MIN_MISFIT << endl;
+					//cout << MIN_MISFIT << endl;
 
 					buf.ANG = ANGVCTR.at(ang);
 					buf.NRM = CNTRVCTR.at(cntr);
@@ -276,30 +281,30 @@ vector <BRUTEFORCE_RESULT> BRUTEFORCE_ENGINE (const vector <GDB>& inGDB, const v
 		OUT.push_back(buf);
 	}
 
-	string filename = "BRUTEFORCE.TXT";
+//	string filename = "BRUTEFORCE.TXT";
 
-	ofstream o(filename.c_str());
+//	ofstream o(filename.c_str());
 
-	o
-	<< "NRM.X" << '\t'
-	<< "NRM.Y" << '\t'
-	<< "NRM.Z" << '\t'
-	<< "ANG" << '\t'
-	<< "PHI" << '\t'
-	<< "MISFIT" << endl;
+//	o
+	//<< "NRM.X" << '\t'
+	//<< "NRM.Y" << '\t'
+	//<< "NRM.Z" << '\t'
+	//<< "ANG" << '\t'
+	//<< "PHI" << '\t'
+	//<< "MISFIT" << endl;
 
-	for (size_t i = 0; i < OUT.size(); i++) {
+	//for (size_t i = 0; i < OUT.size(); i++) {
 
-		cout
-		<< OUT.at(i).NRM.X << '\t'
-		<< OUT.at(i).NRM.Y << '\t'
-		<< OUT.at(i).NRM.Z << '\t'
-		<< OUT.at(i).ANG << '\t'
-		<< OUT.at(i).PHI << '\t'
-		<< OUT.at(i).MISFIT << '\n';
-	}
+	//	cout
+	//	<< OUT.at(i).NRM.X << '\t'
+	//	<< OUT.at(i).NRM.Y << '\t'
+	//	<< OUT.at(i).NRM.Z << '\t'
+	//	<< OUT.at(i).ANG << '\t'
+	//	<< OUT.at(i).PHI << '\t'
+	//	<< OUT.at(i).MISFIT << '\n';
+	//}
 
-	cout << "BF_END" << endl;
+	//cout << "BF_END" << endl;
 	return OUT;
 }
 

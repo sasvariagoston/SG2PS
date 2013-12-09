@@ -118,63 +118,74 @@ int string_to_int(const string& s) {
 
 	return to_type<int>(s);
 }
-
+/*
 double SIGNUM (double in) {
 
 	if (in < 0.0) return -1.0;
 	else if (in == 0.0) return  0.0;
 	else return  1.0;
 }
+*/
 
-double SIN (double in) {
+double SIN (const double& in) {
 
-	in = (in * 3.1415926535) / 180.0;
+	double out = in;
 
-	ASSERT(!isnan(in));
+	out = (out * 3.1415926535) / 180.0;
 
-	return sin(in);
+	ASSERT(!isnan(out));
+
+	return sin(out);
 }
 
-double COS (double in) {
+double COS (const double& in) {
 
-	in = (in * 3.1415926535) / 180.0;
+	double out = in;
 
-	ASSERT(!isnan(in));
+	out = (out * 3.1415926535) / 180.0;
 
-	return cos(in);
+	ASSERT(!isnan(out));
+
+	return cos(out);
 }
 
-double ASIN (double in) {
+double ASIN (const double& in) {
 
-	if (in >= 1.0) 	in =   (1.0 - 10e-8);
-	if (in <= -1.0) in = - (1.0 - 10e-8);
+	double out = in;
 
-	in = asin(in);
+	if (out >= 1.0)  out =   (1.0 - 10e-8);
+	if (out <= -1.0) out = - (1.0 - 10e-8);
 
-	ASSERT(!isnan(in));
+	out = asin(out);
 
-	return (in * 180.0) / 3.1415926535;
+	ASSERT(!isnan(out));
+
+	return (out * 180.0) / 3.1415926535;
 }
 
-double ACOS (double in) {
+double ACOS (const double& in) {
 
-	if (in >= 1.0)  in =   (1.0 - 10e-8);
-	if (in <= -1.0) in = - (1.0 - 10e-8);
+	double out = in;
 
-	in = acos(in);
+	if (out >= 1.0)  out =   (1.0 - 10e-8);
+	if (out <= -1.0) out = - (1.0 - 10e-8);
 
-	ASSERT(!isnan(in));
+	out = acos(out);
 
-	return (in * 180.0) / 3.1415926535;
+	ASSERT(!isnan(out));
+
+	return (out * 180.0) / 3.1415926535;
 }
 
-double ATAN (double in) {
+double ATAN (const double& in) {
 
-	in = atan(in);
+	double out = in;
 
-	ASSERT(!isnan(in));
+	out = atan(out);
 
-	return (in * 180.0) / 3.1415926535;
+	ASSERT(!isnan(out));
+
+	return (out * 180.0) / 3.1415926535;
 }
 
 double mm_to_point (int i) {
@@ -193,7 +204,7 @@ VCTR crossproduct (const VCTR& in1, const VCTR& in2) {
 	return out;
 }
 
-double dotproduct (VCTR in1, VCTR in2, bool normalisation) {
+double dotproduct (const VCTR& in1, const VCTR& in2, const bool& normalisation) {
 
 	double l_in1 = sqrt((in1.X * in1.X) + (in1.Y * in1.Y) + (in1.Z * in1.Z));
 	double l_in2 = sqrt((in2.X * in2.X) + (in2.Y * in2.Y) + (in2.Z * in2.Z));
@@ -219,7 +230,7 @@ double det_3 (vector <vector <double> > in) {
 			(in.at(0).at(0) * in.at(1).at(2) * in.at(2).at(1));
 }
 
-vector <vector <double> >  declare_3x3_matrix (double a, double b, double c, double d, double e, double f, double g, double h, double i) {
+vector <vector <double> >  declare_3x3_matrix (const double& a, const double& b, const double& c, const double& d, const double& e, const double& f, const double& g, const double& h, const double& i) {
 
 	vector < vector < double > > o;
 	vector <double> buffer;
@@ -247,7 +258,7 @@ vector <vector <double> >  declare_3x3_matrix (double a, double b, double c, dou
 	return o;
 }
 
-vector <vector <double> > init_matrix (const size_t dimension) {
+vector <vector <double> > init_matrix (const size_t& dimension) {
 
 	vector <vector <double> > o;
 	vector <double> buffer;
@@ -274,7 +285,7 @@ vector <vector <double> > init_matrix (const size_t dimension) {
 	return o;
 }
 
-vector <vector <double> > init_matrix (const size_t i, const size_t j) {
+vector <vector <double> > init_matrix (const size_t& i, const size_t& j) {
 
 	vector <vector <double> > o;
 	vector <double> buffer;
@@ -447,7 +458,7 @@ vector <vector <double> > outer_product (vector <double> in) {
 	return o;
 }
 
-vector <vector <double> > transpose (vector <vector <double> > in) {
+vector <vector <double> > transpose (const vector <vector <double> >& in) {
 
 	vector <vector <double> > o = in;
 
@@ -475,7 +486,7 @@ vector <vector <double> > transpose (vector <vector <double> > in) {
 	return o;
 }
 
-vector <vector <double> > mult_mtrx (vector <vector <double> > in1, vector <vector <double> > in2) {
+vector <vector <double> > mult_mtrx (const vector <vector <double> >& in1, const vector <vector <double> >& in2) {
 
 	size_t m = in1.size();
 	size_t n = in1.at(0).size();
@@ -510,7 +521,7 @@ vector <vector <double> > mult_mtrx (vector <vector <double> > in1, vector <vect
 	return out;
 }
 
-vector <vector <double> > add_mtrx (vector <vector <double> > in1, vector <vector <double> > in2) {
+vector <vector <double> > add_mtrx (const vector <vector <double> >& in1, const vector <vector <double> >& in2) {
 
 	vector <vector <double> > out = init_matrix (in1.size(), in1.at(0).size());
 	size_t m = 0;
@@ -1028,7 +1039,7 @@ CENTR_VECT unitvector (CENTR_VECT in) {
 	return in;
 }
 
-VCTR declare_vector (double a, double b, double c) {
+VCTR declare_vector (const double& a, const double& b, const double& c) {
 
 	VCTR o;
 
@@ -1113,7 +1124,7 @@ VCTR compute_d_for_SC (GDB i) {
 	return d;
 }
 
-VCTR DXDYDZ_from_dipdir_dip (DIPDIR_DIP i) {
+VCTR DXDYDZ_from_dipdir_dip (const DIPDIR_DIP& i) {
 
 	VCTR out;
 
@@ -1124,7 +1135,7 @@ VCTR DXDYDZ_from_dipdir_dip (DIPDIR_DIP i) {
 	return out;
 }
 
-VCTR NXNYNZ_from_dipdir_dip (DIPDIR_DIP i) {
+VCTR NXNYNZ_from_dipdir_dip (const DIPDIR_DIP& i) {
 
 	VCTR out;
 
@@ -1159,63 +1170,55 @@ STRESSFIELD stressvector_to_DXDYDZ (STRESSFIELD in) {
 	return out;
 }
 
-VCTR DXDYDZ_from_NXNYNZ (VCTR i) {
-
-	VCTR out;
+VCTR DXDYDZ_from_NXNYNZ (const VCTR& i) {
 
 	DIPDIR_DIP temp = dipdir_dip_from_NXNYNZ (i);
 
-	out = DXDYDZ_from_dipdir_dip (temp);
-
-	return out;
+	return DXDYDZ_from_dipdir_dip (temp);
 }
 
-VCTR NXNYNZ_from_DXDYDZ (VCTR i) {
-
-	VCTR out;
+VCTR NXNYNZ_from_DXDYDZ (const VCTR& i) {
 
 	DIPDIR_DIP temp = dipdir_dip_from_DXDYDZ (i);
 
-	out = NXNYNZ_from_dipdir_dip (temp);
-
-	return out;
+	return NXNYNZ_from_dipdir_dip (temp);
 }
 
-DIPDIR_DIP dipdir_dip_from_DXDYDZ (VCTR i) {
+DIPDIR_DIP dipdir_dip_from_DXDYDZ (const VCTR& i) {
 
 	DIPDIR_DIP actual;
 
-	i = unitvector (i);
+	VCTR out = unitvector (i);
 
-	actual.DIP = fabs(ACOS(i.Z) - 90.0);
+	actual.DIP = fabs(ACOS(out.Z) - 90.0);
 
-	if (i.Y == 0.0) i.Y = 0.00000001;
+	if (out.Y == 0.0) out.Y = 0.00000001;
 
-	actual.DIPDIR = ATAN (i.X / i.Y);
+	actual.DIPDIR = ATAN (out.X / out.Y);
 
-	if ((i.X > 0.0) && (i.Y < 0.0)) actual.DIPDIR = 180.0 + actual.DIPDIR;
-	if ((i.X < 0.0) && (i.Y < 0.0)) actual.DIPDIR = 180.0 + actual.DIPDIR;
-	if ((i.X < 0.0) && (i.Y > 0.0)) actual.DIPDIR = 360.0 + actual.DIPDIR;
+	if ((out.X > 0.0) && (out.Y < 0.0)) actual.DIPDIR = 180.0 + actual.DIPDIR;
+	if ((out.X < 0.0) && (out.Y < 0.0)) actual.DIPDIR = 180.0 + actual.DIPDIR;
+	if ((out.X < 0.0) && (out.Y > 0.0)) actual.DIPDIR = 360.0 + actual.DIPDIR;
 
 	return actual;
 }
 
-DIPDIR_DIP dipdir_dip_from_NXNYNZ (VCTR i) {
+DIPDIR_DIP dipdir_dip_from_NXNYNZ (const VCTR& i) {
 
-	i = unitvector (i);
+	VCTR out = unitvector (i);
 
 	DIPDIR_DIP actual;
 
-	actual.DIP = ACOS(i.Z);
+	actual.DIP = ACOS(out.Z);
 
-	if (i.Y == 0.0) i.Y = 0.0000000000001;
+	if (out.Y == 0.0) out.Y = 0.0000000000001;
 
-	actual.DIPDIR = ATAN (i.X / i.Y);
+	actual.DIPDIR = ATAN (out.X / out.Y);
 
-	if ((i.X > 0.0) && (i.Y > 0.0)) actual.DIPDIR =   0.0 + actual.DIPDIR;
-	if ((i.X > 0.0) && (i.Y < 0.0)) actual.DIPDIR = 180.0 + actual.DIPDIR;
-	if ((i.X < 0.0) && (i.Y < 0.0)) actual.DIPDIR = 180.0 + actual.DIPDIR;
-	if ((i.X < 0.0) && (i.Y > 0.0)) actual.DIPDIR = 360.0 + actual.DIPDIR;
+	if ((out.X > 0.0) && (out.Y > 0.0)) actual.DIPDIR =   0.0 + actual.DIPDIR;
+	if ((out.X > 0.0) && (out.Y < 0.0)) actual.DIPDIR = 180.0 + actual.DIPDIR;
+	if ((out.X < 0.0) && (out.Y < 0.0)) actual.DIPDIR = 180.0 + actual.DIPDIR;
+	if ((out.X < 0.0) && (out.Y > 0.0)) actual.DIPDIR = 360.0 + actual.DIPDIR;
 
 	return actual;
 }

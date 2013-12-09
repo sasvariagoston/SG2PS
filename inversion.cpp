@@ -365,57 +365,54 @@ vector <GDB> inversion (vector <GDB> inGDB, ofstream& o, INPSET inset, CENTER ce
 		VCTR ORIGO = declare_vector(0.0, 0.0, 1.0);
 		size_t POINTS_DISTANCE = 9;
 		vector <VCTR> CNTRVCTR = generate_centroids_net (ORIGO, POINTS_DISTANCE, inset);
-		//NUMERICALLY OK
 
 		double ANG_MIN = 0.0;
 		double ANG_MAX = 180.0;
 		vector <double> ANGVCTR = generate_angle_vector_180 (ANG_MIN, ANG_MAX, 18);
-		//NUMERICALLY OK
 
 		double PHI_MIN = 0.0;
 		double PHI_MAX = 1.0;
 		vector <double> PHIVCTR = generate_phi_vector (PHI_MIN, PHI_MAX, 10);
-		//NUMERICALLY OK
 
 		vector <BRUTEFORCE_RESULT> BR_RAW = BRUTEFORCE_ENGINE (inGDB, CNTRVCTR, ANGVCTR, PHIVCTR, inset);
 
 		BR_RAW = return_minimum_misfits (BR_RAW, 10);
 
 
-		for (size_t i = 0; i < BR_RAW.size(); i++) {
+		//for (size_t i = 0; i < BR_RAW.size(); i++) {
 
-			o
-			<< BR_RAW.at(i).NRM.X << '\t'
-			<< BR_RAW.at(i).NRM.Y << '\t'
-			<< BR_RAW.at(i).NRM.Z << '\t'
-			<< BR_RAW.at(i).ANG << '\t'
-			<< BR_RAW.at(i).PHI << '\t'
-			<< BR_RAW.at(i).MISFIT << endl;
-		}
+		//	o
+			//<< BR_RAW.at(i).NRM.X << '\t'
+			//<< BR_RAW.at(i).NRM.Y << '\t'
+			//<< BR_RAW.at(i).NRM.Z << '\t'
+			//<< BR_RAW.at(i).ANG << '\t'
+			//<< BR_RAW.at(i).PHI << '\t'
+			//<< BR_RAW.at(i).MISFIT << endl;
+		//}
 
 
 
-		exit (1);
+		//exit (1);
 
 		vector <BRUTEFORCE_RESULT> BR_FINAL;
 
 		for (size_t i = 0; i < BR_RAW.size(); i++) {
 
-			string COUNT = int_to_string(i);
+			//string COUNT = int_to_string(i);
 
-			ostringstream filename;
+			//ostringstream filename;
 
-			filename << "BRUTEFORCE_" << i << ".TXT";
+			//filename << "BRUTEFORCE_" << i << ".TXT";
 
-			ofstream o(filename.str().c_str());
+			//ofstream o(filename.str().c_str());
 
-			o
-			<< "NRM.X" << '\t'
-			<< "NRM.Y" << '\t'
-			<< "NRM.Z" << '\t'
-			<< "ANG" << '\t'
-			<< "PHI" << '\t'
-			<< "MISFIT" << endl;
+			//o
+			//<< "NRM.X" << '\t'
+			//<< "NRM.Y" << '\t'
+			//<< "NRM.Z" << '\t'
+			//<< "ANG" << '\t'
+			//<< "PHI" << '\t'
+			//<< "MISFIT" << endl;
 
 			VCTR ORIGO = BR_RAW.at(i).NRM;
 			POINTS_DISTANCE = 1;
@@ -436,16 +433,16 @@ vector <GDB> inversion (vector <GDB> inGDB, ofstream& o, INPSET inset, CENTER ce
 			vector <BRUTEFORCE_RESULT> BR_FINE = BRUTEFORCE_ENGINE (inGDB, CNTRVCTR, ANGVCTR, PHIVCTR, inset);
 
 
-			for (size_t k = 0; k < BR_FINE.size(); k++) {
+			//for (size_t k = 0; k < BR_FINE.size(); k++) {
 
-				o
-				<< BR_FINE.at(k).NRM.X << '\t'
-				<< BR_FINE.at(k).NRM.Y << '\t'
-				<< BR_FINE.at(k).NRM.Z << '\t'
-				<< BR_FINE.at(k).ANG << '\t'
-				<< BR_FINE.at(k).PHI << '\t'
-				<< BR_FINE.at(k).MISFIT << '\n';
-			}
+				//o
+				//<< BR_FINE.at(k).NRM.X << '\t'
+				//<< BR_FINE.at(k).NRM.Y << '\t'
+				//<< BR_FINE.at(k).NRM.Z << '\t'
+				//<< BR_FINE.at(k).ANG << '\t'
+				//<< BR_FINE.at(k).PHI << '\t'
+				//<< BR_FINE.at(k).MISFIT << '\n';
+			//}
 
 			BR_FINE = return_minimum_misfits (BR_FINE, 1);
 
@@ -457,12 +454,34 @@ vector <GDB> inversion (vector <GDB> inGDB, ofstream& o, INPSET inset, CENTER ce
 		//exit (1);
 
 
+		BR_FINAL = return_minimum_misfits (BR_FINAL, 1);
+
+		VCTR MIN_N1 = 		BR_FINAL.at(0).NRM;
+		double MIN_ANG = 	BR_FINAL.at(0).ANG;
+		double MIN_PHI = 	BR_FINAL.at(0).PHI;
+
+		st = return_stresstensor_from_n1_ang_phi (MIN_N1, MIN_ANG, MIN_PHI);
+
+		cout << fixed << setprecision(6) << endl;
+
+		cout << st._11 << '\t' << st._12 << '\t' << st._13 << endl;
+		cout << st._12 << '\t' << st._22 << '\t' << st._23 << endl;
+		cout << st._13 << '\t' << st._23 << '\t' << st._33 << endl;
+
+
+
 	//	st._11 =  0.222668;
 	//	st._12 =  0.128558;
 	//	st._13 = -0.906418;
 	//	st._22 =  0.127125;
 	//	st._23 = -0.222668;
 	//	st._33 = -0.128558;
+
+		//brute_force-ra:
+
+		//0.195515	0.112962	-0.183388
+		//0.112962	0.065266	-0.106299
+		//-0.183388	-0.106299	0.939219
 
 		sf = eigenvalue_eigenvector (st);
 

@@ -26,19 +26,19 @@ double string_to_double(const string& s); // throws logic_error
 
 int string_to_int(const string& s); // throws logic_error
 
-double SIGNUM (double in);
+//double SIGNUM (double in);
 
-double SIN  (double in);
-double COS 	(double in);
-double ASIN (double in);
-double ACOS (double in);
-double ATAN (double in);
+double SIN  (const double& in);
+double COS 	(const double& in);
+double ASIN (const double& in);
+double ACOS (const double& in);
+double ATAN (const double& in);
 
 double rounding (double in);
 double mm_to_point (int i);
 
 VCTR  crossproduct (const VCTR& in1, const VCTR& in2);
-double dotproduct (VCTR in1, VCTR in2, bool normalisation=false);
+double dotproduct (const VCTR& in1, const VCTR& in2, const bool& normalisation=false);
 
 double det_3 (vector <vector <double> > in);
 
@@ -46,10 +46,10 @@ double stresstensor_determinant (const STRESSTENSOR& st);
 
 void check_stress_tensor_singularity(const STRESSTENSOR& st);
 
-vector <vector <double> >  declare_3x3_matrix (double a, double b, double c, double d, double e, double f, double g, double h, double i);
+vector <vector <double> >  declare_3x3_matrix (const double& a, const double& b, const double& c, const double& d, const double& e, const double& f, const double& g, const double& h, const double& i);
 
-vector <vector <double> > init_matrix (const size_t dimension);
-vector <vector <double> > init_matrix (const size_t i, const size_t j);
+vector <vector <double> > init_matrix (const size_t& dimension);
+vector <vector <double> > init_matrix (const size_t& i, const size_t& j);
 
 vector <vector <double> > identity_matrix (vector <vector <double> >);
 
@@ -59,9 +59,9 @@ size_t m_from_max_element (size_t max_element, size_t n);
 double teta (vector <vector <double> > in, size_t m, size_t n);
 vector <vector <double> > init_rotation_mtrx (double teta, size_t m, size_t n, int dimension);
 vector <vector <double> > outer_product (vector <double> in);
-vector <vector <double> > transpose (vector <vector <double> > in);
-vector <vector <double> > mult_mtrx (vector <vector <double> > in1, vector <vector <double> > in2);
-vector <vector <double> > add_mtrx (vector <vector <double> > in1, vector <vector <double> > in2);
+vector <vector <double> > transpose (const vector <vector <double> >& in);
+vector <vector <double> > mult_mtrx (const vector <vector <double> >& in1, const vector <vector <double> >& in2);
+vector <vector <double> > add_mtrx (const vector <vector <double> >& in1, const vector <vector <double> >& in2);
 
 int return_second_eigenvalue (vector <vector< double > > in);
 int return_first_eigenvalue (vector <vector< double > > in);
@@ -94,7 +94,7 @@ VCTR invert_VCTR (VCTR in);
 CENTR_VECT unitvector (CENTR_VECT in);
 vector < double > unitvector (vector < double > in);
 
-VCTR declare_vector (double a, double b, double c);
+VCTR declare_vector (const double& a, const double& b, const double& c);
 CENTR_VECT declare_vector (double a, double b, double c, double d, double e, double f);
 
 VCTR flip_vector (VCTR in);
@@ -104,17 +104,17 @@ VCTR flip_ptn_vector (VCTR in);
 
 VCTR compute_d_for_SC (GDB i);
 
-VCTR DXDYDZ_from_dipdir_dip (DIPDIR_DIP i);
-VCTR NXNYNZ_from_dipdir_dip (DIPDIR_DIP i);
+VCTR DXDYDZ_from_dipdir_dip (const DIPDIR_DIP& i);
+VCTR NXNYNZ_from_dipdir_dip (const DIPDIR_DIP& i);
 
 VCTR inversion_DXDYDZ_from_DXDYDZ (VCTR i);
 STRESSFIELD stressvector_to_DXDYDZ (STRESSFIELD in);
 
-VCTR DXDYDZ_from_NXNYNZ (VCTR i);
-VCTR NXNYNZ_from_DXDYDZ (VCTR i);
+VCTR DXDYDZ_from_NXNYNZ (const VCTR& i);
+VCTR NXNYNZ_from_DXDYDZ (const VCTR& i);
 
-DIPDIR_DIP dipdir_dip_from_DXDYDZ (VCTR i);
-DIPDIR_DIP dipdir_dip_from_NXNYNZ (VCTR i);
+DIPDIR_DIP dipdir_dip_from_DXDYDZ (const VCTR& i);
+DIPDIR_DIP dipdir_dip_from_NXNYNZ (const VCTR& i);
 
 VCTR ROTATE (const VCTR& ax, const VCTR& torotate, const double& A);
 
