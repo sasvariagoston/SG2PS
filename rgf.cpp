@@ -723,17 +723,17 @@ bool stopcriteria (string prevDATATYPE, string DATATYPE, string prevLOC, string 
 	else return false;
 }
 
-size_t minimum_independent_dataset (INPSET inset) {
+size_t minimum_independent_dataset (const vector <GDB>& inGDB, const INPSET& inset) {
 
-	if 		(inset.inversion == "D") return 1;
-	else if (inset.inversion == "P") return 1;
-	else if (inset.inversion == "M") return 4;
-	else if (inset.inversion == "S") return 5;
-	else if (inset.inversion == "F") return 6;
-	else if (inset.inversion == "A") return 4;
-	else if (inset.inversion == "O") return 4;
-	else if (inset.inversion == "B") return 4;
-	else if (inset.fracture == "B") return 4;
+	if 		(is_method_NDA			(inGDB, inset)) return 1;
+	else if (is_method_PTN			(inGDB, inset)) return 1;
+	else if (is_method_MICHAEL		(inGDB, inset)) return 4;
+	else if (is_method_SHAN			(inGDB, inset)) return 5;
+	else if (is_method_FRY			(inGDB, inset)) return 6;
+	else if (is_method_ANGELIER		(inGDB, inset)) return 4;
+	else if (is_method_MOSTAFA		(inGDB, inset)) return 4;
+	else if (is_method_BRUTEFORCE	(inGDB, inset)) return 1;
+	else if (is_method_BINGHAM		(inGDB, inset)) return 4;
 	else return 1;
 }
 
@@ -773,7 +773,7 @@ bool correct_inhomogeneous_number (vector <GDB> inGDB, INPSET inset) {
 
 	vector <GDB> test = return_GDB_with_no_homogeneous_data (inGDB);
 
-	if (test.size() >= minimum_independent_dataset (inset)) return true;
+	if (test.size() >= minimum_independent_dataset (inGDB, inset)) return true;
 	return false;
 }
 

@@ -73,6 +73,11 @@ bool is_method_PTN (vector <GDB> inGDB, INPSET inset) {
 	return (inGDB.at(0).DATATYPE == "STRIAE" && inset.inversion == "P");
 }
 
+bool is_method_YAMAJI (vector <GDB> inGDB, INPSET inset) {
+
+	return (inGDB.at(0).DATATYPE == "STRIAE" && inset.inversion == "Y");
+}
+
 size_t useful_striae_number (vector <GDB> inGDB) {
 
 	size_t useful_striae_number = 0;
@@ -103,49 +108,22 @@ vector <GDB> return_stressvector_estimators (const STRESSTENSOR& st, vector <GDB
 
 	for (size_t i  =0; i < inGDB.size(); i++) {
 
-		//cout << "1" << endl;
-
 		outGDB.at(i).SHEAR_S  = return_shearstress  (st, inGDB.at(i), compression_positive);
-
-		//cout << fixed << setprecision(6) << endl;
-		//cout << "SHEAR STRESS" << endl;
-		//cout
-		//<< outGDB.at(i).SHEAR_S.X << '\t'
-		//<< outGDB.at(i).SHEAR_S.Y << '\t'
-		//<< outGDB.at(i).SHEAR_S.Z << endl;
-
-		//cout << "2" << endl;
 
 		outGDB.at(i).NORMAL_S = return_normalstress (st, inGDB.at(i), compression_positive);
 
-		//cout << "NORMAL STRESS" << endl;
-		//cout
-		//<< outGDB.at(i).NORMAL_S.X << '\t'
-		//<< outGDB.at(i).NORMAL_S.Y << '\t'
-		//<< outGDB.at(i).NORMAL_S.Z << endl;
-
-
-
-		//cout << "3" << endl;
-
 		outGDB.at(i).UPSILON  = return_upsilon (st, inGDB.at(i), method, compression_positive);
-
-		//cout << "6" << endl;
 
 		outGDB.at(i).ANG  = return_ANG (st, inGDB.at(i), compression_positive);
 
-		//cout << "7" << endl;
-
 		outGDB.at(i).RUP  = return_RUP (st, inGDB.at(i), compression_positive);
-
-		//cout << "8" << endl;
 
 		if (method == "MOSTAFA")
 
-		outGDB.at(i).lambda =  sqrt(
-				outGDB.at(i).SHEAR_S.X * outGDB.at(i).SHEAR_S.X +
-				outGDB.at(i).SHEAR_S.Y * outGDB.at(i).SHEAR_S.Y +
-				outGDB.at(i).SHEAR_S.Z * outGDB.at(i).SHEAR_S.Z);
+			outGDB.at(i).lambda =  sqrt(
+					outGDB.at(i).SHEAR_S.X * outGDB.at(i).SHEAR_S.X +
+					outGDB.at(i).SHEAR_S.Y * outGDB.at(i).SHEAR_S.Y +
+					outGDB.at(i).SHEAR_S.Z * outGDB.at(i).SHEAR_S.Z);
 	}
 
 	return outGDB;
@@ -195,8 +173,9 @@ string inversion_method (vector <GDB> inGDB, INPSET inset) {
 	bool NDA = 			is_method_NDA(inGDB, inset);
 	bool PTN = 			is_method_PTN(inGDB, inset);
 	bool SHAN = 		is_method_SHAN(inGDB, inset);
+	bool YAMAJI = 		is_method_YAMAJI(inGDB, inset);
 
-	if (!ANGELIER && !BINGHAM && !BRUTEFORCE && !FRY &&!MICHAEL && !MOSTAFA && !NDA && !PTN && !SHAN) ASSERT_DEAD_END();
+	if (!ANGELIER && !BINGHAM && !BRUTEFORCE && !FRY &&!MICHAEL && !MOSTAFA && !NDA && !PTN && !SHAN && !YAMAJI) ASSERT_DEAD_END();
 
 	if (ANGELIER) return "ANGELIER";
 	else if (BINGHAM) return "BINGHAM";
@@ -206,6 +185,7 @@ string inversion_method (vector <GDB> inGDB, INPSET inset) {
 	else if (MOSTAFA) return "MOSTAFA";
 	else if (NDA) return "NDA";
 	else if (PTN) return "PTN";
+	else if (YAMAJI) return "YAMAJI";
 	else return "SHAN";
 }
 
@@ -293,8 +273,9 @@ vector <GDB> inversion (vector <GDB> inGDB, ofstream& o, INPSET inset, CENTER ce
 	bool NDA = 			is_method_NDA(inGDB, inset);
 	bool PTN = 			is_method_PTN(inGDB, inset);
 	bool SHAN = 		is_method_SHAN(inGDB, inset);
+	bool YAMAJI = 		is_method_YAMAJI(inGDB, inset);
 
-	if (!ANGELIER && !BINGHAM && !BRUTEFORCE && !FRY && !MICHAEL && !MOSTAFA && !NDA && !PTN && !SHAN) ASSERT_DEAD_END();
+	if (!ANGELIER && !BINGHAM && !BRUTEFORCE && !FRY && !MICHAEL && !MOSTAFA && !NDA && !PTN && !SHAN && !YAMAJI) ASSERT_DEAD_END();
 
 	bool successfull = false;
 	double average_misfit;
@@ -362,132 +343,18 @@ vector <GDB> inversion (vector <GDB> inGDB, ofstream& o, INPSET inset, CENTER ce
 	}
 	else if (BRUTEFORCE) {
 
-		VCTR ORIGO = declare_vector(0.0, 0.0, 1.0);
-		size_t POINTS_DISTANCE = 9;
-		vector <VCTR> CNTRVCTR = generate_centroids_net (ORIGO, POINTS_DISTANCE, inset);
-
-		double ANG_MIN = 0.0;
-		double ANG_MAX = 180.0;
-		vector <double> ANGVCTR = generate_angle_vector_180 (ANG_MIN, ANG_MAX, 18);
-
-		double PHI_MIN = 0.0;
-		double PHI_MAX = 1.0;
-		vector <double> PHIVCTR = generate_phi_vector (PHI_MIN, PHI_MAX, 10);
-
-		vector <BRUTEFORCE_RESULT> BR_RAW = BRUTEFORCE_ENGINE (inGDB, CNTRVCTR, ANGVCTR, PHIVCTR, inset);
-
-		BR_RAW = return_minimum_misfits (BR_RAW, 10);
-
-
-		//for (size_t i = 0; i < BR_RAW.size(); i++) {
-
-		//	o
-			//<< BR_RAW.at(i).NRM.X << '\t'
-			//<< BR_RAW.at(i).NRM.Y << '\t'
-			//<< BR_RAW.at(i).NRM.Z << '\t'
-			//<< BR_RAW.at(i).ANG << '\t'
-			//<< BR_RAW.at(i).PHI << '\t'
-			//<< BR_RAW.at(i).MISFIT << endl;
-		//}
-
-
-
-		//exit (1);
-
-		vector <BRUTEFORCE_RESULT> BR_FINAL;
-
-		for (size_t i = 0; i < BR_RAW.size(); i++) {
-
-			//string COUNT = int_to_string(i);
-
-			//ostringstream filename;
-
-			//filename << "BRUTEFORCE_" << i << ".TXT";
-
-			//ofstream o(filename.str().c_str());
-
-			//o
-			//<< "NRM.X" << '\t'
-			//<< "NRM.Y" << '\t'
-			//<< "NRM.Z" << '\t'
-			//<< "ANG" << '\t'
-			//<< "PHI" << '\t'
-			//<< "MISFIT" << endl;
-
-			VCTR ORIGO = BR_RAW.at(i).NRM;
-			POINTS_DISTANCE = 1;
-			vector <VCTR> CNTRVCTR = generate_centroids_net(ORIGO, POINTS_DISTANCE, inset);
-
-			ANG_MIN = BR_RAW.at(i).ANG - 7.0;
-			ANG_MAX = BR_RAW.at(i).ANG + 7.0;
-			if (ANG_MIN < 0.0) ANG_MIN = 0.0;
-			if (ANG_MAX > 180.0) ANG_MAX = 180.0;
-			vector <double> ANGVCTR = generate_angle_vector_180 (ANG_MIN, ANG_MAX, 14);
-
-			PHI_MIN = BR_RAW.at(i).PHI - 0.07;
-			PHI_MAX = BR_RAW.at(i).PHI + 0.07;
-			if (PHI_MIN < 0.0) PHI_MIN = 0.0;
-			if (PHI_MAX > 1.0) PHI_MAX = 1.0;
-			vector <double> PHIVCTR = generate_phi_vector (PHI_MIN, PHI_MAX, 10);
-
-			vector <BRUTEFORCE_RESULT> BR_FINE = BRUTEFORCE_ENGINE (inGDB, CNTRVCTR, ANGVCTR, PHIVCTR, inset);
-
-
-			//for (size_t k = 0; k < BR_FINE.size(); k++) {
-
-				//o
-				//<< BR_FINE.at(k).NRM.X << '\t'
-				//<< BR_FINE.at(k).NRM.Y << '\t'
-				//<< BR_FINE.at(k).NRM.Z << '\t'
-				//<< BR_FINE.at(k).ANG << '\t'
-				//<< BR_FINE.at(k).PHI << '\t'
-				//<< BR_FINE.at(k).MISFIT << '\n';
-			//}
-
-			BR_FINE = return_minimum_misfits (BR_FINE, 1);
-
-			BRUTEFORCE_RESULT buf = BR_FINE.at(0);
-
-			BR_FINAL.push_back(buf);
-		}
-
-		//exit (1);
-
-
-		BR_FINAL = return_minimum_misfits (BR_FINAL, 1);
-
-		VCTR MIN_N1 = 		BR_FINAL.at(0).NRM;
-		double MIN_ANG = 	BR_FINAL.at(0).ANG;
-		double MIN_PHI = 	BR_FINAL.at(0).PHI;
-
-		st = return_stresstensor_from_n1_ang_phi (MIN_N1, MIN_ANG, MIN_PHI);
-
-		cout << fixed << setprecision(6) << endl;
-
-		cout << st._11 << '\t' << st._12 << '\t' << st._13 << endl;
-		cout << st._12 << '\t' << st._22 << '\t' << st._23 << endl;
-		cout << st._13 << '\t' << st._23 << '\t' << st._33 << endl;
-
-
-
-	//	st._11 =  0.222668;
-	//	st._12 =  0.128558;
-	//	st._13 = -0.906418;
-	//	st._22 =  0.127125;
-	//	st._23 = -0.222668;
-	//	st._33 = -0.128558;
-
-		//brute_force-ra:
-
-		//0.195515	0.112962	-0.183388
-		//0.112962	0.065266	-0.106299
-		//-0.183388	-0.106299	0.939219
+		st = st_BRUTEFORCE (inGDB, inset);
 
 		sf = eigenvalue_eigenvector (st);
 
 		sf = computestressfield_DXDYDZ (sf);
 
 		sf =  stress_regime (sf);
+	}
+
+	else if (YAMAJI) {
+
+
 	}
 
 	else if (PTN) {
@@ -508,27 +375,19 @@ vector <GDB> inversion (vector <GDB> inGDB, ofstream& o, INPSET inset, CENTER ce
 	}
 	else ASSERT_DEAD_END()
 
-
-
-	cout << "1" << endl;
 	successfull = check_correct_stressfield (sf);
-	cout << "2" << endl;
+
 
 	if 		(MOSTAFA) 				inGDB = return_stressvector_estimators (st, inGDB, "MOSTAFA", false);
 	else if (!MOSTAFA && !BINGHAM) 	inGDB = return_stressvector_estimators (st, inGDB, "ANGELIER", false);
 	else {};
 
-	cout << "3" << endl;
-
-
 
 	if (successfull) {
 
-		//cout << "3" << endl;
+
 
 		average_misfit = return_average_misfit (st, inGDB, false);
-
-		//cout << "31" << endl;
 
 		if (BINGHAM) bingham_result_output (sf);
 
@@ -565,8 +424,6 @@ vector <GDB> inversion (vector <GDB> inGDB, ofstream& o, INPSET inset, CENTER ce
 		PS_lineation (inGDB.at(0), o, inset, center, sf, false, "S3");
 	}
 	else cout << "unable to compute stress field for the data set." << endl;
-
-	//cout << "3" << endl;
 
 	return inGDB;
 }

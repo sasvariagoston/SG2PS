@@ -185,11 +185,15 @@ vector <vector < vector <string> > > return_default_settings_database () {
 	pushbach_settings_option (defitem,
 			"O",
 			"  - Inversion...................................: using Mostafa's (2005) method",
-			"    - inversion Mostafa's (2005) method.....................[o],  ");
+			"    - inversion using Mostafa's (2005) method...............[o],  ");
 	pushbach_settings_option (defitem,
 			"B",
 			"  - Inversion...................................: using brute force iteration",
 			"    - inversion using brute force iteration.................[b],  ");
+	pushbach_settings_option (defitem,
+			"Y",
+			"  - Inversion...................................: using Yamaji's (2000) iteration",
+			"    - inversion using Yamaji's (2005) method................[y],  ");
 	pushbach_settings_option (defitem,
 			"N",
 			"  - Inversion...................................: none",

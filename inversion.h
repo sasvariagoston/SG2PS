@@ -19,6 +19,7 @@ bool is_method_MOSTAFA (vector <GDB> inGDB, INPSET inset);
 bool is_method_NDA (vector <GDB> inGDB, INPSET inset);
 bool is_method_BRUTEFORCE (vector <GDB> inGDB, INPSET inset);
 bool is_method_PTN (vector <GDB> inGDB, INPSET inset);
+bool is_method_YAMAJI (vector <GDB> inGDB, INPSET inset);
 
 size_t useful_striae_number (vector <GDB> inGDB);
 

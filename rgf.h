@@ -51,7 +51,7 @@ vector <GDB> sort_by_iID (vector <GDB> inGDB);
 bool stopcriteria (string prevDATATYPE, string DATATYPE, string prevLOC, string LOC, string prevGC, string GC, INPSET inset);
 bool stopcriteria (string prevDATATYPE, string DATATYPE, string prevLOC, string LOC);
 
-size_t minimum_independent_dataset (INPSET inset);
+size_t minimum_independent_dataset (const vector <GDB>& inGDB, const INPSET& inset);
 
 vector <GDB> return_GDB_with_no_homogeneous_data (vector <GDB> inGDB);
 
