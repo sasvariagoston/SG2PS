@@ -141,16 +141,16 @@ STRESSTENSOR invert_stress_tensor (STRESSTENSOR st);
 
 STRESSTENSOR add_stress_tensor (STRESSTENSOR st, STRESSTENSOR T);
 
+STRESSTENSOR convert_matrix_to_stresstensor (const vector <vector <double> >& IN);
 
 
+VCTR return_stressvector (const STRESSTENSOR& st, const VCTR& N, const bool& compression_positive);
+VCTR return_normalstress (const STRESSTENSOR& st, const VCTR& N, const bool& compression_positive);
+VCTR return_shearstress (const STRESSTENSOR& st, const VCTR& N, const bool& compression_positive);
+VCTR return_upsilon (const STRESSTENSOR& st, const VCTR& N, const VCTR& SV, const VCTR& UPSILON, const double& lambda, const string& method, const bool& compression_positive);
 
-VCTR return_stressvector (const STRESSTENSOR& st, const GDB& inGDB, const bool& compression_positive);
-VCTR return_normalstress (const STRESSTENSOR& st, const GDB& inGDB, const bool& compression_positive);
-VCTR return_shearstress (const STRESSTENSOR& st, const GDB& inGDB, const bool& compression_positive);
-VCTR return_upsilon (const STRESSTENSOR& st, const GDB& inGDB, const string& method, const bool& compression_positive);
-
-double return_ANG (const STRESSTENSOR& st, const GDB& inGDB, const bool& compression_positive);
-double return_RUP (const STRESSTENSOR& st, const GDB& inGDB, const bool& compression_positive);
+double return_ANG (const STRESSTENSOR& st, const VCTR& N, const VCTR& SV, const bool& compression_positive);
+double return_RUP (const STRESSTENSOR& st, const VCTR& N, const VCTR& SV, const double& lambda, const bool& compression_positive);
 
 double return_average_misfit (const STRESSTENSOR& st, const vector <GDB>& inGDB, const bool& compression_positive);
 

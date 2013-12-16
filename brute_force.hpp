@@ -19,14 +19,10 @@ bool by_MISFIT_ANGLE (const BRUTEFORCE_RESULT& x, const BRUTEFORCE_RESULT& y);
 
 vector <BRUTEFORCE_RESULT> return_minimum_misfits (vector <BRUTEFORCE_RESULT> IN, size_t records_number);
 
-STRESSTENSOR return_stresstensor_from_n1_ang_phi (const VCTR& N1, const double& ANG, const double& PHI);
-
 vector <BRUTEFORCE_RESULT> BRUTEFORCE_ENGINE (const vector <GDB>& inGDB, const vector <VCTR>& CNTRVCTR, const vector <double>& ANGVCTR, const vector <double>& PHIVCTR, const INPSET& inset);
 
 STRESSTENSOR st_BRUTEFORCE (const vector <GDB>& inGDB, const INPSET& inset);
 
 void dbg_cout_matrix (vector <vector <double> > I);
-
-
 
 #endif

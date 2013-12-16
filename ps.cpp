@@ -912,7 +912,7 @@ void PS_mohr_circle (vector <GDB> inGDB, ofstream& o, INPSET inset, CENTER mohr_
 
 	do {
 
-		stressvector = return_stressvector (st, inGDB.at(j), compression_positive);
+		stressvector = return_stressvector (st, inGDB.at(j).N, compression_positive);
 
 		stress_magnitude =
 				(inGDB.at(j).N.X * stressvector.X) +

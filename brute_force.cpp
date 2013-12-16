@@ -73,7 +73,7 @@ vector <vector <double> > DIR_MX1_from_n1 (const VCTR& n1, const double& angle) 
 
 	VCTR n2 = DXDYDZ_from_NXNYNZ(n1);
 
-	n2 = unitvector (n2);
+	//n2 = unitvector (n2);
 
 	n2 = ROTATE(n1, n2, angle);
 
@@ -100,8 +100,6 @@ vector <vector <double> > st_from_reduced_stresstensor (const vector <vector <do
 
 	vector <vector <double> >  OUT = mult_mtrx (DIR_MX2, T);
 
-
-
 	return mult_mtrx(OUT, DIR_MX1); //NUMERICALLY CHECKED, OK
 }
 
@@ -121,22 +119,6 @@ vector <VCTR> generate_centroids_net (const VCTR& ORIGO, const size_t POINTS_DIS
 
 	double ANGLE = ACOS(dotproduct(AXIS, ABOVE));
 
-	//cout << fixed << setprecision(3) << endl;
-
-	//cout
-	//<< AXIS.X << '\t'
-	//<< AXIS.Y << '\t'
-	//<< AXIS.Z << endl;
-
-	//cout
-	//<< STRIKE.X << '\t'
-	//<< STRIKE.Y << '\t'
-	//<< STRIKE.Z << endl;
-
-	//cout << ANGLE << endl;
-
-	//cout << fixed << setprecision(6) << endl;
-
 	vector <VCTR> OUT;
 
 	for (size_t i = 0; i < NET.size(); i++) {
@@ -149,66 +131,16 @@ vector <VCTR> generate_centroids_net (const VCTR& ORIGO, const size_t POINTS_DIS
 
 				if (T.Z > 0.0) T = invert_VCTR(T);
 
-
-
-				//T.X = T.X * RADIUS;
-				//T.Y = T.Y * RADIUS;
-				//T.Z =  - sqrt(1.0 - (T.X*T.X) - (T.Y*T.Y));
-
 				T = unitvector(T);
 
 				OUT.push_back(T);
 			}
 		}
 	}
-
 	OUT.push_back(AXIS);
-
-	for (size_t i = 0; i < OUT.size(); i++) {
-
-	//	cout
-	//	<< OUT.at(i).X << '\t'
-	//	<< OUT.at(i).Y << '\t'
-	//	<< OUT.at(i).Z << '\t'
-	//	<< '\n';
-
-	}
-
-	//cout << "END" << endl;
-
-	//exit (1);
 
 	return OUT; //OK
 }
-
-STRESSTENSOR convert_matrix_to_stresstensor (const vector <vector <double> >& IN) {
-
-	ASSERT2(IN.size() == 3, "3x3 matrix expected for stress tensor conversion");
-	ASSERT2(IN.at(0).size() == 3, "3x3 matrix expected for stress tensor conversion");
-
-	STRESSTENSOR OUT;
-
-	OUT._11 = IN.at(0).at(0);
-	OUT._12 = IN.at(0).at(1);
-	OUT._13 = IN.at(0).at(2);
-	OUT._22 = IN.at(1).at(1);
-	OUT._23 = IN.at(1).at(2);
-	OUT._33 = IN.at(2).at(2);
-
-	return OUT;
-}
-
-double calculate_cumulative_misfit (const vector <GDB>& inGDB) {
-
-	double MISFIT = 0.0;
-
-	for (size_t i = 0; i < inGDB.size (); i++) {
-
-		MISFIT = MISFIT + inGDB.at(i).ANG;
-	}
-	return MISFIT;
-}
-
 
 bool by_MISFIT_ANGLE (const BRUTEFORCE_RESULT& x, const BRUTEFORCE_RESULT& y) {
 
@@ -230,25 +162,22 @@ vector <BRUTEFORCE_RESULT> return_minimum_misfits (vector <BRUTEFORCE_RESULT> IN
 	return OUT;
 }
 
-STRESSTENSOR return_stresstensor_from_n1_ang_phi (const VCTR& N1, const double& ANG, const double& PHI) {
-
-	vector <vector <double> > M1 = DIR_MX1_from_n1 (N1, ANG);
-
-	vector <vector <double> > T = st_from_reduced_stresstensor (M1, PHI);
-
-	return convert_matrix_to_stresstensor (T);
-}
-
 vector <BRUTEFORCE_RESULT> BRUTEFORCE_ENGINE (const vector <GDB>& inGDB, const vector <VCTR>& CNTRVCTR, const vector <double>& ANGVCTR, const vector <double>& PHIVCTR, const INPSET& inset) {
 
 	size_t CNT_MAX = CNTRVCTR.size();
 	size_t ANG_MAX = ANGVCTR.size();
 	size_t PHI_MAX = PHIVCTR.size();
 
-	bool BRUTEFORCE 	= is_method_BRUTEFORCE(inGDB, inset);
-	bool YAMAJI 		= is_method_YAMAJI(inGDB, inset);
+	size_t DATANUMBER = inGDB.size();
 
-	if (!BRUTEFORCE && !YAMAJI) ASSERT_DEAD_END();
+	vector <VCTR> N;
+	vector <VCTR> SV;
+
+	for (size_t q = 0; q < DATANUMBER; q++) {
+
+		N.push_back(inGDB.at(q).N);
+		SV.push_back(inGDB.at(q).SV);
+	}
 
 	vector <BRUTEFORCE_RESULT> OUT;
 
@@ -260,13 +189,14 @@ vector <BRUTEFORCE_RESULT> BRUTEFORCE_ENGINE (const vector <GDB>& inGDB, const v
 		for (size_t ang = 0; ang < ANG_MAX; ang++) {
 			for (size_t phi = 0; phi < PHI_MAX; phi++) {
 
+				double MISFIT = 0.0;
+
 				STRESSTENSOR st =  return_stresstensor_from_n1_ang_phi (CNTRVCTR.at(cntr), ANGVCTR.at(ang), PHIVCTR.at(phi));
 
-				//vector <BRUTEFORCE_RESULT> YAMAJI_RESULT = YAMAJI_ENGINE (const vector <GDB>& inGDB, const vector <VCTR>& CNTRVCTR, const vector <double>& ANGVCTR, const vector <double>& PHIVCTR, const INPSET& inset)
+				for (size_t z = 0; z < DATANUMBER; z++) {
 
-				vector <GDB> tempGDB = return_stressvector_estimators (st, inGDB, "BRUTEFORCE", false);
-
-				double MISFIT = calculate_cumulative_misfit (tempGDB);
+					MISFIT = MISFIT + return_ANG(st, N.at(z), SV.at(z), false);
+				}
 
 				if (MISFIT < MIN_MISFIT) {
 
@@ -285,76 +215,21 @@ vector <BRUTEFORCE_RESULT> BRUTEFORCE_ENGINE (const vector <GDB>& inGDB, const v
 	return OUT;
 }
 
-vector <BRUTEFORCE_RESULT> YAMAJI_ENGINE (const vector <GDB>& inGDB, const VCTR& CNTR, const double& ANG, const double& PHI, const INPSET& inset) {
-
-	vector <BRUTEFORCE_RESULT> OUT;
-
-	for (size_t i = 0; i < inGDB.size() - 3; i++) {
-		for (size_t j = i + 1; j < inGDB.size() - 2; j++) {
-			for (size_t k = i + 2; k < inGDB.size() - 1; k++) {
-				for (size_t l = i + 3; l < inGDB.size(); l++) {
-
-					vector <GDB> tempGDB;
-
-					tempGDB.push_back(inGDB.at(i));
-					tempGDB.push_back(inGDB.at(j));
-					tempGDB.push_back(inGDB.at(k));
-					tempGDB.push_back(inGDB.at(l));
-
-					STRESSTENSOR st = return_stresstensor_from_n1_ang_phi (CNTR, ANG, PHI);
-
-					tempGDB = return_stressvector_estimators(st, tempGDB, "BRUTEFORCE", false);
-
-					double MISFIT = calculate_cumulative_misfit (tempGDB);
-
-					BRUTEFORCE_RESULT buf;
-
-					buf.ANG = ANG;
-					buf.NRM = CNTR;
-					buf.PHI = PHI;
-					buf.MISFIT = MISFIT;
-
-					OUT.push_back(buf);
-				}
-			}
-		}
-	}
-	return OUT;
-}
-
-
 STRESSTENSOR st_BRUTEFORCE (const vector <GDB>& inGDB, const INPSET& inset) {
-
-	bool BRUTEFORCE 	= is_method_BRUTEFORCE(inGDB, inset);
-	bool YAMAJI 		= is_method_YAMAJI(inGDB, inset);
-
-	if (!BRUTEFORCE && !YAMAJI) ASSERT_DEAD_END();
 
 	vector <VCTR> CNTRVCTR;
 	vector <double> ANGVCTR;
 	vector <double> PHIVCTR;
 
-	if (BRUTEFORCE) {
+	CNTRVCTR = generate_centroids_net (declare_vector(0.0, 0.0, 1.0), 9, inset);
 
-		CNTRVCTR = generate_centroids_net (declare_vector(0.0, 0.0, 1.0), 9, inset);
+	ANGVCTR = generate_angle_vector_180 (0.0, 180.0, 18);
 
-		ANGVCTR = generate_angle_vector_180 (0.0, 180.0, 18);
-
-		PHIVCTR = generate_phi_vector (0.0, 1.0, 10);
-	}
-	else {
-
-		CNTRVCTR = return_rakhmanov_points(256);
-
-		ANGVCTR = generate_angle_vector_180 (0.0, 180.0, 16);
-
-		PHIVCTR = generate_phi_vector (0.0, 1.0, 15);
-	}
+	PHIVCTR = generate_phi_vector (0.0, 1.0, 10);
 
 	vector <BRUTEFORCE_RESULT> BR_RAW = BRUTEFORCE_ENGINE (inGDB, CNTRVCTR, ANGVCTR, PHIVCTR, inset);
 
-	if (BRUTEFORCE) BR_RAW = return_minimum_misfits (BR_RAW, 10);
-	else {};
+	BR_RAW = return_minimum_misfits (BR_RAW, 10);
 
 	vector <BRUTEFORCE_RESULT> BR_FINAL;
 
@@ -364,17 +239,17 @@ STRESSTENSOR st_BRUTEFORCE (const vector <GDB>& inGDB, const INPSET& inset) {
 		size_t POINTS_DISTANCE = 1;
 		vector <VCTR> CNTRVCTR = generate_centroids_net(ORIGO, POINTS_DISTANCE, inset);
 
-		double ANG_MIN = BR_RAW.at(i).ANG - 7.0;
-		double ANG_MAX = BR_RAW.at(i).ANG + 7.0;
+		double ANG_MIN = BR_RAW.at(i).ANG - 5.0;
+		double ANG_MAX = BR_RAW.at(i).ANG + 5.0;
 		if (ANG_MIN <   0.0) ANG_MIN = 0.0;
 		if (ANG_MAX > 180.0) ANG_MAX = 180.0;
-		vector <double> ANGVCTR = generate_angle_vector_180 (ANG_MIN, ANG_MAX, 14);
+		vector <double> ANGVCTR = generate_angle_vector_180 (ANG_MIN, ANG_MAX, 5);
 
-		double PHI_MIN = BR_RAW.at(i).PHI - 0.07;
-		double PHI_MAX = BR_RAW.at(i).PHI + 0.07;
+		double PHI_MIN = BR_RAW.at(i).PHI - 0.05;
+		double PHI_MAX = BR_RAW.at(i).PHI + 0.05;
 		if (PHI_MIN < 0.0) PHI_MIN = 0.0;
 		if (PHI_MAX > 1.0) PHI_MAX = 1.0;
-		vector <double> PHIVCTR = generate_phi_vector (PHI_MIN, PHI_MAX, 10);
+		vector <double> PHIVCTR = generate_phi_vector (PHI_MIN, PHI_MAX, 5);
 
 		vector <BRUTEFORCE_RESULT> BR_FINE = BRUTEFORCE_ENGINE (inGDB, CNTRVCTR, ANGVCTR, PHIVCTR, inset);
 

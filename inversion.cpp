@@ -102,21 +102,26 @@ vector <GDB> return_striae_with_offset (vector <GDB> inGDB) {
 	return outGDB;
 }
 
-vector <GDB> return_stressvector_estimators (const STRESSTENSOR& st, vector <GDB> inGDB, const string& method, const bool& compression_positive) {
+vector <GDB> return_stressvector_estimators (const STRESSTENSOR& st, const vector <GDB>& inGDB, const string& method, const bool& compression_positive) {
 
 	vector <GDB> outGDB = inGDB;
 
 	for (size_t i  =0; i < inGDB.size(); i++) {
 
-		outGDB.at(i).SHEAR_S  = return_shearstress  (st, inGDB.at(i), compression_positive);
+		VCTR N = inGDB.at(i).N;
+		VCTR SV = inGDB.at(i).SV;
+		VCTR UPSILON = inGDB.at(i).UPSILON;
+		double lambda = inGDB.at(i).lambda;
 
-		outGDB.at(i).NORMAL_S = return_normalstress (st, inGDB.at(i), compression_positive);
+		outGDB.at(i).SHEAR_S  = return_shearstress  (st, N, compression_positive);
 
-		outGDB.at(i).UPSILON  = return_upsilon (st, inGDB.at(i), method, compression_positive);
+		outGDB.at(i).NORMAL_S = return_normalstress (st, N, compression_positive);
 
-		outGDB.at(i).ANG  = return_ANG (st, inGDB.at(i), compression_positive);
+		outGDB.at(i).UPSILON  = return_upsilon (st, N, SV, UPSILON, lambda , method, compression_positive);
 
-		outGDB.at(i).RUP  = return_RUP (st, inGDB.at(i), compression_positive);
+		outGDB.at(i).ANG  = return_ANG (st, N, SV, compression_positive);
+
+		outGDB.at(i).RUP  = return_RUP (st, N, SV, lambda, compression_positive);
 
 		if (method == "MOSTAFA")
 
@@ -127,6 +132,15 @@ vector <GDB> return_stressvector_estimators (const STRESSTENSOR& st, vector <GDB
 	}
 
 	return outGDB;
+}
+
+STRESSTENSOR return_stresstensor_from_n1_ang_phi (const VCTR& N1, const double& ANG, const double& PHI) {
+
+	vector <vector <double> > M1 = DIR_MX1_from_n1 (N1, ANG);
+
+	vector <vector <double> > T = st_from_reduced_stresstensor (M1, PHI);
+
+	return convert_matrix_to_stresstensor (T);
 }
 
 vector <GDB> generate_virtual_striae (vector <GDB> inGDB) {

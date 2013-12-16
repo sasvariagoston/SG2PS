@@ -1728,9 +1728,26 @@ STRESSTENSOR add_stress_tensor (STRESSTENSOR st, STRESSTENSOR T) {
 	return out;
 }
 
-VCTR return_stressvector (const STRESSTENSOR& st, const GDB& inGDB, const bool& compression_positive) {
+STRESSTENSOR convert_matrix_to_stresstensor (const vector <vector <double> >& IN) {
 
-	VCTR N = inGDB.N;
+	ASSERT2(IN.size() == 3, "3x3 matrix expected for stress tensor conversion");
+	ASSERT2(IN.at(0).size() == 3, "3x3 matrix expected for stress tensor conversion");
+
+	STRESSTENSOR OUT;
+
+	OUT._11 = IN.at(0).at(0);
+	OUT._12 = IN.at(0).at(1);
+	OUT._13 = IN.at(0).at(2);
+	OUT._22 = IN.at(1).at(1);
+	OUT._23 = IN.at(1).at(2);
+	OUT._33 = IN.at(2).at(2);
+
+	return OUT;
+}
+
+
+//VCTR return_stressvector (const STRESSTENSOR& st, const GDB& inGDB, const bool& compression_positive) {
+VCTR return_stressvector (const STRESSTENSOR& st, const VCTR& N, const bool& compression_positive) {
 
 	VCTR out = declare_vector (
 			(st._11 * N.X + st._12 * N.Y + st._13 * N.Z),
@@ -1742,79 +1759,72 @@ VCTR return_stressvector (const STRESSTENSOR& st, const GDB& inGDB, const bool& 
 	return out;
 }
 
-VCTR return_normalstress (const STRESSTENSOR& st, const GDB& inGDB, const bool& compression_positive) {
+//VCTR return_normalstress (const STRESSTENSOR& st, const GDB& inGDB, const bool& compression_positive) {
+VCTR return_normalstress (const STRESSTENSOR& st, const VCTR& N, const bool& compression_positive) {
 
-	VCTR N = inGDB.N;
-	VCTR stressvector = return_stressvector (st, inGDB, compression_positive);
+	VCTR stressvector = return_stressvector (st, N, compression_positive);
 
 	double stress = (N.X * stressvector.X) + (N.Y * stressvector.Y) + (N.Z * stressvector.Z);
 
-	VCTR out = declare_vector (N.X * stress, N.Y * stress, N.Z * stress);
-
-	return out;
+	return (declare_vector (N.X * stress, N.Y * stress, N.Z * stress));
 }
 
-VCTR return_shearstress (const STRESSTENSOR& st, const GDB& inGDB, const bool& compression_positive) {
+VCTR return_shearstress (const STRESSTENSOR& st, const VCTR& N, const bool& compression_positive) {
 
-	VCTR stressvector = return_stressvector (st, inGDB, compression_positive);
+	VCTR stressvector = return_stressvector (st, N, compression_positive);
 
-	VCTR normalstress = return_normalstress (st, inGDB, compression_positive);
+	VCTR normalstress = return_normalstress (st, N, compression_positive);
 
-	VCTR out = declare_vector(
+	return (declare_vector(
 			stressvector.X - normalstress.X,
 			stressvector.Y - normalstress.Y,
-			stressvector.Z - normalstress.Z);
-
-	return out;
+			stressvector.Z - normalstress.Z));
 }
 
-VCTR return_upsilon (const STRESSTENSOR& st, const GDB& inGDB, const string& method, const bool& compression_positive) {
+VCTR return_upsilon (const STRESSTENSOR& st, const VCTR& N, const VCTR& SV, const VCTR& UPSILON, const double& lambda, const string& method, const bool& compression_positive) {
 
-	VCTR shearstress = return_shearstress (st, inGDB, compression_positive);
+	VCTR shearstress = return_shearstress (st, N, compression_positive);
 	VCTR out;
 
 	if (method == "ANGELIER")
 
 		out = declare_vector(
-				(inGDB.SV.X * inGDB.lambda) - shearstress.X,
-				(inGDB.SV.Y * inGDB.lambda) - shearstress.Y,
-				(inGDB.SV.Z * inGDB.lambda) - shearstress.Z);
+				(SV.X * lambda) - shearstress.X,
+				(SV.Y * lambda) - shearstress.Y,
+				(SV.Z * lambda) - shearstress.Z);
 
 	else
 
 		out = declare_vector(
-				(inGDB.UPSILON.X * inGDB.lambda) - shearstress.X,
-				(inGDB.UPSILON.Y * inGDB.lambda) - shearstress.Y,
-				(inGDB.UPSILON.Z * inGDB.lambda) - shearstress.Z);
+				(UPSILON.X * lambda) - shearstress.X,
+				(UPSILON.Y * lambda) - shearstress.Y,
+				(UPSILON.Z * lambda) - shearstress.Z);
 
 	return out;
 }
 
-double return_ANG (const STRESSTENSOR& st, const GDB& inGDB, const bool& compression_positive) {
+double return_ANG (const STRESSTENSOR& st, const VCTR& N, const VCTR& SV, const bool& compression_positive) {
 
-	VCTR slipvector = inGDB.SV;
+	VCTR shearstress = return_shearstress (st, N, compression_positive);
 
-	VCTR shearstress = return_shearstress (st, inGDB, compression_positive);
-
-	return ACOS (dotproduct (slipvector, shearstress, true));
+	return ACOS (dotproduct (SV, shearstress, true));
 }
 
-double return_RUP (const STRESSTENSOR& st, const GDB& inGDB, const bool& compression_positive) {
+double return_RUP (const STRESSTENSOR& st, const VCTR& N, const VCTR& SV, const double& lambda, const bool& compression_positive) {
 
-	VCTR shearstress  = return_shearstress (st, inGDB, compression_positive);
-	VCTR stressvector = return_stressvector (st, inGDB, compression_positive);
-	VCTR slipvector = inGDB.SV;
+	VCTR shearstress  = return_shearstress (st, N, compression_positive);
+	VCTR stressvector = return_stressvector (st, N, compression_positive);
 
-	double out = inGDB.lambda * inGDB.lambda;
+	double out = lambda * lambda;
 
 	out = out +
 			(shearstress.X * shearstress.X) +
 			(shearstress.Y * shearstress.Y) +
 			(shearstress.Z * shearstress.Z);
 
-	out = out - 2.0 * inGDB.lambda * dotproduct (slipvector, stressvector, false);
+	out = out - 2.0 * lambda * dotproduct (SV, stressvector, false);
 
-	return ((sqrt(out * out)) / inGDB.lambda) * 100.0;
+	return ((sqrt(out * out)) / lambda) * 100.0;
 }
 
 double return_average_misfit (const STRESSTENSOR& st, const vector <GDB>& inGDB, const bool& compression_positive) {
@@ -1825,7 +1835,7 @@ double return_average_misfit (const STRESSTENSOR& st, const vector <GDB>& inGDB,
 
 	do {
 
-		ang = return_ANG (st, inGDB.at(i), compression_positive);
+		ang = return_ANG (st, inGDB.at(i).N, inGDB.at(i).SV, compression_positive);
 		misfit = misfit + ang;
 
 		i++;
