@@ -25,6 +25,7 @@
 #include "shan.h"
 #include "structs.h"
 #include "valley_method.hpp"
+#include "yamaji.hpp"
 
 using namespace std;
 
@@ -368,6 +369,11 @@ vector <GDB> inversion (vector <GDB> inGDB, ofstream& o, INPSET inset, CENTER ce
 
 	else if (YAMAJI) {
 
+		cout << "YAMAJI" << endl;
+
+		vector <BRUTEFORCE_RESULT> BR = st_YAMAJI (inGDB, inset);
+
+		exit (1);
 
 	}
 

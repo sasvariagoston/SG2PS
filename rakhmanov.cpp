@@ -19,8 +19,6 @@ using namespace std;
 
 vector <VCTR> return_rakhmanov_points (size_t N) {
 
-	cout << "RAKHMANOV" << endl;
-
 	const size_t N_ORIG = N;
 
 	const size_t N_MAX = N * 2;

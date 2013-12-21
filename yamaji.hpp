@@ -10,6 +10,6 @@
 
 using namespace std;
 
-vector <BRUTEFORCE_RESULT> YAMAJI_ENGINE (const vector <GDB>& inGDB, const VCTR& CNTR, const double& ANG, const double& PHI, const INPSET& inset);
+vector <BRUTEFORCE_RESULT> st_YAMAJI (const vector <GDB>& inGDB, const INPSET& inset);
 
 #endif

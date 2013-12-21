@@ -164,6 +164,11 @@ vector <BRUTEFORCE_RESULT> return_minimum_misfits (vector <BRUTEFORCE_RESULT> IN
 
 vector <BRUTEFORCE_RESULT> BRUTEFORCE_ENGINE (const vector <GDB>& inGDB, const vector <VCTR>& CNTRVCTR, const vector <double>& ANGVCTR, const vector <double>& PHIVCTR, const INPSET& inset) {
 
+	bool BRUTEFORCE = is_method_BRUTEFORCE(inGDB, inset);
+	bool YAMAJI = is_method_YAMAJI(inGDB, inset);
+
+	if (!BRUTEFORCE && ! YAMAJI) ASSERT_DEAD_END();
+
 	size_t CNT_MAX = CNTRVCTR.size();
 	size_t ANG_MAX = ANGVCTR.size();
 	size_t PHI_MAX = PHIVCTR.size();
