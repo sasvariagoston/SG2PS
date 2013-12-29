@@ -162,6 +162,153 @@ vector <BRUTEFORCE_RESULT> return_minimum_misfits (vector <BRUTEFORCE_RESULT> IN
 	return OUT;
 }
 
+static double dotprod(const VCTR& a, const VCTR& b) {
+
+    return a.X*b.X + a.Y*b.Y + a.Z*b.Z;
+}
+
+static double length_sqr(const VCTR& v) {
+
+    return v.X*v.X + v.Y*v.Y + v.Z*v.Z + 1.0e-6;
+}
+
+static VCTR make_unit(const VCTR& in) {
+
+    VCTR OUT;
+
+    double vectorlength = sqrt(in.X*in.X + in.Y*in.Y + in.Z*in.Z + 1.0e-6);
+
+    OUT.X = (in.X / vectorlength);
+    OUT.Y = (in.Y / vectorlength);
+    OUT.Z = (in.Z / vectorlength);
+
+    return OUT;
+}
+
+static double deg_to_rad(double alpha) {
+
+    return 0.01745329252*alpha;
+}
+
+// TODO Another representation of rotation may need less floating point operations
+static VCTR rotate(const VCTR& ax, const VCTR& torotate, double alpha) {
+
+    VCTR result;
+    VCTR A_1, A_2, A_3;
+
+//    const double cos_a = COS(alpha);
+//    const double sin_a = SIN(alpha);
+//---------------------------------------
+//    float s(0), c(0);
+//
+//    sincosf(deg_to_rad(alpha), &s, &c);
+//
+//    const double cos_a = c;
+//    const double sin_a = s;
+//----------------------------------------
+    const double alpha_deg = deg_to_rad(alpha);
+    const double cos_a = cos(alpha_deg);
+    const double sin_a = sin(alpha_deg);
+
+    A_1.X =      cos_a         + (1.0 -  cos_a) * ax.X * ax.X;
+    A_1.Y = (1.0-cos_a) * ax.Y * ax.X - (sin_a)        * ax.Z;
+    A_1.Z = (1.0-cos_a) * ax.Z * ax.X + (sin_a)        * ax.Y;
+
+    A_2.X = (1.0-cos_a) * ax.Y * ax.X + (sin_a)        * ax.Z;
+    A_2.Y =      cos_a         + (1.0 -  cos_a) * ax.Y * ax.Y;
+    A_2.Z = (1.0-cos_a) * ax.Y * ax.Z - (sin_a)        * ax.X;
+
+    A_3.X = (1.0-cos_a) * ax.Z * ax.X - (sin_a)        * ax.Y;
+    A_3.Y = (1.0-cos_a) * ax.Y * ax.Z + (sin_a)        * ax.X;
+    A_3.Z =      cos_a         + (1.0 -  cos_a) * ax.Z * ax.Z;
+
+    result.X = dotprod(torotate, A_1);
+    result.Y = dotprod(torotate, A_2);
+    result.Z = dotprod(torotate, A_3);
+
+    return make_unit(result);
+}
+
+static void multiply(const double x[3][3], const double y[3][3], double z[3][3]) {
+
+    for (int i=0; i<3; ++i) {
+        for (int j=0; j<3; ++j) {
+            z[i][j] = 0.0;
+            for (int k=0; k<3; ++k) {
+                z[i][j] += x[i][k]*y[k][j];
+            }
+        }
+    }
+}
+
+static STRESSTENSOR calculate_stresstensor(const VCTR& n1, double ANG, double PHI) {
+
+    // vector <vector <double> > M1 = DIR_MX1_from_n1 (N1, ANG);
+    // DIR_MX1_from_n1 (const VCTR& n1, const double& angle)
+    //-----------------------------------------------------------------
+
+    VCTR n2 = DXDYDZ_from_NXNYNZ(n1); // FIXME dipdir_dip_from_NXNYNZ should most likely call atan2
+
+    //n2 = unitvector (n2);
+
+    n2 = rotate(n1, n2, ANG); // TODO Discuss this, perhaps there is a more efficient way
+
+    n2 = make_unit(n2);
+
+    VCTR n3 = crossproduct(n1, n2);
+
+    n3 = make_unit(n3);
+
+    const double DIR_MX1[3][3] = { { n1.X, n1.Y, n1.Z },
+                                   { n2.X, n2.Y, n2.Z },
+                                   { n3.X, n3.Y, n3.Z } };
+    //-----------------------------------------------------------------
+    //vector <vector <double> > T = st_from_reduced_stresstensor (M1, PHI);
+    //st_from_reduced_stresstensor(const vector<vector<double>>& DIR_MX1, const double& fi)
+
+    const double T[3][3] = { { 0.0, 0.0, 0.0 },
+                             { 0.0, PHI, 0.0 },
+                             { 0.0, 0.0, 1.0 } };
+
+    //vector <vector <double> >  DIR_MX2 = transpose(DIR_MX1);
+
+    const double DIR_MX2[3][3]  = { { n1.X, n2.X, n3.X },
+                                    { n1.Y, n2.Y, n3.Y },
+                                    { n1.Z, n2.Z, n3.Z } };
+
+    //vector <vector <double> >  OUT = mult_mtrx (DIR_MX2, T);
+
+    double OUT[3][3];
+
+    multiply(DIR_MX2, T, OUT); // FIXME Most likely wasteful as T has only 2 nonzero elements
+
+    double res[3][3];
+
+    multiply(OUT, DIR_MX1, res); // res was T in the original code
+
+    STRESSTENSOR st;
+
+    st._11 = res[0][0];
+    st._12 = res[0][1];
+    st._13 = res[0][2];
+    st._22 = res[1][1];
+    st._23 = res[1][2];
+    st._33 = res[2][2];
+
+    return st;
+}
+
+static double misfit(const STRESSTENSOR& st, const VCTR& N, const VCTR& SV, bool compression_positive) {
+
+    VCTR shearstress = return_shearstress (st, N, compression_positive); // TODO Seems to compute the same twice
+
+    double prod = dotprod(SV, shearstress);
+
+    return 1.0 - prod*prod/(length_sqr(SV)*length_sqr(shearstress));
+
+    //return ACOS (dotproduct (SV, shearstress, true));
+}
+
 vector <BRUTEFORCE_RESULT> BRUTEFORCE_ENGINE (const vector <GDB>& inGDB, const vector <VCTR>& CNTRVCTR, const vector <double>& ANGVCTR, const vector <double>& PHIVCTR, const INPSET& inset) {
 
 	bool BRUTEFORCE = is_method_BRUTEFORCE(inGDB, inset);
@@ -186,6 +333,8 @@ vector <BRUTEFORCE_RESULT> BRUTEFORCE_ENGINE (const vector <GDB>& inGDB, const v
 
 	vector <BRUTEFORCE_RESULT> OUT;
 
+	OUT.reserve(CNT_MAX);
+
 	for (size_t cntr = 0; cntr < CNT_MAX; cntr++) {
 
 		double MIN_MISFIT = 10000000.0;
@@ -194,13 +343,17 @@ vector <BRUTEFORCE_RESULT> BRUTEFORCE_ENGINE (const vector <GDB>& inGDB, const v
 		for (size_t ang = 0; ang < ANG_MAX; ang++) {
 			for (size_t phi = 0; phi < PHI_MAX; phi++) {
 
-				double MISFIT = 0.0;
+				//STRESSTENSOR st =  return_stresstensor_from_n1_ang_phi (CNTRVCTR.at(cntr), ANGVCTR.at(ang), PHIVCTR.at(phi));
 
-				STRESSTENSOR st =  return_stresstensor_from_n1_ang_phi (CNTRVCTR.at(cntr), ANGVCTR.at(ang), PHIVCTR.at(phi));
+			    STRESSTENSOR st = calculate_stresstensor(CNTRVCTR.at(cntr), ANGVCTR.at(ang), PHIVCTR.at(phi));
 
-				for (size_t z = 0; z < DATANUMBER; z++) {
+                double MISFIT = 0.0;
 
-					MISFIT = MISFIT + return_ANG(st, N.at(z), SV.at(z), false);
+				for (size_t z = 0; z < DATANUMBER; ++z) {
+
+				    //MISFIT = MISFIT + return_ANG(st, N.at(z), SV.at(z), false);
+
+					MISFIT += misfit(st, N.at(z), SV.at(z), false);
 				}
 
 				if (MISFIT < MIN_MISFIT) {
