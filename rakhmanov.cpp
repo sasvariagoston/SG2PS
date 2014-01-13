@@ -23,7 +23,7 @@ vector <VCTR> return_rakhmanov_points (size_t N) {
 
 	const size_t N_MAX = N * 2;
 
-	const double SQRT_N = sqrt(N_MAX);
+	const double SQRT_N = sqrt(static_cast<double>(N_MAX));
 
 	const double pi = 3.14159265359;
 

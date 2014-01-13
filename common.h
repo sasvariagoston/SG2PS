@@ -178,4 +178,9 @@ double points_distance (VCTR a, VCTR b);
 
 vector <VCTR> convert_vectors_to_S_or_W (vector <VCTR> in, INPSET inset);
 
+#if _MSC_VER && !__INTEL_COMPILER
+#include <float.h>
+#define isnan _isnan
+#endif
+
 #endif

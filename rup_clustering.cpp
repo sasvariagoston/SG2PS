@@ -162,7 +162,7 @@ size_t return_DATA_ideal_bin_number (vector <double> in) {
 
 	vector <RUP_table> RT;
 
-	for (size_t bin_number = 1; bin_number < sqrt(in.size()) * 2.0; bin_number++) {
+	for (size_t bin_number = 1; bin_number < sqrt(static_cast<double>(in.size())) * 2.0; bin_number++) {
 
 		buffer = return_cost_function_member (in, bin_number);
 
