@@ -43,5 +43,5 @@ double uniform_0_1() {
 }
 
 #else
-#error "Chech the random number generation on your platform, try to use mt19937!"
+#error "Check the random number generation on your platform, try to use mt19937!"
 #endif
