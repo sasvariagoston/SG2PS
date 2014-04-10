@@ -1,4 +1,4 @@
-// Copyright (C) 2012, 2013 Ágoston Sasvári
+// Copyright (C) 2012 - 2014 Ágoston Sasvári
 // All rights reserved.
 // This code is published under the GNU Lesser General Public License.
 #ifndef RGF_HPP_
@@ -66,8 +66,10 @@ vector <GDB> ptn (vector <GDB> inGDB, INPSET inset);
 
 vector <GDB> clustering_GBD (INPSET inset, vector <GDB> inGDB);
 
-void process_rgf (string inputfilename, string XY_filename, INPSET inset);
+void process_rgf (string inputfilename, string XY_filename, INPSET inset, bool is_debug);
 
 void dbg_vctr (vector <GDB> inGDB, string to_dump);
+
+void dbg_cout_GDB_vector (const vector <GDB>& inGDB);
 
 #endif

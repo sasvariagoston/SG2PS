@@ -1,4 +1,4 @@
-// Copyright (C) 2012, 2013 Ágoston Sasvári
+// Copyright (C) 2012 - 2014 Ágoston Sasvári
 // All rights reserved.
 // This code is published under the GNU Lesser General Public License.
 
@@ -271,7 +271,7 @@ void inversion_result_output (STRESSFIELD sf, double average_misfit) {
 	<< " deg." << endl;
 }
 
-vector <GDB> inversion (vector <GDB> inGDB, ofstream& o, INPSET inset, CENTER center, CENTER mohr_center, PAPER P, bool tilt) {
+vector <GDB> inversion (vector <GDB> inGDB, ofstream& o, INPSET inset, CENTER center, CENTER mohr_center, PAPER P, bool tilt, const bool is_debug) {
 
 	bool is_ANG = (inset.clustering_RUP_ANG == "A");
 	bool is_RUP = (inset.clustering_RUP_ANG == "R");
@@ -374,7 +374,6 @@ vector <GDB> inversion (vector <GDB> inGDB, ofstream& o, INPSET inset, CENTER ce
 		vector <BRUTEFORCE_RESULT> BR = st_YAMAJI (inGDB, inset);
 
 		exit (1);
-
 	}
 
 	else if (PTN) {
@@ -397,15 +396,12 @@ vector <GDB> inversion (vector <GDB> inGDB, ofstream& o, INPSET inset, CENTER ce
 
 	successfull = check_correct_stressfield (sf);
 
-
 	if 		(MOSTAFA) 				inGDB = return_stressvector_estimators (st, inGDB, "MOSTAFA", false);
 	else if (!MOSTAFA && !BINGHAM) 	inGDB = return_stressvector_estimators (st, inGDB, "ANGELIER", false);
 	else {};
 
 
 	if (successfull) {
-
-
 
 		average_misfit = return_average_misfit (st, inGDB, false);
 
@@ -435,15 +431,35 @@ vector <GDB> inversion (vector <GDB> inGDB, ofstream& o, INPSET inset, CENTER ce
 			PS_idealmovement (inGDB, o, inset, center);
 		}
 
-		process_one_by_one (inGDB, o, inset, center, P, tilt);
+		//process_one_by_one (inGDB, o, inset, center, P, tilt);
 
 		ps_inversion (st, sf, inGDB, V, inset, o, center, mohr_center, P);
 
 		PS_lineation (inGDB.at(0), o, inset, center, sf, false, "S1");
 		PS_lineation (inGDB.at(0), o, inset, center, sf, false, "S2");
 		PS_lineation (inGDB.at(0), o, inset, center, sf, false, "S3");
+
+		if (is_debug) cout_dbg_stressfield (sf);
 	}
 	else cout << "unable to compute stress field for the data set." << endl;
 
 	return inGDB;
+}
+
+void cout_dbg_stressfield (const STRESSFIELD& sf) {
+
+	cout << fixed << setprecision(0) << flush;
+	cout << "S1: " << sf.S_1.DIPDIR << "/" << sf.S_1.DIP << flush;
+	cout << fixed << setprecision(6) << flush;
+	cout << " ("   << sf.EIGENVECTOR1.X << ", " << sf.EIGENVECTOR1.Y << ", " << sf.EIGENVECTOR1.Z << ")" << endl;
+	cout << fixed << setprecision(0) << flush;
+	cout << "S2: " << sf.S_2.DIPDIR << "/" << sf.S_2.DIP << flush;
+	cout << fixed << setprecision(6) << flush;
+	cout << " ("   << sf.EIGENVECTOR2.X << ", " << sf.EIGENVECTOR2.Y << ", " << sf.EIGENVECTOR2.Z << ")" << endl;
+	cout << fixed << setprecision(0) << flush;
+	cout << "S3: " << sf.S_3.DIPDIR << "/" << sf.S_3.DIP << flush;
+	cout << fixed << setprecision(6) << flush;
+	cout << " ("   << sf.EIGENVECTOR3.X << ", " << sf.EIGENVECTOR3.Y << ", " << sf.EIGENVECTOR3.Z << ")" << endl;
+
+	cout << "EIGENVALUES: " << sf.EIGENVALUE.X << ", " << sf.EIGENVALUE.Y << ", " << sf.EIGENVALUE.Z << ")" << endl;
 }

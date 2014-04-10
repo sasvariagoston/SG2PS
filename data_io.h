@@ -1,4 +1,4 @@
-// Copyright (C) 2012, 2013  Ágoston Sasvári
+// Copyright (C) 2012 - 2014  Ágoston Sasvári
 // All rights reserved.
 // This code is published under the GNU Lesser General Public License.
 
@@ -28,12 +28,12 @@ void outputresultrgf (PFN output, vector <GDB> outGDB, bool tilted, INPSET inset
 
 void outputaveragergf (PFN output, vector <GDB> outGDB);
 
-void outputselected_ps_rgf (PFN output, vector <GDB> outGDB, vector <GDB> tiltoutGDB, INPSET inset);
+void outputselected_ps_rgf (PFN output, vector <GDB> outGDB, vector <GDB> tiltoutGDB, INPSET inset, bool is_debug);
 
 void output_to_rgf (PFN output, vector <GDB> processGDB, INPSET inset, bool tilted);
-void output_to_ps (PFN output, vector <GDB> processGDB, vector <GDB> tiltprocessGDB, INPSET inset, PAPER P, CENTER center);
+void output_to_ps (PFN output, vector <GDB> processGDB, vector <GDB> tiltprocessGDB, INPSET inset, PAPER P, CENTER center, bool is_debug);
 
-void process_group_by_group (vector <GDB> outGDB, ofstream& o, INPSET inset, CENTER center, PAPER P, bool tilt);
+void process_group_by_group (vector <GDB> outGDB, ofstream& o, INPSET inset, CENTER center, PAPER P, bool tilt, bool is_debug);
 void process_one_by_one (vector <GDB> inGDB, ofstream& o, INPSET inset, CENTER center, PAPER P, bool tilt);
 
 void dbg_cout_RGF_colors (vector <GDB> inGDB);

@@ -1,4 +1,4 @@
-// Copyright (C) 2012, 2013 Ágoston Sasvári
+// Copyright (C) 2012 - 2014 Ágoston Sasvári
 // All rights reserved.
 // This code is published under the GNU Lesser General Public License.
 
@@ -8,6 +8,7 @@
 #include <math.h>
 #include <vector>
 
+#include "allowed_keys.hpp"
 #include "assertions.hpp"
 #include "common.h"
 #include "kaalsbeek.hpp"
@@ -26,13 +27,6 @@ vector <VCTR> generate_arc (const size_t& SEG_CNT, const size_t& ARC_CNT, const 
 	DD.DIPDIR = (SEG_CNT * 60.0) + 30.0 ;
 
 	if (DD.DIPDIR > 360.0) DD.DIPDIR = DD.DIPDIR - 360.0;
-	else {}
-
-	//arccont runs 0..9
-
-	//DD.DIP = ARC_CNT * 9.0; - original
-
-	//DD.DIP = 90.0 - (POINTS_DISTANCE * (ARC_CNT + 1));
 
 	DD.DIP = 90.0 - (10.0  * POINTS_DISTANCE) + (POINTS_DISTANCE * ARC_CNT);
 
@@ -82,20 +76,18 @@ vector <vector <vector <VCTR> > > generate_net (const size_t& POINTS_DISTANCE) {
 	return NET;
 }
 
-vector <TRIANGLE>  generate_net_count (vector <GDB> inGDB, vector <vector <vector <VCTR> > > NET, INPSET inset) {
+vector <TRIANGLE>  generate_net_count (const vector <GDB>& inGDB, const vector <vector <vector <VCTR> > >& NET, const INPSET& inset) {
 
 	vector <vector <VCTR> > buf;
 
 	vector <TRIANGLE> TRI = generate_triangle (NET);
 
-	//TRI = increase_triange_density(TRI);
-
-	TRI = return_count_in_net (inGDB, TRI);
+	TRI = return_count_in_net (inGDB, inset, TRI);
 
 	return TRI;
 }
 
-vector <GRID_CENTER> generate_triangle_center (vector <TRIANGLE> net) {
+vector <GRID_CENTER> generate_triangle_center (const vector <TRIANGLE>& net) {
 
 	vector <GRID_CENTER> out;
 
@@ -115,7 +107,7 @@ vector <GRID_CENTER> generate_triangle_center (vector <TRIANGLE> net) {
 	return out;
 }
 
-vector <GRID_CENTER> reduce_triangle_center (vector <GRID_CENTER> in) {
+vector <GRID_CENTER> reduce_triangle_center (const vector <GRID_CENTER>& in) {
 
 	vector <GRID_CENTER> out;
 
@@ -168,7 +160,7 @@ vector <TRIANGLE> generate_triangle_offnet(vector <vector <vector <VCTR> > > net
 		buf.COUNT = 0;
 
 		//generates CCW triangles
-		dbg_test_triangle_points_direction (buf.A, buf.B, buf.C, "6th arc");
+		//dbg_test_triangle_points_direction (buf.A, buf.B, buf.C, "6th arc");
 		//dbg_cout_triangle ("6 - OFFNET", buf.A, buf.B, buf.C, SEG_CNT, 0, p_cnt + 0, SEG_CNT, 0, p_cnt + 1, 33, 33, 33);
 
 		out.push_back(buf);
@@ -204,7 +196,7 @@ vector <TRIANGLE> generate_triangle_offnet_between_segments (vector <vector <vec
 	buf.GROUP = 7;
 	buf.COUNT = 0;
 
-	dbg_test_triangle_points_direction (buf.A, buf.B, buf.C, "7th arc");
+	//dbg_test_triangle_points_direction (buf.A, buf.B, buf.C, "7th arc");
 	//dbg_cout_triangle ("7 - OFF, BTW SEG", buf.A, buf.B, buf.C, SEG_L, 0, 9, SEG_U, 0, 0, 55, 55, 55);
 
 	out.push_back(buf);
@@ -228,7 +220,7 @@ vector <TRIANGLE> generate_triangle_in_arc (vector <vector <vector <VCTR> > > ne
 		buf.GROUP = 1;
 		buf.COUNT = 0;
 
-		dbg_test_triangle_points_direction (buf.A, buf.B, buf.C, "1st arc");
+		//dbg_test_triangle_points_direction (buf.A, buf.B, buf.C, "1st arc");
 		//dbg_cout_triangle ("1 - IN_ARC_I", buf.A, buf.B, buf.C, SEG_CNT, ARC_CNT + 0, p_cnt + 1, SEG_CNT, ARC_CNT + 0, p_cnt + 0, SEG_CNT, ARC_CNT + 1, p_cnt + 0);
 
 		out.push_back(buf);
@@ -253,7 +245,7 @@ vector <TRIANGLE> generate_triangle_in_arc_II (vector <vector <vector <VCTR> > >
 		buf.GROUP = 2;
 		buf.COUNT = 0;
 
-		dbg_test_triangle_points_direction (buf.A, buf.B, buf.C, "2nd arc");
+		//dbg_test_triangle_points_direction (buf.A, buf.B, buf.C, "2nd arc");
 		//dbg_cout_triangle ("2 - IN_ARC_II",	buf.A, buf.B, buf.C, SEG_CNT, ARC_CNT + 0, p_cnt + 1, SEG_CNT, ARC_CNT + 1, p_cnt + 0, SEG_CNT, ARC_CNT + 1, p_cnt + 1);
 
 		out.push_back(buf);
@@ -290,7 +282,7 @@ vector <TRIANGLE> generate_triangle_between_arcs (vector <vector <vector <VCTR> 
 	buf.GROUP = 3;
 	buf.COUNT = 0;
 
-	dbg_test_triangle_points_direction (buf.A, buf.B, buf.C, "3rd arc");
+	//dbg_test_triangle_points_direction (buf.A, buf.B, buf.C, "3rd arc");
 	//dbg_cout_triangle ("3 - BTW_ARC_I",	buf.A, buf.B, buf.C, SEG_U, ARC_CNT + 0, 0, SEG_L, ARC_CNT + 0, p_max, SEG_U, ARC_CNT + 1, 0);
 
 	out.push_back(buf);
@@ -302,7 +294,7 @@ vector <TRIANGLE> generate_triangle_between_arcs (vector <vector <vector <VCTR> 
 	buf.GROUP = 4;
 	buf.COUNT = 0;
 
-	dbg_test_triangle_points_direction (buf.A, buf.B, buf.C, "4th arc");
+	//dbg_test_triangle_points_direction (buf.A, buf.B, buf.C, "4th arc");
 	//dbg_cout_triangle ("4 - BTW_ARC_II", buf.A, buf.B, buf.C, SEG_U, ARC_CNT + 1, 0, SEG_L, ARC_CNT + 0, p_max, SEG_L, ARC_CNT + 1, p_max - 1);
 
 	out.push_back(buf);
@@ -336,7 +328,7 @@ vector <TRIANGLE> generate_central_triangles (vector <vector <vector <VCTR> > > 
 	buf.GROUP = 5;
 	buf.COUNT = 0;
 
-	dbg_test_triangle_points_direction (buf.A, buf.B, buf.C, "5th arc");
+	//dbg_test_triangle_points_direction (buf.A, buf.B, buf.C, "5th arc");
 	//dbg_cout_triangle ("5 - CENTRAL", buf.A, buf.B, buf.C, SEG_U, 9, 0, SEG_L, 9, 0, 11, 11, 11);
 
 	out.push_back(buf);
@@ -556,25 +548,74 @@ vector <TRIANGLE> add_external_to_internal (vector <TRIANGLE> innet, TRIANGLE of
 	return innet;
 }
 
-vector <TRIANGLE> return_count_in_net (vector <GDB> inGDB, vector <TRIANGLE> innet) {
+bool is_computing_for_dipdir_bearing (const INPSET& I) {
+
+	return (I.contouring == "D");
+}
+
+bool is_computing_for_strike_bearing (const INPSET& I) {
+
+	return (I.contouring == "S");
+}
+
+bool is_computing_for_planenormal_bearing (const INPSET& I) {
+
+	return (I.contouring == "O");
+}
+
+bool is_computing_for_striaebearing_bearing (const INPSET& I) {
+
+	return (I.contouring == "B");
+}
+
+vector <TRIANGLE> return_count_in_net (const vector <GDB>& inGDB, const INPSET& inset, vector <TRIANGLE>& innet) {
 
 	for (size_t i = 0; i < innet.size(); i++) {
 
 		size_t counter = 0;
 
+		bool DIPDIR = is_computing_for_dipdir_bearing(inset);
+		bool STRIKE = is_computing_for_strike_bearing(inset);
+		bool NORMAL = is_computing_for_planenormal_bearing(inset);
+		bool STRIAE = is_computing_for_striaebearing_bearing(inset);
+
 		for (size_t j = 0; j < inGDB.size(); j++) {
 
-			DIPDIR_DIP DD = dipdir_dip_from_DXDYDZ(inGDB.at(j).D);
+			VCTR TO_PROCESS;
 
-			if (DD.DIPDIR < 180.0) DD.DIPDIR = DD.DIPDIR + 180.0;
-			else DD.DIPDIR = DD.DIPDIR - 180.0;
+			if (DIPDIR) TO_PROCESS = inGDB.at(j).D;
 
-			DD.DIP = 90.0 - DD.DIP;
+			else if (STRIKE) {
 
-			VCTR pole = DXDYDZ_from_dipdir_dip(DD);
+				DIPDIR_DIP DD = dipdir_dip_from_DXDYDZ(inGDB.at(j).D);
+
+				if (is_in_range (0.0, 90.0, DD.DIPDIR)) DD.DIPDIR = DD.DIPDIR + 270.0;
+				else DD.DIPDIR = DD.DIPDIR - 90.0;
+
+				DD.DIP = 0.0;
+
+				TO_PROCESS = DXDYDZ_from_dipdir_dip(DD);
+			}
+			else if (NORMAL) {
+
+				DIPDIR_DIP DD = dipdir_dip_from_DXDYDZ(inGDB.at(j).D);
+
+				if (DD.DIPDIR < 180.0) DD.DIPDIR = DD.DIPDIR + 180.0;
+				else DD.DIPDIR = DD.DIPDIR - 180.0;
+
+				DD.DIP = 90.0 - DD.DIP;
+
+				TO_PROCESS = DXDYDZ_from_dipdir_dip(DD);
+			}
+			else if (STRIAE) {
+
+				if (is_allowed_striae_datatype(inGDB.at(j).DATATYPE)) TO_PROCESS = inGDB.at(j).DC;
+				else TO_PROCESS = inGDB.at(j).D;
+			}
+			else ASSERT_DEAD_END();
 
 
-			if (is_data_in_triangle(innet.at(i), pole)) {
+			if (is_data_in_triangle(innet.at(i), TO_PROCESS)) {
 
 				if (innet.at(i).GROUP < 6) counter++;
 				else innet = add_external_to_internal (innet, innet.at(i));
@@ -583,7 +624,6 @@ vector <TRIANGLE> return_count_in_net (vector <GDB> inGDB, vector <TRIANGLE> inn
 
 		innet.at(i).COUNT = counter;
 	}
-
 	return innet;
 }
 
@@ -611,7 +651,7 @@ void dbg_test_triangle_points_direction (VCTR A, VCTR B, VCTR C, string msg) {
 
 	VCTR pole = declare_vector(-2.0, -2.0, NaN());
 
-	cout << fixed << setprecision(5) << endl;
+	//cout << fixed << setprecision(5) << endl;
 
 	if (is_data_in_triangle(T, pole)) ASSERT3(msg);
 

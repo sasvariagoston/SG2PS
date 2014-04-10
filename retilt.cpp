@@ -1,4 +1,4 @@
-// Copyright (C) 2012, 2013 Ágoston Sasvári
+// Copyright (C) 2012 - 2014 Ã�goston SasvÃ¡ri
 // All rights reserved.
 // This code is published under the GNU Lesser General Public License.
 
@@ -28,15 +28,9 @@ VCTR return_tilting_axis (GDB in, bool paleonorth) {
 	return unitvector (AXIS);
 }
 
-double return_tilting_angle (GDB in, INPSET inSET) {
+double return_tilting_angle (GDB in, bool paleonorth) {
 
-	bool TILT_BY_BEDDING = 		(inSET.tilting == "B");
-	bool TILT_BY_PALEONORTH = 	(inSET.tilting == "P");
-	bool TILT_BY_ALL = 			(inSET.tilting == "A");
-
-	if (!TILT_BY_BEDDING && !TILT_BY_PALEONORTH && !TILT_BY_ALL) ASSERT_DEAD_END();
-
-	if (TILT_BY_PALEONORTH) return (- in.PALEON);
+	if (paleonorth) return (- in.PALEON);
 	else {
 
 		if (in.avS0d.DIP <= 90.0) return in.avS0d.DIP;
@@ -103,7 +97,7 @@ GDB TILT_DATA (GDB in, INPSET inset, bool by_paleonorth) {
 	bool OVERTURNED = is_allowed_bedding_overturned_sense(in.avS0offset);
 	bool NO_DIRECTION = is_allowed_striae_none_sense(in.OFFSET);
 
-	double ANGLE = 	return_tilting_angle (in, inset);
+	double ANGLE = 	return_tilting_angle (in, TILT_BY_PALEONORTH);
 	VCTR AXIS = 	return_tilting_axis(in, TILT_BY_PALEONORTH);
 
 	if (fabs(ANGLE) < 0.01 || fabs(ANGLE) > 900.00) return in;
@@ -151,6 +145,7 @@ GDB TILT_DATA (GDB in, INPSET inset, bool by_paleonorth) {
 		OUT.DC = ROT_generate_D_vector_lineation (in.DC, AXIS, ANGLE);
 		OUT.NC = ROT_generate_N_vector_lineation (OUT.DC);
 		OUT.SC = crossproduct(OUT.DC, OUT.NC);
+		OUT.corrL = dipdir_dip_from_DXDYDZ (OUT.DC);
 
 		if (NO_DIRECTION) 	OUT.SV = declare_vector (0.0, 0.0, 0.0);
 		else 				OUT.SV = unitvector(ROTATE (AXIS, in.SV, ANGLE));
@@ -184,6 +179,7 @@ GDB S0_TILT (GDB inGDB, INPSET inSET) {
 	if (!TILT_BY_BEDDING && !TILT_BY_PALEONORTH && !TILT_BY_ALL) ASSERT_DEAD_END();
 
 	if (TILT_BY_ALL) {
+
 		outGDB = TILT_DATA (inGDB, inSET, false);
 		outGDB = TILT_DATA (outGDB, inSET, true);
 	}
@@ -203,15 +199,12 @@ vector <GDB> cGc_RETILT (vector <GDB> inGDB, INPSET inSET) {
 	bool TILT_BY_BEDDING = 		(inSET.tilting == "B");
 	bool TILT_BY_PALEONORTH = 	(inSET.tilting == "P");
 	bool TILT_BY_ALL = 			(inSET.tilting == "A");
-
 	if (!TILT_BY_BEDDING && !TILT_BY_PALEONORTH && !TILT_BY_ALL) ASSERT_DEAD_END();
 
 	for (i = 0; i < inGDB.size(); i++) outGDB.at(i) = S0_TILT (inGDB.at(i), inSET);
 
-
-	if 		(TILT_BY_BEDDING 	|| TILT_BY_ALL) 	cout << "  - Retilting all of  " << i << " data records by the bedding has done." <<  endl;
-	else if (TILT_BY_PALEONORTH || TILT_BY_ALL) 	cout << "  - Retilting all of  " << i << " data records by the Paleo-North data has done." <<  endl;
-	else ASSERT_DEAD_END();
+	if (TILT_BY_BEDDING    || TILT_BY_ALL) 	cout << "  - Retilting all of  " << i << " data records by the bedding has done." <<  endl;
+	if (TILT_BY_PALEONORTH || TILT_BY_ALL) 	cout << "  - Retilting all of  " << i << " data records by the Paleo-North data has done." <<  endl;
 
 	return outGDB;
 }

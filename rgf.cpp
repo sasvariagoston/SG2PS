@@ -1,4 +1,4 @@
-// Copyright (C) 2012, 2013 Ágoston Sasvári
+// Copyright (C) 2012 - 2014 Ágoston Sasvári
 // All rights reserved.
 // This code is published under the GNU Lesser General Public License.
 
@@ -922,7 +922,7 @@ vector <GDB> clustering_GBD (INPSET inset, vector <GDB> inGDB) {
 	return outGDB;
 }
 
-void process_rgf (string inputfilename, string XY_filename, INPSET inset) {
+void process_rgf (string inputfilename, string XY_filename, INPSET inset, bool is_debug) {
 
 	vector <GDB> geodatabase, tiltgeodatabase;
 
@@ -931,6 +931,8 @@ void process_rgf (string inputfilename, string XY_filename, INPSET inset) {
 	cout << "GEODATABASE PROCESSING FOR '" << capslock(inputfilename)<< ".RGF' DATABASE FILE" << endl;
 	if (XY_filename == "NONE") geodatabase = competeRGFcontect(inputfilename, "NONE", inset);
 	else geodatabase = competeRGFcontect(inputfilename, XY_filename, inset);
+
+	// add: modify here is angle is 360, 0, 90, etx similar
 
 	geodatabase = cGc_NDS (geodatabase);
 	geodatabase = cGc_NDS_DCNCSC (geodatabase);
@@ -966,7 +968,7 @@ void process_rgf (string inputfilename, string XY_filename, INPSET inset) {
 	createprojectfolders (projectfoldername, geodatabase); // TODO Failures in creating project folders silently ignored
 	create_pointer_to_project_folder(projectfoldername);
 	copyoriginalfiles (projectfoldername);
-	outputselected_ps_rgf (projectfoldername, geodatabase, tiltgeodatabase, inset);
+	outputselected_ps_rgf (projectfoldername, geodatabase, tiltgeodatabase, inset, is_debug);
 	outputaveragergf (projectfoldername, geodatabase);
 	geodatabase = sort_by_iID (geodatabase);
 	tiltgeodatabase = sort_by_iID (tiltgeodatabase);
@@ -1000,4 +1002,181 @@ void dbg_vctr (vector <GDB> inGDB, string to_dump) {
 			<< DUMP.Y << '\t'
 			<< DUMP.Z << '\t' << endl;
 		}
+}
+
+void dbg_cout_GDB_vector (const vector <GDB>& inGDB) {
+
+	cout << endl;
+	cout << "-------- START DUMPING GBD VECTOR --------" << endl;
+
+	cout
+
+	<< "ID" << '\t' << "iID" << '\t'
+	<< "N.X" << '\t' << "N.Y" << '\t' << "N.Z" << '\t'
+	<< "D.X" << '\t' << "D.Y" << '\t'<< "D.Z" << '\t'
+	<< "S.X" << '\t' << "S.Y" << '\t'<< "S.Z" << '\t'
+	<< "NC.X" << '\t' << "NC.Y" << '\t'<< "NC.Z" << '\t'
+	<< "DC.X" << '\t' << "DC.Y" << '\t'<< "DC.Z" << '\t'
+	<< "SC.X" << '\t' << "SC.Y" << '\t'<< "SC.Z" << '\t'
+	<< "SV.X" << '\t' << "SV.Y" << '\t'<< "SV.Z" << '\t'
+
+	<< "LPITCH" << '\t'
+	<< "LPITCHSENSE" << '\t'
+	<< "PITCHANGLE" << '\t'
+
+	<< "MISFIT" << '\t'
+	<< "LINEATION" << '\t'
+	<< "UPWARD" << '\t'
+	<< "OFFSET" << '\t'
+	<< "corrOFFSET" << '\t'
+	<< "UP" << '\t'
+
+	<< "GC" << '\t'
+	<< "COLOR" << '\t'
+	<< "LOC" << '\t'
+	<< "LOCX" << '\t'
+	<< "LOCY" << '\t'
+	<< "FORMATION" << '\t'
+	<< "DATATYPE" << '\t'
+	<< "DIPDIR" << '\t'
+	<< "DIP" << '\t'
+	<< "LDIR" << '\t'
+	<< "LDIP" << '\t'
+
+	<< "corr.DIPDIR" << '\t'
+	<< "corr.DIP" << '\t'
+	<< "corrL.DIPDIR" << '\t'
+	<< "corrL.DIP" << '\t'
+
+	<< "PALEON" << '\t'
+	<< "COMMENT" << '\t'
+	<< "DATAGROUP" << '\t'
+	<< "PSCOLOR" << '\t'
+	<< "DASHED" << '\t'
+
+	<< "ptnP.X" << '\t' << "ptnP.Y" << '\t'<< "ptnP.Z" << '\t'
+	<< "ptnT.X" << '\t' << "ptnT.Y" << '\t'<< "ptnT.Z" << '\t'
+	<< "ptnN.X" << '\t' << "ptnN.Y" << '\t'<< "ptnN.Z" << '\t'
+
+	<< "ptnPd.DIPDIR" << '\t'
+	<< "ptnPd.DIP" << '\t'
+	<< "ptnTd.DIPDIR" << '\t'
+	<< "ptnTd.DIP" << '\t'
+	<< "ptnNd.DIPDIR" << '\t'
+	<< "ptnNd.DIP" << '\t'
+
+	<< "avD.X" << '\t' << "avD.Y" << '\t'<< "avD.Z" << '\t'
+	<< "avS0D.X" << '\t' << "avS0D.Y" << '\t'<< "avS0D.Z" << '\t'
+	<< "avS0N.X" << '\t' << "avS0N.Y" << '\t'<< "avS0N.Z" << '\t'
+	<< "rotavD.X" << '\t' << "rotavD.Y" << '\t'<< "rotavD.Z" << '\t'
+
+	<< "avS0d.DIPDIR" << '\t'
+	<< "avS0d.DIP" << '\t'
+	<< "avd.DIPDIR" << '\t'
+	<< "avd.DIP" << '\t'
+	<< "avS0offset" << '\t'
+
+	<< "SHEAR_S.X" << '\t' << "SHEAR_S.Y" << '\t'<< "SHEAR_S.Z" << '\t'
+	<< "NORMAL_S.X" << '\t' << "NORMAL_S.Y" << '\t'<< "NORMAL_S.Z" << '\t'
+	<< "UPSILON.X" << '\t' << "UPSILON.Y" << '\t'<< "UPSILON.Z" << '\t'
+
+	<< "lambda" << '\t'
+	<< "ANG" << '\t'
+	<< "RUP" << '\t'
+	<< endl;
+
+	for (size_t i = 0; i < inGDB.size(); i++) {
+
+		GDB T = inGDB.at(i);
+
+		cout
+
+		<< fixed << setprecision(0)
+		<< T.ID << '\t' << T.iID << '\t'
+
+		<< fixed << setprecision(6)
+		<< T.N.X << '\t' << T.N.Y << '\t' << T.N.Z << '\t'
+		<< T.D.X << '\t' << T.D.Y << '\t'<< T.D.Z << '\t'
+		<< T.S.X << '\t' << T.S.Y << '\t'<< T.S.Z << '\t'
+		<< T.NC.X << '\t' << T.NC.Y << '\t'<< T.NC.Z << '\t'
+		<< T.DC.X << '\t' << T.DC.Y << '\t'<< T.DC.Z << '\t'
+		<< T.SC.X << '\t' << T.SC.Y << '\t'<< T.SC.Z << '\t'
+		<< T.SV.X << '\t' << T.SV.Y << '\t'<< T.SV.Z << '\t'
+
+		<< T.LPITCH << '\t'
+		<< T.LPITCHSENSE << '\t'
+		<< T.PITCHANGLE << '\t'
+
+		<< fixed << setprecision(3)
+		<< T.MISFIT << '\t'
+		<< T.LINEATION << '\t'
+		<< T.UPWARD << '\t'
+		<< T.OFFSET << '\t'
+		<< T.corrOFFSET << '\t'
+		<< T.UP<< '\t'
+
+		<< fixed << setprecision(0)
+		<< T.GC << '\t'
+		<< T.COLOR << '\t'
+		<< T.LOC << '\t'
+		<< T.LOCX << '\t'
+		<< T.LOCY << '\t'
+		<< T.FORMATION << '\t'
+		<< T.DATATYPE << '\t'
+		<< T.DIPDIR << '\t'
+		<< T.DIP << '\t'
+		<< T.LDIR << '\t'
+		<< T.LDIP << '\t'
+
+		<< T.corr.DIPDIR << '\t'
+		<< T.corr.DIP << '\t'
+		<< T.corrL.DIPDIR << '\t'
+		<< T.corrL.DIP << '\t'
+
+		<< T.PALEON << '\t'
+		<< T.COMMENT << '\t'
+		<< T.DATAGROUP << '\t'
+		<< T.PSCOLOR << '\t'
+		<< T.DASHED << '\t'
+
+		<< fixed << setprecision(6)
+		<< T.ptnP.X << '\t' << T.ptnP.Y << '\t'<< T.ptnP.Z << '\t'
+		<< T.ptnT.X << '\t' << T.ptnT.Y << '\t'<< T.ptnT.Z << '\t'
+		<< T.ptnN.X << '\t' << T.ptnN.Y << '\t'<< T.ptnN.Z << '\t'
+
+		<< fixed << setprecision(0)
+		<< T.ptnPd.DIPDIR << '\t'
+		<< T.ptnPd.DIP << '\t'
+		<< T.ptnTd.DIPDIR << '\t'
+		<< T.ptnTd.DIP << '\t'
+		<< T.ptnNd.DIPDIR << '\t'
+		<< T.ptnNd.DIP << '\t'
+
+		<< fixed << setprecision(6)
+		<< T.avD.X << '\t' << T.avD.Y << '\t'<< T.avD.Z << '\t'
+		<< T.avS0D.X << '\t' << T.avS0D.Y << '\t'<< T.avS0D.Z << '\t'
+		<< T.avS0N.X << '\t' << T.avS0N.Y << '\t'<< T.avS0N.Z << '\t'
+		<< T.rotavD.X << '\t' << T.rotavD.Y << '\t'<< T.rotavD.Z << '\t'
+
+		<< fixed << setprecision(0)
+		<< T.avS0d.DIPDIR << '\t'
+		<< T.avS0d.DIP << '\t'
+		<< T.avd.DIPDIR << '\t'
+		<< T.avd.DIP << '\t'
+		<< T.avS0offset << '\t'
+
+		<< fixed << setprecision(6)
+		<< T.SHEAR_S.X << '\t' << T.SHEAR_S.Y << '\t'<< T.SHEAR_S.Z << '\t'
+		<< T.NORMAL_S.X << '\t' << T.NORMAL_S.Y << '\t'<< T.NORMAL_S.Z << '\t'
+		<< T.UPSILON.X << '\t' << T.UPSILON.Y << '\t'<< T.UPSILON.Z << '\t'
+
+		<< T.lambda << '\t'
+		<< T.ANG << '\t'
+		<< T.RUP << '\t'
+		<< endl;
+	}
+	cout << "-------- END DUMPING GBD VECTOR --------" << endl << endl;
+
+
+	return;
 }

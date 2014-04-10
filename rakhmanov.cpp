@@ -1,4 +1,4 @@
-// Copyright (C) 2012, 2013 Ágoston Sasvári
+// Copyright (C) 2012 - 2014 Ágoston Sasvári
 // All rights reserved.
 // This code is published under the GNU Lesser General Public License.
 
@@ -18,6 +18,8 @@
 using namespace std;
 
 vector <VCTR> return_rakhmanov_points (size_t N) {
+
+	N = N + 1;
 
 	const size_t N_ORIG = N;
 
@@ -59,6 +61,5 @@ vector <VCTR> return_rakhmanov_points (size_t N) {
 
 		phi_prev = phi;
 	}
-
 	return OUT;  //CHECKED, OK
 }

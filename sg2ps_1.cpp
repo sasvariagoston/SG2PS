@@ -1,4 +1,4 @@
-// Copyright (C) 2012, 2013 Ágoston Sasvári
+// Copyright (C) 2012 - 2014 Ágoston Sasvári
 // All rights reserved.
 // This code is published under the GNU Lesser General Public License.
 
@@ -10,6 +10,7 @@
 #include "checksettingfilecontent.h"
 #include "checkrgffilecontent.h"
 #include "checkxycontent.h"
+#include "generate_default_settings.hpp"
 #include "run_mode.h"
 
 using namespace std;
@@ -96,13 +97,15 @@ void real_main(int argument_number, char *argv[]) {
 
 	string xy_filename;
 
+	//dbg_generate_settings_file_list ();
+
 	for (size_t j = 0; j < inputfilename_vector.size() ; j++) {
 
 		inset = manage_settings_batch (inputfilename_vector.at(j));
 
 		if (using_xy_files) xy_filename = check_xy_inputs (inputfilename_vector.at(j));
 
-		process_rgf (inputfilename_vector.at(j), xy_filename, inset); // TODO Reads in the rgf file again, was first checked in check_rgf_inputs
+		process_rgf (inputfilename_vector.at(j), xy_filename, inset, is_DEBUG()); // TODO Reads in the rgf file again, was first checked in check_rgf_inputs
 
 		cout << "EVALUATION OF " << capslock(inputfilename_vector.at(j)) << ".RGF FILE COMPLETED." << endl;
 	}
@@ -152,10 +155,7 @@ bool just_version_required(const string& arg) {
 
 		cout << version_id() << endl;
 	}
-	else {
-
-		return false;
-	}
+	else return false;
 
 	return true;
 }

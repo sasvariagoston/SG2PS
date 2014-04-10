@@ -1,4 +1,4 @@
-// Copyright (C) 2012, 2013 Ágoston Sasvári
+// Copyright (C) 2012 - 2014 Ágoston Sasvári
 // All rights reserved.
 // This code is published under the GNU Lesser General Public License.
 
@@ -77,5 +77,9 @@ void PS_SYMBOLS_LABEL (ofstream& o, INPSET inset, PAPER P);
 void PS_SYMBOLS (vector <GDB> inGDB, ofstream& o, INPSET inset, PAPER P);
 
 void ps_plot_densities (DENSITY dens, size_t radius, ofstream&  o, INPSET inset, CENTER center);
+
+void color_PS (ofstream& o, const string& RGB);
+void text_PS (ofstream& o, const double X, const double Y, const size_t decimals, const string text);
+void font_PS (ofstream& o, const string& font, const size_t size);
 
 #endif

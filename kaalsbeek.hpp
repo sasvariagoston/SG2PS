@@ -1,4 +1,4 @@
-// Copyright (C) 2012, 2013 Ágoston Sasvári
+// Copyright (C) 2012 - 2014 Ágoston Sasvári
 // All rights reserved.
 // This code is published under the GNU Lesser General Public License.
 
@@ -17,12 +17,11 @@ vector <vector <VCTR> > generate_segment (const size_t& SEG_CNT, const size_t& P
 
 vector <vector <vector <VCTR> > > generate_net (const size_t& POINTS_DISTANCE);
 
+vector <TRIANGLE>  generate_net_count (const vector <GDB>& inGDB, const vector <vector <vector <VCTR> > >& NET, const INPSET& inset);
 
-vector <TRIANGLE>  generate_net_count (vector <GDB> inGDB, vector <vector <vector <VCTR> > > NET, INPSET inset);
+vector <GRID_CENTER> generate_triangle_center (const vector <TRIANGLE>& net);
 
-vector <GRID_CENTER> generate_triangle_center (vector <TRIANGLE> net);
-
-vector <GRID_CENTER> reduce_triangle_center (vector <GRID_CENTER> in);
+vector <GRID_CENTER> reduce_triangle_center (const vector <GRID_CENTER>& in);
 
 vector <TRIANGLE> merge_triangle (vector <TRIANGLE> target, vector <TRIANGLE> record);
 
@@ -52,7 +51,12 @@ bool is_neighbouring_internal_triange (TRIANGLE inTRI, TRIANGLE offTRI);
 
 vector <TRIANGLE> add_external_to_internal (vector <TRIANGLE> innet, TRIANGLE offnet);
 
-vector <TRIANGLE> return_count_in_net (vector <GDB> inGDB, vector <TRIANGLE> innet);
+bool is_computing_for_dipdir_bearing (const INPSET& I);
+bool is_computing_for_strike_bearing (const INPSET& I);
+bool is_computing_for_planenormal_bearing (const INPSET& I);
+bool is_computing_for_striaebearing_bearing (const INPSET& I);
+
+vector <TRIANGLE> return_count_in_net (const vector <GDB>& inGDB, const INPSET& inset, vector <TRIANGLE>& innet);
 
 void dbg_cout_triangle (string method, VCTR A, VCTR B, VCTR C, size_t SC1, size_t AC1, size_t PC1, size_t SC2, size_t AC2, size_t PC2, size_t SC3, size_t AC3, size_t PC3);
 

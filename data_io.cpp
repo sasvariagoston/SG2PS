@@ -1,4 +1,4 @@
-// Copyright (C) 2012, 2013 Ágoston Sasvári
+// Copyright (C) 2012 - 2014 Ágoston Sasvári
 // All rights reserved.
 // This code is published under the GNU Lesser General Public License.
 
@@ -108,10 +108,7 @@ void createprojectfolders (PFN output, vector <GDB> inGDB) {
 
 		const string& dir = possible_folders.at(i);
 
-		if (existence(dir, inGDB)) {
-
-			create_folders(output, dir);
-		}
+		if (existence(dir, inGDB)) create_folders(output, dir);
 	}
 }
 
@@ -393,7 +390,7 @@ void outputaveragergf (PFN output, vector <GDB> outGDB) {
 	cout << "  - Average RGF output completed." <<  endl;
 }
 
-void outputselected_ps_rgf (PFN output, vector <GDB> outGDB, vector <GDB> tiltoutGDB, INPSET inset) {
+void outputselected_ps_rgf (PFN output, vector <GDB> outGDB, vector <GDB> tiltoutGDB, INPSET inset, bool is_debug) {
 
 	vector <GDB> processGDB, tiltprocessGDB;
 	size_t i = 0;
@@ -429,7 +426,7 @@ void outputselected_ps_rgf (PFN output, vector <GDB> outGDB, vector <GDB> tiltou
 
 			output_to_rgf (output, tiltprocessGDB, inset, true);
 
-			output_to_ps (output, processGDB, tiltprocessGDB, inset, P, center);
+			output_to_ps (output, processGDB, tiltprocessGDB, inset, P, center, is_debug);
 		}
 
 	} while (i < outGDB.size());
@@ -472,7 +469,9 @@ void output_to_rgf (PFN output, vector <GDB> processGDB, INPSET inset, bool tilt
 	output_rgf_file.close();
 }
 
-void output_to_ps (PFN output, vector <GDB> processGDB, vector <GDB> tiltprocessGDB, INPSET inset, PAPER P, CENTER center) {
+void output_to_ps (PFN output, vector <GDB> processGDB, vector <GDB> tiltprocessGDB, INPSET inset, PAPER P, CENTER center, bool is_debug) {
+
+	if (is_debug) cout << "-------- " << processGDB.at(0).DATATYPE << " --------" << endl;
 
 	string output_ps_filename;
 	string bs = path_separator;
@@ -485,20 +484,20 @@ void output_to_ps (PFN output, vector <GDB> processGDB, vector <GDB> tiltprocess
 	PS_header (processGDB.at(0).DATATYPE, inset, processGDB.at(0).LOC, output_ps_file);
 	PS_SYMBOLS(processGDB, output_ps_file, inset, P);
 
+
+
 	if (processGDB.at(0).DATATYPE == "STRIAE" && (inset.inversion != "N")) PS_stress_scale (output_ps_file, inset, P);
 
 
 	PS_border (processGDB.at(0), output_ps_file, inset, P);
 
 
-	process_group_by_group (processGDB, output_ps_file, inset, center, P, false);
-	process_group_by_group (tiltprocessGDB, output_ps_file, inset, center, P, true);
+	process_group_by_group (processGDB, output_ps_file, inset, center, P, false, is_debug);
+	process_group_by_group (tiltprocessGDB, output_ps_file, inset, center, P, true, is_debug);
 
 	PS_datanumber_averagebedding (processGDB.at(0), output_ps_file, inset, P, center, processGDB.size());
 
 	PS_net (output_ps_file, inset, P);
-
-	//contouring (processGDB, inset);
 }
 
 void cout_method_text (vector <GDB> inGDB, INPSET inset) {
@@ -534,7 +533,7 @@ void cout_original_tilted_text (bool tilt) {
 	}
 }
 
-void process_group_by_group (vector <GDB> inGDB, ofstream& o, INPSET inset, CENTER center, PAPER P, bool tilt) {
+void process_group_by_group (vector <GDB> inGDB, ofstream& o, INPSET inset, CENTER center, PAPER P, bool tilt, bool is_debug) {
 
 	CENTER mohr_center;
 
@@ -553,39 +552,39 @@ void process_group_by_group (vector <GDB> inGDB, ofstream& o, INPSET inset, CENT
 		mohr_center.Y = P.O8Y;
 	}
 
-
 	bool IS_FRACTURE = 	(inset.fracture == "B" && inGDB.at(0).DATATYPE == "FRACTURE");
 	bool IS_STRIAE = 	(inGDB.at(0).DATATYPE == "STRIAE" && inset.inversion != "N");
 	bool IS_FOLD = 		(is_allowed_foldsurface_processing(inGDB.at(0).DATATYPE));
 
 	bool TO_INVERT = (IS_FRACTURE || IS_STRIAE);  // was followed by "|| IS_FOLD"
 
-
-	vector <GDB> processGDB = inGDB;;
+	vector <GDB> processGDB = inGDB;
 
 	if (inGDB.at(0).DATATYPE == "STRIAE") processGDB = return_striae_with_offset (inGDB);
 	else {}
 
 	bool has_right_data_number = correct_inhomogeneous_number (processGDB, inset);
 
-	PS_draw_rose (inGDB, o, inset, center, P, tilt);
+	contouring (inGDB, o, inset, P, center, is_debug);
 
+	PS_draw_rose (inGDB, o, inset, center, P, tilt, is_debug);
 
 	if (IS_FOLD) calculate_foldsurface (inGDB, o, inset, center);
 	else {}
-
 
 	if (TO_INVERT) {
 
 		if (!tilt) cout_method_text (inGDB, inset);
 
+		process_one_by_one (inGDB, o, inset, center, P, tilt);
+
 		if (has_right_data_number) {
 
 			cout_original_tilted_text (tilt);
 
-			//process_one_by_one (processGDB, o, inset, center, P, tilt);
+			//process_one_by_one (inGDB, o, inset, center, P, tilt);
 
-			processGDB = inversion (processGDB, o, inset, center, mohr_center, P, tilt);
+			processGDB = inversion (processGDB, o, inset, center, mohr_center, P, tilt, is_debug);
 		}
 		else {
 
@@ -599,6 +598,13 @@ void process_group_by_group (vector <GDB> inGDB, ofstream& o, INPSET inset, CENT
 
 		process_one_by_one (processGDB, o, inset, center, P, tilt);
 	}
+
+	if (is_debug) {
+
+		dbg_cout_GDB_vector (processGDB);
+	}
+
+	return;
 }
 
 void process_one_by_one (vector <GDB> inGDB, ofstream& o, INPSET inset, CENTER center, PAPER P, bool tilt) {

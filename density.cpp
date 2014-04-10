@@ -1,4 +1,4 @@
-// Copyright (C) 2012, 2013 Ágoston Sasvári
+// Copyright (C) 2012 - 2014 Ágoston Sasvári
 // All rights reserved.
 // This code is published under the GNU Lesser General Public License.
 
@@ -10,12 +10,13 @@
 
 #include "assertions.hpp"
 #include "common.h"
+#include "rgf.h"
 #include "kaalsbeek.hpp"
 #include "density.h"
 #include "ps.h"
 #include "structs.h"
 
-XY stereonet_coordinate_from_DIPDIR_DIP (DIPDIR_DIP in, CENTER center, INPSET inset) {
+XY stereonet_coordinate_from_DIPDIR_DIP (const DIPDIR_DIP& in, const CENTER& center, const INPSET& inset) {
 
 	XY out;
 
@@ -47,48 +48,7 @@ XY stereonet_coordinate_from_DIPDIR_DIP (DIPDIR_DIP in, CENTER center, INPSET in
 	return out;
 }
 
-VCTR density_color_from_percentage (double percentage) {
-
-	VCTR minimum = declare_vector(1.00, 1.00, 1.00);
-	VCTR maximum = declare_vector(1.00, 0.00, 1.00);
-
-	return declare_vector(
-	minimum.X * (1.0 - percentage) + maximum.X * percentage,
-	minimum.Y * (1.0 - percentage) + maximum.Y * percentage,
-	minimum.Z * (1.0 - percentage) + maximum.Z * percentage);
-}
-
-DENSITY density_in_cell (vector <GDB> in, size_t search_dipdir, size_t search_dip, size_t radius) {
-
-	DENSITY out;
-
-	size_t counter = 0;
-
-	double min_dipdir =		search_dipdir - radius;
-	double max_dipdir = 	search_dipdir + radius;
-	double min_dip = 		search_dip - radius;
-	double max_dip = 		search_dip + radius;
-
-	for (size_t i = 0; i < in.size(); i++) {
-
-		double DD = in.at(i).corr.DIPDIR;
-		double D = in.at(i).corr.DIP;
-
-		bool DD_IN_RANGE = (is_in_range(min_dipdir, max_dipdir, DD));
-		bool D_IN_RANGE = (is_in_range(min_dip, max_dip, D));
-
-		if (DD_IN_RANGE && D_IN_RANGE) counter++;
-		else {};
-	}
-
-	out.direction.DIPDIR = search_dipdir;
-	out.direction.DIP = search_dip;
-	out.percentage = counter;
-
-	return out;
-}
-
-vector < vector <GRID_CENTER> > generate_rectangular_grid_from_triange_center (size_t cell_number) {
+vector < vector <GRID_CENTER> > generate_rectangular_grid_from_triange_center (const size_t cell_number) {
 
 	vector < vector <GRID_CENTER> > out;
 
@@ -121,11 +81,20 @@ vector < vector <GRID_CENTER> > generate_rectangular_grid_from_triange_center (s
 
 		out.push_back (grid_buf);
 	}
-
 	return out;
 }
 
-vector < vector <GRID_CENTER> > calculate_grid_cell_values_from_triangle (vector < vector <GRID_CENTER> > rect_grid, vector <GRID_CENTER> tri_center) {
+double return_grid_size (const vector < vector <GRID_CENTER> >& rect_grid) {
+
+	double A1 = rect_grid.at(0).at(1).CENTER.X ;
+	double A2 = rect_grid.at(0).at(0).CENTER.X ;
+
+	return (A1 - A2);
+}
+
+vector < vector <GRID_CENTER> > calculate_grid_cell_values_from_triangle (vector < vector <GRID_CENTER> >& rect_grid, const vector <GRID_CENTER>& tri_center) {
+
+	double GRID_SIZE = return_grid_size(rect_grid);
 
 	size_t cell_number = rect_grid.at(0).size();
 
@@ -134,6 +103,7 @@ vector < vector <GRID_CENTER> > calculate_grid_cell_values_from_triangle (vector
 		for (size_t j = 0; j < cell_number; j++) {
 
 			double cml_value = 0.0;
+			double distance = 0.0;
 
 			double R_X = rect_grid.at(k).at(j).CENTER.X;
 			double R_Y = rect_grid.at(k).at(j).CENTER.Y;
@@ -143,15 +113,22 @@ vector < vector <GRID_CENTER> > calculate_grid_cell_values_from_triangle (vector
 				double T_X = tri_center.at(i).CENTER.X;
 				double T_Y = tri_center.at(i).CENTER.Y;
 
-				double distance = sqrt((R_X - T_X) * (R_X - T_X) + (R_Y - T_Y) * (R_Y - T_Y));
+				distance = sqrt((R_X - T_X) * (R_X - T_X) + (R_Y - T_Y) * (R_Y - T_Y));
+
+				if (distance < 0.0) ASSERT_DEAD_END()
+				else if (is_in_range (0.0, 1.0, distance)) {}
+				else if (is_in_range (1.0, 2.0, distance)) distance = 2.0 - distance;
+				else if (is_in_range (2.0, 3.0, distance)) distance = 0.0;
+				else ASSERT_DEAD_END();
+
+				if (distance < (GRID_SIZE / 5.0)) distance = GRID_SIZE;
 
 				cml_value = cml_value + (tri_center.at(i).COUNT / (distance));
 			}
-
 			bool IN_RECT_CELL = (sqrt((R_X * R_X) + (R_Y * R_Y)) <= 1.0);
 
 			if (IN_RECT_CELL)	rect_grid.at(k).at(j).COUNT = cml_value;
-			else {} // OK
+			else {}
 		}
 	}
 	return rect_grid;
@@ -181,96 +158,37 @@ vector <size_t> sort_by_VALUE (vector <size_t> IN) {
 	return IN;
 }
 
-size_t return_TRI_GRID_max_count (vector <GRID_CENTER> TRI_CENTER) {
+size_t return_RECT_GRID_max_count (const vector < vector <GRID_CENTER> >& RECT_GRID) {
 
-	TRI_CENTER = sort_by_GRID_COUNT (TRI_CENTER);
-
-	return TRI_CENTER.at(TRI_CENTER.size() - 1).COUNT;
-}
-
-size_t return_RECT_GRID_max_count (vector < vector <GRID_CENTER> > RECT_GRID) {
-
-	double MAX = 0;
+	double MAX = 0.0;
 
 	for (size_t i = 0; i < RECT_GRID.size(); i++) {
-
 		for (size_t j = 0; j < RECT_GRID.at(i).size(); j++) {
 
 			if (RECT_GRID.at(i).at(j).COUNT > MAX) MAX = RECT_GRID.at(i).at(j).COUNT;
-
 		}
 	}
 	return MAX;
 }
 
-vector < vector <GRID_CENTER> > normalize_grid_cell_values (vector < vector <GRID_CENTER> > rect_grid, vector <GRID_CENTER> tri_center) {
+vector <double> return_isoline_percentages (const double C_MN, const double C_MX) {
 
-	size_t max_count = return_TRI_GRID_max_count (tri_center);
+	vector <double> ISOLINE;
 
-	double rect_max = return_RECT_GRID_max_count(rect_grid);
+	double STEP = 0.1;
 
-	for (size_t i = 0; i < rect_grid.size(); i++) {
+	double REC = 0.0;
 
-		for (size_t j = 0; j < rect_grid.at(0).size(); j++) {
+	for (size_t i = 0; REC < C_MX; i++) {
 
-			rect_grid.at(i).at(j).COUNT = (rect_grid.at(i).at(j).COUNT / rect_max) * max_count;
-		}
+		REC = C_MN + i * STEP;
+
+		ISOLINE.push_back(REC);
 	}
-	return rect_grid;
-}
-
-double return_contour_step (double TRI_MAX_COUNT) {
-
-	return TRI_MAX_COUNT / 10.0;
-}
-
-vector <size_t> return_isoline (vector <vector <GRID_CENTER> > RECT_GRID) {
-
-	vector <size_t> ISOLINE;
-
-	vector <size_t> COUNTS;
-
-	size_t CELLS = RECT_GRID.size();
-
-	for (size_t i = 0; i < CELLS; i++) {
-		for (size_t j = 0; j < CELLS; j++) {
-
-			if (RECT_GRID.at(i).at(j).COUNT > 0) COUNTS.push_back(RECT_GRID.at(i).at(j).COUNT);
-		}
-	}
-
-	COUNTS = sort_by_VALUE (COUNTS);
-
-	//for (size_t i = 0; i < COUNTS.size(); i++) {
-	//	cout << COUNTS.at(i) << endl;
-	//}
-
-	size_t TEN_PERCENT =  COUNTS.size() / 10.0;
-
-	size_t MIN = 0;
-	size_t MAX = 0;
-
-	for (size_t i = 0; i < 9; i++) {
-
-		MIN =  i      * TEN_PERCENT;
-		MAX = (i + 1) * TEN_PERCENT;
-
-		ISOLINE.push_back((COUNTS.at(MAX) + COUNTS.at(MIN)) / 2.0);
-
-		//cout << ISOLINE.at(i) << " -- " << MIN << " -- " << MAX << " -- " << COUNTS.size() << " ------ " << COUNTS.at(MAX) << " -- " << COUNTS.at(MIN) << endl;
-	}
-
-	ISOLINE.push_back((COUNTS.at(COUNTS.size() - 1) + COUNTS.at(MAX)) / 2.0);
-
-	//for (size_t i = 0; i < ISOLINE.size(); i++) {
-
-	//	cout << ISOLINE.at(i) << endl;
-	//}
-
 	return ISOLINE;
 }
 
-vector < vector <GRID_CENTER> > generate_empty_binary_rect_grid (size_t cell_number) {
+vector < vector <GRID_CENTER> > generate_empty_binary_rect_grid (const size_t cell_number) {
 
 	vector < vector <GRID_CENTER> > out;
 
@@ -290,11 +208,10 @@ vector < vector <GRID_CENTER> > generate_empty_binary_rect_grid (size_t cell_num
 
 		out.push_back(buf_row);
 	}
-
 	return out;
 }
 
-vector < vector <GRID_CENTER> > generate_binary_rect_grid (vector < vector <GRID_CENTER> > rect_grid, size_t COUNT) {
+vector < vector <GRID_CENTER> > generate_binary_rect_grid (const vector < vector <GRID_CENTER> >& rect_grid, const size_t COUNT) {
 
 	size_t cell_number = rect_grid.at(0).size();
 
@@ -303,18 +220,18 @@ vector < vector <GRID_CENTER> > generate_binary_rect_grid (vector < vector <GRID
 	vector < vector <GRID_CENTER> > bin_grid = generate_empty_binary_rect_grid (cell_number);
 
 	for (size_t j = 0; j < cell_number; j++) {
-
 		for (size_t i = 0; i < cell_number; i++) {
 
-			if (rect_grid.at(j).at(i).COUNT > COUNT) bin_grid.at(j).at(i).COUNT = 1;
-			else rect_grid.at(j).at(i).COUNT = 0;
+			size_t ACT_CNT = rect_grid.at(j).at(i).COUNT;
+
+			if (ACT_CNT > COUNT) 	bin_grid.at(j).at(i).COUNT = 1;
+			else 					bin_grid.at(j).at(i).COUNT = 0;
 		}
 	}
-
 	return bin_grid;
 }
 
-vector < vector <GRID_CENTER> > generate_marching_squares (vector < vector <GRID_CENTER> > bin_grid) {
+vector < vector <GRID_CENTER> > generate_marching_squares (const vector < vector <GRID_CENTER> >& bin_grid) {
 
 	size_t cell_number = bin_grid.at(0).size() - 1;
 
@@ -345,13 +262,10 @@ vector < vector <GRID_CENTER> > generate_marching_squares (vector < vector <GRID
 			m_sq.at(j).at(i).COUNT = A_CNT * 1 + B_CNT * 2 + C_CNT * 4 + D_CNT * 8;
 		}
 	}
-
-	return m_sq; // ok
+	return m_sq;
 }
 
-// ---------------------- eddig ok
-
-vector < vector <GRID_CENTER> > check_saddle (vector < vector <GRID_CENTER> > m_sq, vector < vector <GRID_CENTER> > rect_grid, size_t isoline) {
+vector < vector <GRID_CENTER> > check_saddle (vector < vector <GRID_CENTER> >& m_sq, const vector < vector <GRID_CENTER> >& rect_grid, const double isoline) {
 
 	size_t cell_number = m_sq.at(0).size();
 
@@ -361,10 +275,10 @@ vector < vector <GRID_CENTER> > check_saddle (vector < vector <GRID_CENTER> > m_
 
 			size_t SQ_ID = m_sq.at(j).at(i).COUNT;
 
-			double A_CNT = rect_grid.at(j + 1).at(i + 0).COUNT;
-			double B_CNT = rect_grid.at(j + 1).at(i + 1).COUNT;
-			double C_CNT = rect_grid.at(j + 0).at(i + 1).COUNT;
-			double D_CNT = rect_grid.at(j + 0).at(i + 0).COUNT;
+			size_t A_CNT = rect_grid.at(j + 1).at(i + 0).COUNT;
+			size_t B_CNT = rect_grid.at(j + 1).at(i + 1).COUNT;
+			size_t C_CNT = rect_grid.at(j + 0).at(i + 1).COUNT;
+			size_t D_CNT = rect_grid.at(j + 0).at(i + 0).COUNT;
 
 			double SADDLE_CNT = (A_CNT + B_CNT + C_CNT + D_CNT) / 4.0;
 
@@ -384,7 +298,7 @@ vector < vector <GRID_CENTER> > check_saddle (vector < vector <GRID_CENTER> > m_
 	return m_sq;
 }
 
-vector <LINE> return_line_from_m_sq_number (vector <vector <GRID_CENTER> > m_sq, vector <vector <GRID_CENTER> > rect_grid, size_t j, size_t i, size_t isoline) {
+vector <LINE> return_line_from_m_sq_number (const vector <vector <GRID_CENTER> >& m_sq, const vector <vector <GRID_CENTER> >& rect_grid, const size_t j, const size_t i, const size_t isoline) {
 
 	vector <LINE> out;
 
@@ -670,7 +584,48 @@ vector <LINE> return_line_from_m_sq_number (vector <vector <GRID_CENTER> > m_sq,
 	return out;
 }
 
-vector <LINE> generate_raw_lines (vector <vector <GRID_CENTER> > m_sq, vector <vector <GRID_CENTER> > rect_grid, size_t isoline) {
+vector <LINE> manage_points_outside (const vector <LINE>& L) {
+
+	vector <LINE> OUT;
+
+	if (L.size() < 1 && L.size() > 2) ASSERT_DEAD_END();
+
+	for (size_t i = 0; i < L.size(); i++) {
+
+		LINE ACT_L = L.at(i);
+
+		bool A_IN = is_point_in_circle(ACT_L.A);
+		bool B_IN = is_point_in_circle(ACT_L.B);
+
+		bool IN  = (A_IN && B_IN);
+		bool CRS = (A_IN || B_IN);
+		bool OSD = (!A_IN && !B_IN);
+
+		if (!IN && !OSD && !CRS) ASSERT_DEAD_END();
+
+		if (IN) OUT.push_back(ACT_L);
+		else if (CRS) {
+
+			if  (A_IN) {
+
+				VCTR NEW = interpolate_between_points (ACT_L.A, ACT_L.B);
+				ACT_L.B = NEW;
+				OUT.push_back (ACT_L);
+			}
+			else if (B_IN) {
+
+				VCTR NEW = interpolate_between_points (ACT_L.A, ACT_L.B);
+				ACT_L.A = NEW;
+				OUT.push_back (ACT_L);
+			}
+			else {}
+		}
+		else {}
+	}
+	return OUT;
+}
+
+vector <LINE> generate_raw_lines (const vector <vector <GRID_CENTER> >& m_sq, const vector <vector <GRID_CENTER> >& rect_grid, const double isoline) {
 
 	vector <LINE> out;
 
@@ -679,7 +634,6 @@ vector <LINE> generate_raw_lines (vector <vector <GRID_CENTER> > m_sq, vector <v
 	ASSERT2((m_sq.size() == m_sq.at(0).size()), "Incorrect marching square database: not rectangular");
 
 	for (size_t j = 0; j < cell_number; j++) {
-
 		for (size_t i = 0; i < cell_number; i++) {
 
 			vector <LINE> buf;
@@ -691,13 +645,15 @@ vector <LINE> generate_raw_lines (vector <vector <GRID_CENTER> > m_sq, vector <v
 				buf = return_line_from_m_sq_number (m_sq, rect_grid, j, i, isoline);
 			}
 
+			buf = manage_points_outside (buf);
+
 			out.insert(out.end(), buf.begin(), buf.end());
 		}
 	}
 	return out;
 }
 
-vector <vector <LINE> > generate_line_vector (vector <LINE> in) {
+vector <vector <LINE> > generate_line_vector (const vector <LINE>& in) {
 
 	vector <vector <LINE> > out;
 
@@ -711,11 +667,10 @@ vector <vector <LINE> > generate_line_vector (vector <LINE> in) {
 
 		out.push_back(row_buf);
 	}
-
 	return out;
 }
 
-vector <LINE> turn_off_record (vector <LINE> in) {
+vector <LINE> turn_off_record (vector <LINE>& in) {
 
 	for (size_t i = 0; i < in.size(); i++) {
 
@@ -724,11 +679,10 @@ vector <LINE> turn_off_record (vector <LINE> in) {
 		in.at(i).B.X = 999.99;
 		in.at(i).B.Y = 999.99;
 	}
-
 	return in;
 }
 
-vector <LINE> flip_line (vector <LINE> L) {
+vector <LINE> flip_line (const vector <LINE>& L) {
 
 	vector <LINE> out = L;
 
@@ -743,11 +697,10 @@ vector <LINE> flip_line (vector <LINE> L) {
 
 		out.at(L.size() - 1 - i) = buf;
 	}
-
 	return out;
 }
 
-vector <vector <LINE> > connect_vectors(vector <vector <LINE> > LV) {
+vector <vector <LINE> > connect_vectors (vector <vector <LINE> >& LV) {
 
 	size_t change_counter = 0;
 
@@ -755,48 +708,61 @@ vector <vector <LINE> > connect_vectors(vector <vector <LINE> > LV) {
 
 		change_counter = 0;
 
-		for(size_t k = 0; k < LV.size(); k++) {
+		for (size_t j = 0; j < LV.size() - 1; j++) {
+			for (size_t k = j + 1; k < LV.size(); k++) {
 
-			for(size_t j = 0; j < LV.size(); j++) {
+				size_t J_SIZE = LV.at(j).size();
+				size_t K_SIZE = LV.at(k).size();
 
-				LINE to_flip_1 = LV.at(j).at(0);
-				LINE to_flip_2 = LV.at(k).at(0);
+				VCTR J_FRST = LV.at(j).at(0).A;
+				VCTR K_FRST = LV.at(k).at(0).A;
 
-				bool FLIP = (
-						is_in_range (to_flip_1.A.X, to_flip_1.A.X, to_flip_2.A.X) &&
-						is_in_range (to_flip_1.A.Y, to_flip_1.A.Y, to_flip_2.A.Y) &&
-						(to_flip_1.A.X < 900.0) && (to_flip_1.A.Y < 900.0) &&
-						(to_flip_2.B.X < 900.0) && (to_flip_2.B.Y < 900.0) &&
-						(j != k)
+				VCTR J_LAST = LV.at(j).at(J_SIZE - 1).B;
+				VCTR K_LAST = LV.at(k).at(K_SIZE - 1).B;
 
-				);
+				bool HAS_VALUE = (
+						(J_FRST.X < 900.0) &&
+						(K_FRST.X < 900.0) &&
+						(J_LAST.X < 900.0) &&
+						(K_LAST.X < 900.0));
 
-				if (FLIP) {
+				bool FIRST_FIRST =
+						is_in_range (J_FRST.X, J_FRST.X, K_FRST.X) &&
+						is_in_range (J_FRST.Y, J_FRST.Y, K_FRST.Y);
 
-					if (j < k) LV.at(j) = 	flip_line (LV.at(j));
-					else LV.at(k) = 		flip_line (LV.at(k));
-				}
+				bool FIRST_LAST =
+						is_in_range (J_FRST.X, J_FRST.X, K_LAST.X) &&
+						is_in_range (J_FRST.Y, J_FRST.Y, K_LAST.Y);
 
-				LINE iter_1 = LV.at(j).at(0);
-				LINE iter_2 = LV.at(k).at(LV.at(k).size() - 1);
+				bool LAST_FIRST =
+						is_in_range (J_LAST.X, J_LAST.X, K_FRST.X) &&
+						is_in_range (J_LAST.Y, J_LAST.Y, K_FRST.Y);
 
-				bool CONNECTION = (
-						is_in_range (iter_1.A.X, iter_1.A.X, iter_2.B.X) &&
-						is_in_range (iter_1.A.Y, iter_1.A.Y, iter_2.B.Y) &&
-						(iter_1.A.X < 900.0) &&	(iter_1.A.Y < 900.0) &&
-						(iter_2.B.X < 900.0) && (iter_2.B.Y < 900.0) &&
-						(j != k)
-				);
+				bool LAST_LAST =
+						is_in_range (J_LAST.X, J_LAST.X, K_LAST.X) &&
+						is_in_range (J_LAST.Y, J_LAST.Y, K_LAST.Y);
 
-				if (CONNECTION) {
+				if (HAS_VALUE && (FIRST_FIRST || FIRST_LAST || LAST_FIRST || LAST_LAST)) {
 
-					LV.at(k).insert(LV.at(k).end(), LV.at(j).begin(), LV.at(j).end());
+					if (FIRST_FIRST) LV.at(j) = flip_line (LV.at(j));
 
-					LV.at(j) = turn_off_record(LV.at(j));
+					else if (FIRST_LAST) {
+
+						LV.at(j) = 	flip_line (LV.at(j));
+						LV.at(k) = 	flip_line (LV.at(k));
+					}
+					else if (LAST_FIRST) {}
+					else if (LAST_LAST) LV.at(k) = flip_line (LV.at(k));
+
+					else ASSERT_DEAD_END();
+
+					LV.at(j).insert(LV.at(j).end(), LV.at(k).begin(), LV.at(k).end());
+
+					LV.at(k) = turn_off_record(LV.at(k));
 
 					change_counter++;
 				}
-				else {}
+				else LV.at(k) = flip_line (LV.at(k));
 			}
 		}
 
@@ -805,21 +771,62 @@ vector <vector <LINE> > connect_vectors(vector <vector <LINE> > LV) {
 	return LV;
 }
 
-vector <vector <LINE> > tidy_vectors(vector <vector <LINE> > LV) {
+vector <vector <LINE> > eliminate_empty_short_records (vector <vector <LINE> >& LV) {
 
-	vector <vector <LINE> > out;
+	vector <vector <LINE> > OUT;
 
 	for (size_t i = 0; i < LV.size(); i++) {
 
 		vector <LINE> buf = LV.at(i);
 
-		if (LV.at(i).at(0).A.X < 900.0) out.push_back(buf);
-	}
+		bool HAS_VALUE = LV.at(i).at(0).A.X < 900.0;
 
+		bool LENGTH_OK = LV.at(i).size() > 4;
+
+		if (HAS_VALUE && LENGTH_OK) OUT.push_back(buf);
+	}
+	return OUT;
+}
+
+vector < vector <VCTR> > eliminate_short_distances (const vector < vector <VCTR> >& BZ) {
+
+	vector < vector <VCTR> > out;
+
+	for (size_t i = 0; i < BZ.size(); i++) {
+
+		vector <double> DST;
+
+		for (size_t j = 1; j < BZ.at(i).size(); j++) {
+
+			VCTR ACT = BZ.at(i).at(j);
+			VCTR PRW = BZ.at(i).at(j - 1);
+
+			double D = sqrt(((ACT.X - PRW.X) * (ACT.X - PRW.X)) + ((ACT.Y - PRW.Y) * (ACT.Y - PRW.Y)));
+
+			DST.push_back(D);
+		}
+		if (DST.size() + 1 != BZ.at(i).size()) ASSERT_DEAD_END ();
+
+		vector <VCTR> buf;
+
+		for (size_t j = 0; j < BZ.at(i).size(); j++) {
+
+			if ((j == 0) || (j == BZ.at(i).size() - 1)) {
+
+				buf.push_back(BZ.at(i).at(j));
+			}
+			else {
+
+				if (DST.at(j - 1) > 0.02) buf.push_back(BZ.at(i).at(j));
+			}
+		}
+
+		if (buf.size() > 5) out.push_back(buf);
+	}
 	return out;
 }
 
-vector < vector <VCTR> > generate_bezier_points (vector <vector <LINE> > LV) {
+vector < vector <VCTR> > generate_bezier_points (const vector <vector <LINE> >& LV) {
 
 	vector < vector <VCTR> > out;
 
@@ -836,16 +843,15 @@ vector < vector <VCTR> > generate_bezier_points (vector <vector <LINE> > LV) {
 
 		out.push_back(row_buf);
 	}
-
 	return out;
 }
 
-bool is_point_in_circle (VCTR in) {
+bool is_point_in_circle (const VCTR& in) {
 
 	return (sqrt((in.X * in.X) + (in.Y * in.Y)) < 1.0);
 }
 
-bool is_circle_border (VCTR A, VCTR B) {
+bool is_circle_border (const VCTR& A, const VCTR& B) {
 
 	if (
 			(is_point_in_circle(A) && !is_point_in_circle(B)) ||
@@ -854,54 +860,12 @@ bool is_circle_border (VCTR A, VCTR B) {
 	else return false;
 }
 
-vector < vector <VCTR> > fit_to_circle_I (vector < vector <VCTR> > inBZ) {
+VCTR interpolate_between_points (const VCTR& inA, const VCTR& inB) {
 
-	vector < vector <VCTR> > out;
+	bool is_A_in = is_point_in_circle(inA);
+	bool is_B_in = is_point_in_circle(inB);
 
-	for (size_t i = 0; i < inBZ.size(); i++) {
-
-		vector <VCTR> buf;
-
-		for (size_t j = 0; j < inBZ.at(i).size() - 1; j++) {
-
-			VCTR act = inBZ.at(i).at(j);
-			VCTR next = inBZ.at(i).at(j + 1);
-
-			bool border = false;
-
-			border = is_circle_border(act, next);
-
-			buf.push_back(act);
-
-
-			if (border) {
-
-				buf.push_back(next);
-
-				out.push_back(buf);
-
-				buf.clear();
-
-				buf.push_back(act);
-			}
-			else {}
-
-			if (j == inBZ.at(i).size() - 2) {
-
-				buf.push_back(next);
-
-				out.push_back(buf);
-
-				buf.clear();
-			}
-			else {}
-		}
-	}
-
-	return out;
-}
-
-VCTR interpolate_between_points (VCTR inA, VCTR inB, bool linestart) {
+	if (!(is_A_in || is_B_in)) ASSERT_DEAD_END();
 
 	bool CLIN_X = is_in_range(inA.X, inA.X, inB.X);
 	bool CLIN_Y = is_in_range(inA.Y, inA.Y, inB.Y);
@@ -911,7 +875,6 @@ VCTR interpolate_between_points (VCTR inA, VCTR inB, bool linestart) {
 		if (CLIN_X) {
 
 			double Y = sqrt (1.0 - (inA.X * inA.X));
-
 			bool BTW = (is_in_range(inA.Y, inB.Y, Y) || is_in_range(inA.Y, inB.Y, Y));
 
 			if (BTW) 	return declare_vector(inA.X,  Y, NaN());
@@ -920,14 +883,12 @@ VCTR interpolate_between_points (VCTR inA, VCTR inB, bool linestart) {
 		else {
 
 			double X = sqrt (1.0 - (inA.Y * inA.Y));
-
 			bool BTW = (is_in_range(inA.X, inB.X, X) || is_in_range(inA.X, inB.X, X));
 
 			if (BTW) 	return declare_vector( X, inA.Y, NaN());
 			else 		return declare_vector(-X, inA.Y, NaN());
 		}
 	}
-
 	double X = 0.0;
 	double Y = 0.0;
 
@@ -942,8 +903,6 @@ VCTR interpolate_between_points (VCTR inA, VCTR inB, bool linestart) {
 
 	double X1 = QUAD_SOL.at(0);
 	double X2 = QUAD_SOL.at(1);
-
-	cout << A << "  "  << B << "  "  << C << "  "  << X1 << "  "  << X2 << endl;
 
 	ASSERT(!isnan(X1));
 	ASSERT(!isnan(X2));
@@ -968,17 +927,12 @@ VCTR interpolate_between_points (VCTR inA, VCTR inB, bool linestart) {
 
 	Y = m * X + b;
 
-	//cout << inA.X << '\t' << inA.Y << endl;
-	//cout << X << '\t' << Y << endl;
-	//cout << inB.X << '\t' << inB.Y << endl;
-
-
 	ASSERT(!isnan(Y));
 
 	return declare_vector(X, Y, NaN());
 }
 
-VCTR generate_new_start (VCTR A) {
+VCTR generate_new_start (const VCTR& A) {
 
 	double length = sqrt((A.X * A.X ) +	(A.Y * A.Y));
 
@@ -991,12 +945,12 @@ VCTR generate_new_start (VCTR A) {
 	return out;
 }
 
-bool is_closed_line (VCTR min_A, VCTR max_B) {
+bool is_closed_line (const VCTR& min_A, const VCTR& max_B) {
 
 	return (is_in_range(min_A.X, min_A.X, max_B.X) && is_in_range(min_A.Y, min_A.Y, max_B.Y));
 }
 
-vector <VCTR> flip_BZ_line (vector <VCTR> BZ) {
+vector <VCTR> flip_BZ_line (const vector <VCTR>& BZ) {
 
 	vector <VCTR> out = BZ;
 
@@ -1009,472 +963,663 @@ vector <VCTR> flip_BZ_line (vector <VCTR> BZ) {
 
 		out.at(BZ.size() - 1 - i) = buf;
 	}
-
 	return out;
 }
 
-vector <VCTR> turn_off_BZ_record (vector <VCTR> in) {
+vector < vector <VCTR> > extrapolate_to_circle (const vector < vector <VCTR> >& inBZ) {
 
-	for (size_t i = 0; i < in.size(); i++) {
+	vector < vector <VCTR> > OUT = inBZ;
 
-		in.at(i).X = 999.99;
-		in.at(i).Y = 999.99;
-	}
+	for (size_t i = 0; i < inBZ.size(); i++) {
 
-	return in;
-}
+		size_t MAX = inBZ.at(i).size();
 
-bool BZ_to_connect (VCTR A, VCTR B) {
+		VCTR FIRST = inBZ.at(i).at(0);
+		VCTR LAST  = inBZ.at(i).at(MAX - 1);
 
-	return (
-			is_in_range (A.X, A.X, B.X) &&
-			is_in_range (A.Y, A.Y, B.Y) &&
-			(A.X < 900.0) && (A.Y < 900.0) &&
-			(B.X < 900.0) && (B.Y < 900.0) &&
-			is_point_in_circle(A) &&
-			is_point_in_circle(B)
-	);
-}
+		bool CLOSED = is_closed_line (FIRST, LAST);
+		bool FIRST_IN = is_point_in_circle(FIRST);
+		bool  LAST_IN = is_point_in_circle(LAST);
 
-bool BZ_to_flip (VCTR A, VCTR B) {
+		if (!CLOSED) {
 
-	return (
-			is_in_range (A.X, A.X, B.X) &&
-			is_in_range (A.Y, A.Y, B.Y) &&
-			(A.X < 900.0) && (A.Y < 900.0) &&
-			(B.X < 900.0) && (B.Y < 900.0)
-	);
-}
+			if (FIRST_IN) {
 
-vector < vector <VCTR> > connect_bezier_segments (vector < vector <VCTR> > inBZ){
-
-	size_t change_counter = 0;
-
-	do {
-
-		change_counter = 0;
-
-		for(size_t k = 0; k < inBZ.size(); k++) {
-
-			for(size_t j = 0; j < inBZ.size(); j++) {
-
-				VCTR to_flip_1 = inBZ.at(j).at(0);
-				VCTR to_flip_2 = inBZ.at(k).at(0);
-
-				if (BZ_to_flip (to_flip_1, to_flip_2) && (j != k)) {
-
-					cout << "NEED TO FLIP" << endl;
-
-					if (j < k) inBZ.at(j) = flip_BZ_line (inBZ.at(j));
-					else inBZ.at(k) = 		flip_BZ_line (inBZ.at(k));
-
-				}
-
-				VCTR iter_1 = inBZ.at(j).at(0);
-				VCTR iter_2 = inBZ.at(k).at(inBZ.at(k).size() - 1);
-
-				if (BZ_to_connect(iter_1, iter_2) && (j != k)) {
-
-					inBZ.at(k).insert(inBZ.at(k).end(), inBZ.at(j).begin(), inBZ.at(j).end());
-
-					inBZ.at(j) = turn_off_BZ_record(inBZ.at(j));
-
-					change_counter++;
-				}
-				else {}
+				FIRST = generate_new_start (FIRST);
+				OUT.at(i).at(0) = FIRST;
 			}
+			else {}
+
+			if (LAST_IN) {
+
+				LAST  = generate_new_start (LAST);
+				OUT.at(i).at(MAX - 1) = LAST;
+			}
+			else {}
 		}
-
-	} while (change_counter > 0);
-
-	return inBZ;
-}
-
-vector < vector <VCTR> > fit_to_circle_II (vector < vector <VCTR> > inBZ) {
-
-	//vector < vector <VCTR> > out;
-
-	for (size_t i = 0; i < inBZ.size(); i++) {
-
-		vector <VCTR>  buf;
-
-		VCTR min_A = inBZ.at(i).at(0);
-		VCTR min_B = inBZ.at(i).at(1);
-
-		VCTR max_A = inBZ.at(i).at(inBZ.at(i).size() - 2);
-		VCTR max_B = inBZ.at(i).at(inBZ.at(i).size() - 1);
-
-		bool is_start_crossing =	is_circle_border(min_A, min_B);
-		bool is_end_crossing = 		is_circle_border(max_A, max_B);
-
-
-		bool closed_line = (is_closed_line (min_A, max_B) &&
-
-				min_A.X < 900.0 &&
-				min_A.Y < 900.0 &&
-				max_B.X < 900.0 &&
-				max_B.Y < 900.0);
-
-
-		if (is_start_crossing) {
-
-			//cout << "is_start_crossing" << endl;
-
-			inBZ.at(i).at(0) = interpolate_between_points (min_A, min_B, true);
-		}
-		else if (!is_start_crossing && !closed_line) {
-
-			inBZ.at(i).at(0) = generate_new_start (min_A);
-		}
-		else {}
-
-
-
-		if (is_end_crossing) {
-
-			//cout << "is_end_crossing" << endl;
-
-			//cout << max_A.X << "  " << max_A.Y << "  " << endl;
-			//cout << max_B.X << "  " << max_B.Y << "  " << endl;
-
-			inBZ.at(i).at(inBZ.at(i).size() - 1) = interpolate_between_points (max_A, max_B, false);
-		}
-		else if (!is_end_crossing && !closed_line) {
-
-			inBZ.at(i).at(inBZ.at(i).size() - 1) = generate_new_start (max_B);
-		}
-		else {}
-
-		//cout << min_A.X << '\t' << min_A.Y << (min_A.X * min_A.X + min_A.Y * min_A.Y) << endl;
-		//cout << max_B.X << '\t' << max_B.Y << (max_B.X * max_B.X + max_B.Y * max_B.Y) << endl;
-
-		//if (!is_start_crossing && !closed_line) buf.push_back (new_start);
-		//else {}
-
-		//buf.insert(buf.end(), inBZ.at(i).begin(), inBZ.at(i).end());
-
-		//if (!is_end_crossing && !closed_line) buf.push_back (new_end);
-		//else {}
-
-		//out.push_back(buf);
 	}
-
-	return inBZ;
+	return OUT;
 }
 
-vector < vector <VCTR> > shorten_bezier (vector < vector <VCTR> > inBZ) {
+bool is_line_CCW (const vector <VCTR>& I) {
 
-	vector < vector <VCTR> > out;
+	double A = polygon_area (I);
 
-	for (size_t i = 0; i < inBZ.size(); i++) {
+	if (A > 0.0) return true;
+	else return false;
+}
 
-		if (inBZ.at(i).size() < 10) {}
+vector <VCTR> flip_line (const vector <VCTR>& I) {
+
+	vector <VCTR> OUT = I;
+
+	const size_t SIZE = I.size();
+
+	for (size_t i = 0; i < SIZE; i++ ) 	OUT.at(i) = I.at(SIZE - 1 - i);
+
+	return OUT;
+}
+
+vector <VCTR> flip_curve_to_CCW (const vector <VCTR>& BZ) {
+
+	if (!is_line_CCW (BZ)) return flip_line(BZ);
+	else return BZ;
+}
+
+vector <BEZIER> generate_final_bezier (const vector < VCTR>& inBZ) {
+
+	vector <BEZIER> OUT;
+
+	for (size_t j = 1; j < inBZ.size() - 1; j++) {
+
+		BEZIER buf;
+
+		bool is_FIRST = (j == 1);
+		bool is_LAST  = (j == inBZ.size() - 2);
+
+		VCTR PRW = inBZ.at(j - 1);
+		VCTR ACT = inBZ.at(j - 0);
+		VCTR NXT = inBZ.at(j + 1);
+
+		if (is_FIRST) {
+
+			buf.A.X = PRW.X;
+			buf.A.Y = PRW.Y;
+			buf.A.Z = NaN();
+
+			buf.B.X = (PRW.X + ACT.X) / 2.0;
+			buf.B.Y = (PRW.Y + ACT.Y) / 2.0;
+			buf.B.Z = NaN();
+
+			buf.C.X = (3.0 * ACT.X + NXT.X) / 4.0;
+			buf.C.Y = (3.0 * ACT.Y + NXT.Y) / 4.0;
+			buf.C.Z = NaN();
+
+			buf.D.X = (NXT.X + ACT.X) / 2.0;
+			buf.D.Y = (NXT.Y + ACT.Y) / 2.0;
+			buf.D.Z = NaN();
+		}
+		else if (is_LAST) {
+
+			buf.A.X = (PRW.X + ACT.X) / 2.0;
+			buf.A.Y = (PRW.Y + ACT.Y) / 2.0;
+			buf.A.Z = NaN();
+
+			buf.B.X = (PRW.X + 2.0 * ACT.X) / 3.0;
+			buf.B.Y = (PRW.Y + 2.0 * ACT.Y) / 3.0;
+			buf.B.Z = NaN();
+
+			buf.C.X = (ACT.X + NXT.X) / 2.0;
+			buf.C.Y = (ACT.Y + NXT.Y) / 2.0;
+			buf.C.Z = NaN();
+
+			buf.D.X = NXT.X;
+			buf.D.Y = NXT.Y;
+			buf.D.Z = NaN();
+		}
 		else {
 
-			vector <VCTR> buf;
+			buf.A.X = (PRW.X + ACT.X) / 2.0;
+			buf.A.Y = (PRW.Y + ACT.Y) / 2.0;
+			buf.A.Z = NaN();
 
-			VCTR start  = inBZ.at(i).at(0);
-			VCTR end  = inBZ.at(i).at(inBZ.at(i).size() - 1);
+			buf.B.X = (PRW.X + 3.0 * ACT.X) / 4.0;
+			buf.B.Y = (PRW.Y + 3.0 * ACT.Y) / 4.0;
+			buf.B.Z = NaN();
 
-			buf.push_back(start);
+			buf.C.X = (3.0 * ACT.X + NXT.X) / 4.0;
+			buf.C.Y = (3.0 * ACT.Y + NXT.Y) / 4.0;
+			buf.C.Z = NaN();
 
-			for (size_t k = 0; k < inBZ.at(i).size(); k+=5) {
+			buf.D.X = (NXT.X + ACT.X) / 2.0;
+			buf.D.Y = (NXT.Y + ACT.Y) / 2.0;
+			buf.D.Z = NaN();
+		}
+		OUT.push_back(buf);
+	}
+	return OUT;
+}
 
-				buf.push_back(inBZ.at(i).at(k));
+double return_t (const VCTR& C, const VCTR& B, const VCTR& P) {
 
+	double X21 = C.X - B.X;
+	double Y21 = C.Y - B.Y;
+	double X1P = B.X - P.X;
+	double Y1P = B.Y - P.Y;
+
+	double t = - (((X1P * X21) + (Y1P * Y21)) / ((X21 * X21) + (Y21 * Y21)));
+
+	return t;
+}
+
+double return_distance_from_side (const VCTR& C, const VCTR& B, const VCTR& P) {
+
+	double X21 = C.X - B.X;
+	double Y21 = C.Y - B.Y;
+	double X1P = B.X - P.X;
+	double Y1P = B.Y - P.Y;
+
+	double t = return_t (C, B, P);
+
+	double d = ((X1P + t * X21) * (X1P + t * X21)) + ((Y1P + t * Y21) * (Y1P + t * Y21));
+
+	return sqrt (d);
+}
+
+double return_distance_from_point (const VCTR& A, const VCTR& P) {
+
+	double X1P = A.X - P.X;
+	double Y1P = A.Y - P.Y;
+
+	double d = (X1P * X1P) + (Y1P * Y1P);
+
+	return sqrt(d);
+}
+
+double return_triangle_area (const VCTR& A, const VCTR& B, const VCTR& C) {
+
+	vector <VCTR> t;
+
+	t.push_back(A);
+	t.push_back(B);
+	t.push_back(C);
+
+	return polygon_area(t);
+}
+
+bool is_point_inside_curve (const vector <VCTR>& I, const GRID_CENTER& GP) {
+
+	vector <VCTR> temp = I;
+
+	size_t MAX = temp.size();
+
+	VCTR FRST = temp.at(0);
+	VCTR LAST = temp.at(MAX - 1);
+
+	bool CLOSED = is_closed_line(FRST, LAST);
+
+	if (!CLOSED) temp.push_back(temp.at(0));
+	temp.push_back(temp.at(1));
+
+	double DISTANCE = 10e9;
+
+	bool CLOSE_TO_VERTEX = false;
+	bool CLOSE_TO_SIDE = false;
+
+	MAX = temp.size();
+
+	const VCTR P = GP.CENTER;
+
+	VCTR sA, sB, sC, vA, vB, vC;
+
+	for (size_t i = 1; i < temp.size() - 1; i++) {
+
+		VCTR act_C = temp.at(i - 1);
+		VCTR act_B = temp.at(i);
+		VCTR act_A = temp.at(i + 1);
+
+		double t = return_t (act_C, act_B, P);
+
+		if (t <= 0) {
+
+			double ACT_DST_VRTX = return_distance_from_point (act_B, P);
+
+			if (ACT_DST_VRTX < DISTANCE) {
+
+				DISTANCE = ACT_DST_VRTX;
+				CLOSE_TO_VERTEX = true;
+				CLOSE_TO_SIDE = false;
+
+				vA = act_A;
+				vB = act_B;
+				vC = act_C;
 			}
+		}
+		else if (t > 0.0 && t < 1.0) {
 
-			if (
-					buf.at(buf.size() - 1).Y != end.Y &&
-					buf.at(buf.size() - 1).Y != end.Y) {
+			double ACT_DST_SIDE = return_distance_from_side  (act_C, act_B, P);
 
-				buf.push_back(end);
+			if (ACT_DST_SIDE < DISTANCE) {
+
+				DISTANCE = ACT_DST_SIDE;
+				CLOSE_TO_SIDE = true;
+				CLOSE_TO_VERTEX = false;
+
+				sA = act_A;
+				sB = act_B;
+				sC = act_C;
 			}
+		}
+		else {}
+	}
 
-			out.push_back(buf);
+	if (CLOSE_TO_SIDE && !CLOSE_TO_VERTEX) {
+
+		double A1 = return_triangle_area (sC, sB, P);
+		bool AREA_POSITIVE =  (A1 > 0.0);
+
+		if (AREA_POSITIVE) return true;
+		else return false;
+	}
+	else if (!CLOSE_TO_SIDE && CLOSE_TO_VERTEX) {
+
+		double A2 = return_triangle_area (vC, vB, vA);
+		bool VERTEX_CONCAVE = (A2 < 0.0);
+
+		if (VERTEX_CONCAVE) return true;
+		else return false;
+	}
+	else {
+		ASSERT_DEAD_END();
+		return false;
+	}
+}
+
+bool curve_contains_peak (const vector <VCTR>& I, const vector < vector <GRID_CENTER> >& RECT_GRID, const double& CONTOUR) {
+
+	for (size_t i = 0; i < RECT_GRID.size(); i++) {
+		for (size_t j = 0; j < RECT_GRID.at(i).size(); j++) {
+
+			GRID_CENTER ACT = RECT_GRID.at(i).at(j);
+
+			if (ACT.COUNT >= CONTOUR) if (is_point_inside_curve (I, ACT)) return true;
 		}
 	}
-
-	return out;
+	return false;
 }
 
+double polygon_area (const vector <VCTR>& I) {
 
-VCTR vctr_average (VCTR A, VCTR B) {
+	vector <VCTR> t = I;
 
-	VCTR out;
+	double A = 0;
 
-	out.X = (A.X + B.X) / 2.0;
-	out.Y = (A.Y + B.Y) / 2.0;
-	out.Z = (A.Z + B.Z) / 2.0;
+	VCTR FRST = t.at(0);
+	VCTR LAST = t.at(t.size() - 1);
 
-	return out;
+	bool CLOSED = is_closed_line(FRST, LAST);
+
+	if (!CLOSED) t.push_back(t.at(0));
+
+	for (size_t i = 0; i < t.size() - 1; i++) {
+
+		VCTR ACT = t.at(i);
+		VCTR NXT = t.at(i + 1);
+
+		double area = ((ACT.X * NXT.Y) - (ACT.Y * NXT.X)) / 2.0;
+
+		A = A + area;
+	}
+	return A;
 }
 
-vector < vector <VCTR> > generate_final_bezier (vector < vector <VCTR> > inBZ) {
+bool is_line_close_unitcircle (const vector <VCTR>& I, const double CELL) {
 
-	vector < vector <VCTR> > out;
+	size_t CLOSE_COUNTER = 0;
 
-	for (size_t i = 0; i < inBZ.size(); i++) {
+	for (size_t i = 0; i < I.size(); i++) {
 
-		vector <VCTR> buf;
+		double LENGTH = sqrt(I.at(i).X * I.at(i).X + I.at(i).Y * I.at(i).Y);
 
-		for (size_t j = 0; j < inBZ.at(i).size() - 2; j++) {
+		if (LENGTH > 1.0 - (CELL / 2.0)) CLOSE_COUNTER++;
+	}
+	return ((CLOSE_COUNTER / I.size()) > 0.6);
+}
 
-			VCTR A = inBZ.at(i).at(j);
-			VCTR B = inBZ.at(i).at(j + 1);
-			VCTR C = inBZ.at(i).at(j + 2);
+vector <VCTR> close_contourline (const vector <VCTR>& I, const double START_ANGLE, const double END_ANGLE, const double CELL, const bool CHECK_DISTANCE) {
 
-			VCTR line_start = inBZ.at(i).at(0);
-			VCTR line_end = inBZ.at(i).at(inBZ.at(i).size() - 1);
-			VCTR before_line_end = inBZ.at(i).at(inBZ.at(i).size() - 2);
+	vector <VCTR> NEW;
+	vector <VCTR> OUT = I;
 
-			VCTR E = vctr_average(A, B);
-			VCTR F = vctr_average(B, C);
-			VCTR G = vctr_average(before_line_end, A);
+	ASSERT2(is_line_CCW(I), "CCW line is expected in 'close_contourline' function");
+	ASSERT2(START_ANGLE != END_ANGLE, "open line expected in 'close_contourline' function");
 
-			bool closed_line = is_closed_line (line_start, line_end);
+	bool START_LESS_THAN_END = (START_ANGLE < END_ANGLE);
 
-			if (j == 0) {
+	VCTR END;
+	double step = 0.0;
 
-				if (closed_line) {
+	if (START_LESS_THAN_END) {
+		step = 360.0 - (END_ANGLE - START_ANGLE);
+		END = I.at(0);
+	}
+	else {
+		step = START_ANGLE - END_ANGLE;
+		END = I.at(I.size() - 1);
+	}
 
-					buf.push_back(G);
-					buf.push_back(vctr_average(G, A));
-					buf.push_back(vctr_average(A, E));
-					buf.push_back(E);
+	step = step / 100.0;
+	END.Z = 0.0;
 
-					buf.push_back(E);
-					buf.push_back(vctr_average(E, B));
-					buf.push_back(vctr_average(B, F));
-					buf.push_back(F);
+	double RATIO = 1.0;
+
+	if (CHECK_DISTANCE && is_line_close_unitcircle (I, CELL)) RATIO = 1.0 + (CELL * 2.0);
+
+	VCTR AXIS = declare_vector(0.0, 0.0, 1.0);
+
+	for (size_t i = 1; i < 100; i++) {
+
+		VCTR t = ROTATE (AXIS, END, step * i);
+
+		t.X = t.X * RATIO;
+		t.Y = t.Y * RATIO;
+
+		NEW.push_back(t);
+	}
+
+	if (START_LESS_THAN_END) {
+
+		OUT = flip_BZ_line(OUT);
+
+		OUT.insert(OUT.end(), NEW.begin(), NEW.end());
+
+		if (!is_line_CCW(OUT)) OUT = flip_BZ_line(OUT);
+	}
+	else OUT.insert(OUT.end(), NEW.begin(), NEW.end());
+
+	return OUT;
+}
+
+void contourline_to_ps (ofstream& o, const INPSET& inset, const PAPER& P, const CENTER& center, const vector <VCTR>& BZ, const double& FRST_ANGLE, const double& LAST_ANGLE, const double& CONTOUR, const double& C_MN, const double& C_MX, const double& MAX) {
+
+	VCTR FRST_PNT = BZ.at(0);
+	VCTR LAST_PNT = BZ.at(BZ.size() - 1);
+
+	bool CLOSED = is_closed_line(FRST_PNT, LAST_PNT);
+
+	if (!CLOSED && FRST_ANGLE > 900.0 && LAST_ANGLE > 900.0) ASSERT_DEAD_END();
+
+	vector <BEZIER> B = generate_final_bezier (BZ);
+
+	o << "  newpath " << endl;
+
+	o << 0.9 - (((CONTOUR - C_MN) / (C_MX - C_MN)) / 2.0) << " 1.00 1.00 setrgbcolor " << endl;
+
+	o
+	<< B.at(0).A.X * center.radius + center.X << " "
+	<< B.at(0).A.Y * center.radius + center.Y  << " moveto" << endl;
+
+	for (size_t i = 0; i < B.size(); i++) {
+
+		o
+		<< B.at(i).B.X * center.radius + center.X  << " "
+		<< B.at(i).B.Y * center.radius + center.Y  << " "
+		<< B.at(i).C.X * center.radius + center.X  << " "
+		<< B.at(i).C.Y * center.radius + center.Y  << " "
+		<< B.at(i).D.X * center.radius + center.X  << " "
+		<< B.at(i).D.Y * center.radius + center.Y  << " curveto" << endl;
+	}
+
+	if (!CLOSED) {
+
+		o
+		<< " " << center.X
+		<< " " << center.Y
+		<< " " << center.radius
+		<< " " << 90.0 + 360.0 - FRST_ANGLE
+		<< " " << 90.0 + 360.0 - LAST_ANGLE << " arc " << flush;
+	}
+
+	o << "  closepath fill stroke " << endl;
+
+	o << "  newpath " << endl;
+	o <<  "0.50 0.50 0.50 setrgbcolor " << endl;
+
+	o
+	<< B.at(0).A.X * center.radius + center.X << " "
+	<< B.at(0).A.Y * center.radius + center.Y  << " moveto" << endl;
+
+	for (size_t i = 0; i < B.size(); i++) {
+
+		o
+		<< B.at(i).B.X * center.radius + center.X  << " "
+		<< B.at(i).B.Y * center.radius + center.Y  << " "
+		<< B.at(i).C.X * center.radius + center.X  << " "
+		<< B.at(i).C.Y * center.radius + center.Y  << " "
+		<< B.at(i).D.X * center.radius + center.X  << " "
+		<< B.at(i).D.Y * center.radius + center.Y  << " curveto" << endl;
+	}
+
+	o << " [2 2] 0 setdash 0.8 setlinewidth stroke " << endl;
+	o << " [  ] 0 setdash " << endl;
+
+}
+
+void output_contourline (ofstream& o, const INPSET& inset, const PAPER& P, const CENTER& center, vector <vector <VCTR> >& BZ,  vector < vector <GRID_CENTER> >& RECT_GRID, const double& CONTOUR, const double C_MN, const double C_MX, const double& MAX, const bool is_debug) {
+
+	double CELL = return_grid_size(RECT_GRID);
+
+	for (size_t i = 0; i < BZ.size(); i++) {
+
+		vector <VCTR> A =  BZ.at(i);
+
+		if (is_debug) dbg_bezier_points (A);
+
+		VCTR FRST_PNT = A.at(0);
+		VCTR LAST_PNT = A.at(A.size() - 1);
+
+		FRST_PNT.Z = 0.0;
+		LAST_PNT.Z = 0.0;
+
+		if (!is_closed_line(FRST_PNT, LAST_PNT)) {
+
+			double FRST_ANGLE = dipdir_dip_from_DXDYDZ(FRST_PNT).DIPDIR;
+			double LAST_ANGLE = dipdir_dip_from_DXDYDZ(LAST_PNT).DIPDIR;
+
+			A = flip_curve_to_CCW (A);
+
+			vector <VCTR> A1 = close_contourline (A, FRST_ANGLE, LAST_ANGLE, CELL, true);
+			vector <VCTR> A2 = close_contourline (A, LAST_ANGLE, FRST_ANGLE, CELL, true);
+
+			bool A1_HAS_PEAK = curve_contains_peak (A1, RECT_GRID, CONTOUR * MAX);
+			bool A2_HAS_PEAK = curve_contains_peak (A2, RECT_GRID, CONTOUR * MAX);
+
+			A1 = close_contourline (A, FRST_ANGLE, LAST_ANGLE, CELL, false);
+			A2 = close_contourline (A, LAST_ANGLE, FRST_ANGLE, CELL, false);
+
+			double A1_AREA = polygon_area (A1);
+			double A2_AREA = polygon_area (A2);
+
+			if (is_debug) {
+
+				cout << endl;
+				cout << "A1 AREA: " << A1_AREA << " A2 AREA: " << A1_AREA << endl;
+				cout << "A1_HAS_PEAK: " << A1_HAS_PEAK << " A2_HAS_PEAK: " << A2_HAS_PEAK << endl;
+				cout << endl;
+			}
+
+			bool LARGER_HAS_PEAKS = (
+					(A1_AREA > A2_AREA && A1_HAS_PEAK && !A2_HAS_PEAK) ||
+					(A2_AREA > A1_AREA && A2_HAS_PEAK && !A1_HAS_PEAK));
+			bool LARGE_AT_LEAST_DOUBLE = (
+					A1_AREA > A2_AREA * 2.0 || A2_AREA > A1_AREA * 2.0);
+
+			if (is_debug) {
+
+				cout << endl;
+				cout << "LARGER_HAS_PEAKS: " << LARGER_HAS_PEAKS << " LARGE_AT_LEAST_DOUBLE: " << LARGE_AT_LEAST_DOUBLE << endl;
+				cout << endl;
+			}
+
+			bool DRAW_IT = true;
+
+			if (LARGE_AT_LEAST_DOUBLE && LARGER_HAS_PEAKS) DRAW_IT = false;
+
+			if (DRAW_IT) {
+
+				if (A1_HAS_PEAK && !A2_HAS_PEAK) 		contourline_to_ps (o, inset, P, center, A, FRST_ANGLE, LAST_ANGLE, CONTOUR, C_MN, C_MX, MAX);
+				else if (!A1_HAS_PEAK && A2_HAS_PEAK) 	contourline_to_ps (o, inset, P, center, A, LAST_ANGLE, FRST_ANGLE, CONTOUR, C_MN, C_MX, MAX);
+				else if (A1_HAS_PEAK && A2_HAS_PEAK) {
+
+					if (A1_AREA < A2_AREA) 	contourline_to_ps (o, inset, P, center, A, FRST_ANGLE, LAST_ANGLE, CONTOUR, C_MN, C_MX, MAX);
+					else 					contourline_to_ps (o, inset, P, center, A, LAST_ANGLE, FRST_ANGLE, CONTOUR, C_MN, C_MX, MAX);
 				}
-				else {
-
-					buf.push_back(line_start);
-					buf.push_back(vctr_average(line_start, B));
-					buf.push_back(vctr_average(B, F));
-					buf.push_back(F);
-				}
+				else ASSERT_DEAD_END();
 			}
-
-			else if (j == inBZ.at(i).size() - 3 && !closed_line)  {
-
-				buf.push_back(E);
-				buf.push_back(vctr_average(E, B));
-				buf.push_back(vctr_average(B, C));
-				buf.push_back(C);
-			}
-			else {
-
-				buf.push_back(E);
-				buf.push_back(vctr_average(E, B));
-				buf.push_back(vctr_average(B, F));
-				buf.push_back(F);
-			}
+			else {}
 		}
-		out.push_back(buf);
+		else contourline_to_ps (o, inset, P, center, A, 999.99, 999.99, CONTOUR, C_MN, C_MX, MAX);
 	}
-
-	return out;
 }
 
-vector < vector <VCTR> > eliminate_empty_records (vector < vector <VCTR> > inBZ) {
+bool is_processable_for_contouring (const vector <GDB>& inGDB) {
 
-	vector < vector <VCTR> > out;
+	vector <GDB> test = return_GDB_with_no_homogeneous_data (inGDB);
 
-	for (size_t i = 0; i < inBZ.size(); i++) {
-
-		if (inBZ.at(i).size() > 3 && inBZ.at(i).at(0).X < 900.0) out.push_back(inBZ.at(i));
-	}
-
-	return out;
+	if (test.size() < 2) return false;
+	else return true;
 }
 
-vector < vector <VCTR> > eliminate_out_circle_curves (vector < vector <VCTR> > inBZ) {
+void contouring (const vector <GDB>& inGDB, ofstream& o, const INPSET& inset, const PAPER& P, const CENTER center, bool is_debug) {
 
-	vector < vector <VCTR> > out;
-
-	for (size_t i = 0; i < inBZ.size(); i++) {
-
-		bool to_eliminate = false;
-
-		if (inBZ.at(i).size() < 5) to_eliminate = true;
-
-		if (inBZ.at(i).size() >= 5 && !is_point_in_circle (inBZ.at(i).at(1))) to_eliminate = true;
-
-		if (!to_eliminate) out.push_back(inBZ.at(i));
-	}
-
-	return out;
-}
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-void contouring (vector <GDB> inGDB, INPSET inset) {
+	if (inset.contouring == "N") return;
+	if (!is_processable_for_contouring(inGDB)) return;
 
 	vector <vector <vector <VCTR> > > NET = generate_net (9);
 
 	vector <TRIANGLE> TRI_GRID = generate_net_count (inGDB, NET, inset);
+
+	if (is_debug) dbg_cout_TRI_GRID (TRI_GRID);
 
 	vector <GRID_CENTER> TRI_CENTER = generate_triangle_center (TRI_GRID);
 
 	size_t cell_number = sqrt (TRI_CENTER.size() / 0.78);
 
 	TRI_CENTER = reduce_triangle_center(TRI_CENTER);
-	//dbg_cout_triangle_center(TRI_CENTER);
 
 	vector < vector <GRID_CENTER> > RECT_GRID = generate_rectangular_grid_from_triange_center (cell_number);
-	//dbg_cout_rect_grid(RECT_GRID);
 
 	RECT_GRID = calculate_grid_cell_values_from_triangle (RECT_GRID, TRI_CENTER);
-	//dbg_cout_rect_grid(RECT_GRID);
 
-	size_t TRI_MAX_COUNT = return_TRI_GRID_max_count (TRI_CENTER);
-	//cout << "TRI_MAX_COUNT: " << TRI_MAX_COUNT << endl;
+	if (is_debug) dbg_cout_rect_grid (RECT_GRID, true);
 
-	//RECT_GRID = normalize_grid_cell_values (RECT_GRID, TRI_CENTER);
-	//dbg_cout_rect_grid(RECT_GRID);
+	double C_MN = 0.5;
+	double C_MX = 0.9;
 
-	string outputfilename = "LINE2.PS";
-	ofstream o (outputfilename.c_str());
-	cout_line_to_ps_header (o);
-	//cout_rect_grid_to_ps (RECT_GRID, o, inset);
+	vector <double> CNTR_AT = return_isoline_percentages (C_MN, C_MX);
 
-	//double contour_step = return_contour_step (TRI_MAX_COUNT);
+	size_t MAX = return_RECT_GRID_max_count (RECT_GRID);
 
-	vector <size_t> CNTR_AT = return_isoline (RECT_GRID);
-
-
-
-	//cout << "******** CONTOURING ********" << endl;
-	//cout << "contour_step: " << contour_step << endl;
-
-	//for (size_t k = 0; k < 5; k++) {
 	for (size_t i = 0; i < CNTR_AT.size(); i++) {
 
-		size_t RECT_MAX_COUNT = return_RECT_GRID_max_count (RECT_GRID);
-
-
-		vector < vector <GRID_CENTER> > BIN_GRID = generate_binary_rect_grid (RECT_GRID, CNTR_AT.at(i));
-		//dbg_cout_rect_grid(BIN_GRID);
+		vector < vector <GRID_CENTER> > BIN_GRID = generate_binary_rect_grid (RECT_GRID, CNTR_AT.at(i) * MAX);
 
 		vector < vector <GRID_CENTER> > M_SQ = generate_marching_squares (BIN_GRID);
 
-		M_SQ = check_saddle (M_SQ, RECT_GRID, CNTR_AT.at(i));
-		//dbg_cout_rect_grid(M_SQ);
+		if (is_debug) dbg_cout_rect_grid(M_SQ, false);
 
-		vector <LINE> C_LINE = generate_raw_lines (M_SQ, RECT_GRID, CNTR_AT.at(i));
+		if (M_SQ.size() + 1 != BIN_GRID.size()) ASSERT3("rectangular density grid and/or maching sqare grid error");
+
+		M_SQ = check_saddle (M_SQ, RECT_GRID, CNTR_AT.at(i) * MAX);
+
+		vector <LINE> C_LINE = generate_raw_lines (M_SQ, RECT_GRID, CNTR_AT.at(i) * MAX);
+
+		if (is_debug) dbg_cout_line (C_LINE);
 
 		vector <vector <LINE> > LINE_VCTR = generate_line_vector (C_LINE);
 
-		//LINE_VCTR = connect_vectors(LINE_VCTR);
-		//LINE_VCTR = tidy_vectors(LINE_VCTR);
-		//dbg_cout_line_vctr(LINE_VCTR);
+		LINE_VCTR = connect_vectors (LINE_VCTR);
+
+		LINE_VCTR = eliminate_empty_short_records (LINE_VCTR);
 
 		vector < vector <VCTR> > BZ = generate_bezier_points (LINE_VCTR);
-		//dbg_bezier_points(BZ);
 
-		//BZ = fit_to_circle_I (BZ);
+		BZ = extrapolate_to_circle (BZ);
 
-		//BZ = eliminate_out_circle_curves (BZ);
+		BZ = eliminate_short_distances (BZ);
 
-		//BZ = connect_bezier_segments (BZ);
-
-		//BZ = eliminate_empty_records (BZ);
-		//dbg_bezier_points(BZ);
-
-		//BZ = fit_to_circle_II (BZ);
-		//dbg_bezier_points(BZ);
-
-		//BZ = shorten_bezier (BZ); //not used, not tested
-
-		//BZ = generate_final_bezier (BZ);
-		//dbg_bezier_points(BZ);
-
-		//*****EDDIG OK
-		// **** eddig ellenorizve, ertheto, amit csinal ****
-
-
-
-
-
-
-
-
-		//cout_bezier_to_ps(BZ, o, CNTR_AT.size(), RECT_MAX_COUNT);
-		cout_line_to_ps (C_LINE, o, CNTR_AT.at(i), RECT_MAX_COUNT);
-
-		//cout << BZ.size() << endl;
-		//cout << C_LINE.size() << endl;
+		output_contourline (o, inset, P, center, BZ, RECT_GRID, CNTR_AT.at(i), C_MN, C_MX, MAX, is_debug);
 	}
 }
 
-/*vector <TRIANGLE> TRI = generate_net (processGDB, inset);
+void dbg_cout_NET (const vector <vector <vector <VCTR> > >& NET) {
 
-//cout << TRI.size() << endl;
+	cout << "**** DEBUGGING KAALSBEEK NET FOR CONTOURING ****" << endl;
+	cout << fixed << setprecision (6) << endl;
 
-vector <GRID_CENTER> tri_center = generate_triangle_center (TRI);
+	for (size_t i = 0; i < NET.size(); i++) {
+		for (size_t j = 0; j < NET.at(i).size(); j++) {
+			for (size_t k = 0; k < NET.at(i).at(j).size(); k++) {
 
-//cout << tri_center.size() << endl;
+				cout
+				<< NET.at(i).at(j).at(k).X << '\t'
+				<< NET.at(i).at(j).at(k).Y << '\t'
+				<< NET.at(i).at(j).at(k).Z << endl;
+			}
+		}
+	}
+	cout << "**** END DEBUGGING KAALSBEEK NET FOR CONTOURING ****" << endl;
+}
 
-size_t cell_number = sqrt (tri_center.size()) / 0.78;
+void dbg_cout_TRI_GRID (const vector <TRIANGLE>& TRI_GRID) {
 
-//cout << cell_number << endl;
-
-tri_center = reduce_triangle_center(tri_center);
-
-vector < vector <GRID_CENTER> > RECT_grid = generate_rectangular_grid_from_triange_center (cell_number);
-
-
-
-RECT_grid = calculate_grid_cell_values_from_triangle (RECT_grid, tri_center);
-
-RECT_grid = normalize_grid_cell_values (RECT_grid, tri_center);
-*/
-
-
-
-
-
-
-
-void dbg_cout_triangle_center (vector <GRID_CENTER> TRI_CENTER) {
-
-	cout << fixed << setprecision(3) << endl;
-
-	cout << " --------- TRIANGULAR GRID  --------- " << endl;
+	cout << "**** DEBUGGING TRIANGULAR GRID WITH COUNTS FOR CONTOURING ****" << endl;
+	cout << fixed << setprecision (6) << endl;
 
 	cout
-	<< "  X  " << '\t'
-	<< "  Y  " << '\t'
-	<< "  Z  " << '\t'
-	<< "COUNT" << endl;
+	<< "A.X" << '\t' << "A.Y" << '\t' << "A.Z" << '\t'
+	<< "B.X" << '\t' << "B.Y" << '\t' << "B.Z" << '\t'
+	<< "C.X" << '\t' << "C.Y" << '\t' << "C.Z" << '\t'
+	<< "COUNT" << '\t'<< "GROUP" << endl;
+
+	for (size_t i = 0; i < TRI_GRID.size(); i++) {
+
+		cout
+		<< TRI_GRID.at(i).A.X << '\t'
+		<< TRI_GRID.at(i).A.Y << '\t'
+		<< TRI_GRID.at(i).A.Z << '\t'
+
+		<< TRI_GRID.at(i).B.X << '\t'
+		<< TRI_GRID.at(i).B.Y << '\t'
+		<< TRI_GRID.at(i).B.Z << '\t'
+
+		<< TRI_GRID.at(i).C.X << '\t'
+		<< TRI_GRID.at(i).C.Y << '\t'
+		<< TRI_GRID.at(i).C.Z << '\t'
+
+		<< TRI_GRID.at(i).COUNT << '\t'
+		<< TRI_GRID.at(i).GROUP << endl;
+	}
+	cout << "**** END DEBUGGING TRIANGULAR GRID WITH COUNTS FORR CONTOURING ****" << endl << endl;
+}
+
+void dbg_cout_CONTOURS (const vector <size_t>& CNTR_AT) {
+
+	cout << "**** DEBUGGING CONTOUR INTERVALS FOR CONTOURING ****" << endl;
+
+	cout << fixed << setprecision (0) << endl;
+
+	for (size_t i = 0; i < CNTR_AT.size(); i++) cout << CNTR_AT.at(i) << endl;
+
+	cout << "**** END DEBUGGING CONTOUR INTERVALS FOR CONTOURING ****" << endl;
+}
+
+void dbg_cout_triangle_center (const vector <GRID_CENTER>& TRI_CENTER) {
+
+	cout << "**** DEBUGGING TRIANGULAR GRID CENTERS ****" << endl;
+	cout << "X" << '\t' << "Y" << '\t' << "Z" << '\t' << "COUNT" << endl;
+
+	cout << fixed << setprecision(3) << endl;
 
 	for (size_t i = 0; i < TRI_CENTER.size(); i++) {
 
@@ -1484,89 +1629,55 @@ void dbg_cout_triangle_center (vector <GRID_CENTER> TRI_CENTER) {
 		<< TRI_CENTER.at(i).CENTER.Z << '\t'
 		<< TRI_CENTER.at(i).COUNT << endl;
 	}
-
-	cout << " ------ end triangulat grid ------ " << endl;
+	cout << "**** END DEBUGGING TRIANGULAR GRID CENTERS ****" << endl;
 }
 
-void dbg_cout_rect_grid (vector < vector <GRID_CENTER> > rect_grid) {
+void dbg_cout_rect_grid (const vector < vector <GRID_CENTER> >& rect_grid, const bool display_coordinates) {
 
 	size_t cell_number = rect_grid.at(0).size();
 
-	cout << "-------- BINARY GRID --------" << endl;
+	cout << "-------- DEBUGGING RECTANGULAR DENSITY GRID --------" << endl;
 
-	cout << fixed << setw(2) << setprecision(2) << endl;
+	for (size_t i = 0; i < cell_number; i++) {
+		for (size_t j = 0; j < cell_number; j++) {
 
-	for (size_t j = 0; j < cell_number; j++) {
+			if (display_coordinates) {
+				cout
+				<< fixed << setprecision(6)
+				<< rect_grid.at(i).at(j).CENTER.X << '\t'
+				<< rect_grid.at(i).at(j).CENTER.Y << '\t'<< flush;
+			}
 
-		for (size_t i = 0; i < cell_number; i++) {
-
-			cout
-			//<< rect_grid.at(j).at(i).CENTER.X << '\t'
-			//<< rect_grid.at(j).at(i).CENTER.Y << '\t'
-			<< rect_grid.at(j).at(i).COUNT << '\t' << flush;
+			cout << fixed << setprecision(0)
+			<< rect_grid.at(i).at(j).COUNT << '\t' << flush;
 		}
-
 		cout << endl;
 	}
+	cout << "-------- END DEBUGGING RECTANGULAR DENSITY GRID --------" << endl << endl;;
 }
 
-void cout_line_to_ps_header (ofstream& o) {
+void dbg_cout_line (const vector <LINE>& L) {
 
-	o << "%!PS-Adobe-3.0 EPSF-3.0" << endl;
-	o << "%%BoundingBox:  0 0 440 440" << endl;
+	cout << "---- DEBUGGING LINES ----" << endl;
 
-	o << "  220.0 220.0 200.0 0.0 360.0 arc stroke"	<< endl;
-}
+	cout
+	<< "A.X" << '\t' << "A.Y" << '\t'
+	<< "B.X" << '\t' << "B.Y" << endl;
 
-void cout_line_to_ps (vector <LINE> l, ofstream& o, size_t isoline, size_t max_COUNT) {
+	cout << fixed << setprecision(6) << endl;
 
-	for (size_t i = 0; i < l.size(); i++) {
+	for(size_t i = 0; i < L.size(); i++) {
 
-		o
-		<< "  newpath  "
-		<< l.at(i).A.X * 200.0 + 220.0 << "  " << l.at(i).A.Y * 200.0 + 220.0 << " moveto "
-		<< l.at(i).B.X * 200.0 + 220.0 << "  " << l.at(i).B.Y * 200.0 + 220.0 << " lineto" << endl;
-
-		o
-		<<  isoline / max_COUNT << " "
-		<<  isoline / max_COUNT << " "
-		<<  " 1 setrgbcolor stroke " << endl;
+		cout
+		<< L.at(i).A.X << '\t'
+		<< L.at(i).A.Y << '\t'
+		<< L.at(i).B.X << '\t'
+		<< L.at(i).B.Y << endl;
 	}
+	cout << "---- END DEBUGGING LINES ----" << endl << endl;
 }
 
-void cout_bezier_to_ps (vector < vector<VCTR> > BZ, ofstream& o, size_t isoline, double max_COUNT) {
-
-	for (size_t i = 0; i < BZ.size(); i++) {
-
-		o << "  newpath  " << endl;
-
-		if (BZ.at(i).size() > 3) {
-
-			for (size_t j = 0; j < BZ.at(i).size() - 3; j+=4) {
-
-				o
-				<< BZ.at(i).at(j + 0).X * 200.0 + 220.0 << " "
-				<< BZ.at(i).at(j + 0).Y * 200.0 + 220.0 << " moveto" << endl;
-
-				o
-				<< BZ.at(i).at(j + 1).X * 200.0 + 220.0 << " "
-				<< BZ.at(i).at(j + 1).Y * 200.0 + 220.0 << " "
-				<< BZ.at(i).at(j + 2).X * 200.0 + 220.0 << " "
-				<< BZ.at(i).at(j + 2).Y * 200.0 + 220.0 << " "
-				<< BZ.at(i).at(j + 3).X * 200.0 + 220.0 << " "
-				<< BZ.at(i).at(j + 3).Y * 200.0 + 220.0 << " curveto" << endl;
-
-				o
-				<<  isoline / max_COUNT << " "
-				<<  isoline / max_COUNT << " "
-				<<  " 1 setrgbcolor stroke " << endl;
-			}
-		}
-		else {}
-	}
-}
-
-void dbg_cout_line_vctr (vector <vector <LINE> > LV) {
+void dbg_cout_line_vctr (const vector <vector <LINE> >& LV) {
 
 	cout << "LINE VECTOR: " << endl;
 
@@ -1579,38 +1690,44 @@ void dbg_cout_line_vctr (vector <vector <LINE> > LV) {
 			cout << LV.at(i).at(j).B.X << '\t' << flush;
 			cout << LV.at(i).at(j).B.Y << '\t' << flush;
 		}
-
 		cout << endl;
 	}
 }
 
-void dbg_bezier_points (vector < vector <VCTR> > BZ) {
+void dbg_bezier_points (const vector <VCTR>& BZ) {
 
-	cout << "BEZIER: " << endl;
+	cout << "**** BEZIER POINTS FOR CONTOURING ****" << endl;
 
-	for(size_t i = 0; i < BZ.size(); i++) {
+	for (size_t j = 0; j < BZ.size(); j++) {
 
-		cout << " ---------------LINE " << i << endl;
-
-		for(size_t j = 0; j < BZ.at(i).size(); j++) {
-
-			bool IN = BZ.at(i).at(j).X * BZ.at(i).at(j).X + BZ.at(i).at(j).Y * BZ.at(i).at(j).Y < 1.0;
-
-			string 		in_out = "IN";
-			if (!IN)	in_out = "OUT";
-
-			cout << BZ.at(i).at(j).X << '\t' << flush;
-			cout << BZ.at(i).at(j).Y << '\t' << flush;
-			cout << in_out << endl;
-		}
-
-		cout << endl;
+		cout << BZ.at(j).X << '\t' << BZ.at(j).Y << '\t' << endl;
 	}
+	cout << "**** END BEZIER POINTS FOR CONTOURING ****" << endl;
 }
 
-void cout_rect_grid_to_ps (vector <vector < GRID_CENTER> > rect_grid, ofstream& o, INPSET inset) {
+void dbg_bezier_curve (const vector <BEZIER>& B) {
 
-	//size_t cell_number = rect_grid.at(0).size();
+	cout << "**** BEZIER CURVE FOR CONTOURING ****" << endl;
+
+	cout
+	<< "A.X" << '\t' << "A.Y" << '\t'
+	<< "B.X" << '\t' << "B.Y" << '\t'
+	<< "C.X" << '\t' << "C.Y" << '\t'
+	<< "D.X" << '\t' << "D.Y" << '\t' << endl;
+
+	for (size_t j = 0; j < B.size(); j++) {
+
+		cout
+		<< B.at(j).A.X << '\t' << B.at(j).A.Y << '\t'
+		<< B.at(j).B.X << '\t' << B.at(j).B.Y << '\t'
+		<< B.at(j).C.X << '\t' << B.at(j).C.Y << '\t'
+		<< B.at(j).D.X << '\t' << B.at(j).D.Y << '\t' << endl;
+	}
+
+	cout << "**** END BEZIER CURVE FOR CONTOURING ****" << endl;
+}
+
+void cout_rect_grid_to_ps (const vector <vector < GRID_CENTER> >& rect_grid, ofstream& o, const INPSET& inset) {
 
 	for (size_t j = 0; j < rect_grid.size() - 1; j++) {
 
@@ -1631,12 +1748,9 @@ void cout_rect_grid_to_ps (vector <vector < GRID_CENTER> > rect_grid, ofstream& 
 			double CW = rect_grid.at(j + 0).at(i + 1).COUNT;
 			double DW = rect_grid.at(j + 0).at(i + 0).COUNT;
 
-			//double COUNT = 30.0 * (AW + BW + CW + DW) / (4.0 * max_COUNT);
 			double COUNT = ((AW + BW + CW + DW) / 4.0);
 
-			//cout << COUNT << endl;
-
-			inset.grayscale = "N";
+			//inset.grayscale = "N";
 
 			VCTR COLOR = generate_stress_colors(COUNT, inset);
 
@@ -1653,7 +1767,6 @@ void cout_rect_grid_to_ps (vector <vector < GRID_CENTER> > rect_grid, ofstream& 
 				<< " setrgbcolor fill stroke" << endl;
 			}
 		}
-
 		cout << endl;
 	}
 }

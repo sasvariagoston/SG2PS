@@ -1,4 +1,4 @@
-// Copyright (C) 2012, 2013 Ágoston Sasvári
+// Copyright (C) 2012 - 2014 Ágoston Sasvári
 // All rights reserved.
 // This code is published under the GNU Lesser General Public License.
 
@@ -139,12 +139,27 @@ vector <vector < vector <string> > > return_default_settings_database () {
 			"A",
 			"  - Clustering..................................: iteration for ideal cluster number",
 			"    - automatic cluster number..............................[a],  ");
+
+
 	pushbach_settings_range (defitem,
 			"2", "9",
 			"  - Clustering..................................: ",
 			" clusters",
 			"    - or 2..9 clusters...................................[2..9]?  ",
 			"");
+
+
+	/*
+	pushbach_settings_option (defitem, "2", "", "");
+	pushbach_settings_option (defitem, "3", "", "");
+	pushbach_settings_option (defitem, "4", "", "");
+	pushbach_settings_option (defitem, "5", "", "");
+	pushbach_settings_option (defitem, "6", "", "");
+	pushbach_settings_option (defitem, "7", "", "");
+	pushbach_settings_option (defitem, "8", "", "");
+	pushbach_settings_option (defitem, "9", "", "");
+	*/
+
 	DEF.push_back(defitem);
 
 	pushbach_settings_item (defitem, "LABELING:", "  - Labeling of stereonet:");
@@ -190,10 +205,12 @@ vector <vector < vector <string> > > return_default_settings_database () {
 			"B",
 			"  - Inversion...................................: using brute force iteration",
 			"    - inversion using brute force iteration.................[b],  ");
+	/*
 	pushbach_settings_option (defitem,
 			"Y",
 			"  - Inversion...................................: using Yamaji's (2000) iteration",
 			"    - inversion using Yamaji's (2005) method................[y],  ");
+	*/
 	pushbach_settings_option (defitem,
 			"N",
 			"  - Inversion...................................: none",
@@ -238,12 +255,15 @@ vector <vector < vector <string> > > return_default_settings_database () {
 	DEF.push_back(defitem);
 
 	pushbach_settings_item (defitem, "STRESSANGLE:", "  - Angle between s1 and fault plane for regression: ");
+
+
 	pushbach_settings_range (defitem,
 			"10", "80",
 			"  - Angle in degs between s1 and fault plane....: ",
 			" degree(s)",
 			"    - 10 to 80 degrees.................................[10..80]?  ",
 			"");
+
 	//pushbach_settings_option (defitem,"30","","");  //temp
 	DEF.push_back(defitem);
 
@@ -259,13 +279,16 @@ vector <vector < vector <string> > > return_default_settings_database () {
 	DEF.push_back(defitem);
 
 	pushbach_settings_item (defitem, "LINEWIDTH:", "  - Linewidth in points (1/72 inch):");
+
+
 	pushbach_settings_range (defitem,
 			"0", "10",
 			"  - Linewidth...................................: ",
 			" points",
 			"    - 0.1 to 1.0.............................[1...9, 0 for 1.0]?  ",
-			"0.6");
-	//pushbach_settings_option (defitem,"0.6","","");  //temp
+			"6");
+
+	//pushbach_settings_option (defitem,"6","","");  //temp
 	DEF.push_back(defitem);
 
 	pushbach_settings_item (defitem, "ROSETYPE:", "  - Rose plot for data sets:");
@@ -315,13 +338,21 @@ vector <vector < vector <string> > > return_default_settings_database () {
 			"  - Contour of input data.......................: no contouring",
 			"    - no contouring.........................................[N],  ");
 	pushbach_settings_option (defitem,
-			"S",
-			"  - Contour of input data.......................: Schmidt 1% method",
-			"    - Schmidt 1% method.....................................[s],  ");
+			"D",
+			"  - Contour of input data.......................: Dip direction / bearing",
+			"    - Dip direction / bearing...............................[d],  ");
 	pushbach_settings_option (defitem,
-			"K",
-			"  - Contour of input data.......................: Kamb's (1959) method",
-			"    - Kamb's (1959) method..................................[k],  ");
+			"S",
+			"  - Contour of input data.......................: Strike direction / bearing",
+			"    - Strike direction / bearing............................[s],  ");
+	pushbach_settings_option (defitem,
+			"O",
+			"  - Contour of input data.......................: Plane normal / bearing",
+			"    - Plane normal / bearing................................[o],  ");
+	pushbach_settings_option (defitem,
+			"B",
+			"  - Contour of input data.......................: Striae bearing / bearing",
+			"    - Striae bearing / bearing..............................[b],  ");
 	DEF.push_back(defitem);
 
 	pushbach_settings_item (defitem, "GRAYSCALE:", "  - Color mode of the grapical output:");
@@ -346,100 +377,343 @@ void dbg_default_settings_database (vector <vector < vector <string> > > DEF) {
 
 				cout << DEF.at(i).at(j).at(k) << endl;;
 			}
-
 		}
 		cout << "---" << endl;
 	}
 }
 
-
 void dbg_generate_settings_file_list () {
 
 	vector <vector <vector <string> > > DEF = return_default_settings_database();
+
+
+
+
 
 	for (size_t i00 = 1; i00 < DEF.at(0).size(); i00++) {
 		for (size_t i01 = 1; i01 < DEF.at(1).size(); i01++) {
 			for (size_t i02 = 1; i02 < DEF.at(2).size(); i02++) {
 				for (size_t i03 = 1; i03 < DEF.at(3).size(); i03++) {
 					for (size_t i04 = 1; i04 < DEF.at(4).size(); i04++) {
-						for (size_t i05 = 1; i05 < DEF.at(5).size(); i05++) {
-							for (size_t i06 = 1; i06 < DEF.at(6).size(); i06++) {
-								for (size_t i07 = 1; i07 < DEF.at(7).size(); i07++) {
-									for (size_t i08 = 1; i08 < DEF.at(8).size(); i08++) {
-										for (size_t i09 = 1; i09 < DEF.at(9).size(); i09++) {
-											for (size_t i10 = 1; i10 < DEF.at(10).size(); i10++) {
-												for (size_t i11 = 1; i11 < DEF.at(11).size(); i11++) {
-													for (size_t i12 = 1; i12 < DEF.at(12).size(); i12++) {
-														for (size_t i13 = 1; i13 < DEF.at(13).size(); i13++) {
-															for (size_t i14 = 1; i14 < DEF.at(14).size(); i14++) {
-																for (size_t i15 = 1; i15 < DEF.at(15).size(); i15++) {
-																	for (size_t i16 = 1; i16 < DEF.at(16).size(); i16++) {
-																		for (size_t i17 = 1; i17 < DEF.at(17).size(); i17++) {
-																			for (size_t i18 = 1; i18 < DEF.at(18).size(); i18++) {
-																				for (size_t i19 = 1; i19 < DEF.at(19).size(); i19++) {
-
-																					ofstream o;
-
-																					string filename =
-
-																							DEF.at(0).at(i00).at(0) +
-																							DEF.at(1).at(i01).at(0) +
-																							DEF.at(2).at(i02).at(0) +
-																							DEF.at(3).at(i03).at(0) +
-																							DEF.at(4).at(i04).at(0) +
-																							DEF.at(5).at(i05).at(0) +
-																							DEF.at(6).at(i06).at(0) +
-																							DEF.at(7).at(i07).at(0) +
-																							DEF.at(8).at(i08).at(0) +
-																							DEF.at(9).at(i09).at(0) +
-																							DEF.at(10).at(i10).at(0) +
-																							DEF.at(11).at(i11).at(0) +
-																							DEF.at(12).at(i12).at(0) +
-																							DEF.at(13).at(i13).at(0) +
-																							DEF.at(14).at(i14).at(0) +
-																							DEF.at(15).at(i15).at(0) +
-																							DEF.at(16).at(i16).at(0) +
-																							DEF.at(17).at(i17).at(0) +
-																							DEF.at(18).at(i18).at(0);
 
 
-																					cout << filename << endl;
+						ofstream o;
 
-																					o.open ((filename + ".set").c_str());
+						string filename =
+
+								DEF.at(0).at(i00).at(0) +
+								DEF.at(1).at(i01).at(0) +
+								DEF.at(2).at(i02).at(0) +
+								DEF.at(3).at(i03).at(0) +
+								DEF.at(4).at(i04).at(0) +
+								DEF.at(5).at(1).at(0) +
+								DEF.at(6).at(1).at(0) +
+								DEF.at(7).at(1).at(0) +
+								DEF.at(8).at(1).at(0) +
+								DEF.at(9).at(1).at(0) +
+								DEF.at(10).at(1).at(0) +
+								DEF.at(11).at(1).at(0) +
+								DEF.at(12).at(1).at(0) +
+								DEF.at(13).at(1).at(0) +
+								DEF.at(14).at(1).at(0) +
+								DEF.at(15).at(1).at(0) +
+								DEF.at(16).at(1).at(0) +
+								DEF.at(17).at(1).at(0) +
+								DEF.at(18).at(1).at(0) +
+								DEF.at(19).at(1).at(0);
+
+						o.open ((filename + ".set").c_str());
+
+						o << DEF.at(0).at(0).at(0) << '\t' << DEF.at(0).at(i00).at(0) << endl;
+						o << DEF.at(1).at(0).at(0) << '\t' << DEF.at(1).at(i01).at(0) << endl;
+						o << DEF.at(2).at(0).at(0) << '\t' << DEF.at(2).at(i02).at(0) << endl;
+						o << DEF.at(3).at(0).at(0) << '\t' << DEF.at(3).at(i03).at(0) << endl;
+						o << DEF.at(4).at(0).at(0) << '\t' << DEF.at(4).at(i04).at(0) << endl;
+						o << DEF.at(5).at(0).at(0) << '\t' << DEF.at(5).at(1).at(0) << endl;
+						o << DEF.at(6).at(0).at(0) << '\t' << DEF.at(6).at(1).at(0) << endl;
+						o << DEF.at(7).at(0).at(0) << '\t' << DEF.at(7).at(1).at(0) << endl;
+						o << DEF.at(8).at(0).at(0) << '\t' << DEF.at(8).at(1).at(0) << endl;
+						o << DEF.at(9).at(0).at(0) << '\t' << DEF.at(9).at(1).at(0) << endl;
+						o << DEF.at(10).at(0).at(0) << '\t' << DEF.at(10).at(1).at(0) << endl;
+						o << DEF.at(11).at(0).at(0) << '\t' << DEF.at(11).at(1).at(0) << endl;
+						o << DEF.at(12).at(0).at(0) << '\t' << DEF.at(12).at(1).at(0) << endl;
+						o << DEF.at(13).at(0).at(0) << '\t' << DEF.at(13).at(1).at(0) << endl;
+						o << DEF.at(14).at(0).at(0) << '\t' << DEF.at(14).at(1).at(0) << endl;
+						o << DEF.at(15).at(0).at(0) << '\t' << DEF.at(15).at(1).at(0) << endl;
+						o << DEF.at(16).at(0).at(0) << '\t' << DEF.at(16).at(1).at(0) << endl;
+						o << DEF.at(17).at(0).at(0) << '\t' << DEF.at(17).at(1).at(0) << endl;
+						o << DEF.at(18).at(0).at(0) << '\t' << DEF.at(18).at(1).at(0) << endl;
+						o << DEF.at(19).at(0).at(0) << '\t' << DEF.at(19).at(1).at(0) << endl;
+
+						o.close();
+					}
+				}
+			}
+		}
+	}
+
+	for (size_t i05 = 1; i05 < DEF.at(5).size(); i05++) {
+		for (size_t i06 = 1; i06 < DEF.at(6).size(); i06++) {
+			for (size_t i07 = 1; i07 < DEF.at(7).size(); i07++) {
+				for (size_t i08 = 1; i08 < DEF.at(8).size(); i08++) {
+					for (size_t i09 = 1; i09 < DEF.at(9).size(); i09++) {
 
 
-																					o << DEF.at(0).at(0).at(0) << '\t' << DEF.at(0).at(i00).at(0) << endl;
-																					o << DEF.at(1).at(0).at(0) << '\t' << DEF.at(1).at(i01).at(0) << endl;
-																					o << DEF.at(2).at(0).at(0) << '\t' << DEF.at(2).at(i02).at(0) << endl;
-																					o << DEF.at(3).at(0).at(0) << '\t' << DEF.at(3).at(i03).at(0) << endl;
-																					o << DEF.at(4).at(0).at(0) << '\t' << DEF.at(4).at(i04).at(0) << endl;
-																					o << DEF.at(5).at(0).at(0) << '\t' << DEF.at(5).at(i05).at(0) << endl;
-																					o << DEF.at(6).at(0).at(0) << '\t' << DEF.at(6).at(i06).at(0) << endl;
-																					o << DEF.at(7).at(0).at(0) << '\t' << DEF.at(7).at(i07).at(0) << endl;
-																					o << DEF.at(8).at(0).at(0) << '\t' << DEF.at(8).at(i08).at(0) << endl;
-																					o << DEF.at(9).at(0).at(0) << '\t' << DEF.at(9).at(i09).at(0) << endl;
-																					o << DEF.at(10).at(0).at(0) << '\t' << DEF.at(10).at(i10).at(0) << endl;
-																					o << DEF.at(11).at(0).at(0) << '\t' << DEF.at(11).at(i11).at(0) << endl;
-																					o << DEF.at(12).at(0).at(0) << '\t' << DEF.at(12).at(i12).at(0) << endl;
-																					o << DEF.at(13).at(0).at(0) << '\t' << DEF.at(13).at(i13).at(0) << endl;
-																					o << DEF.at(14).at(0).at(0) << '\t' << DEF.at(14).at(i14).at(0) << endl;
-																					o << DEF.at(15).at(0).at(0) << '\t' << DEF.at(15).at(i15).at(0) << endl;
-																					o << DEF.at(16).at(0).at(0) << '\t' << DEF.at(16).at(i16).at(0) << endl;
-																					o << DEF.at(17).at(0).at(0) << '\t' << DEF.at(17).at(i17).at(0) << endl;
-																					o << DEF.at(18).at(0).at(0) << '\t' << DEF.at(18).at(i18).at(0) << endl;
-																					o << DEF.at(19).at(0).at(0) << '\t' << DEF.at(19).at(i19).at(0) << endl;
+						ofstream o;
 
-																					o.close();
+						string filename =
+
+								DEF.at(0).at(1).at(0) +
+								DEF.at(1).at(1).at(0) +
+								DEF.at(2).at(1).at(0) +
+								DEF.at(3).at(1).at(0) +
+								DEF.at(4).at(1).at(0) +
+								DEF.at(5).at(i05).at(0) +
+								DEF.at(6).at(i06).at(0) +
+								DEF.at(7).at(i07).at(0) +
+								DEF.at(8).at(i08).at(0) +
+								DEF.at(9).at(i09).at(0) +
+								DEF.at(10).at(1).at(0) +
+								DEF.at(11).at(1).at(0) +
+								DEF.at(12).at(1).at(0) +
+								DEF.at(13).at(1).at(0) +
+								DEF.at(14).at(1).at(0) +
+								DEF.at(15).at(1).at(0) +
+								DEF.at(16).at(1).at(0) +
+								DEF.at(17).at(1).at(0) +
+								DEF.at(18).at(1).at(0) +
+								DEF.at(19).at(1).at(0);
+
+						o.open ((filename + ".set").c_str());
+
+						o << DEF.at(0).at(0).at(0) << '\t' << DEF.at(0).at(1).at(0) << endl;
+						o << DEF.at(1).at(0).at(0) << '\t' << DEF.at(1).at(1).at(0) << endl;
+						o << DEF.at(2).at(0).at(0) << '\t' << DEF.at(2).at(1).at(0) << endl;
+						o << DEF.at(3).at(0).at(0) << '\t' << DEF.at(3).at(1).at(0) << endl;
+						o << DEF.at(4).at(0).at(0) << '\t' << DEF.at(4).at(1).at(0) << endl;
+						o << DEF.at(5).at(0).at(0) << '\t' << DEF.at(5).at(i05).at(0) << endl;
+						o << DEF.at(6).at(0).at(0) << '\t' << DEF.at(6).at(i06).at(0) << endl;
+						o << DEF.at(7).at(0).at(0) << '\t' << DEF.at(7).at(i07).at(0) << endl;
+						o << DEF.at(8).at(0).at(0) << '\t' << DEF.at(8).at(i08).at(0) << endl;
+						o << DEF.at(9).at(0).at(0) << '\t' << DEF.at(9).at(i09).at(0) << endl;
+						o << DEF.at(10).at(0).at(0) << '\t' << DEF.at(10).at(1).at(0) << endl;
+						o << DEF.at(11).at(0).at(0) << '\t' << DEF.at(11).at(1).at(0) << endl;
+						o << DEF.at(12).at(0).at(0) << '\t' << DEF.at(12).at(1).at(0) << endl;
+						o << DEF.at(13).at(0).at(0) << '\t' << DEF.at(13).at(1).at(0) << endl;
+						o << DEF.at(14).at(0).at(0) << '\t' << DEF.at(14).at(1).at(0) << endl;
+						o << DEF.at(15).at(0).at(0) << '\t' << DEF.at(15).at(1).at(0) << endl;
+						o << DEF.at(16).at(0).at(0) << '\t' << DEF.at(16).at(1).at(0) << endl;
+						o << DEF.at(17).at(0).at(0) << '\t' << DEF.at(17).at(1).at(0) << endl;
+						o << DEF.at(18).at(0).at(0) << '\t' << DEF.at(18).at(1).at(0) << endl;
+						o << DEF.at(19).at(0).at(0) << '\t' << DEF.at(19).at(1).at(0) << endl;
+
+						o.close();
+					}
+				}
+			}
+		}
+	}
+
+	for (size_t i10 = 1; i10 < DEF.at(10).size(); i10++) {
+		for (size_t i11 = 1; i11 < DEF.at(11).size(); i11++) {
+			for (size_t i12 = 1; i12 < DEF.at(12).size(); i12++) {
+				for (size_t i13 = 1; i13 < DEF.at(13).size(); i13++) {
+					for (size_t i14 = 1; i14 < DEF.at(14).size(); i14++) {
 
 
-																				}
-																			}
-																		}
-																	}
-																}
-															}
-														}
-													}
+						ofstream o;
+
+						string filename =
+
+								DEF.at(0).at(1).at(0) +
+								DEF.at(1).at(1).at(0) +
+								DEF.at(2).at(1).at(0) +
+								DEF.at(3).at(1).at(0) +
+								DEF.at(4).at(1).at(0) +
+								DEF.at(5).at(1).at(0) +
+								DEF.at(6).at(1).at(0) +
+								DEF.at(7).at(1).at(0) +
+								DEF.at(8).at(1).at(0) +
+								DEF.at(9).at(1).at(0) +
+								DEF.at(10).at(i10).at(0) +
+								DEF.at(11).at(i11).at(0) +
+								DEF.at(12).at(i12).at(0) +
+								DEF.at(13).at(i13).at(0) +
+								DEF.at(14).at(i14).at(0) +
+								DEF.at(15).at(1).at(0) +
+								DEF.at(16).at(1).at(0) +
+								DEF.at(17).at(1).at(0) +
+								DEF.at(18).at(1).at(0) +
+								DEF.at(19).at(1).at(0);
+
+						o.open ((filename + ".set").c_str());
+
+						o << DEF.at(0).at(0).at(0) << '\t' << DEF.at(0).at(1).at(0) << endl;
+						o << DEF.at(1).at(0).at(0) << '\t' << DEF.at(1).at(1).at(0) << endl;
+						o << DEF.at(2).at(0).at(0) << '\t' << DEF.at(2).at(1).at(0) << endl;
+						o << DEF.at(3).at(0).at(0) << '\t' << DEF.at(3).at(1).at(0) << endl;
+						o << DEF.at(4).at(0).at(0) << '\t' << DEF.at(4).at(1).at(0) << endl;
+						o << DEF.at(5).at(0).at(0) << '\t' << DEF.at(5).at(1).at(0) << endl;
+						o << DEF.at(6).at(0).at(0) << '\t' << DEF.at(6).at(1).at(0) << endl;
+						o << DEF.at(7).at(0).at(0) << '\t' << DEF.at(7).at(1).at(0) << endl;
+						o << DEF.at(8).at(0).at(0) << '\t' << DEF.at(8).at(1).at(0) << endl;
+						o << DEF.at(9).at(0).at(0) << '\t' << DEF.at(9).at(1).at(0) << endl;
+						o << DEF.at(10).at(0).at(0) << '\t' << DEF.at(10).at(i10).at(0) << endl;
+						o << DEF.at(11).at(0).at(0) << '\t' << DEF.at(11).at(i11).at(0) << endl;
+						o << DEF.at(12).at(0).at(0) << '\t' << DEF.at(12).at(i12).at(0) << endl;
+						o << DEF.at(13).at(0).at(0) << '\t' << DEF.at(13).at(i13).at(0) << endl;
+						o << DEF.at(14).at(0).at(0) << '\t' << DEF.at(14).at(i14).at(0) << endl;
+						o << DEF.at(15).at(0).at(0) << '\t' << DEF.at(15).at(1).at(0) << endl;
+						o << DEF.at(16).at(0).at(0) << '\t' << DEF.at(16).at(1).at(0) << endl;
+						o << DEF.at(17).at(0).at(0) << '\t' << DEF.at(17).at(1).at(0) << endl;
+						o << DEF.at(18).at(0).at(0) << '\t' << DEF.at(18).at(1).at(0) << endl;
+						o << DEF.at(19).at(0).at(0) << '\t' << DEF.at(19).at(1).at(0) << endl;
+
+						o.close();
+					}
+				}
+			}
+		}
+	}
+
+
+
+	for (size_t i15 = 1; i15 < DEF.at(15).size(); i15++) {
+		for (size_t i16 = 1; i16 < DEF.at(16).size(); i16++) {
+			for (size_t i17 = 1; i17 < DEF.at(17).size(); i17++) {
+				for (size_t i18 = 1; i18 < DEF.at(18).size(); i18++) {
+					for (size_t i19 = 1; i19 < DEF.at(19).size(); i19++) {
+
+
+						ofstream o;
+
+						string filename =
+
+								DEF.at(0).at(1).at(0) +
+								DEF.at(1).at(1).at(0) +
+								DEF.at(2).at(1).at(0) +
+								DEF.at(3).at(1).at(0) +
+								DEF.at(4).at(1).at(0) +
+								DEF.at(5).at(1).at(0) +
+								DEF.at(6).at(1).at(0) +
+								DEF.at(7).at(1).at(0) +
+								DEF.at(8).at(1).at(0) +
+								DEF.at(9).at(1).at(0) +
+								DEF.at(10).at(1).at(0) +
+								DEF.at(11).at(1).at(0) +
+								DEF.at(12).at(1).at(0) +
+								DEF.at(13).at(1).at(0) +
+								DEF.at(14).at(1).at(0) +
+								DEF.at(15).at(i15).at(0) +
+								DEF.at(16).at(i16).at(0) +
+								DEF.at(17).at(i17).at(0) +
+								DEF.at(18).at(i18).at(0) +
+								DEF.at(19).at(i19).at(0);
+
+						o.open ((filename + ".set").c_str());
+
+						o << DEF.at(0).at(0).at(0) << '\t' << DEF.at(0).at(1).at(0) << endl;
+						o << DEF.at(1).at(0).at(0) << '\t' << DEF.at(1).at(1).at(0) << endl;
+						o << DEF.at(2).at(0).at(0) << '\t' << DEF.at(2).at(1).at(0) << endl;
+						o << DEF.at(3).at(0).at(0) << '\t' << DEF.at(3).at(1).at(0) << endl;
+						o << DEF.at(4).at(0).at(0) << '\t' << DEF.at(4).at(1).at(0) << endl;
+						o << DEF.at(5).at(0).at(0) << '\t' << DEF.at(5).at(1).at(0) << endl;
+						o << DEF.at(6).at(0).at(0) << '\t' << DEF.at(6).at(1).at(0) << endl;
+						o << DEF.at(7).at(0).at(0) << '\t' << DEF.at(7).at(1).at(0) << endl;
+						o << DEF.at(8).at(0).at(0) << '\t' << DEF.at(8).at(1).at(0) << endl;
+						o << DEF.at(9).at(0).at(0) << '\t' << DEF.at(9).at(1).at(0) << endl;
+						o << DEF.at(10).at(0).at(0) << '\t' << DEF.at(10).at(1).at(0) << endl;
+						o << DEF.at(11).at(0).at(0) << '\t' << DEF.at(11).at(1).at(0) << endl;
+						o << DEF.at(12).at(0).at(0) << '\t' << DEF.at(12).at(1).at(0) << endl;
+						o << DEF.at(13).at(0).at(0) << '\t' << DEF.at(13).at(1).at(0) << endl;
+						o << DEF.at(14).at(0).at(0) << '\t' << DEF.at(14).at(1).at(0) << endl;
+						o << DEF.at(15).at(0).at(0) << '\t' << DEF.at(15).at(i15).at(0) << endl;
+						o << DEF.at(16).at(0).at(0) << '\t' << DEF.at(16).at(i16).at(0) << endl;
+						o << DEF.at(17).at(0).at(0) << '\t' << DEF.at(17).at(i17).at(0) << endl;
+						o << DEF.at(18).at(0).at(0) << '\t' << DEF.at(18).at(i18).at(0) << endl;
+						o << DEF.at(19).at(0).at(0) << '\t' << DEF.at(19).at(i19).at(0) << endl;
+
+						o.close();
+					}
+				}
+			}
+		}
+	}
+
+
+
+
+
+
+
+
+
+	/*
+
+
+	for (size_t i08 = 1; i08 < DEF.at(8).size(); i08++) {
+		for (size_t i09 = 1; i09 < DEF.at(9).size(); i09++) {
+			for (size_t i10 = 1; i10 < DEF.at(10).size(); i10++) {
+				for (size_t i11 = 1; i11 < DEF.at(11).size(); i11++) {
+					for (size_t i12 = 1; i12 < DEF.at(12).size(); i12++) {
+						for (size_t i13 = 1; i13 < DEF.at(13).size(); i13++) {
+							for (size_t i14 = 1; i14 < DEF.at(14).size(); i14++) {
+								for (size_t i15 = 1; i15 < DEF.at(15).size(); i15++) {
+									for (size_t i16 = 1; i16 < DEF.at(16).size(); i16++) {
+										for (size_t i17 = 1; i17 < DEF.at(17).size(); i17++) {
+											for (size_t i18 = 1; i18 < DEF.at(18).size(); i18++) {
+												for (size_t i19 = 1; i19 < DEF.at(19).size(); i19++) {
+
+
+													ofstream o;
+
+													string filename =
+
+															DEF.at(0).at(1).at(0) +
+															DEF.at(1).at(1).at(0) +
+															DEF.at(2).at(1).at(0) +
+															DEF.at(3).at(1).at(0) +
+															DEF.at(4).at(1).at(0) +
+															DEF.at(5).at(1).at(0) +
+															DEF.at(6).at(1).at(0) +
+															DEF.at(7).at(1).at(0) +
+															DEF.at(8).at(i08).at(0) +
+															DEF.at(9).at(i09).at(0) +
+															DEF.at(10).at(i10).at(0) +
+															DEF.at(11).at(i11).at(0) +
+															DEF.at(12).at(i12).at(0) +
+															DEF.at(13).at(i13).at(0) +
+															DEF.at(14).at(i14).at(0) +
+															DEF.at(15).at(i15).at(0) +
+															DEF.at(16).at(i16).at(0) +
+															DEF.at(17).at(i17).at(0) +
+															DEF.at(18).at(i18).at(0) +
+															DEF.at(19).at(i19).at(0);
+
+													o.open ((filename + ".set").c_str());
+
+													o << DEF.at(0).at(0).at(0) << '\t' << DEF.at(0).at(1).at(0) << endl;
+													o << DEF.at(1).at(0).at(0) << '\t' << DEF.at(1).at(1).at(0) << endl;
+													o << DEF.at(2).at(0).at(0) << '\t' << DEF.at(2).at(1).at(0) << endl;
+													o << DEF.at(3).at(0).at(0) << '\t' << DEF.at(3).at(1).at(0) << endl;
+													o << DEF.at(4).at(0).at(0) << '\t' << DEF.at(4).at(1).at(0) << endl;
+													o << DEF.at(5).at(0).at(0) << '\t' << DEF.at(5).at(1).at(0) << endl;
+													o << DEF.at(6).at(0).at(0) << '\t' << DEF.at(6).at(1).at(0) << endl;
+													o << DEF.at(7).at(0).at(0) << '\t' << DEF.at(7).at(1).at(0) << endl;
+													o << DEF.at(8).at(0).at(0) << '\t' << DEF.at(8).at(i08).at(0) << endl;
+													o << DEF.at(9).at(0).at(0) << '\t' << DEF.at(9).at(i09).at(0) << endl;
+													o << DEF.at(10).at(0).at(0) << '\t' << DEF.at(10).at(i10).at(0) << endl;
+													o << DEF.at(11).at(0).at(0) << '\t' << DEF.at(11).at(i11).at(0) << endl;
+													o << DEF.at(12).at(0).at(0) << '\t' << DEF.at(12).at(i12).at(0) << endl;
+													o << DEF.at(13).at(0).at(0) << '\t' << DEF.at(13).at(i13).at(0) << endl;
+													o << DEF.at(14).at(0).at(0) << '\t' << DEF.at(14).at(i14).at(0) << endl;
+													o << DEF.at(15).at(0).at(0) << '\t' << DEF.at(15).at(i15).at(0) << endl;
+													o << DEF.at(16).at(0).at(0) << '\t' << DEF.at(16).at(i16).at(0) << endl;
+													o << DEF.at(17).at(0).at(0) << '\t' << DEF.at(17).at(i17).at(0) << endl;
+													o << DEF.at(18).at(0).at(0) << '\t' << DEF.at(18).at(i18).at(0) << endl;
+													o << DEF.at(19).at(0).at(0) << '\t' << DEF.at(19).at(i19).at(0) << endl;
+
+													o.close();
 												}
 											}
 										}
@@ -452,5 +726,76 @@ void dbg_generate_settings_file_list () {
 			}
 		}
 	}
+
+
+
+	for (size_t i00 = 1; i00 < DEF.at(0).size(); i00++) {
+		for (size_t i01 = 1; i01 < DEF.at(1).size(); i01++) {
+			for (size_t i02 = 1; i02 < DEF.at(2).size(); i02++) {
+				for (size_t i03 = 1; i03 < DEF.at(3).size(); i03++) {
+					for (size_t i04 = 1; i04 < DEF.at(4).size(); i04++) {
+						for (size_t i05 = 1; i05 < DEF.at(5).size(); i05++) {
+							for (size_t i06 = 1; i06 < DEF.at(6).size(); i06++) {
+								for (size_t i07 = 1; i07 < DEF.at(7).size(); i07++) {
+
+									ofstream o;
+
+									string filename =
+
+											DEF.at(0).at(i00).at(0) +
+											DEF.at(1).at(i01).at(0) +
+											DEF.at(2).at(i02).at(0) +
+											DEF.at(3).at(i03).at(0) +
+											DEF.at(4).at(i04).at(0) +
+											DEF.at(5).at(i05).at(0) +
+											DEF.at(6).at(i06).at(0) +
+											DEF.at(7).at(i07).at(0) +
+											DEF.at(8).at(1).at(0) +
+											DEF.at(9).at(1).at(0) +
+											DEF.at(10).at(1).at(0) +
+											DEF.at(11).at(1).at(0) +
+											DEF.at(12).at(1).at(0) +
+											DEF.at(13).at(1).at(0) +
+											DEF.at(14).at(1).at(0) +
+											DEF.at(15).at(1).at(0) +
+											DEF.at(16).at(1).at(0) +
+											DEF.at(17).at(1).at(0) +
+											DEF.at(18).at(1).at(0) +
+											DEF.at(19).at(1).at(0);
+
+									o.open ((filename + ".set").c_str());
+
+									o << DEF.at(0).at(0).at(0) << '\t' << DEF.at(0).at(i00).at(0) << endl;
+									o << DEF.at(1).at(0).at(0) << '\t' << DEF.at(1).at(i01).at(0) << endl;
+									o << DEF.at(2).at(0).at(0) << '\t' << DEF.at(2).at(i02).at(0) << endl;
+									o << DEF.at(3).at(0).at(0) << '\t' << DEF.at(3).at(i03).at(0) << endl;
+									o << DEF.at(4).at(0).at(0) << '\t' << DEF.at(4).at(i04).at(0) << endl;
+									o << DEF.at(5).at(0).at(0) << '\t' << DEF.at(5).at(i05).at(0) << endl;
+									o << DEF.at(6).at(0).at(0) << '\t' << DEF.at(6).at(i06).at(0) << endl;
+									o << DEF.at(7).at(0).at(0) << '\t' << DEF.at(7).at(i07).at(0) << endl;
+									o << DEF.at(8).at(0).at(0) << '\t' << DEF.at(8).at(1).at(0) << endl;
+									o << DEF.at(9).at(0).at(0) << '\t' << DEF.at(9).at(1).at(0) << endl;
+									o << DEF.at(10).at(0).at(0) << '\t' << DEF.at(10).at(1).at(0) << endl;
+									o << DEF.at(11).at(0).at(0) << '\t' << DEF.at(11).at(1).at(0) << endl;
+									o << DEF.at(12).at(0).at(0) << '\t' << DEF.at(12).at(1).at(0) << endl;
+									o << DEF.at(13).at(0).at(0) << '\t' << DEF.at(13).at(1).at(0) << endl;
+									o << DEF.at(14).at(0).at(0) << '\t' << DEF.at(14).at(1).at(0) << endl;
+									o << DEF.at(15).at(0).at(0) << '\t' << DEF.at(15).at(1).at(0) << endl;
+									o << DEF.at(16).at(0).at(0) << '\t' << DEF.at(16).at(1).at(0) << endl;
+									o << DEF.at(17).at(0).at(0) << '\t' << DEF.at(17).at(1).at(0) << endl;
+									o << DEF.at(18).at(0).at(0) << '\t' << DEF.at(18).at(1).at(0) << endl;
+									o << DEF.at(19).at(0).at(0) << '\t' << DEF.at(19).at(1).at(0) << endl;
+
+									o.close();
+								}
+							}
+						}
+					}
+				}
+			}
+		}
+	}
+
+	*/
 	return;
 }

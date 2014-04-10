@@ -1,4 +1,4 @@
-// Copyright (C) 2012, 2013 Ágoston Sasvári
+// Copyright (C) 2012 - 2014 Ágoston Sasvári
 // All rights reserved.
 // This code is published under the GNU Lesser General Public License.
 
@@ -208,7 +208,7 @@ void PS_draw_rose_DATATYPE (vector <GDB> inGBD, ofstream& o, INPSET inset, CENTE
 	else ASSERT_DEAD_END();
 }
 
-void PS_draw_rose_DIPDIR (vector <GDB> inGDB, ofstream& o, INPSET inset, CENTER center) {
+void PS_draw_rose_DIPDIR (vector <GDB> inGDB, ofstream& o, INPSET inset, CENTER center, const bool is_debug) {
 
 	ROSENUMBER datanumber;
 	ROSENUMBER mx;
@@ -249,6 +249,14 @@ void PS_draw_rose_DIPDIR (vector <GDB> inGDB, ofstream& o, INPSET inset, CENTER 
 
 		if (datanumber.LIN_NUM > mx.LIN_NUM) mx.LIN_NUM = datanumber.LIN_NUM;
 		if (datanumber.PLN_NUM > mx.PLN_NUM) mx.PLN_NUM = datanumber.PLN_NUM;
+
+		if (is_debug) {
+
+			cout << fixed << setprecision(0) << flush;
+			cout << "ANGLE: " << begin_angle << flush;
+			cout << " LIN: " << datanumber.LIN_NUM << flush;
+			cout << " PLN: " << datanumber.PLN_NUM << endl;
+		}
 
 		begin_angle = begin_angle + step_angle;
 		if (inset.rosetype == "S") i++;
@@ -315,6 +323,14 @@ void PS_draw_rose_DIPDIR (vector <GDB> inGDB, ofstream& o, INPSET inset, CENTER 
 			percent.LIN_NUM = datanumber.LIN_NUM / mx.LIN_NUM;
 			percent.PLN_NUM = datanumber.PLN_NUM / mx.PLN_NUM;
 
+			if (is_debug) {
+
+				cout << fixed << setprecision(0) << flush;
+				cout << "ANGLE: " << begin_angle << flush;
+				cout << " LIN: " << datanumber.LIN_NUM << flush;
+				cout << " PLN: " << datanumber.PLN_NUM << endl;
+			}
+
 			PS_draw_rose_DATATYPE(inGDB, o, inset, center, percent, begin_angle, false);
 
 			begin_angle = begin_angle + step_angle;
@@ -325,7 +341,7 @@ void PS_draw_rose_DIPDIR (vector <GDB> inGDB, ofstream& o, INPSET inset, CENTER 
 	}
 }
 
-void PS_draw_rose_DIP (vector <GDB> inGDB, ofstream& o, INPSET inset, CENTER center) {
+void PS_draw_rose_DIP (vector <GDB> inGDB, ofstream& o, INPSET inset, CENTER center, const bool is_debug) {
 
 	ROSENUMBER datanumber;
 	ROSENUMBER mx;
@@ -403,26 +419,26 @@ void PS_draw_rose_DIP (vector <GDB> inGDB, ofstream& o, INPSET inset, CENTER cen
 	}
 }
 
-void PS_draw_rose (vector <GDB> roseGDB, ofstream& o, INPSET inset, CENTER center, PAPER P, bool tilt) {
+void PS_draw_rose (vector <GDB> roseGDB, ofstream& o, INPSET inset, CENTER center, PAPER P, bool tilt, const bool is_debug) {
 
 	if (!tilt) {
 
 		center.X = P.O3X;
 		center.Y = P.O3Y;
-		PS_draw_rose_DIPDIR (roseGDB, o, inset, center);
+		PS_draw_rose_DIPDIR (roseGDB, o, inset, center, is_debug);
 
 		center.X = P.O5X;
 		center.Y = P.O5Y;
-		PS_draw_rose_DIP (roseGDB, o, inset, center);
+		PS_draw_rose_DIP (roseGDB, o, inset, center, is_debug);
 	}
 	else {
 
 		center.X = P.O4X;
 		center.Y = P.O4Y;
-		PS_draw_rose_DIPDIR (roseGDB, o, inset, center);
+		PS_draw_rose_DIPDIR (roseGDB, o, inset, center, is_debug);
 
 		center.X = P.O6X;
 		center.Y = P.O6Y;
-		PS_draw_rose_DIP (roseGDB, o, inset, center);
+		PS_draw_rose_DIP (roseGDB, o, inset, center, is_debug);
 	}
 }

@@ -1,25 +1,21 @@
-//#include <algorithm>
+// Copyright (C) 2012 - 2014 Ágoston Sasvári
+// All rights reserved.
+// This code is published under the GNU Lesser General Public License.
 
+//#include <algorithm>
 #include <algorithm>
-//#include <cmath>
-//#include <ctime>
-//#include <iomanip>
 #include <iostream>
 #include <iomanip>
 #include <math.h>
 #include <fstream>
-//#include <sstream>
-//#include <stdexcept>
-//#include <vector>
 
-//#include "array_to_vector.hpp"
+
 #include "assertions.hpp"
 #include "brute_force.hpp"
 #include "common.h"
 #include "inversion.h"
 #include "kaalsbeek.hpp"
 #include "rakhmanov.hpp"
-//#include "rgf.h"
 #include "structs.h"
 #include "brute_force.hpp"
 
@@ -73,8 +69,6 @@ vector <vector <double> > DIR_MX1_from_n1 (const VCTR& n1, const double& angle) 
 
 	VCTR n2 = DXDYDZ_from_NXNYNZ(n1);
 
-	//n2 = unitvector (n2);
-
 	n2 = ROTATE(n1, n2, angle);
 
 	n2 = unitvector(n2);
@@ -87,7 +81,7 @@ vector <vector <double> > DIR_MX1_from_n1 (const VCTR& n1, const double& angle) 
 			n1.X, n1.Y, n1.Z,
 			n2.X, n2.Y, n2.Z,
 			n3.X, n3.Y, n3.Z));
-} //CHECKED, NUMERICALLY OK
+}
 
 vector <vector <double> > st_from_reduced_stresstensor (const vector <vector <double> >& DIR_MX1, const double& fi) {
 
@@ -100,7 +94,7 @@ vector <vector <double> > st_from_reduced_stresstensor (const vector <vector <do
 
 	vector <vector <double> >  OUT = mult_mtrx (DIR_MX2, T);
 
-	return mult_mtrx(OUT, DIR_MX1); //NUMERICALLY CHECKED, OK
+	return mult_mtrx(OUT, DIR_MX1);
 }
 
 vector <VCTR> generate_centroids_net (const VCTR& ORIGO, const size_t POINTS_DISTANCE, const INPSET& inset) {
@@ -139,7 +133,7 @@ vector <VCTR> generate_centroids_net (const VCTR& ORIGO, const size_t POINTS_DIS
 	}
 	OUT.push_back(AXIS);
 
-	return OUT; //OK
+	return OUT;
 }
 
 bool by_MISFIT_ANGLE (const BRUTEFORCE_RESULT& x, const BRUTEFORCE_RESULT& y) {
@@ -375,15 +369,9 @@ vector <BRUTEFORCE_RESULT> BRUTEFORCE_ENGINE (const vector <GDB>& inGDB, const v
 
 STRESSTENSOR st_BRUTEFORCE (const vector <GDB>& inGDB, const INPSET& inset) {
 
-	vector <VCTR> CNTRVCTR;
-	vector <double> ANGVCTR;
-	vector <double> PHIVCTR;
-
-	CNTRVCTR = generate_centroids_net (declare_vector(0.0, 0.0, 1.0), 9, inset);
-
-	ANGVCTR = generate_angle_vector_180 (0.0, 180.0, 18);
-
-	PHIVCTR = generate_phi_vector (0.0, 1.0, 10);
+	vector <VCTR> CNTRVCTR = generate_centroids_net (declare_vector(0.0, 0.0, 1.0), 9, inset);
+	vector <double> ANGVCTR = generate_angle_vector_180 (0.0, 180.0, 18);
+	vector <double> PHIVCTR = generate_phi_vector (0.0, 1.0, 10);
 
 	vector <BRUTEFORCE_RESULT> BR_RAW = BRUTEFORCE_ENGINE (inGDB, CNTRVCTR, ANGVCTR, PHIVCTR, inset);
 

@@ -1,4 +1,4 @@
-// Copyright (C) 2012, 2013 Ágoston Sasvári
+// Copyright (C) 2012 - 2014 Ágoston Sasvári
 // All rights reserved.
 // This code is published under the GNU Lesser General Public License.
 
@@ -291,5 +291,13 @@ struct BRUTEFORCE_RESULT {
 	double ANG;
 	double PHI;
 	double MISFIT;
+};
+
+struct BEZIER {
+
+	VCTR A;
+	VCTR B;
+	VCTR C;
+	VCTR D;
 };
 #endif

@@ -1,4 +1,4 @@
-// Copyright (C) 2012, 2013 Ágoston Sasvári
+// Copyright (C) 2012 - 2014 Ágoston Sasvári
 // All rights reserved.
 // This code is published under the GNU Lesser General Public License.
 
@@ -10,7 +10,7 @@
 #include "structs.h"
 
 VCTR return_tilting_axis (GDB in, bool paleonorth);
-double return_tilting_angle (GDB in, INPSET inSET);
+double return_tilting_angle (GDB in, bool paleonorth);
 
 VCTR ROT_generate_N_vector_plane (VCTR N, VCTR AXIS, double ANGLE);
 VCTR ROT_generate_N_vector_lineation (VCTR D);

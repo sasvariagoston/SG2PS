@@ -1,4 +1,4 @@
-// Copyright (C) 2012, 2013 Ágoston Sasvári
+// Copyright (C) 2012 - 2014 Ágoston Sasvári
 // All rights reserved.
 // This code is published under the GNU Lesser General Public License.
 
@@ -9,7 +9,9 @@
 #include <sstream>
 
 #include "allowed_keys.hpp"
+#include "assertions.hpp"
 #include "density.h"
+#include "kaalsbeek.hpp"
 #include "ps.h"
 #include "rgf.h"
 #include "common.h"
@@ -463,6 +465,18 @@ void PS_net (ofstream& o, INPSET inset, PAPER P) {
 	if (inset.plot == "H")  nethemisphere = "Hoeppener-plot, " + nethemisphere;
 	else nethemisphere = "Angelier-plot, " + nethemisphere;
 
+	string contour = "";
+
+	if (is_computing_for_dipdir_bearing(inset))
+		contour = "Contouring plane dip directions / lineation bearings";
+	else if (is_computing_for_strike_bearing(inset))
+		contour = "Contouring plane strike directions / lineation bearings";
+	else if (is_computing_for_planenormal_bearing(inset))
+		contour = "Contouring plane normal directions / lineation bearings";
+	else if (is_computing_for_striaebearing_bearing(inset))
+			contour = "Contouring striae / lineations bearings";
+	else {};
+
 	o << '\n';
 	o << "  0.00 0.00 0.00 setrgbcolor 1 setlinewidth" << '\n' << '\n';
 
@@ -703,12 +717,24 @@ void PS_net (ofstream& o, INPSET inset, PAPER P) {
 	  << "  (N) 0 0 0 setrgbcolor show" << '\n';
 
 	o << "/ArialNarrow findfont 8 scalefont setfont" << '\n';
+
 	o << "  " <<  fixed << setprecision (3) << P.O1X - P.R - 0.2 * P.B
 	  << " "  <<  fixed << setprecision (3) << P.O1Y - P.R - 20.0 << " moveto"
 	  << "  (" << nethemisphere << ") show" << '\n';
 	o << "  " <<  fixed << setprecision (3) << P.O2X - P.R - 0.2 * P.B
 	  << " "  <<  fixed << setprecision (3) << P.O2Y - P.R - 20.0 << " moveto"
 	  << "  (" << nethemisphere << ") show" << '\n';
+
+
+	o
+	<< "  " <<  fixed << setprecision (3) << P.O1X - P.R - 0.2 * P.B
+	<< " "  <<  fixed << setprecision (3) << P.O1Y - P.R - 28.0 << " moveto"
+	<< "  (" << contour << ") show" << '\n';
+
+	o
+	<< "  " <<  fixed << setprecision (3) << P.O2X - P.R - 0.2 * P.B
+	<< " "  <<  fixed << setprecision (3) << P.O2Y - P.R - 28.0 << " moveto"
+	<< "  (" << contour << ") show" << '\n';
 
 	o << 20.0 * P.A << " " << P.A + 5.0 << " moveto"
 	  << "  (Plotted by SG2PS - for reference see www.sg2ps.eu webpage.) show" << '\n' << '\n';
@@ -732,6 +758,7 @@ void PS_stressdata (ofstream& o, CENTER center, PAPER P, STRESSFIELD sf, string 
 	else if (method == "SHAN") 			o << "(Regression after Shan et al. (2003) ) show" << '\n';
 	else if (method == "ANGELIER") 		o << "(Inversion after Angelier (1990) ) show" << '\n';
 	else if (method == "PTN") 			o << "(Regression after Turner (1953) ) show" << '\n';
+	else if (method == "BRUTEFORCE")	o << "(Brute force inversion) show" << '\n';
 	else if (method == "MICHAEL") 		o << "(Inversion after Michael (1984) ) show" << '\n';
 	else if (method == "MOSTAFA") 		o << "(Inversion after Mostafa (2005) ) show" << '\n';
 	else {}
@@ -2755,121 +2782,100 @@ void PS_SYMBOLS (vector <GDB> inGDB, ofstream& o, INPSET inset, PAPER P) {
 	PS_SYMBOLS_border (o, P);
 	PS_SYMBOLS_LABEL (o, inset, P);
 
-	o << "/ArialNarrow findfont 8 scalefont setfont" 					<< '\n';
+	font_PS(o, "ArialNarrow", 8);
 
-	o << "  " << P.S1X + 5.2 * P.A << " " << P.S1Y - 0.3 * P.A  << " moveto " << '\n';
-	o << "  (ROSE PLOT) 0 0 0 setrgbcolor show"  << '\n';
-	PS_SYMBOLS_ROSE (inGDB, o, inset, P);
+	//o << "/ArialNarrow findfont 8 scalefont setfont" 					<< '\n';
 
-	o << "  " << P.S1X + 7.4 * P.A << " " << P.S1Y - 0.3 * P.A  << " moveto " << '\n';
-	o << "  (GROUPS) 0 0 0 setrgbcolor show"  << '\n';
-	PS_SYMBOLS_GROUPS (o, inset, P);
+	color_PS(o, "0 0 0");
+
+	double X = P.S1X + 5.2 * P.A;
+	double Y = P.S1Y - 0.3 * P.A;
+	text_PS(o, X, Y, 3, "ROSE PLOT");
+
+	//o << "  " << P.S1X + 5.2 * P.A << " " << P.S1Y - 0.3 * P.A  << " moveto " << '\n';
+	//o << "  (ROSE PLOT) 0 0 0 setrgbcolor show"  << '\n';
+	//PS_SYMBOLS_ROSE (inGDB, o, inset, P);
+
+	X = P.S1X + 7.4 * P.A;
+	Y = P.S1Y - 0.3 * P.A;
+	text_PS(o, X, Y, 3, "GROUPS");
+	//o << "  " << P.S1X + 7.4 * P.A << " " << P.S1Y - 0.3 * P.A  << " moveto " << '\n';
+	//o << "  (GROUPS) 0 0 0 setrgbcolor show"  << '\n';
+	//PS_SYMBOLS_GROUPS (o, inset, P);
 
 	if (inGDB.at(0).DATAGROUP == "PLANE") {
 
-		o << "  " << P.S1X + 0.8 * P.A << " " << P.S1Y - 0.3 * P.A  << " moveto " << '\n';
-		o << "  (PLANES) 0 0 0 setrgbcolor show"  << '\n';
+		X = P.S1X + 0.8 * P.A;
+		Y = P.S1Y - 0.3 * P.A;
+		text_PS(o, X, Y, 3, "PLANES");
+		//o << "  " << P.S1X + 0.8 * P.A << " " << P.S1Y - 0.3 * P.A  << " moveto " << '\n';
+		//o << "  (PLANES) 0 0 0 setrgbcolor show"  << '\n';
 		PS_SYMBOLS_PLANE (inGDB, o, inset, P);
 
-		o << "  " << P.S1X + 2.5 * P.A << " " << P.S1Y - 0.3 * P.A  << " moveto " << '\n';
-		o << "  (BINGHAM STATISTICS) 0 0 0 setrgbcolor show"  << '\n';
-
+		X = P.S1X + 2.5 * P.A;
+		Y = P.S1Y - 0.3 * P.A;
+		text_PS(o, X, Y, 3, "GROUPS");
+		//o << "  " << P.S1X + 2.5 * P.A << " " << P.S1Y - 0.3 * P.A  << " moveto " << '\n';
+		//o << "  (BINGHAM STATISTICS) 0 0 0 setrgbcolor show"  << '\n';
 		if ((inset.fracture == "B") && (inGDB.at(0).DATATYPE == "FRACTURE")) PS_SYMBOLS_BINGHAM (o, P);
-
-		return;
 	}
+	else if (inGDB.at(0).DATAGROUP == "STRIAE") {
 
-	if (inGDB.at(0).DATAGROUP == "STRIAE") {
-
-		o << "  " << P.S1X + 0.1 * P.A << " " << P.S1Y - 0.3 * P.A  << " moveto " << '\n';
-		o << "  (FAULT AND STRIAE DATA) 0 0 0 setrgbcolor show"  << '\n';
+		X = P.S1X + 0.1 * P.A;
+		Y = P.S1Y - 0.3 * P.A;
+		text_PS(o, X, Y, 3, "FAULT AND STRIAE DATA");
+		//o << "  " << P.S1X + 0.1 * P.A << " " << P.S1Y - 0.3 * P.A  << " moveto " << '\n';
+		//o << "  (FAULT AND STRIAE DATA) 0 0 0 setrgbcolor show"  << '\n';
 
 		if (inset.plot == "A")	PS_SYMBOLS_STRIAE (o, inset, P);
 		else PS_SYMBOLS_HOEPPNER (o, P);
 
-		o << "  " << P.S1X + 2.6 * P.A << " " << P.S1Y - 0.3 * P.A  << " moveto " << '\n';
-		o << "  (STRESS INVERSION) 0 0 0 setrgbcolor show"  << '\n';
+		X = P.S1X + 2.6 * P.A;
+		Y = P.S1Y - 0.3 * P.A;
+		text_PS(o, X, Y, 3, "STRESS INVERSION");
+		//o << "  " << P.S1X + 2.6 * P.A << " " << P.S1Y - 0.3 * P.A  << " moveto " << '\n';
+		//o << "  (STRESS INVERSION) 0 0 0 setrgbcolor show"  << '\n';
 		if (inset.inversion != "N") PS_SYMBOLS_INVERSION (o, P);
-
-		return;
 	}
+	else if (inGDB.at(0).DATAGROUP == "SC") {
 
-	if (inGDB.at(0).DATAGROUP == "SC") {
-
-		o << "  " << P.S1X + 0.1 * P.A << " " << P.S1Y - 0.3 * P.A  << " moveto " << '\n';
-		o << "  (SCHISTOSITY, CLEAVEGE) 0 0 0 setrgbcolor show"  << '\n';
+		X = P.S1X + 0.1 * P.A;
+		Y = P.S1Y - 0.3 * P.A;
+		text_PS(o, X, Y, 3, "SCHISTOSITY, CLEAVEGE");
+		//o << "  " << P.S1X + 0.1 * P.A << " " << P.S1Y - 0.3 * P.A  << " moveto " << '\n';
+		//o << "  (SCHISTOSITY, CLEAVEGE) 0 0 0 setrgbcolor show"  << '\n';
 		PS_SYMBOLS_SC (o, inset, P);
 
-		o << "  " << P.S1X + 2.6 * P.A << " " << P.S1Y - 0.3 * P.A  << " moveto " << '\n';
-		o << "  (STRESS INVERSION) 0 0 0 setrgbcolor show"  << '\n';
-
-		return;
+		X = P.S1X + 2.6 * P.A;
+		Y = P.S1Y - 0.3 * P.A;
+		text_PS(o, X, Y, 3, "STRESS INVERSION");
+		//o << "  " << P.S1X + 2.6 * P.A << " " << P.S1Y - 0.3 * P.A  << " moveto " << '\n';
+		//o << "  (STRESS INVERSION) 0 0 0 setrgbcolor show"  << '\n';
 	}
+	else if (inGDB.at(0).DATAGROUP == "LINEATION") {
 
-	if (inGDB.at(0).DATAGROUP == "LINEATION") {
-
-		o << "  " << P.S1X + 0.6 * P.A << " " << P.S1Y - 0.3 * P.A  << " moveto " << '\n';
-		o << "  (LINEATION) 0 0 0 setrgbcolor show"  << '\n';
+		X = P.S1X + 0.6 * P.A;
+		Y = P.S1Y - 0.3 * P.A;
+		text_PS(o, X, Y, 3, "LINEATION");
+		//o << "  " << P.S1X + 0.6 * P.A << " " << P.S1Y - 0.3 * P.A  << " moveto " << '\n';
+		//o << "  (LINEATION) 0 0 0 setrgbcolor show"  << '\n';
 		PS_SYMBOLS_LINEATION (inGDB, o, inset, P);
-
-		return;
 	}
+	else ASSERT_DEAD_END();
 }
 
-void ps_plot_densities (DENSITY dens, size_t radius, ofstream& o, INPSET inset, CENTER center) {
+void color_PS (ofstream& o, const string& RGB) {
 
-	const size_t min_dipdir = dens.direction.DIPDIR - radius;
-	const size_t max_dipdir = dens.direction.DIPDIR + radius;
+	o << " " << RGB << " setrgbcolor" << '\n';
+}
 
-	const size_t min_dip = dens.direction.DIP - radius;
-	const size_t max_dip = dens.direction.DIP + radius;
+void text_PS (ofstream& o, const double X, const double Y, const size_t decimals, const string text) {
 
-	DIPDIR_DIP act_DD;
+	o << fixed << setprecision(decimals) << flush;
+	o << " " << X << " " << Y << " moveto (" << text << ") show" << '\n';
+}
 
-	act_DD.DIPDIR = min_dipdir;
-	act_DD.DIP = min_dip;
+void font_PS (ofstream& o, const string& font, const size_t size) {
 
-	XY act_xy = stereonet_coordinate_from_DIPDIR_DIP (act_DD, center, inset);
-
-	o << fixed << setprecision (3) << '\n';
-
-	o << "newpath" << '\n';
-
-	o << "  "  <<  act_xy.X << " " << act_xy.Y << " moveto" << '\n';
-
-	for (act_DD.DIPDIR = min_dipdir + 1; act_DD.DIPDIR < max_dipdir + 1; act_DD.DIPDIR++) {
-
-		act_xy = stereonet_coordinate_from_DIPDIR_DIP (act_DD, center, inset);
-		o << "  "  <<  act_xy.X << " " << act_xy.Y << " lineto" << '\n';
-	}
-
-	for (act_DD.DIP = min_dip + 1; act_DD.DIP < max_dip + 1; act_DD.DIP++) {
-
-		act_xy = stereonet_coordinate_from_DIPDIR_DIP (act_DD, center, inset);
-		o << "  "  <<  act_xy.X << " " << act_xy.Y << " lineto" << '\n';
-	}
-
-	for (act_DD.DIPDIR = max_dipdir - 1; act_DD.DIPDIR > min_dipdir - 1; act_DD.DIPDIR--) {
-
-		act_xy = stereonet_coordinate_from_DIPDIR_DIP (act_DD, center, inset);
-		o << "  "  <<  act_xy.X << " " << act_xy.Y << " lineto" << '\n';
-	}
-
-	for (act_DD.DIP = min_dip - 1; act_DD.DIP > max_dip - 1; act_DD.DIP--) {
-
-		act_xy = stereonet_coordinate_from_DIPDIR_DIP (act_DD, center, inset);
-		o << "  "  <<  act_xy.X << " " << act_xy.Y << " lineto" << '\n';
-	}
-
-	o << "  closepath" << '\n';
-
-
-	o << fixed << setprecision (2) << '\n';
-
-	o
-	<< "  "
-	<< (density_color_from_percentage(dens.percentage)).X << " "
-	<< (density_color_from_percentage(dens.percentage)).Y << " "
-	<< (density_color_from_percentage(dens.percentage)).Z << " "
-	<< "setrgbcolor fill stroke" << '\n' << '\n';
+	o << "/" << font << " findfont " << size << " scalefont setfont" << '\n';
 }
