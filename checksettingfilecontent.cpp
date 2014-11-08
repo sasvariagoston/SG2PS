@@ -12,6 +12,7 @@
 #include "exceptions.hpp"
 #include "generate_default_settings.hpp"
 #include "run_mode.h"
+#include "settings.hpp"
 
 bool has_settings_file_data (string settingfilename) {
 
@@ -140,7 +141,6 @@ bool is_setting_record_correct (vector <string> SETrecord) {
 			if (fit_of_records (SETrecord, DEF, j, k)) return true;
 		}
 	}
-
 	return false;
 }
 
@@ -176,7 +176,6 @@ vector <vector <string> > input_hardcoded () {
 
 		OUT.push_back(buf);
 	}
-
 	return OUT;
 }
 
@@ -204,81 +203,6 @@ vector <vector <string> > apply_default (vector <vector <string> > SET) {
 	return OUT;
 }
 
-vector <vector <string> > settings_to_vector (INPSET inset) {
-
-	vector <vector <string> > out;
-
-	for (size_t i = 0; i < 19; i++) {
-
-		vector <string> rec;
-
-		string buf = "";
-
-		rec.push_back(buf);
-		rec.push_back(buf);
-
-		out.push_back(rec);
-	}
-
-	out.at( 0).at(0) = "DATARULE:";			out.at( 0).at(1) = inset.datarule;
-	out.at( 1).at(0) = "PLOT:";				out.at( 1).at(1) = inset.plot;
-	out.at( 2).at(0) = "PLOTTYPE:";			out.at( 2).at(1) = inset.plottype;
-	out.at( 3).at(0) = "HEMISPHERE:";		out.at( 3).at(1) = inset.hemisphere;
-	out.at( 4).at(0) = "TILTING:";			out.at( 4).at(1) = inset.tilting;
-	out.at( 5).at(0) = "GROUP:";			out.at( 5).at(1) = inset.group;
-	out.at( 6).at(0) = "CLUSTERNUMBER:";	out.at( 6).at(1) = inset.clusternumber;
-	out.at( 7).at(0) = "LABELING:";			out.at( 7).at(1) = inset.labeling;
-	out.at( 8).at(0) = "INVERSION:";		out.at( 8).at(1) = inset.inversion;
-	out.at( 9).at(0) = "RUP_CLUSTERING:";	out.at( 9).at(1) = inset.clustering_RUP_ANG;
-	out.at(10).at(0) = "VIRTUAL:";			out.at(10).at(1) = inset.virt_striae;
-	out.at(11).at(0) = "IDEALMOVEMENT:";	out.at(11).at(1) = inset.idealmovement;
-	out.at(12).at(0) = "STRESSANGLE:";		out.at(12).at(1) = double_to_string(inset.angle, 1); // double here
-	out.at(13).at(0) = "BINGHAM:";			out.at(13).at(1) = inset.fracture;
-	out.at(14).at(0) = "LINEWIDTH:";		out.at(14).at(1) = double_to_string(inset.linewidth, 1);// double here
-	out.at(15).at(0) = "ROSETYPE:";			out.at(15).at(1) = inset.rosetype;
-	out.at(16).at(0) = "ROSEDIRECTION:";	out.at(16).at(1) = inset.rosedirection;
-	out.at(17).at(0) = "ROSEBINNING:";		out.at(17).at(1) = inset.rosebinning;
-	out.at(18).at(0) = "CONTOURING:";		out.at(18).at(1) = inset.contouring;
-	out.at(19).at(0) = "GRAYSCALE:";		out.at(19).at(1) = inset.grayscale;
-
-
-	return out;
-}
-
-INPSET vector_to_settings (vector <vector <string> > SET) {
-
-	INPSET inset;
-
-	bool failed;
-
-	for (size_t i = 0; i < SET.size(); i++) {
-
-		if 		(SET.at(i).at(0) == "DATARULE:") 		inset.datarule 				= SET.at(i).at(1);
-		else if (SET.at(i).at(0) == "PLOT:")			inset.plot 					= SET.at(i).at(1);
-		else if (SET.at(i).at(0) == "PLOTTYPE:")		inset.plottype 				= SET.at(i).at(1);
-		else if (SET.at(i).at(0) == "HEMISPHERE:")		inset.hemisphere 			= SET.at(i).at(1);
-		else if (SET.at(i).at(0) == "TILTING:")			inset.tilting 				= SET.at(i).at(1);
-		else if (SET.at(i).at(0) == "GROUP:")			inset.group 				= SET.at(i).at(1);
-		else if (SET.at(i).at(0) == "CLUSTERNUMBER:")	inset.clusternumber 		= SET.at(i).at(1);
-		else if (SET.at(i).at(0) == "LABELING:")		inset.labeling 				= SET.at(i).at(1);
-		else if (SET.at(i).at(0) == "INVERSION:")		inset.inversion				= SET.at(i).at(1);
-		else if (SET.at(i).at(0) == "RUP_CLUSTERING:")	inset.clustering_RUP_ANG	= SET.at(i).at(1);
-		else if (SET.at(i).at(0) == "VIRTUAL:")			inset.virt_striae			= SET.at(i).at(1);
-		else if (SET.at(i).at(0) == "IDEALMOVEMENT:")	inset.idealmovement			= SET.at(i).at(1);
-		else if (SET.at(i).at(0) == "STRESSANGLE:")		inset.angle					= string_to_double(SET.at(i).at(1), failed);
-		else if (SET.at(i).at(0) == "BINGHAM:")			inset.fracture				= SET.at(i).at(1);
-		else if (SET.at(i).at(0) == "LINEWIDTH:")		inset.linewidth				= string_to_double(SET.at(i).at(1), failed) / 10.0;
-		else if (SET.at(i).at(0) == "ROSETYPE:")		inset.rosetype				= SET.at(i).at(1);
-		else if (SET.at(i).at(0) == "ROSEDIRECTION:")	inset.rosedirection			= SET.at(i).at(1);
-		else if (SET.at(i).at(0) == "ROSEBINNING:")		inset.rosebinning			= SET.at(i).at(1);
-		else if (SET.at(i).at(0) == "CONTOURING:")		inset.contouring			= SET.at(i).at(1);
-		else if (SET.at(i).at(0) == "GRAYSCALE:")		inset.grayscale				= SET.at(i).at(1);
-		else {}
-	}
-
-	return inset;
-}
-
 string input_setting_decision () {
 
 	string c;
@@ -286,7 +210,7 @@ string input_setting_decision () {
 	while (!((c == "S") || (c == "D") || (c == "N"))) {
 
 		cout << endl;
-		cout << "Do You want to use and save these settings.....[S]," 			<< endl;
+		cout << "Do you want to use and save these settings.....[S]," 			<< endl;
 		cout << "use default values.............................[D]," 			<< endl;
 		cout << "input new ones.................................[N]," 			<< endl;
 		cout << "or exit........................................[X]........?  " << flush;
@@ -296,18 +220,17 @@ string input_setting_decision () {
 
 		if (c == "X") throw exit_requested();
 	}
-
 	return c;
 }
 
 vector <vector <string> > decide_setting_status (string projectname) {
 
-	cout << endl << endl;
-	cout << "CHECK SETTINGS OF '" <<  capslock(projectname) << "' PROJECT"<< endl;
+	if (!is_mode_DEBUG()) cout << endl << endl;
+	if (!is_mode_DEBUG()) cout << "CHECK SETTINGS OF '" <<  capslock(projectname) << "' PROJECT"<< endl;
 
 	if (is_settings_file_correct (projectname + ".set")) {
 
-		cout << "  - Using '" << capslock (projectname) << ".SET' setting file." << endl;
+		if (!is_mode_DEBUG()) cout << "  - Using '" << capslock (projectname) << ".SET' setting file." << endl;
 
 		return read_settingsfile_to_vector (projectname + ".set");
 	}
@@ -315,7 +238,7 @@ vector <vector <string> > decide_setting_status (string projectname) {
 
 		if (is_settings_file_correct ("sg2ps.set")) {
 
-			cout << "  - No valid setting found, using 'SG2PS.SET' setting file." << endl;
+			if (!is_mode_DEBUG()) cout << "  - No valid setting found, using 'SG2PS.SET' setting file." << endl;
 
 			return read_settingsfile_to_vector ("sg2ps.set");
 		}
@@ -391,18 +314,20 @@ vector <vector <string> > inputsettings_manually (string projectname) {
 
 }
 
-INPSET manage_settings_batch (string projectname) {
+void manage_settings_batch (string projectname) {
 
 	vector <vector <string> > SET = decide_setting_status (projectname);
 
 	SET = apply_default(SET);
 
-	dump_actual_settings(SET);
+	if (!is_mode_DEBUG()) dump_actual_settings(SET);
 
-	return vector_to_settings(SET);
+	INIT_SETTINGS (SET);
+
+	return;
 }
 
-INPSET manage_settings_nobatch (string projectname) {
+void manage_settings_nobatch (string projectname) {
 
 	vector <vector <string> > SET = decide_setting_status (projectname);
 
@@ -426,7 +351,9 @@ INPSET manage_settings_nobatch (string projectname) {
 
 	outputsettingfile (SET, projectname);
 
-	return vector_to_settings(SET);
+	INIT_SETTINGS (SET);
+
+	return;
 }
 
 void outputsettingfile (vector <vector <string> > SET, string projectname) {
@@ -491,27 +418,4 @@ void dbg_cout_settings_vector (vector < vector <string> > IN) {
 
 		cout << IN.at(i).at(0) << '\t' << IN.at(i).at(1) << endl;
 	}
-}
-
-void dbg_cout_inpset (INPSET inset) {
-
-	cout << "inset.datarule" << '\t' << inset.datarule << endl;
-	cout << "inset.plot" << '\t' << inset.plot << endl;
-	cout << "inset.plottype" << '\t' << inset.plottype << endl;
-	cout << "inset.hemisphere" << '\t' << inset.hemisphere << endl;
-	cout << "inset.tilting" << '\t' << inset.tilting << endl;
-	cout << "inset.group" << '\t' << inset.group << endl;
-	cout << "inset.clusternumber" << '\t' << inset.clusternumber << endl;
-	cout << "inset.labeling" << '\t' << inset.labeling << endl;
-	cout << "inset.inversion" << '\t' << inset.inversion << endl;
-	cout << "inset.clustering_RUP_ANG" << '\t' << inset.clustering_RUP_ANG << endl;
-	cout << "inset.virt_striae" << '\t' << inset.virt_striae << endl;
-	cout << "inset.idealmovement" << '\t' << inset.idealmovement << endl;
-	cout << "inset.angle" << '\t' << inset.angle << endl;
-	cout << "inset.fracture" << '\t' << inset.fracture << endl;
-	cout << "inset.linewidth" << '\t' << inset.linewidth << endl;
-	cout << "inset.rosetype" << '\t' << inset.rosetype << endl;
-	cout << "inset.rosebinning" << '\t' << inset.rosebinning << endl;
-	cout << "inset.contouring" << '\t' << inset.contouring << endl;
-	cout << "inset.grayscale" << '\t' << inset.grayscale << endl;
 }

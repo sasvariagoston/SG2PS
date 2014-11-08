@@ -8,8 +8,8 @@
 
 using namespace std;
 
-STRESSTENSOR st_NDA (vector <GDB> inGDB, INPSET inset);
+STRESSTENSOR st_NDA (const vector <GDB>& inGDB);
 
-STRESSFIELD sf_NDA (STRESSTENSOR st);
+STRESSFIELD sf_NDA (const STRESSTENSOR& st);
 
 #endif

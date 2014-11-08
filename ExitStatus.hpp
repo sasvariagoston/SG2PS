@@ -15,6 +15,7 @@ struct ExitStatus {
         LOGIC_ERROR,
         RUNTIME_ERROR,
         STD_EXCEPTION,
+        ARG_ERROR,
         UNKNOWN_ERROR
     };
 

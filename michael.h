@@ -9,12 +9,12 @@
 
 using namespace std;
 
-vector <vector < double> > michael_parameters (vector <GDB> inGDB);
+vector <vector <double> > michael_parameters (const vector <GDB>& inGDB);
 
-vector <vector < double> > stressvector_parameters (vector <GDB> inGDB);
+vector <vector <double> > stressvector_parameters (const vector <GDB>& inGDB);
 
-STRESSTENSOR st_MICHAEL (vector <GDB> inGDB, INPSET inset);
+STRESSTENSOR st_MICHAEL (const vector <GDB>& inGDB);
 
-STRESSFIELD sf_MICHAEL (STRESSTENSOR st);
+STRESSFIELD sf_MICHAEL (const STRESSTENSOR& st);
 
 #endif

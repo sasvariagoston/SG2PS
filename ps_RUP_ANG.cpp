@@ -8,8 +8,13 @@
 #include <iostream>
 #include <vector>
 
+#include "assertions.hpp"
+#include "allowed_keys.hpp"
+#include "color_management.hpp"
 #include "common.h"
+#include "ps.h"
 #include "rup_clustering.hpp"
+#include "settings.hpp"
 #include "structs.h"
 #include "valley_method.hpp"
 
@@ -20,42 +25,48 @@ bool by_border (const BRDR& x, const BRDR& y) {
 	return x.border < y.border;
 }
 
-vector <BRDR> sort_by_border (vector <BRDR> in) {
+vector <BRDR> sort_by_border (const vector <BRDR>& in) {
 
-	sort(in.begin(), in.end(), by_border);
+	vector <BRDR> out = in;
 
-	return in;
+	sort(out.begin(), out.end(), by_border);
+
+	return out;
 }
 
-double return_datamin (vector <GDB> inGDB, string field) {
+double return_datamin (const vector <GDB>& inGDB, const string field) {
 
 	if (field == "RUP") {
 
-		inGDB = sort_by_RUP(inGDB);
-		return inGDB.at(0).RUP;
+		const vector <GDB> outGDB = sort_by_RUP (inGDB);
+		return outGDB.at(0).RUP;
 	}
+	else if (field == "ANG") {
 
-	else {
-		inGDB = sort_by_ANG(inGDB);
-		return inGDB.at(0).ANG;
+		const vector <GDB> outGDB = sort_by_ANG (inGDB);
+		return outGDB.at(0).ANG;
 	}
+	else ASSERT_DEAD_END();
+	return NaN();
 }
 
-double return_datamax (vector <GDB> inGDB, string field) {
+double return_datamax (const vector <GDB>& inGDB, const string field) {
 
 	if (field == "RUP") {
 
-		inGDB = sort_by_RUP(inGDB);
-		return inGDB.at(inGDB.size() - 1).RUP;
+		const vector <GDB> outGDB = sort_by_RUP (inGDB);
+		return outGDB.at(inGDB.size() - 1).RUP;
 	}
+	else if (field == "ANG") {
 
-	else {
-		inGDB = sort_by_ANG(inGDB);
-		return inGDB.at(inGDB.size() - 1).ANG;
+		const vector <GDB> outGDB = sort_by_ANG (inGDB);
+		return outGDB.at(inGDB.size() - 1).ANG;
 	}
+	else ASSERT_DEAD_END();
+	return NaN();
 }
 
-int return_count_max (vector <GDB> inGDB, string method, size_t bin_number) {
+size_t return_count_max (const vector <GDB>& inGDB, const string method, const size_t bin_number) {
 
 	vector <HISTOGRAM> H = generate_DATA_histogram (GDB_to_table (inGDB, method), bin_number);
 
@@ -64,35 +75,31 @@ int return_count_max (vector <GDB> inGDB, string method, size_t bin_number) {
 	return H.at(H.size() - 1).COUNT;
 }
 
-double return_step (double DATA_max) {
+size_t return_step (const double DATA_max) {
 
-	if (DATA_max < 1.0) return 0.2;
+	if (DATA_max < 5.0) return 1;
 	else {
 
-		if (DATA_max < 5.0) return 1;
+		if (DATA_max < 10) return 2;
 		else {
 
-			if (DATA_max < 10) return 2;
+			if (DATA_max < 25) return 5;
 			else {
 
-				if (DATA_max < 25) return 5;
+				if (DATA_max < 50) return 10;
 				else {
 
-					if (DATA_max < 50) return 10;
+					if (DATA_max < 100) return 20;
 					else {
 
-						if (DATA_max < 100) return 20;
+						if (DATA_max < 250) return 50;
 						else {
 
-							if (DATA_max < 250) return 50;
+							if (DATA_max < 500) return 100;
 							else {
 
-								if (DATA_max < 500) return 100;
-								else {
-
-									if (DATA_max < 1000) return 200;
-									else return DATA_max / 5.0;
-								}
+								if (DATA_max < 1000) return 200;
+								else return DATA_max / 5.0;
 							}
 						}
 					}
@@ -102,18 +109,18 @@ double return_step (double DATA_max) {
 	}
 }
 
-void ps_draw_histogram_bars (vector <GDB> inGDB, vector <line_RUP_ANG> L_R_A, INPSET inset, ofstream& o, CENTER center, PAPER P, double DATA_min, double DATA_max, size_t bin_number, double binsize, string method) {
+void ps_draw_histogram_bars (const vector <GDB>& inGDB, const vector <line_RUP_ANG>& L_R_A, ofstream& o, const CENTER& center, const PAPER& P, const double DATA_min, const double DATA_max, const size_t bin_number, const double binsize, const string method) {
 
 	double counter = DATA_min;
 	double X, Y1, Y2;
 
-	bool RUP_clustering = (inset.clustering_RUP_ANG == "R");
-	bool ANG_clustering = (inset.clustering_RUP_ANG == "A");
+	const bool RUP_display = (method == "RUP");
+	const bool ANG_display = (method == "ANG");
 
-	bool RUP_display = (method == "RUP");
-	bool ANG_display = (method == "ANG");
+	if (!RUP_display && !ANG_display) ASSERT_DEAD_END();
 
-	bool BW = ((!RUP_clustering && !ANG_clustering) || (RUP_clustering && ANG_display) || (ANG_clustering && RUP_display));
+	const bool BW1 = ((!is_RUP_CLUSTERING_RUP() && !is_RUP_CLUSTERING_ANG()) || (is_RUP_CLUSTERING_RUP() && ANG_display) || (is_RUP_CLUSTERING_ANG() && RUP_display));
+	const bool BW2 = !is_COLOURING_RUPANG();
 
 	for (size_t j = 0; j < L_R_A.size(); j++) {
 
@@ -121,114 +128,110 @@ void ps_draw_histogram_bars (vector <GDB> inGDB, vector <line_RUP_ANG> L_R_A, IN
 
 		for (size_t i = 0; i < inGDB.size(); i++) {
 
-			if (method == "RUP" && is_in_range (counter, counter + binsize, inGDB.at(i).RUP)) data_counter++;
-			if (method == "ANG" && is_in_range (counter, counter + binsize, inGDB.at(i).ANG)) data_counter++;
+			if (RUP_display && is_in_range (counter, counter + binsize, inGDB.at(i).RUP)) data_counter++;
+			if (ANG_display && is_in_range (counter, counter + binsize, inGDB.at(i).ANG)) data_counter++;
 		}
-
 		size_t count_max = return_count_max (inGDB, method, bin_number);
 
 		double linewidth = L_R_A.at(j).COUNT * 30.0;
 		linewidth = linewidth /count_max;
 
-		if (method == "RUP")	X = center.X + P.R + 2.0 * P.B + linewidth / 2.0;
-		else 					X = center.X + P.R + 4.0 * P.B + linewidth / 2.0;
+		if (RUP_display)		X = center.X + P.R + 2.0 * P.B + linewidth / 2.0;
+		else if (ANG_display)	X = center.X + P.R + 4.0 * P.B + linewidth / 2.0;
 
 		Y1 = center.Y - P.R + 2.0 * P.R * (L_R_A.at(j).L_STR / DATA_max);
 		Y2 = center.Y - P.R + 2.0 * P.R * (L_R_A.at(j).L_END / DATA_max);
 
-		if (inset.grayscale == "Y") o <<  "  0.8 0.8 0.8 setrgbcolor " << linewidth << " setlinewidth" << endl;
-		else {
-			if (BW)	o <<  "  0.8 0.8 0.8 setrgbcolor " << linewidth << " setlinewidth" << endl;
-			else 	o <<  L_R_A.at(j).GC << " setrgbcolor " << linewidth << " setlinewidth" << endl;
-		}
-		o
-		<< "  newpath "
-		<< fixed << setprecision (3) << X << " " << Y1 << " moveto "
-		<< fixed << setprecision (3) << X << " " << Y2 << " lineto stroke" << endl;
+		linewidth_PS (o, linewidth, 1);
+
+		if (!BW1 && !BW2) color_PS (o, L_R_A.at(j).GC);
+		else color_PS (o, "0.7 0.7 0.7");
+
+		newpath_PS(o);
+		moveto_PS(o, X, Y1, 3);
+		lineto_PS(o, X, Y2, 3);
+		stroke_PS(o);
 
 		counter = counter + binsize;
 	}
 }
 
-void ps_RUP_ANG_header (ofstream& o, CENTER center, PAPER P, string method){
+void ps_RUP_ANG_header (ofstream& o, const CENTER& center, const PAPER& P){
 
-	double X = 0;
-	double Y = 0;
+	const bool RUP = is_RUP_CLUSTERING_RUP();
 
-	o << "/ArialNarrow-Bold findfont 8 scalefont setfont" << endl;
+	double X, Y;
 
+	font_PS(o, "ArialNarrow-Bold", 8);
 
-	if (method == "RUP") 	X = center.X + P.R + 2.0 * P.B + 5.0;
-	else 					X = center.X + P.R + 4.0 * P.B + 5.0;
+	color_PS(o, "0.0 0.0 0.0");
 
-	Y = center.Y + P.R + 7.0;
+	X = center.X + P.R + 4.0 * P.B + 5.0 * P.D,
+	Y = center.Y + P.R + 7.0 * P.D;
+	text_PS (o, X, Y, 3, "ANG");
 
-	o
-	<< "  " << fixed << setprecision (3) << X
-	<< " "  << fixed << setprecision (3) << Y << flush;
+	if (RUP && !is_INVERSION_ANGELIER() && !is_INVERSION_MOSTAFA() && !is_INVERSION_SHAN() && !is_INVERSION_FRY()) return;
 
-	if (method == "RUP")	o << "  moveto (RUP) 0 0 0 setrgbcolor show " << endl;
-	else 					o << "  moveto (ANG) 0 0 0 setrgbcolor show " << endl;
+	X = center.X + P.R + 2.0 * P.B + 5.0 * P.D,
+	Y = center.Y + P.R + 7.0 * P.D;
+	text_PS (o, X, Y, 3, "RUP");
 }
 
-void ps_percentage (ofstream& o, CENTER center, PAPER P, string method, double DATA_max) {
+void ps_percentage (ofstream& o, const CENTER& center, const PAPER& P, const string METHOD, const double DATA_max) {
 
-	double X1, X2, Y;
+	const bool RUP = METHOD == "RUP";
+	const bool ANG = METHOD == "ANG";
 
-	double step =  return_step (DATA_max);
+	if (!RUP && !ANG) ASSERT_DEAD_END();
 
-	double counter = 0;
+	const size_t step = return_step (DATA_max);
 
-	o << fixed << setprecision (0) << endl;
+	font_PS (o, "ArialNarrow-Bold", 6);
 
-	o << "/ArialNarrow-Bold findfont 6 scalefont setfont" << endl;
-	o << "  0.0 0.0 0.0 setrgbcolor 0.5 setlinewidth" << endl;
+	for (size_t counter = 0; counter < DATA_max; counter+=step) {
 
-	do {
+		double X1, X2;
 
-		if (method == "RUP") {
+		if (RUP)	X1 = center.X + P.R + 2.0 * P.B;
+		else 		X1 = center.X + P.R + 4.0 * P.B;
 
-			X1 = center.X + P.R + 2.0 * P.B;
-			X2 = center.X + P.R + 2.2 * P.B;
-		}
-		else {
+		if (RUP)	X2 = center.X + P.R + 2.2 * P.B;
+		else		X2 = center.X + P.R + 4.2 * P.B;
 
-			X1 = center.X + P.R + 4.0 * P.B;
-			X2 = center.X + P.R + 4.2 * P.B;
-		}
+		double Y = center.Y - P.R + 2.0 * P.R * (counter / DATA_max);
 
-		Y = center.Y - P.R + 2.0 * P.R * (counter / DATA_max);
+		color_PS(o, "0.0 0.0 0.0");
+		linewidth_PS (o, 0.5, 1);
 
-		o << "  0.0 0.0 0.0 setrgbcolor 0.5 setlinewidth" << endl;
-		o
-		<< "  newpath "
-		<< fixed << setprecision (3) << X1 << " " << Y << " moveto "
-		<< fixed << setprecision (3) << X2 << " " << Y << " lineto stroke" << endl;
+		newpath_PS (o);
+		moveto_PS (o, X1, Y, 3);
+		lineto_PS (o, X2, Y, 3);
+		stroke_PS (o);
 
+		if (RUP) 	X1 = center.X + P.R + 2.4 * P.B;
+		else 		X1 = center.X + P.R + 4.4 * P.B;
 
-		if (method == "RUP") 	X1 = center.X + P.R + 2.4 * P.B;
-		else 					X1 = center.X + P.R + 4.4 * P.B;
+		Y = center.Y - P.R + 2.0 * P.R * (counter / DATA_max) - 1.0 * P.D;
 
-		Y = center.Y - P.R + 2.0 * P.R * (counter / DATA_max) - 1.0;
+		string T = int_to_string (counter);
 
-		o
-		<< "  " << fixed << setprecision (3) << X1
-		<< " "  << fixed << setprecision (3) << Y
-		<< fixed << setprecision (0) << "  moveto (" << counter << flush;
+		if (RUP)	T = T +  "%";
+		else 		T = T +  "deg";
 
-		if (method == "RUP") o << "%) 0 0 0 setrgbcolor show " << endl;
-		else 				 o << " deg) 0 0 0 setrgbcolor show " << endl;
-
-		counter = counter + step;
-
-	} while (counter < DATA_max);
+		text_PS (o, X1, Y, 3, T);
+	}
 }
 
-void ps_percentage_max (ofstream& o, CENTER center, PAPER P, string method, double DATA_max) {
+void ps_percentage_max (ofstream& o, const CENTER& center, const PAPER& P, const string METHOD, const double DATA_max) {
 
-	double X1, X2, Y;
+	double X1, X2;
 
-	if (method == "RUP") {
+	const bool RUP = METHOD == "RUP";
+	const bool ANG = METHOD == "ANG";
+
+	if (!RUP && !ANG) ASSERT_DEAD_END();
+
+	if (RUP) {
 
 		X1 = center.X + P.R + 2.0 * P.B;
 		X2 = center.X + P.R + 2.2 * P.B;
@@ -239,54 +242,37 @@ void ps_percentage_max (ofstream& o, CENTER center, PAPER P, string method, doub
 		X2 = center.X + P.R + 4.2 * P.B;
 	}
 
-	Y = center.Y - P.R + 2.0 * P.R;
+	double Y = center.Y - P.R + 2.0 * P.R;
 
-	o
-	<< "  newpath "
-	<< fixed << setprecision (3) << X1 << " " << Y << " moveto "
-	<< fixed << setprecision (3) << X2 << " " << Y << " lineto stroke" << endl;
+	color_PS(o, "0.0 0.0 0.0");
+	linewidth_PS (o, 0.5, 1);
 
+	newpath_PS(o);
+	moveto_PS (o, X1, Y, 3);
+	lineto_PS (o, X2, Y, 3);
+	stroke_PS (o);
 
-
-
-	if (method == "RUP")	X1 = center.X + P.R + 2.4 * P.B;
-	else 					X1 = center.X + P.R + 4.4 * P.B;
+	if (RUP)	X1 = center.X + P.R + 2.4 * P.B;
+	else 		X1 = center.X + P.R + 4.4 * P.B;
 
 	Y = center.Y - P.R + 2.0 * P.R - 1.0;
 
-	o
-	<< "  " << fixed << setprecision (3) << X1
-	<< " "  << fixed << setprecision (3) << Y
-	<< fixed << setprecision (0) << flush;
+	string T = double_to_string (DATA_max, 0);
 
-	if (method == "RUP")	o << "  moveto (" << DATA_max << "%) 0 0 0 setrgbcolor show " << endl;
-	else 					o << "  moveto (" << DATA_max << " deg) 0 0 0 setrgbcolor show " << endl;
+	if (RUP)	T = T +  "%";
+	else 		T = T +  "deg";
+
+	text_PS (o, X1, Y, 3, T);
 }
 
-vector <line_RUP_ANG> generate_graph_histogram (vector <HISTOGRAM> H, vector <VALLEY> V, double DATA_MAX) {
+vector <line_RUP_ANG> generate_graph_histogram (const vector <HISTOGRAM>& H, const vector <VALLEY>& V, const double DATA_MAX) {
 
-	double SN = 10e-8;
+	const double SN = 10e-8;
 
-	line_RUP_ANG buffer;
 	vector <line_RUP_ANG> out;
 
 	BRDR brdr_buf;
 	vector <BRDR> BORDERS;
-
-	vector <string> H_CLR;
-
-	H_CLR.push_back("0.50 0.50 0.50");
-	H_CLR.push_back("0.50 0.50 1.00");
-	H_CLR.push_back("1.00 0.50 0.83");
-	H_CLR.push_back("1.00 0.50 0.50");
-	H_CLR.push_back("1.00 0.75 0.50");
-	H_CLR.push_back("1.00 1.00 0.50");
-	H_CLR.push_back("0.50 1.00 0.50");
-	H_CLR.push_back("0.83 0.50 0.83");
-	H_CLR.push_back("0.75 1.00 1.00");
-	H_CLR.push_back("0.75 0.75 0.75");
-
-	string act_clr = "0.80 0.80 0.80";
 
 	brdr_buf.border = DATA_MAX + SN;
 	brdr_buf.ID = "MAX";
@@ -296,7 +282,8 @@ vector <line_RUP_ANG> generate_graph_histogram (vector <HISTOGRAM> H, vector <VA
 
 		brdr_buf.border = V.at(i).BIN_CENTER;
 		brdr_buf.ID = "VAL";
-		BORDERS.push_back(brdr_buf);
+		brdr_buf.COUNT = NaN ();
+		BORDERS.push_back (brdr_buf);
 	}
 
 	for (size_t i = 0; i < H.size(); i++) {
@@ -307,28 +294,32 @@ vector <line_RUP_ANG> generate_graph_histogram (vector <HISTOGRAM> H, vector <VA
 		BORDERS.push_back(brdr_buf);
 	}
 
-	BORDERS = sort_by_border(BORDERS);
+	BORDERS = sort_by_border (BORDERS);
 
-	size_t col_cntr = 0;
+	size_t valley_counter = 0;
+
+	const vector <string> GC = allowed_basic_groupcode_str_vector ();
 
 	for (size_t i = 0; i < BORDERS.size() - 1; i++) {
 
+		line_RUP_ANG buffer;
+
 		buffer.L_STR = BORDERS.at(i).border;
 		buffer.L_END = BORDERS.at(i+1).border;
-
 		buffer.COUNT = BORDERS.at(i).COUNT;
+
+		if (valley_counter == 0) buffer.GC = "0.7 0.7 0.7";
+		else buffer.GC = generate_PSCOLOR_from_GC (GC.at(valley_counter + 1));
 
 		if (BORDERS.at(i).ID == "VAL" && i > 0) {
 
-			col_cntr++;
+			valley_counter++;
+
 			buffer.COUNT = BORDERS.at(i-1).COUNT;
 		}
 		else buffer.COUNT = BORDERS.at(i).COUNT;
 
-		buffer.GC = H_CLR.at(col_cntr);
-
 		out.push_back(buffer);
 	}
-
 	return out;
  }

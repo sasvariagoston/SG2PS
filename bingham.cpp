@@ -13,10 +13,11 @@
 #include "common.h"
 #include "exceptions.hpp"
 #include "rgf.h"
+#include "stresstensor.hpp"
 
 using namespace std;
 
-STRESSTENSOR st_BINGHAM (vector <GDB> inGDB) {
+STRESSTENSOR st_BINGHAM (const vector <GDB>& inGDB) {
 
 	STRESSTENSOR st;
 
@@ -27,19 +28,21 @@ STRESSTENSOR st_BINGHAM (vector <GDB> inGDB) {
 	st._23 = 0.0;
 	st._33 = 0.0;
 
-	VCTR N = declare_vector (0.0, 1.0, 0.0);
-	VCTR E = declare_vector (1.0, 0.0, 0.0);
-	VCTR U = declare_vector (0.0, 0.0, 1.0);
+	const VCTR N = declare_vector (0.0, 1.0, 0.0);
+	const VCTR E = declare_vector (1.0, 0.0, 0.0);
+	const VCTR U = declare_vector (0.0, 0.0, 1.0);
 
 	for (size_t i = 0; i < inGDB.size(); i++) {
 
 		STRESSTENSOR T;
 
-		VCTR PN = inGDB.at(i).N;
+		const VCTR PN = inGDB.at(i).N;
 
-		bool OTB = (is_overturned (inGDB.at(i)) && (inGDB.at(i).DATATYPE) == "BEDDING");
+		//const bool OTB = (is_overturned (inGDB.at(i)) && (inGDB.at(i).DATATYPE) == "BEDDING");
 
-		double norm_sqr = dotproduct(PN, PN);
+		const bool OTB = (is_overturned (inGDB.at(i)) && is_allowed_handle_as_bedding (inGDB.at(i).DATATYPE));
+
+		const double norm_sqr = dotproduct(PN, PN);
 
 		if (fabs(norm_sqr-1.0) > 1.0e-4) {
 			ASSERT2(false, "Should be unitvector [X, Y, Z] = [ " << PN.X << ", " <<PN.Y << ", " << PN.Z << "]");
@@ -59,24 +62,25 @@ STRESSTENSOR st_BINGHAM (vector <GDB> inGDB) {
 	return st;
 }
 
-STRESSFIELD sf_BINGHAM (STRESSFIELD sf) {
+STRESSFIELD sf_BINGHAM (STRESSTENSOR& st) {
 
-	double total_eigenvalue = sf.EIGENVALUE.X + sf.EIGENVALUE.Y + sf.EIGENVALUE.Z;
+	STRESSFIELD sf = eigenvalue_eigenvector (st);
 
-	VCTR eigenvalue = sf.EIGENVALUE;
+	const double total_eigenvalue = sf.EIGENVALUE.X + sf.EIGENVALUE.Y + sf.EIGENVALUE.Z;
+
+	const VCTR eigenvalue = sf.EIGENVALUE;
 
 	sf.EIGENVALUE.X = eigenvalue.Z / total_eigenvalue;
 	sf.EIGENVALUE.Y = eigenvalue.Y / total_eigenvalue;
 	sf.EIGENVALUE.Z = eigenvalue.X / total_eigenvalue;
 
+	const double EV1 = sf.EIGENVALUE.X;
+	const double EV2 = sf.EIGENVALUE.Y;
+	const double EV3 = sf.EIGENVALUE.Z;
 
-	double EV1 = sf.EIGENVALUE.X;
-	double EV2 = sf.EIGENVALUE.Y;
-	double EV3 = sf.EIGENVALUE.Z;
-
-	VCTR EVC1 = sf.EIGENVECTOR1;
-	VCTR EVC2 = sf.EIGENVECTOR2;
-	VCTR EVC3 = sf.EIGENVECTOR3;
+	const VCTR EVC1 = sf.EIGENVECTOR1;
+	const VCTR EVC2 = sf.EIGENVECTOR2;
+	const VCTR EVC3 = sf.EIGENVECTOR3;
 
 	if (EV1 >= EV2 && EV2 >= EV3) {
 		sf.EIGENVALUE = declare_vector (EV1, EV2, EV3);
@@ -116,5 +120,5 @@ STRESSFIELD sf_BINGHAM (STRESSFIELD sf) {
 	}
 	else ASSERT_DEAD_END();
 
-	return sf;
+	return computestressfield_DXDYDZ (sf);
 }

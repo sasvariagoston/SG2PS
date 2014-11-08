@@ -10,10 +10,12 @@
 
 using namespace std;
 
-STRESSTENSOR PTN_matrix (vector <GDB> inGDB, string axis);
+vector <GDB> ptn (const vector <GDB>& inGDB); //ok
 
-STRESSTENSOR st_PTN (STRESSFIELD sf);
+STRESSTENSOR PTN_matrix (const vector <GDB>& inGDB, const string& axis); //ok
 
-STRESSFIELD sf_PTN (vector <GDB> inGDB, INPSET inset);
+STRESSFIELD sf_PTN (const vector <GDB>& inGDB); //ok
+
+STRESSTENSOR st_PTN (const STRESSFIELD& sf); //ok
 
 #endif

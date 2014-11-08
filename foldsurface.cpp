@@ -3,33 +3,26 @@
 // This code is published under the GNU Lesser General Public License.
 
 #include <iostream>
+#include <stdlib.h>
 
 #include "average.hpp"
 #include "foldsurface.hpp"
 #include "ps.h"
+#include "rgf.h"
+#include "settings.hpp"
+#include "standard_output.hpp"
 
 using namespace std;
 
-void plot_fold_great_circle (VCTR GR_CRC, ofstream& o, INPSET inset, CENTER center) {
+vector <GDB> CALCULATE_FOLDSURFACE_NORMAL (const vector <GDB>& inGDB) {
 
-	GDB tempGDB;
+	const vector <GDB> OUT = DATATYPE_AVERAGE (inGDB, "FOLD");
 
-	tempGDB.avD = DXDYDZ_from_NXNYNZ(GR_CRC);
-	tempGDB.avd = dipdir_dip_from_DXDYDZ (tempGDB.avD);
+	if (is_CHK_FOLDSURFACE()) {
 
-	if (inset.plot == "H") 	PS_polepoint (tempGDB, o, inset, center, false, "FOLD");
-	else 					PS_plane     (tempGDB, o, inset, center, false, "FOLD");
+		check_standard_FOLDSURFACE (sort_by_iID(OUT));
+		exit (99);
+	}
 
-	PS_folddata (tempGDB, o, center);
-
-	return;
-}
-
-void calculate_foldsurface (vector <GDB> inGDB, ofstream& o, INPSET inset, CENTER center) {
-
-	vector <size_t> length_container = generate_block_length (inGDB, "FOLDSURFACE");
-
-	inGDB = DATATYPE_AVERAGE (inGDB, length_container, "FOLDSURFACE");
-
-	plot_fold_great_circle (inGDB.at(0).avD, o, inset, center);
+	return OUT;
 }

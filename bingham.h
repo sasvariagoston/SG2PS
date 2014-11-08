@@ -9,8 +9,8 @@
 
 using namespace std;
 
-STRESSTENSOR st_BINGHAM (vector <GDB> inGDB);
+STRESSTENSOR st_BINGHAM (const vector <GDB>& inGDB);
 
-STRESSFIELD sf_BINGHAM (STRESSFIELD sf);
+STRESSFIELD sf_BINGHAM (STRESSTENSOR& st);
 
 #endif

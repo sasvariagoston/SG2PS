@@ -9,12 +9,16 @@
 #include <iostream>
 #include <sstream>
 #include <stdexcept>
+//#include <time.h>
 
 #include "allowed_keys.hpp"
 #include "array_to_vector.hpp"
 #include "assertions.hpp"
 #include "common.h"
 #include "rgf.h"
+#include "run_mode.h"
+#include "settings.hpp"
+#include "stresstensor.hpp"
 
 template <typename T>
 T convert(const string& s, bool& failed) {
@@ -40,6 +44,36 @@ bool equals(const string& s, const T& value) {
 	return !failed && (value==other);
 }
 
+void print_banner () {
+
+	if (is_mode_DEBUG ()) return;
+
+	cout << endl << endl;
+
+	cout << " ------------------------------------------------------------------ " << endl;
+	cout << "|                                                                  |" << endl;
+	cout << "|                             SG2PS                                |" << endl;
+	cout << "|       Structural Geological data to PostScript converter         |" << endl;
+	cout << "|                                                                  |" << endl;
+	cout << "|                       Data processing software                   |" << endl;
+	cout << "|                                                                  |" << endl;
+	cout << "|            Copyright (C) 2012 - 2014 Agoston Sasvari.            |" << endl;
+	cout << "|                        All rights reserved.                      |" << endl;
+	cout << "|             This a free software, license: GNU LGPL.             |" << endl;
+	cout << "|                                                                  |" << endl;
+	cout << "|              This software comes with NO WARRANTY.               |" << endl;
+	cout << "|                                                                  |" << endl;
+	cout << "|            For further information check www.sg2ps.eu            |" << endl;
+	cout << "|                                                                  |" << endl;
+	cout << " ------------------------------------------------------------------ " << endl;
+	cout << "|                                                                  |" << endl;
+	cout << "|                 Built on: " << version() <<   "                  | "<< endl;
+	cout << "|                                                                  |" << endl;
+	cout << " ------------------------------------------------------------------ " << endl << endl;
+
+}
+
+
 
 string capslock (string input) {
 
@@ -63,21 +97,28 @@ vector<string> vec_to_uppercase(const vector<string>& v) {
 	return res;
 }
 
-const string int_to_string (int i) {
+const string int_to_string (const int i) {
 
 	ostringstream os;
 	os << i << flush;
 	return os.str();
 }
 
-const string double_to_string(double in, size_t precision) {
+const string size_t_to_string (const size_t i) {
 
 	ostringstream os;
-	os << setprecision (precision) << in << flush;
+	os << i << flush;
 	return os.str();
 }
 
-const string char_to_string (char i) {
+const string double_to_string(const double in, const size_t precision) {
+
+	ostringstream os;
+	os << fixed << setprecision (precision) << in << flush;
+	return os.str();
+}
+
+const string char_to_string (const char i) {
 
 	ostringstream os;
 	os << i << flush;
@@ -177,6 +218,20 @@ double ACOS (const double& in) {
 	return (out * 180.0) / 3.1415926535;
 }
 
+double ACOS_NUM (const double& in) {
+
+	double out = in;
+
+	if (out >= 1.0)  out =   (1.0 - 10e-8);
+	if (out <= -1.0) out = - (1.0 - 10e-8);
+
+	out = (3.1415926535 / 2.0) - in + ((0.5 * in * in * in) / 3.0) + ((0.375 * in * in * in * in * in) / 5.0);
+
+	ASSERT(!isnan(out));
+
+	return (out * 180.0) / 3.1415926535;
+}
+
 double ATAN (const double& in) {
 
 	double out = in;
@@ -188,20 +243,19 @@ double ATAN (const double& in) {
 	return (out * 180.0) / 3.1415926535;
 }
 
-double mm_to_point (int i) {
+double mm_to_point (size_t i) {
 
 	return i * 0.03937 * 72.0;
 }
 
 VCTR crossproduct (const VCTR& in1, const VCTR& in2) {
 
-	VCTR out;
+	return declare_vector (
 
-	out.X =	  (in1.Y * in2.Z) - (in2.Y * in1.Z);
-	out.Y = - (in1.X * in2.Z) + (in2.X * in1.Z);
-	out.Z =	  (in1.X * in2.Y) - (in2.X * in1.Y);
-
-	return out;
+			  (in1.Y * in2.Z) - (in2.Y * in1.Z),
+			- (in1.X * in2.Z) + (in2.X * in1.Z),
+			  (in1.X * in2.Y) - (in2.X * in1.Y)
+	);
 }
 
 double dotproduct (const VCTR& in1, const VCTR& in2, const bool& normalisation) {
@@ -335,22 +389,16 @@ vector <vector <double> > identity_matrix (vector <vector <double> > in) {
 	return in;
 }
 
-vector <double> init_vector (int dimension) {
+vector <double> init_vector (const size_t dimension) {
 
 	vector <double> buffer;
-	int i = 0;
 
-	do {
-
-		buffer.push_back(0.0);
-		i++;
-
-	} while (i < dimension);
+	for (size_t i = 0; i < dimension; i++) buffer.push_back(0.0);
 
 	return buffer;
 }
 
-size_t m_from_max_element (size_t max_element, size_t n) {
+size_t m_from_max_element (size_t max_element, const size_t n) {
 
 	size_t j = 0;
 
@@ -362,7 +410,7 @@ size_t m_from_max_element (size_t max_element, size_t n) {
 	return j;
 }
 
-size_t search_max_off_diagonal_element_in_mtrx (vector <vector <double> > in) {
+size_t search_max_off_diagonal_element_in_mtrx (const vector <vector <double> >& in) {
 
 	size_t m = 0;
 	size_t n = 0;
@@ -391,7 +439,7 @@ size_t search_max_off_diagonal_element_in_mtrx (vector <vector <double> > in) {
 	return out;
 }
 
-double teta (vector <vector <double> > in, size_t m, size_t n) {
+double teta (const vector <vector <double> >& in, const size_t m, const size_t n) {
 
 	double teta = 2.0 * in.at(m).at(n) / (in.at(n).at(n) - in.at(m).at(m));
 
@@ -402,7 +450,7 @@ double teta (vector <vector <double> > in, size_t m, size_t n) {
 	return ret;
 }
 
-vector <vector <double> > init_rotation_mtrx (double teta, size_t m, size_t n, size_t dimension) {
+vector <vector <double> > init_rotation_mtrx (const double teta, const size_t m, const size_t n, const size_t dimension) {
 
 	vector <vector <double> > o = init_matrix (dimension);
 
@@ -436,7 +484,7 @@ vector <vector <double> > init_rotation_mtrx (double teta, size_t m, size_t n, s
 	return o;
 }
 
-vector <vector <double> > outer_product (vector <double> in) {
+vector <vector <double> > outer_product (const vector <double>& in) {
 
 	vector <vector <double> > o = init_matrix (in.size());
 	size_t m = 0;
@@ -543,7 +591,7 @@ vector <vector <double> > add_mtrx (const vector <vector <double> >& in1, const 
 	return out;
 }
 
-int return_second_eigenvalue (vector <vector< double > > in) {
+int return_second_eigenvalue (const vector <vector <double> >& in) {
 
 	vector <sort_jacobi> buffer;
 	sort_jacobi buf;
@@ -565,7 +613,7 @@ int return_second_eigenvalue (vector <vector< double > > in) {
 	return buffer.at(1).ID;
 }
 
-int return_first_eigenvalue (vector <vector< double > > in) {
+int return_first_eigenvalue (const vector <vector <double> >& in) {
 
 	sort_jacobi buf;
 	vector <sort_jacobi> buffer;
@@ -587,7 +635,7 @@ int return_first_eigenvalue (vector <vector< double > > in) {
 	return buffer.at(0).ID;
 }
 
-vector <vector <double> > jacobi (vector <vector <double> > in) {
+vector <vector <double> > jacobi (const vector <vector <double> >& in) {
 
 	vector <vector <double> > out;
 
@@ -653,7 +701,7 @@ vector <vector <double> > jacobi (vector <vector <double> > in) {
 	return out;
 }
 
-vector <vector <double> > gaussian_elimination (vector <vector <double> > in) {
+vector <vector <double> > gaussian_elimination (vector <vector <double> >& in) {
 
 	size_t m = 0;
 	size_t n = 0;
@@ -691,7 +739,7 @@ vector <vector <double> > gaussian_elimination (vector <vector <double> > in) {
 	return o;
 }
 
-vector <vector <double> > LU_decomposition (vector <vector <double> > in) {
+vector <vector <double> > LU_decomposition (const vector <vector <double> >& in) {
 
 	vector <vector <double> > U = in;
 	vector <vector <double> > L = init_matrix (in.size());
@@ -735,7 +783,7 @@ vector <vector <double> > LU_decomposition (vector <vector <double> > in) {
 	return U;
 }
 
-vector <vector <double> > compute_Z (vector <vector <double> > L, vector <vector <double> > c) {
+vector <vector <double> > compute_Z (const vector <vector <double> >& L, const vector <vector <double> >& c) {
 
 	vector <vector <double> > out = init_matrix (L.size(), 1);
 
@@ -762,7 +810,7 @@ vector <vector <double> > compute_Z (vector <vector <double> > L, vector <vector
 	return out;
 }
 
-vector <vector <double> > compute_X (vector <vector <double> > U, vector <vector <double> > Z) {
+vector <vector <double> > compute_X (const vector <vector <double> >& U, const vector <vector <double> >& Z) {
 
 	vector <vector <double> > out = init_matrix (U.size(), 1);
 
@@ -790,52 +838,34 @@ vector <vector <double> > compute_X (vector <vector <double> > U, vector <vector
 	return out;
 }
 
-vector <vector <double> > row_division_diagonal (vector <vector <double> > in,  size_t rownumber, double value) {
+vector <vector <double> > row_division_diagonal (vector <vector <double> >& in, const size_t rownumber, const double value) {
 
-	size_t i = 0;
-
-	do {
+	for (size_t i = 0; i < in.at(0).size(); i++) {
 
 		in.at(rownumber).at(i) = in.at(rownumber).at(i) / value;
-
-		i++;
-
-	} while (i < in.at(0).size());
-
+	}
 	return in;
 }
 
-vector <vector <double> > row_addition (vector <vector <double> > in, size_t actual_row_number, size_t zero_row_number, double value) {
+vector <vector <double> > row_addition (vector <vector <double> >& in, const size_t actual_row_number, const size_t zero_row_number, const double value) {
 
-	size_t i = 0;
-
-	do {
+	for (size_t i = 0; i < in.size(); i++) {
 
 		in.at(actual_row_number).at(i) = in.at(actual_row_number).at(i) - (value * in.at(zero_row_number).at(i));
-
-		i++;
-
-	} while (i < in.size());
-
+	}
 	return in;
 }
 
-vector <vector <double> > row_addition_LU (vector <vector <double> > in, size_t actual_row_number, size_t zero_row_number, double value) {
+vector <vector <double> > row_addition_LU (vector <vector <double> >& in, const size_t actual_row_number, const size_t zero_row_number, const double value) {
 
-	size_t i = 0;
-
-	do {
+	for (size_t i = 0; i < in.size(); i++) {
 
 		in.at(actual_row_number).at(i) = in.at(actual_row_number).at(i) - (value * in.at(zero_row_number).at(i));
-
-		i++;
-
-	} while (i < in.size());
-
+	}
 	return in;
 }
 
-vector < vector < double > > generate_A (vector < vector < double > > EVEV) {
+vector < vector < double > > generate_A (const vector < vector < double > >& EVEV) {
 
 	vector < vector < double > > A = init_matrix (EVEV.at(0).size());
 	size_t i = 0;
@@ -850,7 +880,7 @@ vector < vector < double > > generate_A (vector < vector < double > > EVEV) {
 	return A;
 }
 
-vector < vector < double > > generate_D (vector < vector < double > > EVEV) {
+vector < vector < double > > generate_D (const vector < vector < double > >& EVEV) {
 
 	vector < vector < double > > D = init_matrix (EVEV.at(0).size());
 	size_t i = 0;
@@ -865,37 +895,9 @@ vector < vector < double > > generate_D (vector < vector < double > > EVEV) {
 	return D;
 }
 
-bool check_fry_matrix (size_t first_eigenvalue, vector <vector <double> > in_eigenvector) {
 
-	vector <sort_jacobi> buffer;
-	sort_jacobi buf;
-	size_t j = 0;
 
-	do {
-
-		buf.ID = j;
-		buf.eigenvalue = in_eigenvector.at(first_eigenvalue).at(j);
-		buffer.push_back(buf);
-
-		j++;
-
-	} while (j < in_eigenvector.size());
-
-	sort(buffer.begin(), buffer.end(), byeigenvalue);
-
-	if (	((buffer.at(0).eigenvalue < 0.005) && (buffer.at(0).eigenvalue > -0.005)) &&
-			((buffer.at(1).eigenvalue < 0.005) && (buffer.at(1).eigenvalue > -0.005)) &&
-			((buffer.at(2).eigenvalue < 0.005) && (buffer.at(2).eigenvalue > -0.005))
-
-		&&
-			((buffer.at(3).eigenvalue > 0.57) && (buffer.at(3).eigenvalue < 0.58)) &&
-			((buffer.at(4).eigenvalue > 0.57) && (buffer.at(4).eigenvalue < 0.58)) &&
-			((buffer.at(5).eigenvalue > 0.57) && (buffer.at(5).eigenvalue < 0.58))	) return true;
-
-	else return false;
-}
-
-bool check_correct_stressfield (STRESSFIELD sf) {
+bool check_correct_stressfield (const STRESSFIELD& sf) {
 
 	if ((sf.S_1.DIPDIR 	> 0.0) && (sf.S_1.DIPDIR 	< 360.0) &&
 		(sf.S_1.DIP 	> 0.0) && (sf.S_1.DIP 		< 90.0) &&
@@ -907,79 +909,57 @@ bool check_correct_stressfield (STRESSFIELD sf) {
 	else return false;
 }
 
-VCTR generate_stress_colors (double value, INPSET inset) {
+string generate_stress_colors (const double V) {
 
-	double percentage = 0.0;
+	double P = 0.0;
 
-	VCTR out;
+	if (is_GRAYSCALE_USE()) return ("0.8, 0.8, 0.8");
 
-	if (inset.grayscale == "Y") {
+	if (is_in_range (0.0, 0.5, V)) {
 
-		out.X = 0.80;
-		out.Y = 0.80;
-		out.Z = 0.80;
-
-		return out;
+		P = (V - 0.0) / 0.5;
+		return 	double_to_string (0.0 * (1.0 - P) + 0.0 * P, 3) + " " +
+				double_to_string (0.0 * (1.0 - P) + 0.0 * P, 3) + " " +
+				double_to_string (0.0 * (1.0 - P) + 1.0 * P, 3);
 	}
+	else if (is_in_range (0.5, 1.0, V)) {
 
-	if ((value > 0.0) && (value <= 0.5)) {
-
-		percentage = (value - 0.0) / 0.5;
-
-		out.X = 0.00 * (1.0 - percentage) + 0.00 * (percentage);
-		out.Y = 0.00 * (1.0 - percentage) + 0.00 * (percentage);
-		out.Z = 0.00 * (1.0 - percentage) + 1.00 * (percentage);
+		P = (V - 0.5) / 0.5;
+		return 	double_to_string (0.0 * (1.0 - P) + 0.0 * P, 3) + " " +
+				double_to_string (0.0 * (1.0 - P) + 1.0 * P, 3) + " " +
+				double_to_string (1.0 * (1.0 - P) + 1.0 * P, 3);
 	}
+	else if (is_in_range (1.0, 1.5, V)) {
 
-	else if ((value > 0.5) && (value <= 1.0)) {
-
-		percentage = (value - 0.5) / 0.5;
-
-		out.X = 0.00 * (1.0 - percentage) + 0.00 * (percentage);
-		out.Y = 0.00 * (1.0 - percentage) + 1.00 * (percentage);
-		out.Z = 1.00 * (1.0 - percentage) + 1.00 * (percentage);
+		P = (V - 1.0) / 0.5;
+		return 	double_to_string (0.0 * (1.0 - P) + 0.0 * P, 3) + " " +
+				double_to_string (1.0 * (1.0 - P) + 1.0 * P, 3) + " " +
+				double_to_string (1.0 * (1.0 - P) + 0.0 * P, 3);
 	}
+	else if (is_in_range (1.5, 2.0, V)) {
 
-	else if ((value > 1.0) && (value <= 1.5)) {
-
-		percentage = (value - 1.0) / 0.5;
-
-		out.X = 0.00 * (1.0 - percentage) + 0.00 * (percentage);
-		out.Y = 1.00 * (1.0 - percentage) + 1.00 * (percentage);
-		out.Z = 1.00 * (1.0 - percentage) + 0.00 * (percentage);
+		P = (V - 1.5) / 0.5;
+		return 	double_to_string (0.0 * (1.0 - P) + 1.0 * P, 3) + " " +
+				double_to_string (1.0 * (1.0 - P) + 1.0 * P, 3) + " " +
+				double_to_string (0.0 * (1.0 - P) + 0.0 * P, 3);
 	}
+	else if (is_in_range (2.0, 2.5, V)) {
 
-	else if ((value > 1.5) && (value <= 2.0)) {
-
-		percentage = (value - 1.5) / 0.5;
-
-		out.X = 0.00 * (1.0 - percentage) + 1.00 * (percentage);
-		out.Y = 1.00 * (1.0 - percentage) + 1.00 * (percentage);
-		out.Z = 0.00 * (1.0 - percentage) + 0.00 * (percentage);
+		P = (V - 2.0) / 0.5;
+		return 	double_to_string (1.0 * (1.0 - P) + 1.0 * P, 3) + " " +
+				double_to_string (1.0 * (1.0 - P) + 0.5 * P, 3) + " " +
+				double_to_string (0.0 * (1.0 - P) + 0.0 * P, 3);
 	}
-
-	else if ((value > 2.0) && (value <= 2.5)) {
-
-		percentage = (value - 2.0) / 0.5;
-
-		out.X = 1.00 * (1.0 - percentage) + 1.00 * (percentage);
-		out.Y = 1.00 * (1.0 - percentage) + 0.50 * (percentage);
-		out.Z = 0.00 * (1.0 - percentage) + 0.00 * (percentage);
-	}
-
 	else {
 
-		percentage = (value - 2.5) / 0.5;
-
-		out.X = 1.00 * (1.0 - percentage) + 1.00 * (percentage);
-		out.Y = 0.50 * (1.0 - percentage) + 0.00 * (percentage);
-		out.Z = 0.00 * (1.0 - percentage) + 0.00 * (percentage);
+		P = (V - 2.5) / 0.5;
+		return 	double_to_string (1.0 * (1.0 - P) + 1.0 * P, 3) + " " +
+				double_to_string (0.5 * (1.0 - P) + 0.0 * P, 3) + " " +
+				double_to_string (0.0 * (1.0 - P) + 0.0 * P, 3);
 	}
-
-	return out;
 }
 
-double vectorlength (VCTR in) {
+double vectorlength (const VCTR& in) {
 
 	return sqrt(in.X * in.X + in.Y * in.Y + in.Z * in.Z);
 }
@@ -1025,12 +1005,12 @@ CENTR_VECT unitvector (CENTR_VECT in) {
 
 	if (vectorlength > 0.0000000000001) {
 
-		in.U = (in.U / vectorlength);
-		in.V = (in.V / vectorlength);
-		in.W = (in.W / vectorlength);
-		in.X = (in.X / vectorlength);
-		in.Y = (in.Y / vectorlength);
-		in.Z = (in.Z / vectorlength);
+		in.U = in.U / vectorlength;
+		in.V = in.V / vectorlength;
+		in.W = in.W / vectorlength;
+		in.X = in.X / vectorlength;
+		in.Y = in.Y / vectorlength;
+		in.Z = in.Z / vectorlength;
 	}
 	else {
 		ASSERT2(false,"[U, V, W, X, Y, Z] = [ "<<in.U<<", "<<in.V<<", "<<in.W<<", "<<in.X<<", "<<in.Y<<", "<<in.Z<<"]");
@@ -1039,7 +1019,7 @@ CENTR_VECT unitvector (CENTR_VECT in) {
 	return in;
 }
 
-VCTR declare_vector (const double& a, const double& b, const double& c) {
+VCTR declare_vector (const double a, const double b, const double c) {
 
 	VCTR o;
 
@@ -1050,7 +1030,7 @@ VCTR declare_vector (const double& a, const double& b, const double& c) {
 	return o;
 }
 
-CENTR_VECT declare_vector (double a, double b, double c, double d, double e, double f) {
+CENTR_VECT declare_vector (const double a, const double b, const double c, const double d, const double e, const double f) {
 
 	CENTR_VECT o;
 
@@ -1064,60 +1044,36 @@ CENTR_VECT declare_vector (double a, double b, double c, double d, double e, dou
 	return o;
 }
 
-VCTR flip_vector (VCTR in) {
+VCTR flip_vector (const VCTR& in) {
 
-	return (declare_vector(-in.X, -in.Y, -in.Z));
+	return declare_vector(-in.X, -in.Y, -in.Z);
 }
 
-VCTR flip_D_vector (VCTR in) {
+VCTR flip_D_vector (const VCTR& in) {
 
-	if (in.Z > 0.0) {
-
-		in.X = - in.X;
-		in.Y = - in.Y;
-		in.Z = - in.Z;
-	}
-
+	if (in.Z > 0.0) return flip_vector(in);
 	return in;
 }
 
-VCTR flip_N_vector (VCTR in) {
+VCTR flip_N_vector (const VCTR& in) {
 
-	if (in.Z < 0.0) {
-
-		in.X = - in.X;
-		in.Y = - in.Y;
-		in.Z = - in.Z;
-	}
-
+	if (in.Z < 0.0) return flip_vector(in);
 	return in;
 }
 
-VCTR flip_ptn_vector (VCTR in) {
+VCTR compute_d_for_SC (const GDB& i) {
 
-	if (in.Z < 0.0) in.Z = - in.Z;
+	VCTR temp1 = i.NC;
+	VCTR temp2 = i.N;
 
-	return in;
-}
-
-VCTR compute_d_for_SC (GDB i) {
-
-	VCTR temp1;
-	VCTR temp2;
-	VCTR d;
-	VCTR n;
-
-	temp1 = i.NC;
-	temp2 = i.N;
-
-	n = crossproduct (temp1, temp2);
+	VCTR n = crossproduct (temp1, temp2);
 	n = unitvector (n);
 	n = flip_D_vector (n);
 
 	temp1 = n;
 	temp2 = i.NC;
 
-	d = crossproduct (temp1, temp2);
+	VCTR d = crossproduct (temp1, temp2);
 	d = unitvector (d);
 	d = flip_D_vector (d);
 
@@ -1126,26 +1082,23 @@ VCTR compute_d_for_SC (GDB i) {
 
 VCTR DXDYDZ_from_dipdir_dip (const DIPDIR_DIP& i) {
 
-	VCTR out;
-
-	out.X = ((SIN (i.DIPDIR)) * (COS(i.DIP)));
-	out.Y = ((COS (i.DIPDIR)) * (COS(i.DIP)));
-	out.Z = ((                -  SIN(i.DIP)));
-
-	return out;
+	return declare_vector (
+			SIN (i.DIPDIR) * COS (i.DIP),
+			COS (i.DIPDIR) * COS (i.DIP),
+						   - SIN (i.DIP)
+	);
 }
 
 VCTR NXNYNZ_from_dipdir_dip (const DIPDIR_DIP& i) {
 
-	VCTR out;
-
-	out.X = ((SIN (i.DIPDIR)) * (SIN(i.DIP)));
-	out.Y = ((COS (i.DIPDIR)) * (SIN(i.DIP)));
-	out.Z = ((                   COS(i.DIP)));
-
-	return out;
+	return declare_vector (
+			SIN (i.DIPDIR) * SIN (i.DIP),
+			COS (i.DIPDIR) * SIN (i.DIP),
+							 COS (i.DIP)
+	);
 }
 
+/*
 VCTR inversion_DXDYDZ_from_DXDYDZ (VCTR i) {
 
 	DIPDIR_DIP dd;
@@ -1156,6 +1109,7 @@ VCTR inversion_DXDYDZ_from_DXDYDZ (VCTR i) {
 
 	return DXDYDZ_from_dipdir_dip (dd);
 }
+*/
 
 STRESSFIELD stressvector_to_DXDYDZ (STRESSFIELD in) {
 
@@ -1172,16 +1126,12 @@ STRESSFIELD stressvector_to_DXDYDZ (STRESSFIELD in) {
 
 VCTR DXDYDZ_from_NXNYNZ (const VCTR& i) {
 
-	DIPDIR_DIP temp = dipdir_dip_from_NXNYNZ (i);
-
-	return DXDYDZ_from_dipdir_dip (temp);
+	return DXDYDZ_from_dipdir_dip (dipdir_dip_from_NXNYNZ (i));
 }
 
 VCTR NXNYNZ_from_DXDYDZ (const VCTR& i) {
 
-	DIPDIR_DIP temp = dipdir_dip_from_DXDYDZ (i);
-
-	return NXNYNZ_from_dipdir_dip (temp);
+	return NXNYNZ_from_dipdir_dip (dipdir_dip_from_DXDYDZ (i));
 }
 
 DIPDIR_DIP dipdir_dip_from_DXDYDZ (const VCTR& i) {
@@ -1247,7 +1197,7 @@ VCTR ROTATE (const VCTR& ax, const VCTR& torotate, const double& A) {
 	return unitvector (result);
 }
 
-bool existence (string expression, vector<GDB> inGDB) { // TODO contains? contains datatype?
+bool existence (const string& expression, const vector<GDB>& inGDB) { // TODO contains? contains datatype?
 
 	bool presence = false;
 
@@ -1262,32 +1212,26 @@ bool existence (string expression, vector<GDB> inGDB) { // TODO contains? contai
 	return presence;
 }
 
-bool existence_of_group (int expression, vector <int> whichgroup) {
+bool existence_of_group (const size_t group, const vector <size_t>& whichgroup) {
 
-	bool presence = false;
+	for (size_t i = 0; i < whichgroup.size(); i++) {
 
-	size_t i = 0;
-
-	while (i < whichgroup.size()) {
-
-		if (whichgroup.at(i) == expression) presence = true;
-		i++;
+		if (whichgroup.at(i) == group) return true;
 	}
-
-	return presence;
+	return false;
 }
 
 
-vector <GDB> merge_GDB (vector <GDB> source, vector <GDB> target) {
+vector <GDB> merge_GDB (const vector <GDB>& source, const vector <GDB>& target) {
 
-	for (size_t i = 0; i < source.size(); i++) {
+	vector <GDB> OUT = target;
 
-		target.push_back(source.at(i));
-	}
-	return target;
+	for (size_t i = 0; i < source.size(); i++) OUT.push_back(source.at(i));
+
+	return OUT;
 }
 
-vector <double> quadratic_solution (double A, double B, double C) {
+vector <double> quadratic_solution (const double A, const double B, const double C) {
 
 	vector <double> out;
 
@@ -1307,7 +1251,7 @@ vector <double> quadratic_solution (double A, double B, double C) {
 	return out;
 }
 
-vector <double> cubic_solution (double A, double B, double C, double D) {
+vector <double> cubic_solution (const double A, const double B, const double C, const double D) {
 
 	vector <double> out;
 
@@ -1684,49 +1628,6 @@ STRESSTENSOR stresstensor_from_eigenvalue_eigenvector (STRESSFIELD sf) {
 	return out;
 }
 
-STRESSFIELD computestressfield_DXDYDZ (STRESSFIELD in) {
-
-	STRESSFIELD sf = in;
-
-	sf.EIGENVECTOR1 = flip_D_vector (in.EIGENVECTOR1);
-	sf.S_1 = dipdir_dip_from_DXDYDZ (sf.EIGENVECTOR1);
-
-	sf.EIGENVECTOR2 = flip_D_vector (in.EIGENVECTOR2);
-	sf.S_2 = dipdir_dip_from_DXDYDZ (sf.EIGENVECTOR2);
-
-	sf.EIGENVECTOR3 = flip_D_vector (in.EIGENVECTOR3);
-	sf.S_3 = dipdir_dip_from_DXDYDZ (sf.EIGENVECTOR3);
-
-	return sf;
-}
-
-STRESSTENSOR invert_stress_tensor (STRESSTENSOR st) {
-
-	STRESSTENSOR out = st;
-
-	out._11 = - out._11;
-	out._12 = - out._12;
-	out._13 = - out._13;
-	out._22 = - out._22;
-	out._23 = - out._23;
-	out._33 = - out._33;
-
-	return out;
-}
-
-STRESSTENSOR add_stress_tensor (STRESSTENSOR st, STRESSTENSOR T) {
-
-	STRESSTENSOR out;
-
-	out._11 = st._11 + T._11;
-	out._12 = st._12 + T._12;
-	out._13 = st._13 + T._13;
-	out._22 = st._22 + T._22;
-	out._23 = st._23 + T._23;
-	out._33 = st._33 + T._33;
-
-	return out;
-}
 
 STRESSTENSOR convert_matrix_to_stresstensor (const vector <vector <double> >& IN) {
 
@@ -1746,106 +1647,17 @@ STRESSTENSOR convert_matrix_to_stresstensor (const vector <vector <double> >& IN
 }
 
 
-//VCTR return_stressvector (const STRESSTENSOR& st, const GDB& inGDB, const bool& compression_positive) {
-VCTR return_stressvector (const STRESSTENSOR& st, const VCTR& N, const bool& compression_positive) {
 
-	VCTR out = declare_vector (
-			(st._11 * N.X + st._12 * N.Y + st._13 * N.Z),
-			(st._12 * N.X + st._22 * N.Y + st._23 * N.Z),
-			(st._13 * N.X + st._23 * N.Y + st._33 * N.Z));
 
-	if (! compression_positive)	out = declare_vector (-out.X, -out.Y, -out.Z);
 
-	return out;
-}
 
-//VCTR return_normalstress (const STRESSTENSOR& st, const GDB& inGDB, const bool& compression_positive) {
-VCTR return_normalstress (const STRESSTENSOR& st, const VCTR& N, const bool& compression_positive) {
 
-	VCTR stressvector = return_stressvector (st, N, compression_positive);
 
-	double stress = (N.X * stressvector.X) + (N.Y * stressvector.Y) + (N.Z * stressvector.Z);
 
-	return (declare_vector (N.X * stress, N.Y * stress, N.Z * stress));
-}
 
-VCTR return_shearstress (const STRESSTENSOR& st, const VCTR& N, const bool& compression_positive) {
 
-	VCTR stressvector = return_stressvector (st, N, compression_positive);
 
-	VCTR normalstress = return_normalstress (st, N, compression_positive);
-
-	return (declare_vector(
-			stressvector.X - normalstress.X,
-			stressvector.Y - normalstress.Y,
-			stressvector.Z - normalstress.Z));
-}
-
-VCTR return_upsilon (const STRESSTENSOR& st, const VCTR& N, const VCTR& SV, const VCTR& UPSILON, const double& lambda, const string& method, const bool& compression_positive) {
-
-	VCTR shearstress = return_shearstress (st, N, compression_positive);
-	VCTR out;
-
-	if (method == "ANGELIER")
-
-		out = declare_vector(
-				(SV.X * lambda) - shearstress.X,
-				(SV.Y * lambda) - shearstress.Y,
-				(SV.Z * lambda) - shearstress.Z);
-
-	else
-
-		out = declare_vector(
-				(UPSILON.X * lambda) - shearstress.X,
-				(UPSILON.Y * lambda) - shearstress.Y,
-				(UPSILON.Z * lambda) - shearstress.Z);
-
-	return out;
-}
-
-double return_ANG (const STRESSTENSOR& st, const VCTR& N, const VCTR& SV, const bool& compression_positive) {
-
-	VCTR shearstress = return_shearstress (st, N, compression_positive);
-
-	return ACOS (dotproduct (SV, shearstress, true));
-}
-
-double return_RUP (const STRESSTENSOR& st, const VCTR& N, const VCTR& SV, const double& lambda, const bool& compression_positive) {
-
-	VCTR shearstress  = return_shearstress (st, N, compression_positive);
-	VCTR stressvector = return_stressvector (st, N, compression_positive);
-
-	double out = lambda * lambda;
-
-	out = out +
-			(shearstress.X * shearstress.X) +
-			(shearstress.Y * shearstress.Y) +
-			(shearstress.Z * shearstress.Z);
-
-	out = out - 2.0 * lambda * dotproduct (SV, stressvector, false);
-
-	return ((sqrt(out * out)) / lambda) * 100.0;
-}
-
-double return_average_misfit (const STRESSTENSOR& st, const vector <GDB>& inGDB, const bool& compression_positive) {
-
-	double misfit = 0.0;
-	double ang = 0.0;
-	size_t i = 0;
-
-	do {
-
-		ang = return_ANG (st, inGDB.at(i).N, inGDB.at(i).SV, compression_positive);
-		misfit = misfit + ang;
-
-		i++;
-
-	} while (i < inGDB.size());
-
-	return misfit / inGDB.size();
-}
-
-STRESSFIELD stress_regime (STRESSFIELD in) {
+STRESSFIELD stress_regime (const STRESSFIELD& in) {
 
 	STRESSFIELD out = in;
 
@@ -1887,73 +1699,39 @@ STRESSFIELD stress_regime (STRESSFIELD in) {
 	return out;
 }
 
-vector <double> hyperplane_from_GDB (GDB inGDB)  {
+bool bycorrDIPDIRcorrDIP(const GDB& x, const GDB& y) {
 
-	vector <double>  out = init_vector (6);
-	CENTR_VECT o;
-
-	VCTR n = inGDB.N;
-	VCTR b = inGDB.SV;
-
-	b = crossproduct (b, n);
-
-	b = unitvector (b);
-
-	o.U = - (n.X * b.X);
-	o.V = - (n.Y * b.Y);
-	o.W = - (n.Z * b.Z);
-
-	o.X = - ((b.X * n.Y) + (b.Y * n.X));
-	o.Y = - ((b.Y * n.Z) + (b.Z * n.Y));
-	o.Z = - ((b.Z * n.X) + (b.X * n.Z));
-
-	o = unitvector (o);
-
-	out.at(0) = o.U;
-	out.at(1) = o.V;
-	out.at(2) = o.W;
-	out.at(3) = o.X;
-	out.at(4) = o.Y;
-	out.at(5) = o.Z;
-
-	return out;
+	if (x.corr.DIPDIR != y.corr.DIPDIR) return x.corr.DIPDIR < y.corr.DIPDIR;
+	return x.corr.DIP < y.corr.DIP;
 }
 
-vector < vector <double> > shan_matrix_from_GDB (GDB inGDB)  {
+bool bycorrDIPDIRcorrDIPcorrLDIPDIRcorrLDIP(const GDB& x, const GDB& y) {
 
-	vector <double>  o = init_vector (5);
-	vector < vector <double> > out = init_matrix (5);
-
-	VCTR n = inGDB.N;
-	VCTR s = inGDB.DC;
-
-	s = crossproduct (s, n);
-	s = unitvector (s);
-
-	o.at(0) = n.X * s.X - n.Z * s.Z;
-	o.at(1) = n.Y * s.Y - n.Z * s.Z;
-	o.at(2) = n.X * s.Y + n.Y * s.X;
-	o.at(3) = n.X * s.Z + n.Z * s.X;
-	o.at(4) = n.Y * s.Z + n.Z * s.Y;
-
-	out = outer_product (o);
-
-	return out;
+	if (x.corr.DIPDIR 	!= y.corr.DIPDIR)	return x.corr.DIPDIR < y.corr.DIPDIR;
+	if (x.corr.DIP 		!= y.corr.DIP) 		return x.corr.DIP < y.corr.DIP;
+	if (x.corrL.DIPDIR 	!= y.corrL.DIPDIR) 	return x.corrL.DIPDIR < y.corrL.DIPDIR;
+	return x.corrL.DIP < y.corrL.DIP;
 }
 
-double right_hand_rule_to_german (double corrDIPDIR) {
+double right_hand_rule_to_german (const double corrDIPDIR) {
 
 	if ((corrDIPDIR >= 0.0) && (corrDIPDIR < 270.0)) 	return corrDIPDIR + 90.0;
 	else 												return corrDIPDIR - 270.0;
 }
 
-double german_to_right_hand_rule (double corrDIPDIR) {
+double german_to_right_hand_rule (const double corrDIPDIR) {
 
 	if ((corrDIPDIR > 90.0) && (corrDIPDIR <= 360.0)) 	return corrDIPDIR - 90.0;
 	else 												return corrDIPDIR + 270.0;
 }
 
-void output_elapsed_time (double elapsed_time) {
+void output_elapsed_time (const clock_t& start_t, const clock_t& finish_t) {
+
+	if (is_mode_DEBUG()) return;
+
+	double elapsed_time = (static_cast<double>(finish_t - start_t))/CLOCKS_PER_SEC;
+
+	elapsed_time *= 1000;
 
 	if (elapsed_time < 1 * 1000.0) cout << "  - Elapsed time: " << fixed << setprecision (2) << elapsed_time << " milliseconds." << endl;
 	else {
@@ -1989,13 +1767,9 @@ string build_date () {
 	date.at(7) = 	DATE.at(7);
 	date.at(8) = 	DATE.at(8);
 	date.at(9) = 	DATE.at(9);
-	date.at(10) = DATE.at(10);
+	date.at(10) = 	DATE.at(10);
 
-
-	for (size_t i = 0; i < 11; i++) {
-
-		DATE.at(i) = date.at(i);
-	}
+	for (size_t i = 0; i < 11; i++) DATE.at(i) = date.at(i);
 
 	return DATE;
 }
@@ -2149,14 +1923,14 @@ string version_id() {
 	return id;
 }
 
-bool is_in_range (double range_min, double range_max, double in) {
+bool is_in_range (const double range_min, const double range_max, const double in) {
 
 	double SN = 10e-8;
 
 	return (range_min - SN <= in && in <= range_max + SN);
 }
 
-double points_distance (VCTR a, VCTR b) {
+double points_distance (const VCTR& a, const VCTR&  b) {
 
 	return sqrt (
 			(b.X - a.X) * (b.X - a.X) +
@@ -2165,19 +1939,17 @@ double points_distance (VCTR a, VCTR b) {
 			);
 }
 
-vector <VCTR> convert_vectors_to_S_or_W (vector <VCTR> in, INPSET inset) {
 
-	bool SCHMIDT = (inset.plot == "S");
-	bool WULFF   = (inset.plot == "W");
+/*vector <VCTR> convert_vectors_to_S_or_W (vector <VCTR> in) {
 
-	if (!SCHMIDT && !WULFF) ASSERT_DEAD_END();
+	if (!is_NET_SCHMIDT() && !is_NET_WULFF()) ASSERT_DEAD_END();
 
 	for (size_t i = 0; i < in.size(); i++) {
 
 		double X = 0.0;
 		double Y = 0.0;
 
-		if (SCHMIDT) {
+		if (is_NET_SCHMIDT ()) {
 
 			X = in.at(i).X / sqrt (1.00 + in.at(i).Z);
 			Y = in.at(i).Y / sqrt (1.00 + in.at(i).Z);
@@ -2195,3 +1967,4 @@ vector <VCTR> convert_vectors_to_S_or_W (vector <VCTR> in, INPSET inset) {
 	}
 	return in;
 }
+*/

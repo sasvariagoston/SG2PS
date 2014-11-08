@@ -12,7 +12,7 @@ bool needxyfile ();
 
 string inputxyfilename();
 
-void read_in_xy(const string& file_name);
+void read_in_xy (const string& file_name);
 bool input_xy (const string& projectname);
 
 bool LOCATIONcheck ();
@@ -21,9 +21,9 @@ bool XYcheck ();
 
 bool xyfile_correct (string projectname);
 
-void uppercase_xy_to_check ();
+//void uppercase_xy_to_check ();
 string check_xy_inputs (string inputfilename);
 
-GDB insertxy (GDB inGDB);
+GDB insertxy (const GDB& inGDB);
 
 #endif

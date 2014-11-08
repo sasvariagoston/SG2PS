@@ -10,41 +10,23 @@
 
 using namespace std;
 
-bool is_method_BINGHAM (vector <GDB> inGDB, INPSET inset);
-bool is_method_FRY (vector <GDB> inGDB, INPSET inset);
-bool is_method_MICHAEL (vector <GDB> inGDB, INPSET inset);
-bool is_method_SHAN (vector <GDB> inGDB, INPSET inset);
-bool is_method_ANGELIER (vector <GDB> inGDB, INPSET inset);
-bool is_method_MOSTAFA (vector <GDB> inGDB, INPSET inset);
-bool is_method_NDA (vector <GDB> inGDB, INPSET inset);
-bool is_method_BRUTEFORCE (vector <GDB> inGDB, INPSET inset);
-bool is_method_PTN (vector <GDB> inGDB, INPSET inset);
-bool is_method_YAMAJI (vector <GDB> inGDB, INPSET inset);
+vector <GDB> return_striae_with_offset (const vector <GDB>& inGDB);
 
-size_t useful_striae_number (vector <GDB> inGDB);
+vector <GDB > generate_virtual_striae (const vector <GDB>& inGDB_G);
 
-vector <GDB> return_striae_with_offset (vector <GDB> inGDB);
+void cout_inversion_results (const vector <GDB>& inGDB, const vector <STRESSFIELD>& SFV);
 
-vector <GDB> return_stressvector_estimators (const STRESSTENSOR& st, const vector <GDB>& inGDB, const string& method, const bool& compression_positive);
+vector <STRESSTENSOR> return_STV ();
+vector <STRESSFIELD> return_SFV ();
+void INVERSION (const vector <GDB>& inGDB);
 
-STRESSTENSOR return_stresstensor_from_n1_ang_phi (const VCTR& N1, const double& ANG, const double& PHI);
+void cout_dbg_sf (const vector <GDB>& inGDB);
 
-vector <GDB> generate_virtual_striae (vector <GDB> inGDB);
+vector <GDB> ASSOCIATE_STV_SFV (const vector <GDB>& inGDB, const vector <STRESSTENSOR>& STV, const vector <STRESSFIELD>& SFV);
 
-string inversion_method (vector <GDB> inGDB, INPSET inset);
+vector <GDB> apply_inversion_result (const vector <GDB>& inGDB, const STRESSTENSOR st);
 
-void ps_inversion (string method, STRESSTENSOR st, STRESSFIELD sf, vector <GDB> inGDB, vector <VALLEY> V, INPSET inset, ofstream& o, CENTER center, CENTER mohr_center, PAPER P);
-
-void bingham_result_output (STRESSFIELD sf);
-
-void inversion_result_output (STRESSFIELD sf, double average_misfit);
-
-
-
-vector <GDB> inversion (vector <GDB> inGDB, ofstream& o, INPSET inset, CENTER center, CENTER mohr_center, PAPER P, bool tilt, const bool is_debug);
-
-
-
-void cout_dbg_stressfield (const STRESSFIELD& sf);
+void cout_dbg_stressfield (const vector <STRESSFIELD>& sf);
+void cout_dbg_STV (const vector <STRESSTENSOR>& STV);
 
 #endif

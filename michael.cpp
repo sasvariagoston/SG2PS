@@ -10,16 +10,15 @@
 #include "inversion.h"
 #include "michael.h"
 #include "rgf.h"
+#include "stresstensor.hpp"
 
 using namespace std;
 
-vector <vector < double> > michael_parameters (vector <GDB> inGDB) {
+vector <vector < double> > michael_parameters (const vector <GDB>& inGDB) {
 
 	vector <vector < double> > out = init_matrix (3 * inGDB.size(), 5);
 
-	size_t i = 0;
-
-	do {
+	for (size_t i = 0; i < inGDB.size(); i++) {
 
 		VCTR N = inGDB.at(i).N;
 
@@ -40,51 +39,41 @@ vector <vector < double> > michael_parameters (vector <GDB> inGDB) {
 		out.at( (i * 3) + 2 ).at(2) =     N.X -               (2.0 * N.X * N.Z * N.Z);
 		out.at( (i * 3) + 2 ).at(3) =   - N.Z - (N.Y * N.Y * N.Z) + (N.Z * N.Z * N.Z);
 		out.at( (i * 3) + 2 ).at(4) =     N.Y -               (2.0 * N.Y * N.Z * N.Z);
-
-		i++;
 	}
-
-	while (i < inGDB.size());
-
 	return out;
 }
 
-vector <vector < double> > stressvector_parameters (vector <GDB> inGDB) {
+vector <vector < double> > stressvector_parameters (const vector <GDB>& inGDB) {
 
 	vector <vector < double> > o = init_matrix (3 * inGDB.size(), 1);
-	size_t i = 0;
 
-	do {
+	for (size_t i = 0; i < inGDB.size(); i++) {
 
 		o.at( (i * 3) + 0 ).at(0) =  inGDB.at(i).SV.X;
 		o.at( (i * 3) + 1 ).at(0) =  inGDB.at(i).SV.Y;
 		o.at( (i * 3) + 2 ).at(0) =  inGDB.at(i).SV.Z;
-
-		i++;
-
-	} while (i < inGDB.size());
-
+	}
 	return o;
 }
 
-STRESSTENSOR st_MICHAEL (vector <GDB> inGDB, INPSET inset) {
+STRESSTENSOR st_MICHAEL (const vector <GDB>& inGDB) {
 
 	STRESSTENSOR st;
 
-	if (inset.virt_striae == "Y" ) inGDB = generate_virtual_striae (inGDB);
+	vector <GDB> processGDB = inGDB;
 
-	vector < vector <double> > M = michael_parameters (inGDB);
-	vector < vector <double> > M_t = transpose (M);
+	vector <vector<double> > M = michael_parameters (processGDB);
+	const vector <vector<double> > M_t = transpose (M);
 
-	vector < vector <double> > B = stressvector_parameters (inGDB);
+	vector <vector<double> > B = stressvector_parameters (processGDB);
 
-	vector < vector <double> > LU = init_matrix (10, 5);
-	vector < vector <double> > U = init_matrix (5);
-	vector < vector <double> > L = init_matrix (5);
+	vector <vector<double> > LU = init_matrix (10, 5);
+	vector <vector<double> > U = init_matrix (5);
+	vector <vector<double> > L = init_matrix (5);
 
-	vector < vector <double> > Z = init_matrix (5, 1);
+	vector <vector<double> > Z = init_matrix (5, 1);
 
-	vector < vector <double> > X = init_matrix (5, 1);
+	vector <vector<double> > X = init_matrix (5, 1);
 
 	M = mult_mtrx (M_t, M);
 
@@ -109,8 +98,11 @@ STRESSTENSOR st_MICHAEL (vector <GDB> inGDB, INPSET inset) {
 	return invert_stress_tensor (st);
 }
 
+STRESSFIELD sf_MICHAEL (const STRESSTENSOR& st) {
 
-STRESSFIELD sf_MICHAEL (STRESSTENSOR st) {
+	STRESSFIELD sf = eigenvalue_eigenvector (st);
 
-	return eigenvalue_eigenvector (st);
+	sf = computestressfield_DXDYDZ (sf);
+
+	return stress_regime (sf);
 }

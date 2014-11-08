@@ -26,39 +26,26 @@ struct DIPDIR_DIP {
 	double DIPDIR, DIP;
 };
 
-struct INPSET  {
+struct STRESSFIELD {
 
-	INPSET() { angle=linewidth=NaN(); }
+	STRESSFIELD() { stressratio=delvaux_str=shmax=shmin=NaN(); }
 
-	string datarule;
-	string plot;
-	string plottype;
-	string hemisphere;
-	string tilting;
-	string group;
-	string clusternumber;
-	string labeling;
-	string inversion;
-	string virt_striae;
-	string idealmovement;
-	double angle;
-	string anglest;
-	string fracture;
-	string linewidthst;
-	double linewidth;
-	string rosetype;
-	string rosebinning;
-	string filename;
-	string grayscale;
-	string rosedirection;
+	VCTR EIGENVECTOR1, EIGENVECTOR2, EIGENVECTOR3, EIGENVALUE;
+	DIPDIR_DIP S_1, S_2, S_3;
+	double stressratio, delvaux_str, shmax, shmin;
+	string regime, delvaux_rgm;
+};
 
-	string clustering_RUP_ANG;
-	string contouring;
+struct STRESSTENSOR {
+
+	STRESSTENSOR() { _11=_12=_13=_22=_23=_33=NaN(); }
+
+	double _11, _12, _13, _22, _23, _33;
 };
 
 struct GDB  {
 
-	GDB() { LOCX=LOCY=DIPDIR=DIP=LDIR=LDIP=PALEON=LPITCH=PITCHANGLE=MISFIT=lambda=ANG=RUP=NaN();
+	GDB() { LOCX=LOCY=DIPDIR=DIP=LDIR=LDIP=PALEON=LPITCH=PITCHANGLE=MISFIT=lambda=ANG=RUP=AV_MISF=NaN();
 			iID=numeric_limits<int>::min();
 			UPWARD=false, UP=false;
 		   }
@@ -95,7 +82,8 @@ struct GDB  {
 
 	VCTR N, NC, D, DC, S, SC, SV;
 	VCTR ptnP, ptnT, ptnN;
-	VCTR avD, avS0D, avS0N, rotavD;
+	VCTR avD, avS0D, avS0N;
+	//, rotavD;
 
 	double MISFIT;
 
@@ -103,7 +91,7 @@ struct GDB  {
 	bool UPWARD;
 
 	string OFFSET;
-	string corrOFFSET;
+	//string corrOFFSET;
 
 	bool UP;
 
@@ -112,6 +100,12 @@ struct GDB  {
 	VCTR SHEAR_S, NORMAL_S, UPSILON;
 
 	double ANG, RUP;
+	double AV_MISF;
+
+	VCTR fold_great_circle_N;
+
+	vector <STRESSFIELD> SFV;
+	vector <STRESSTENSOR> STV;
 
 	//int RUP_clusternumber;
 };
@@ -140,7 +134,7 @@ struct PFN {
 struct PAPER {
 
 	double X, Y;
-	double A, B, C, R;
+	double A, B, C, D, R;
 	double O1X, O1Y, O2X, O2Y, O3X, O3Y, O4X, O4Y, O5X, O5Y, O6X, O6Y, O7X, O7Y, O8X, O8Y;
 	double S1X, S1Y, S2X, S2Y, S3X, S3Y, S4X, S4Y, S5X, S5Y, S6X, S6Y;
 };
@@ -159,29 +153,11 @@ struct LOC_X_Y_FRM {
 	string FORMATION;
 };
 
-
-struct STRESSTENSOR {
-
-	STRESSTENSOR() { _11=_12=_13=_22=_23=_33=NaN(); }
-
-	double _11, _12, _13, _22, _23, _33;
-};
-
 struct ROSENUMBER {
 
 	ROSENUMBER() { PLN_NUM=LIN_NUM=NaN(); }
 
 	double PLN_NUM, LIN_NUM;
-};
-
-struct STRESSFIELD {
-
-	STRESSFIELD() { stressratio=delvaux_str=shmax=shmin=NaN(); }
-
-	VCTR EIGENVECTOR1, EIGENVECTOR2, EIGENVECTOR3, EIGENVALUE;
-	DIPDIR_DIP S_1, S_2, S_3;
-	double stressratio, delvaux_str, shmax, shmin;
-	string regime, delvaux_rgm;
 };
 
 struct CENTR_VECT {
@@ -237,7 +213,7 @@ struct HISTOGRAM {
 
 struct VALLEY {
 
-	int BIN_ID;
+	size_t BIN_ID;
 	double BIN_CENTER;
 	string DIR;
 };

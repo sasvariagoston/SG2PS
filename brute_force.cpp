@@ -16,8 +16,9 @@
 #include "inversion.h"
 #include "kaalsbeek.hpp"
 #include "rakhmanov.hpp"
+#include "settings.hpp"
 #include "structs.h"
-#include "brute_force.hpp"
+#include "stresstensor.hpp"
 
 using namespace std;
 
@@ -36,11 +37,9 @@ vector <double> generate_angle_vector_180 (const double& ANG_MIN, const double& 
 
 		ANG_CONTAINER.push_back (ANG);
 
-		//cout << ANG << endl;
-
 		ANG = ANG + step;
 	}
-	return ANG_CONTAINER; // NUMERICALLY OK
+	return ANG_CONTAINER;
 }
 
 vector <double> generate_phi_vector (const double& PHI_MIN, const double& PHI_MAX, const size_t& INT_NUM) {
@@ -58,11 +57,9 @@ vector <double> generate_phi_vector (const double& PHI_MIN, const double& PHI_MA
 
 		PHI_CONTAINER.push_back (PHI);
 
-		//cout << PHI << endl;
-
 		PHI = PHI + step;
 	}
-	return PHI_CONTAINER; // NUMERICALLY OK
+	return PHI_CONTAINER;
 }
 
 vector <vector <double> > DIR_MX1_from_n1 (const VCTR& n1, const double& angle) {
@@ -97,7 +94,7 @@ vector <vector <double> > st_from_reduced_stresstensor (const vector <vector <do
 	return mult_mtrx(OUT, DIR_MX1);
 }
 
-vector <VCTR> generate_centroids_net (const VCTR& ORIGO, const size_t POINTS_DISTANCE, const INPSET& inset) {
+vector <VCTR> generate_centroids_net (const VCTR& ORIGO, const size_t POINTS_DISTANCE) {
 
 	vector <vector <vector <VCTR> > > NET  = generate_net (POINTS_DISTANCE);
 
@@ -161,10 +158,12 @@ static double dotprod(const VCTR& a, const VCTR& b) {
     return a.X*b.X + a.Y*b.Y + a.Z*b.Z;
 }
 
+/*
 static double length_sqr(const VCTR& v) {
 
     return v.X*v.X + v.Y*v.Y + v.Z*v.Z + 1.0e-6;
 }
+*/
 
 static VCTR make_unit(const VCTR& in) {
 
@@ -292,23 +291,22 @@ static STRESSTENSOR calculate_stresstensor(const VCTR& n1, double ANG, double PH
     return st;
 }
 
-static double misfit(const STRESSTENSOR& st, const VCTR& N, const VCTR& SV, bool compression_positive) {
+/*
+static double misfit (const STRESSTENSOR& st, const VCTR& N, const VCTR& SV, bool compression_positive) {
 
-    VCTR shearstress = return_shearstress (st, N, compression_positive); // TODO Seems to compute the same twice
+    VCTR shearstress = return_shearstress (st, N); // TODO Seems to compute the same twice
 
-    double prod = dotprod(SV, shearstress);
+    //double prod = dotprod(SV, shearstress);
 
-    return 1.0 - prod*prod/(length_sqr(SV)*length_sqr(shearstress));
+    //return 1.0 - prod*prod/(length_sqr(SV)*length_sqr(shearstress));
 
-    //return ACOS (dotproduct (SV, shearstress, true));
+    return ACOS (dotproduct (SV, shearstress, true));
 }
+*/
 
-vector <BRUTEFORCE_RESULT> BRUTEFORCE_ENGINE (const vector <GDB>& inGDB, const vector <VCTR>& CNTRVCTR, const vector <double>& ANGVCTR, const vector <double>& PHIVCTR, const INPSET& inset) {
+vector <BRUTEFORCE_RESULT> BRUTEFORCE_ENGINE (const vector <GDB>& inGDB, const vector <VCTR>& CNTRVCTR, const vector <double>& ANGVCTR, const vector <double>& PHIVCTR) {
 
-	bool BRUTEFORCE = is_method_BRUTEFORCE(inGDB, inset);
-	bool YAMAJI = is_method_YAMAJI(inGDB, inset);
-
-	if (!BRUTEFORCE && ! YAMAJI) ASSERT_DEAD_END();
+	if (!is_INVERSION_BRUTEFORCE() && ! is_INVERSION_YAMAJI()) ASSERT_DEAD_END();
 
 	size_t CNT_MAX = CNTRVCTR.size();
 	size_t ANG_MAX = ANGVCTR.size();
@@ -337,17 +335,15 @@ vector <BRUTEFORCE_RESULT> BRUTEFORCE_ENGINE (const vector <GDB>& inGDB, const v
 		for (size_t ang = 0; ang < ANG_MAX; ang++) {
 			for (size_t phi = 0; phi < PHI_MAX; phi++) {
 
-				//STRESSTENSOR st =  return_stresstensor_from_n1_ang_phi (CNTRVCTR.at(cntr), ANGVCTR.at(ang), PHIVCTR.at(phi));
-
 			    STRESSTENSOR st = calculate_stresstensor(CNTRVCTR.at(cntr), ANGVCTR.at(ang), PHIVCTR.at(phi));
 
                 double MISFIT = 0.0;
 
 				for (size_t z = 0; z < DATANUMBER; ++z) {
 
-				    //MISFIT = MISFIT + return_ANG(st, N.at(z), SV.at(z), false);
+				   MISFIT = MISFIT + return_ANG (st, N.at(z), SV.at(z));
 
-					MISFIT += misfit(st, N.at(z), SV.at(z), false);
+					//MISFIT += misfit(st, N.at(z), SV.at(z), false);
 				}
 
 				if (MISFIT < MIN_MISFIT) {
@@ -363,17 +359,16 @@ vector <BRUTEFORCE_RESULT> BRUTEFORCE_ENGINE (const vector <GDB>& inGDB, const v
 		}
 		OUT.push_back(buf);
 	}
-
 	return OUT;
 }
 
-STRESSTENSOR st_BRUTEFORCE (const vector <GDB>& inGDB, const INPSET& inset) {
+STRESSTENSOR st_BRUTEFORCE (const vector <GDB>& inGDB) {
 
-	vector <VCTR> CNTRVCTR = generate_centroids_net (declare_vector(0.0, 0.0, 1.0), 9, inset);
+	vector <VCTR> CNTRVCTR = generate_centroids_net (declare_vector(0.0, 0.0, 1.0), 9);
 	vector <double> ANGVCTR = generate_angle_vector_180 (0.0, 180.0, 18);
 	vector <double> PHIVCTR = generate_phi_vector (0.0, 1.0, 10);
 
-	vector <BRUTEFORCE_RESULT> BR_RAW = BRUTEFORCE_ENGINE (inGDB, CNTRVCTR, ANGVCTR, PHIVCTR, inset);
+	vector <BRUTEFORCE_RESULT> BR_RAW = BRUTEFORCE_ENGINE (inGDB, CNTRVCTR, ANGVCTR, PHIVCTR);
 
 	BR_RAW = return_minimum_misfits (BR_RAW, 10);
 
@@ -383,7 +378,7 @@ STRESSTENSOR st_BRUTEFORCE (const vector <GDB>& inGDB, const INPSET& inset) {
 
 		VCTR ORIGO = BR_RAW.at(i).NRM;
 		size_t POINTS_DISTANCE = 1;
-		vector <VCTR> CNTRVCTR = generate_centroids_net(ORIGO, POINTS_DISTANCE, inset);
+		vector <VCTR> CNTRVCTR = generate_centroids_net(ORIGO, POINTS_DISTANCE);
 
 		double ANG_MIN = BR_RAW.at(i).ANG - 5.0;
 		double ANG_MAX = BR_RAW.at(i).ANG + 5.0;
@@ -397,7 +392,7 @@ STRESSTENSOR st_BRUTEFORCE (const vector <GDB>& inGDB, const INPSET& inset) {
 		if (PHI_MAX > 1.0) PHI_MAX = 1.0;
 		vector <double> PHIVCTR = generate_phi_vector (PHI_MIN, PHI_MAX, 5);
 
-		vector <BRUTEFORCE_RESULT> BR_FINE = BRUTEFORCE_ENGINE (inGDB, CNTRVCTR, ANGVCTR, PHIVCTR, inset);
+		vector <BRUTEFORCE_RESULT> BR_FINE = BRUTEFORCE_ENGINE (inGDB, CNTRVCTR, ANGVCTR, PHIVCTR);
 
 		BR_FINE = return_minimum_misfits (BR_FINE, 1);
 
@@ -413,10 +408,15 @@ STRESSTENSOR st_BRUTEFORCE (const vector <GDB>& inGDB, const INPSET& inset) {
 	double MIN_PHI = BR_FINAL.at(0).PHI;
 
 	return (return_stresstensor_from_n1_ang_phi (MIN_N1, MIN_ANG, MIN_PHI));
+}
 
-	//0.195515	0.112962	-0.183388
-	//0.112962	0.065266	-0.106299
-	//-0.183388	-0.106299	 0.939219
+STRESSFIELD sf_BRUTEFORCE (STRESSTENSOR& st) {
+
+	STRESSFIELD	sf = eigenvalue_eigenvector (st);
+
+	sf = computestressfield_DXDYDZ (sf);
+
+	return stress_regime (sf);
 }
 
 void dbg_cout_matrix (vector <vector <double> > I) {
@@ -440,4 +440,3 @@ void dbg_cout_matrix (vector <vector <double> > I) {
 
 	cout << " ---- END MATRIX ---- " << endl;
 }
-

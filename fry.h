@@ -8,12 +8,18 @@
 
 using namespace std;
 
-vector <vector <double> > FRY_matrix (vector <GDB> inGDB, INPSET inset);
+bool check_fry_matrix (const size_t first_eigenvalue, const vector <vector <double> >& in_eigenvector);
 
-bool fry_correct (vector <GDB> inGDB, INPSET inset);
+bool fry_correct (const vector <GDB>& inGDB);
 
-STRESSTENSOR st_FRY (vector <GDB> inGDB);
+vector <double> hyperplane_from_GDB (const GDB& inGDB);
 
-STRESSFIELD sf_FRY (STRESSTENSOR st);
+vector <vector <double> > FRY_matrix (const vector <GDB>& inGDB);
+
+STRESSTENSOR st_FRY (const vector <GDB>& inGDB);
+
+STRESSFIELD sf_FRY (const STRESSTENSOR& st);
+
+STRESSFIELD INVERSION_FRY (const vector <GDB>& inGDB);
 
 #endif

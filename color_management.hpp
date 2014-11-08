@@ -9,17 +9,15 @@
 
 #include "structs.h"
 
-bool existence_of_group_GDB (string expression, vector <GDB> inGDB);
-bool existence_of_groupcodes (vector <GDB> inGDB);
+vector <GDB> attach_k_means_group_codes (const vector <size_t>& which_group, const vector <GDB>& inGDB);
 
-//vector <GDB> attach_color_codes (vector <int> which_group, vector <GDB> inGDB);
-vector <GDB> attach_group_codes (vector <int> which_group, vector <GDB> inGDB);
+vector <GDB> associate_empty_clustercode (const vector <GDB>& inGDB, const size_t WHICH);
+vector < vector < vector <vector <GDB> > > > associate_empty_clustercode (const vector < vector < vector <vector <GDB> > > >& inGDB_G, const size_t WHICH);
 
-string generate_PSCOLOR_from_GC (string GC, INPSET inset);
-string generate_PSCOLOR_from_COLOR (string CLR, INPSET inset);
-string generate_DASHED_from_GC (string GC, INPSET inset);
+string generate_PSCOLOR_from_GC (const string GC);
+string generate_PSCOLOR_from_COLOR (const string CLR);
+string generate_DASH (const string CODE);
 
-vector <GDB> fill_with_black_colorcode (vector <GDB> inGDB);
-vector <GDB> colorcode_grom_groupcode (vector <GDB> inGDB, INPSET inset);
+vector <GDB> GENERATE_PS_CODE (const vector <GDB>& inGDB);
 
 #endif

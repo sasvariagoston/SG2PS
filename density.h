@@ -10,7 +10,7 @@
 
 #include "structs.h"
 
-XY stereonet_coordinate_from_DIPDIR_DIP (const DIPDIR_DIP& in, const CENTER& center, const INPSET& inset);
+XY stereonet_coordinate_from_DIPDIR_DIP (const DIPDIR_DIP& in, const CENTER& center);
 
 vector < vector <GRID_CENTER> > generate_rectangular_grid_from_triange_center (const size_t cell_number);
 
@@ -88,37 +88,24 @@ bool is_line_close_unitcircle (const vector <VCTR>& I, const double CELL);
 
 vector <VCTR> close_contourline (const vector <VCTR>& I, const double START_ANGLE, const double END_ANGLE, const double CELL, const bool CHECK_DISTANCE);
 
-void contourline_to_ps (ofstream& o, const INPSET& inset, const PAPER& P, const CENTER& center, const vector <VCTR>& BZ, const double& FRST_ANGLE, const double& LAST_ANGLE, const double& CONTOUR, const double& C_MN, const double& C_MX, const double& MAX);
+void contourline_to_ps (ofstream& o, const PAPER& P, const CENTER& center, const vector <VCTR>& BZ, const double& FRST_ANGLE, const double& LAST_ANGLE, const double& CONTOUR, const double& C_MN, const double& C_MX, const double& MAX);
 
-void output_contourline (ofstream& o, const INPSET& inset, const PAPER& P, const CENTER& center, vector <vector <VCTR> >& BZ,  vector < vector <GRID_CENTER> >& RECT_GRID, const double& CONTOUR, const double C_MN, const double C_MX, const double& MAX, const bool is_debug);
+void output_contourline (ofstream& o, const PAPER& P, const CENTER& center, vector <vector <VCTR> >& BZ,  vector < vector <GRID_CENTER> >& RECT_GRID, const double& CONTOUR, const double C_MN, const double C_MX, const double& MAX, const bool is_debug);
 
 bool is_processable_for_contouring (const vector <GDB>& inGDB);
 
-
-void contouring (const vector <GDB>& inGDB, ofstream& o, const INPSET& inset, const PAPER& P, const CENTER center, const bool is_debug);
-
-
+void CONTOURING (const vector <GDB>& inGDB, ofstream& o, const PAPER& P, const CENTER center);
 
 void dbg_cout_NET (const vector <vector <vector <VCTR> > >& NET);
-
 void dbg_cout_TRI_GRID (const vector <TRIANGLE>& TRI_GRID);
-
 void dbg_cout_CONTOURS (const vector <size_t>& CNTR_AT);
-
 void dbg_cout_triangle_center (const vector <GRID_CENTER>& TRI_CENTER);
-
 void dbg_cout_rect_grid (const vector < vector <GRID_CENTER> >& rect_grid, const bool display_coordinates);
-
 void cout_bezier_to_ps (const vector < vector <BEZIER> >& B, ofstream& o, const size_t& isoline, const double& max_COUNT);
-
 void dbg_cout_line (const vector <LINE>& L);
-
 void dbg_cout_line_vctr (const vector <vector <LINE> >& LV);
-
 void dbg_bezier_points (const vector <VCTR>& BZ);
-
 void dbg_bezier_curve (const vector <BEZIER>& B);
-
-void cout_rect_grid_to_ps (const vector <vector < GRID_CENTER> >& rect_grid, ofstream& o, const INPSET& inset);
+void cout_rect_grid_to_ps (const vector <vector < GRID_CENTER> >& rect_grid, ofstream& o);
 
 #endif

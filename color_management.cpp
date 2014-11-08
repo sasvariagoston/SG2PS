@@ -23,220 +23,210 @@
 //#include "ptn.h"
 //#include "rgf.h"
 //#include "rup_clustering.hpp"
+#include "settings.hpp"
 //#include "shan.h"
 //#include "structs.h"
 //#include "valley_method.hpp"
 
 using namespace std;
 
-bool existence_of_group_GDB (string expression, vector <GDB> inGDB) {
+vector <GDB> associate_empty_clustercode (const vector <GDB>& inGDB, const size_t WHICH) {
 
-	for (size_t i = 0; i < inGDB.size(); i++) {
+	if (WHICH != 2 && WHICH != 3) ASSERT_DEAD_END();
 
-		if (inGDB.at(i).GC == expression) return true;
+	vector <GDB> outGDB = inGDB;
 
+	for (size_t i = 0; i < outGDB.size(); i++) {
+
+		const string GC = outGDB.at(i).GC;
+
+		if (GC.size() != 1 && GC.size() != 2) ASSERT_DEAD_END();
+
+		outGDB.at(i).GC = GC + 'X';
 	}
-	return false;
+	return outGDB;
 }
 
-bool existence_of_groupcodes (vector <GDB> inGDB) {
+vector < vector < vector <vector <GDB> > > > associate_empty_clustercode (const vector < vector < vector <vector <GDB> > > >& inGDB_G, const size_t WHICH) {
 
-	for (size_t i = 0; i < inGDB.size(); i++) {
+	if (WHICH != 2 && WHICH != 3) ASSERT_DEAD_END();
 
-		string GC = inGDB.at(i).GC;
+	vector < vector < vector <vector <GDB> > > > outGDB_G = inGDB_G;
 
-		bool GC_STR = is_allowed_groupcode_str(GC);
+	for (size_t i = 0; i < outGDB_G.size(); i++) {
+		for (size_t j = 0; j < outGDB_G.at(i).size(); j++) {
+			for (size_t k = 0; k < outGDB_G.at(i).at(j).size(); k++) {
+				for (size_t l = 0; l < outGDB_G.at(i).at(j).at(k).size(); l++) {
 
-		//if (!(inGDB.at(i).GC == "X")) return true;
+					const string GC = outGDB_G.at(i).at(j).at(k).at(l).GC;
 
-		if (GC_STR) return true;
+					if (GC.size() != 1 && GC.size() != 2) ASSERT_DEAD_END();
+
+					outGDB_G.at(i).at(j).at(k).at(l).GC = GC + 'X';
+				}
+			}
+		}
 	}
-	return false;
+	return outGDB_G;
 }
 
+vector <GDB> attach_k_means_group_codes (const vector <size_t>& which_group, const vector <GDB>& inGDB) {
 
-vector <GDB> attach_group_codes (vector <int> which_group, vector <GDB> inGDB) {
+	vector <GDB> outGDB = inGDB;
 
-	vector <string> GC_STR_VCT = allowed_groupcode_str_vector();
+	const bool NO_CLUSTERING = which_group.size() == 0;
 
-	for (size_t i = 0; i < inGDB.size(); i++) {
+	const vector <string> GC_STR_VCT = allowed_basic_groupcode_str_vector();
 
-		inGDB.at(i).GC = GC_STR_VCT.at(which_group.at(i));
+	for (size_t i = 0; i < outGDB.size(); i++) {
+
+		const string GC = outGDB.at(i).GC;
+
+		if (NO_CLUSTERING) 	outGDB.at(i).GC.at(1) = 'X';
+		else 				outGDB.at(i).GC.at(1) = GC_STR_VCT.at (which_group.at(i)).at(0);
 	}
-
-	return inGDB;
+	return outGDB;
 }
 
+string generate_PSCOLOR_from_GC (const string GC) {
 
-//string complete_colorcode (string in) {
+	if (is_allowed_groupcode_empty(GC)) ASSERT_DEAD_END();
+	if (!is_allowed_basic_groupcode_str(GC)) ASSERT_DEAD_END();
 
-	//if 		(in == "B" || in == "1") 	return "0.00 0.00 1.00";
-	//else if (in == "C" || in == "2")	return "1.00 0.00 0.67";
-	//else if (in == "D" || in == "3")	return "1.00 0.00 0.00";
-	//else if (in == "E" || in == "4")	return "1.00 0.50 0.00";
-	//else if (in == "F" || in == "5")	return "1.00 1.00 0.00";
-	//else if (in == "G" || in == "6")	return "0.00 1.00 0.00";
-	//else if (in == "H" || in == "7")	return "0.67 0.00 0.67";
-	//else if (in == "I" || in == "8")	return "0.50 1.00 1.00";
-	//else if (in == "J" || in == "9")	return "0.50 0.50 0.50";
-	////else 								return "0.00 0.00 0.00";
-//}
-
-string generate_PSCOLOR_from_GC (string GC, INPSET inset) {
-
-	bool IS_ALW_GC_STR = is_allowed_groupcode_str(GC);
-	bool IS_ALW_GC_EPY = is_allowed_groupcode_empty(GC);
-
-	if (!IS_ALW_GC_EPY && ! IS_ALW_GC_STR) ASSERT_DEAD_END();
-
-	bool GRAYSCALE = (inset.grayscale == "Y");
-
-	vector <string> GC_STR_V = allowed_groupcode_str_vector();
+	const vector <string> GC_STR_V = allowed_basic_groupcode_str_vector();
 
 	vector <string> PS_CLR_V;
 
-	if (GRAYSCALE) 	PS_CLR_V = allowed_pscolor_gray_vector();
-	else			PS_CLR_V = allowed_pscolor_rgb_vector();
-
-	//cout << GC << endl;
-
-	//cout << GC_STR_V.size() << endl;
-	//cout << PS_CLR_V.size() << endl;
+	if (is_GRAYSCALE_USE()) 		PS_CLR_V = allowed_pscolor_gray_vector();
+	else if (is_GRAYSCALE_NONE())	PS_CLR_V = allowed_pscolor_rgb_vector();
+	else ASSERT_DEAD_END();
 
 	for (size_t i = 0; i < GC_STR_V.size(); i++) {
 
 		if (GC_STR_V.at(i) == GC) return PS_CLR_V.at(i);
 	}
+	ASSERT_DEAD_END();
 	return PS_CLR_V.at(0);
 }
 
-string generate_PSCOLOR_from_COLOR (string CLR, INPSET inset) {
+string generate_PSCOLOR_from_COLOR (const string CLR) {
 
 	bool IS_ALW_CC_STR = is_allowed_colorcode_str(CLR);
 	bool IS_ALW_CC_NUM = is_allowed_colorcode_num(CLR);
 	bool IS_ALW_CC_EPY = is_allowed_colorcode_empty(CLR);
-
 	if (!IS_ALW_CC_STR && ! IS_ALW_CC_NUM && !IS_ALW_CC_EPY) ASSERT_DEAD_END();
-
-	bool GRAYSCALE = (inset.grayscale == "Y");
 
 	vector <string> CLR_STR_V = allowed_colorcode_str_vector();
 	vector <string> CLR_NUM_V = allowed_colorcode_num_vector();
 
 	vector <string> PS_CLR_V;
 
-	if (GRAYSCALE) 	PS_CLR_V = allowed_pscolor_gray_vector();
-	else			PS_CLR_V = allowed_pscolor_rgb_vector();
+	if (is_GRAYSCALE_USE()) 		PS_CLR_V = allowed_pscolor_gray_vector();
+	else if (is_GRAYSCALE_NONE())	PS_CLR_V = allowed_pscolor_rgb_vector();
+	else ASSERT_DEAD_END();
 
-	//ASSERT(CLR_STR_V.size() == CLR_NUM_V.size());
-	//ASSERT(CLR_STR_V.size() == PS_CLR_V.size());
+	if (IS_ALW_CC_EPY) return PS_CLR_V.at(0);
 
 	for (size_t i = 0; i < CLR_STR_V.size(); i++) {
 
-		if (CLR_STR_V.at(i) == CLR) return PS_CLR_V.at(i);
-		if (CLR_NUM_V.at(i) == CLR) return PS_CLR_V.at(i);
-
+		if (CLR_STR_V.at(i) == CLR) return PS_CLR_V.at(i+1);
+		if (CLR_NUM_V.at(i) == CLR) return PS_CLR_V.at(i+1);
 	}
+	ASSERT_DEAD_END();
 	return PS_CLR_V.at(0);
 }
 
-string generate_DASHED_from_GC (string GC, INPSET inset) {
+string generate_DASH (const string CODE) {
 
-	if (inset.grayscale == "N") return "";
+	const bool COLOR = is_COLOURING_COLORCODE();
+	const bool GROUPS = is_COLOURING_GROUPCODE();
+	const bool KMEANS = is_COLOURING_KMEANS();
+	const bool RUP = is_COLOURING_RUPANG ();
+	const bool IGNORE = is_COLOURING_IGNORE ();
 
-	bool IS_ALW_GC_STR = is_allowed_groupcode_str(GC);
-	bool IS_ALW_GC_EPY = is_allowed_groupcode_empty(GC);
+	if (!COLOR && !GROUPS && !KMEANS && !RUP && !IGNORE) ASSERT_DEAD_END();
 
-	if (!IS_ALW_GC_EPY && ! IS_ALW_GC_STR) ASSERT_DEAD_END();
+	const vector <string> GROUPCODE_STR_V = allowed_basic_groupcode_str_vector();
+	const vector <string> COLORNUM_STR_V = allowed_colorcode_num_vector();
+	const vector <string> COLORSTR_STR_V = allowed_colorcode_str_vector();
+	const vector <string> DSH_V = allowed_dash_vector();
 
-	vector <string> GC_STR_V = allowed_groupcode_str_vector();
+	if (is_GRAYSCALE_NONE () || is_PLOT_HOEPPENER () ) return DSH_V.at(0);
 
-	vector <string> DSH_V = allowed_dash_vector();
+	if (COLOR) {
 
-	for (size_t i = 0; i < GC_STR_V.size(); i++) {
+		for (size_t i = 0; i < COLORNUM_STR_V.size(); i++) {
 
-		if (GC_STR_V.at(i) == GC) return DSH_V.at(i);
+			if (COLORNUM_STR_V.at(i) == CODE) return DSH_V.at(i+1);
+			if (COLORSTR_STR_V.at(i) == CODE) return DSH_V.at(i+1);
+		}
+		ASSERT_DEAD_END();
 	}
+	else if (GROUPS && KMEANS && RUP) {
+
+		for (size_t i = 0; i < GROUPCODE_STR_V.size(); i++) {
+
+			if (GROUPCODE_STR_V.at(i) == CODE) return DSH_V.at(i);
+		}
+		ASSERT_DEAD_END();
+	}
+	else if (IGNORE) {}
+	else ASSERT_DEAD_END();
+
 	return DSH_V.at(0);
 }
 
-bool contains_colorcode (vector <GDB> inGDB) {
+vector <GDB> GENERATE_PS_CODE (const vector <GDB>& inGDB) {
 
-	for (size_t i = 0; i < inGDB.size(); i++) {
+	vector <GDB> outGDB = inGDB;
 
-		string CC = inGDB.at(i).COLOR;
+	for (size_t i = 0; i < outGDB.size(); i++) {
 
-		bool ALW_CLR_NUM = is_allowed_colorcode_num(CC);
-		bool ALW_CLR_STR = is_allowed_colorcode_str(CC);
+		string USE_THIS = "";
 
-		if (ALW_CLR_NUM || ALW_CLR_STR) return true;
-	}
-	return false;
-}
+		bool COLOURING_IGNORE = is_COLOURING_IGNORE ();
+		bool COLOURING_COLORCODE = is_COLOURING_COLORCODE ();
+		bool COLOURING_GROUPCODE = is_COLOURING_GROUPCODE ();
+		bool COLOURING_KMEANS = is_COLOURING_KMEANS();
+		bool COLOURING_RUPANG = is_COLOURING_RUPANG();
 
-bool contains_groupcode (vector <GDB> inGDB) {
+		const string DT = outGDB.at(i).DATATYPE;
 
-	for (size_t i = 0; i < inGDB.size(); i++) {
+		const bool PLANE = is_allowed_plane_datatype (DT);
+		const bool BEDDING = is_allowed_handle_as_bedding (DT);
+		const bool OT = is_allowed_bedding_overturned_sense (outGDB.at(i).OFFSET);
 
-		string GC = inGDB.at(i).GC;
+		const bool OVERTURNED_NOT_BEDDING = PLANE && !BEDDING && OT;
 
-		bool ALW_GC_STR = is_allowed_groupcode_str(GC);
+		if (COLOURING_COLORCODE) {
 
-		if (ALW_GC_STR) return true;
-	}
-	return false;
-}
-
-vector <GDB> colorcode_grom_groupcode (vector <GDB> inGDB, INPSET inset) {
-
-	bool CONTAINS_COLORCODE = contains_colorcode(inGDB);
-	bool CONTAINS_GROUPCODE = contains_groupcode(inGDB);
-
-	bool USE_GROUPS = (inset.group == "Y");
-	bool RUP_OR_ANG = (inset.clustering_RUP_ANG != "N");
-
-	bool by_COLOR = (CONTAINS_COLORCODE && !CONTAINS_GROUPCODE);
-	bool by_GROUP = (CONTAINS_GROUPCODE && !USE_GROUPS) ||
-			(CONTAINS_GROUPCODE && USE_GROUPS && RUP_OR_ANG);
-
-	for (size_t i = 0; i < inGDB.size(); i++) {
-
-		string GC = inGDB.at(i).GC;
-		string COL = inGDB.at(i).COLOR;
-
-		if (by_COLOR) {
-
-			//cout << "COLOR USED" << endl;
-
-			inGDB.at(i).PSCOLOR = generate_PSCOLOR_from_COLOR (COL, inset);
+			USE_THIS  = outGDB.at(i).COLOR;
+			outGDB.at(i).PSCOLOR = generate_PSCOLOR_from_COLOR (USE_THIS);
 		}
-		else if (by_GROUP) {
+		else if (COLOURING_GROUPCODE) {
 
-			//cout << "GROUP USED" << endl;
-
-			inGDB.at(i).PSCOLOR = generate_PSCOLOR_from_GC (GC, inset);
+			USE_THIS = outGDB.at(i).GC.at(0);
+			outGDB.at(i).PSCOLOR = generate_PSCOLOR_from_GC (USE_THIS);
 		}
-		else {
+		else if (COLOURING_KMEANS) {
+
+			USE_THIS = outGDB.at(i).GC.at(1);
+			outGDB.at(i).PSCOLOR = generate_PSCOLOR_from_GC (USE_THIS);
+		}
+		else if (COLOURING_RUPANG) {
+
+			USE_THIS = outGDB.at(i).GC.at(2);
+			outGDB.at(i).PSCOLOR = generate_PSCOLOR_from_GC (USE_THIS);//ok
+		}
+		else if (COLOURING_IGNORE) {
 
 			vector <string> PS_COL_V = allowed_pscolor_rgb_vector();
-
-			//cout << "BLACK USED" << endl;
-
-			inGDB.at(i).PSCOLOR = PS_COL_V.at(0);
+			outGDB.at(i).PSCOLOR = PS_COL_V.at(0);
 		}
+		else ASSERT_DEAD_END();
 
-		inGDB.at(i).DASHED = generate_DASHED_from_GC(GC, inset);
+		if (OVERTURNED_NOT_BEDDING) outGDB.at(i).DASHED = "6 6";
+		else outGDB.at(i).DASHED = generate_DASH (USE_THIS);
 	}
-	return inGDB;
-}
-
-vector <GDB> fill_with_black_colorcode (vector <GDB> inGDB) {
-
-	vector <string> PS_COL_V = allowed_pscolor_rgb_vector();
-
-	for (size_t i = 0; i < inGDB.size(); i++) {
-
-		inGDB.at(i).PSCOLOR = PS_COL_V.at(0);
-	}
-	return inGDB;
+	return outGDB;
 }

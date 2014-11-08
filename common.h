@@ -1,24 +1,30 @@
 // Copyright (C) 2012 - 2014 Ágoston Sasvári
 // All rights reserved.
 // This code is published under the GNU Lesser General Public License.
+
 #ifndef COMMON_HPP_
 #define COMMON_HPP_
 
+#include <ctime>
 #include <vector>
 #include "structs.h"
 
 using namespace std;
 
-void header();
+//void header();
+
+void print_banner () ;
+
 
 string capslock (string input);
 
 string to_uppercase(string s);
 vector<string> vec_to_uppercase(const vector<string>& v);
 
-const string int_to_string(int i);
-const string double_to_string(double in, size_t precision);
-const string char_to_string (char i);
+const string int_to_string(const int i);
+const string size_t_to_string (const size_t i);
+const string double_to_string(const double in, const size_t precision);
+const string char_to_string (const char i);
 double string_to_double(const string& s, bool& failed);
 double string_to_int( const string& s, bool& failed);
 
@@ -26,16 +32,15 @@ double string_to_double(const string& s); // throws logic_error
 
 int string_to_int(const string& s); // throws logic_error
 
-//double SIGNUM (double in);
-
 double SIN  (const double& in);
 double COS 	(const double& in);
 double ASIN (const double& in);
 double ACOS (const double& in);
+double ACOS_NUM (const double& in);
 double ATAN (const double& in);
 
 double rounding (double in);
-double mm_to_point (int i);
+double mm_to_point (size_t i);
 
 VCTR  crossproduct (const VCTR& in1, const VCTR& in2);
 double dotproduct (const VCTR& in1, const VCTR& in2, const bool& normalisation=false);
@@ -53,61 +58,58 @@ vector <vector <double> > init_matrix (const size_t& i, const size_t& j);
 
 vector <vector <double> > identity_matrix (vector <vector <double> >);
 
-vector <double>  init_vector (int dimension);
-size_t search_max_off_diagonal_element_in_mtrx (vector <vector <double> > in);
-size_t m_from_max_element (size_t max_element, size_t n);
-double teta (vector <vector <double> > in, size_t m, size_t n);
-vector <vector <double> > init_rotation_mtrx (double teta, size_t m, size_t n, int dimension);
-vector <vector <double> > outer_product (vector <double> in);
+vector <double> init_vector (const size_t dimension);
+
+size_t search_max_off_diagonal_element_in_mtrx (const vector <vector <double> >& in);
+size_t m_from_max_element (size_t max_element, const size_t n);
+double teta (const vector <vector <double> >& in, const size_t m, const size_t n);
+vector <vector <double> > init_rotation_mtrx (const double teta, const size_t m, const size_t n, const size_t dimension);
+vector <vector <double> > outer_product (const vector <double>& in);
 vector <vector <double> > transpose (const vector <vector <double> >& in);
 vector <vector <double> > mult_mtrx (const vector <vector <double> >& in1, const vector <vector <double> >& in2);
 vector <vector <double> > add_mtrx (const vector <vector <double> >& in1, const vector <vector <double> >& in2);
 
-int return_second_eigenvalue (vector <vector< double > > in);
-int return_first_eigenvalue (vector <vector< double > > in);
+int return_second_eigenvalue (const vector <vector <double> >& in);
+int return_first_eigenvalue (const vector <vector <double> >& in);
 
-vector <vector <double> > jacobi (vector <vector <double> > in);
+vector <vector <double> > jacobi (const vector <vector <double> >& in);
 
-vector <vector <double> > gaussian_elimination (vector <vector <double> > in);
+vector <vector <double> > gaussian_elimination (vector <vector <double> >& in);
 
-vector <vector <double> > LU_decomposition (vector <vector <double> > in);
-vector <vector <double> > compute_Z (vector <vector <double> > L, vector <vector <double> > c);
-vector <vector <double> > compute_X (vector <vector <double> > U, vector <vector <double> > Z);
-
-
-vector <vector <double> > row_division_diagonal (vector <vector <double> > in,  size_t rownumber, double value);
-vector <vector <double> > row_addition (vector <vector <double> > in, size_t actual_row_number, size_t zero_row_number, double value);
-vector <vector <double> > row_addition_LU (vector <vector <double> > in, size_t actual_row_number, size_t zero_row_number, double value);
-
-vector < vector < double > > generate_A (vector < vector < double > > EVEV);
-vector < vector < double > > generate_D (vector < vector < double > > EVEV);
-
-bool check_fry_matrix (size_t second_eigenvalue, vector <vector <double> > in_eigenvector);
-bool check_correct_stressfield (STRESSFIELD sf);
-
-VCTR generate_stress_colors (double value, INPSET inset);
+vector <vector <double> > LU_decomposition (const vector <vector <double> >& in);
+vector <vector <double> > compute_Z (const vector <vector <double> >& L, const vector <vector <double> >& c);
+vector <vector <double> > compute_X (const vector <vector <double> >& U, const vector <vector <double> >& Z);
 
 
-double vectorlength (VCTR in);
+vector <vector <double> > row_division_diagonal (vector <vector <double> >& in, const size_t rownumber, const double value);
+vector <vector <double> > row_addition (vector <vector <double> >& in, const size_t actual_row_number, const size_t zero_row_number, const double value);
+vector <vector <double> > row_addition_LU (vector <vector <double> >& in, const size_t actual_row_number, const size_t zero_row_number, const double value);
+
+vector < vector < double > > generate_A (const vector < vector < double > >& EVEV);
+vector < vector < double > > generate_D (const vector < vector < double > >& EVEV);
+
+bool check_correct_stressfield (const STRESSFIELD& sf);
+
+string generate_stress_colors (const double V);
+
+double vectorlength (const VCTR& in);
 VCTR unitvector (const VCTR& in);
 VCTR invert_VCTR (VCTR in);
 CENTR_VECT unitvector (CENTR_VECT in);
-vector < double > unitvector (vector < double > in);
+vector <double> unitvector (vector <double>& in);
 
-VCTR declare_vector (const double& a, const double& b, const double& c);
-CENTR_VECT declare_vector (double a, double b, double c, double d, double e, double f);
+VCTR declare_vector (const double a, const double b, const double c);
+CENTR_VECT declare_vector (const double a, const double b, const double c, const double d, const double e, const double f);
 
-VCTR flip_vector (VCTR in);
-VCTR flip_D_vector (VCTR in);
-VCTR flip_N_vector (VCTR in);
-VCTR flip_ptn_vector (VCTR in);
+VCTR flip_vector (const VCTR& in);
+VCTR flip_D_vector (const VCTR& in);
+VCTR flip_N_vector (const VCTR& in);
 
-VCTR compute_d_for_SC (GDB i);
+VCTR compute_d_for_SC (const GDB& i);
 
 VCTR DXDYDZ_from_dipdir_dip (const DIPDIR_DIP& i);
 VCTR NXNYNZ_from_dipdir_dip (const DIPDIR_DIP& i);
 
-VCTR inversion_DXDYDZ_from_DXDYDZ (VCTR i);
 STRESSFIELD stressvector_to_DXDYDZ (STRESSFIELD in);
 
 VCTR DXDYDZ_from_NXNYNZ (const VCTR& i);
@@ -118,65 +120,39 @@ DIPDIR_DIP dipdir_dip_from_NXNYNZ (const VCTR& i);
 
 VCTR ROTATE (const VCTR& ax, const VCTR& torotate, const double& A);
 
-bool existence (string expression, vector<GDB> inGDB);
-bool existence_of_group (int expression, vector <int> whichgroup);
-//bool existence_of_group_GDB (string expression, vector <GDB> inGDB);
-//bool existence_of_groupcodes (vector <GDB> inGDB);
+bool existence (const string& expression, const vector<GDB>& inGDB);
+bool existence_of_group (const size_t group, const vector <size_t>& whichgroup);
 
-vector <GDB> merge_GDB (vector <GDB> source, vector <GDB> target);
+vector <GDB> merge_GDB (const vector <GDB>& source, const vector <GDB>& target);
 
-vector <double> quadratic_solution (double A, double B, double C);
-vector <double> cubic_solution (double A, double B, double C, double D);
+vector <double> quadratic_solution (const double A, const double B, const double C);
+vector <double> cubic_solution (const double A, const double B, const double C, const double D);
 vector <double> quartic_solution (double A, double B, double C, double D, double E);
 
 STRESSTENSOR fix_stress_tensor_singularity(STRESSTENSOR& st);
 STRESSFIELD eigenvalue_eigenvector (STRESSTENSOR st);
 STRESSTENSOR stresstensor_from_eigenvalue_eigenvector (STRESSFIELD sf);
 
-
-STRESSFIELD computestressfield_DXDYDZ (STRESSFIELD in);
-STRESSFIELD stress_regime (STRESSFIELD in);
-
-STRESSTENSOR invert_stress_tensor (STRESSTENSOR st);
-
-STRESSTENSOR add_stress_tensor (STRESSTENSOR st, STRESSTENSOR T);
-
+STRESSFIELD stress_regime (const STRESSFIELD& in);
 STRESSTENSOR convert_matrix_to_stresstensor (const vector <vector <double> >& IN);
 
+bool bycorrDIPDIRcorrDIP(const GDB& x, const GDB& y);
+bool bycorrDIPDIRcorrDIPcorrLDIPDIRcorrLDIP(const GDB& x, const GDB& y);
 
-VCTR return_stressvector (const STRESSTENSOR& st, const VCTR& N, const bool& compression_positive);
-VCTR return_normalstress (const STRESSTENSOR& st, const VCTR& N, const bool& compression_positive);
-VCTR return_shearstress (const STRESSTENSOR& st, const VCTR& N, const bool& compression_positive);
-VCTR return_upsilon (const STRESSTENSOR& st, const VCTR& N, const VCTR& SV, const VCTR& UPSILON, const double& lambda, const string& method, const bool& compression_positive);
+//double right_hand_rule_to_german (const double corrDIPDIR);
+//double german_to_right_hand_rule (const double corrDIPDIR);
 
-double return_ANG (const STRESSTENSOR& st, const VCTR& N, const VCTR& SV, const bool& compression_positive);
-double return_RUP (const STRESSTENSOR& st, const VCTR& N, const VCTR& SV, const double& lambda, const bool& compression_positive);
-
-double return_average_misfit (const STRESSTENSOR& st, const vector <GDB>& inGDB, const bool& compression_positive);
-
-
-
-
-vector <double> hyperplane_from_GDB (GDB inGDB);
-vector < vector <double> > shan_matrix_from_GDB (GDB inGDB);
-
-double right_hand_rule_to_german (double corrDIPDIR);
-double german_to_right_hand_rule (double corrDIPDIR);
-
-void output_elapsed_time (double elapsed_time);
-
+void output_elapsed_time (const clock_t& start_t, const clock_t& finish_t);
 string build_date ();
 string build_time ();
-
 string version();
-
 string version_id();
 
-bool is_in_range (double range_min, double range_max, double in);
+bool is_in_range (const double range_min, const double range_max, const double in); //ok
 
-double points_distance (VCTR a, VCTR b);
+double points_distance (const VCTR& a, const VCTR& b);
 
-vector <VCTR> convert_vectors_to_S_or_W (vector <VCTR> in, INPSET inset);
+//vector <VCTR> convert_vectors_to_S_or_W (vector <VCTR> in);
 
 #if _MSC_VER && !__INTEL_COMPILER
 #include <float.h>

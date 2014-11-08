@@ -12,8 +12,6 @@
 
 using namespace std;
 
-void plot_fold_great_circle (VCTR GR_CRC, ofstream& o, INPSET inset, CENTER center);
-
-void calculate_foldsurface (vector <GDB> inGDB, ofstream& o, INPSET inset, CENTER center);
+vector <GDB> CALCULATE_FOLDSURFACE_NORMAL (const vector <GDB>& inGDB);
 
 #endif

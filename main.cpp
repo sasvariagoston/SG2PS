@@ -44,18 +44,20 @@ int main (int argc, char *argv[]) {
 		cout << e.what() << endl;
 		return ExitStatus::BUG;
 	}
-
 	catch(logic_error& e) {
 		cout << "A bug has been detected, please report it (sg2ps@sg2ps.eu)!\n";
 		cout << e.what() << endl;
 		return ExitStatus::LOGIC_ERROR;
 	}
-
 	catch(runtime_error& e) {
 		cout << "Runtime error: " << e.what() << endl;
 		return ExitStatus::RUNTIME_ERROR;
 	}
+	catch (arg_error& e) {
 
+		cout << "Less argument than needed - argument error. " << endl;
+		return ExitStatus::ARG_ERROR;
+	}
 	catch(exception& e) {
 		cout << "Something went wrong, please report it (sg2ps@sg2ps.eu)!\n";
 		cout << "std::exception: " << e.what() << endl;

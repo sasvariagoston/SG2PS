@@ -17,6 +17,10 @@ class xy_error {
 
 };
 
+class arg_error {
+
+};
+
 class set_error {
 
 };

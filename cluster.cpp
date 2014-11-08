@@ -12,457 +12,349 @@
 #include "data_io.h"
 #include "random.hpp"
 #include "rgf.h"
+#include "run_mode.h"
+#include "settings.hpp"
+#include "standard_output.hpp"
 
-vector <CENTR_VECT>  init_centriod (size_t cluster_number, vector <GDB> inGDB) {
+using namespace std;
 
-	CENTR_VECT CV;
-	vector <CENTR_VECT> CENTR;
-	size_t j = 0;
+ vector <size_t> init_whichgroup_uni (const size_t cluster_number, const vector <GDB>& inGDB) {
 
-	uniform_generator_reset();
-
-	if ((inGDB.at(0).DATAGROUP == "STRIAE") || (inGDB.at(0).DATAGROUP == "SC")) {
-
-		do {
-
-			CV.U = (uniform_0_1()) * 2.0 - 1.0;
-			CV.V = (uniform_0_1()) * 2.0 - 1.0;
-			CV.W = (uniform_0_1());
-			CV.X = (uniform_0_1()) * 2.0 - 1.0;
-			CV.Y = (uniform_0_1()) * 2.0 - 1.0;
-			CV.Z = (uniform_0_1());
-
-			CV = unitvector (CV);
-			CENTR.push_back(CV);
-			j++;
-
-		} while (j < cluster_number + 1);
-	}
-
-	else {
-
-		do {
-
-			CV.U = (uniform_0_1()) * 2.0 - 1.0;
-			CV.V = (uniform_0_1()) * 2.0 - 1.0;
-			CV.W = (uniform_0_1());
-			CV.X = 0.0;
-			CV.Y = 0.0;
-			CV.Z = 0.0;
-
-			CV = unitvector (CV);
-
-			CENTR.push_back(CV);
-			j++;
-
-		} while (j < cluster_number + 1);
-	}
-
-	return CENTR;
-}
-
-vector <vector <double> > init_distance_matrix (size_t cluster_number, vector <GDB> inGDB) {
+	vector <size_t> which_group;
 
 	size_t j = 0;
-	size_t k = 0;
-	vector <double> distance_from_centroid;
-	vector <vector <double> > distance_matrix;
 
-	do {
+	for (size_t i = 0; i < inGDB.size(); i++) {
 
-		distance_from_centroid.push_back(0.0);
-
-		j++;
-
-	} while (j < cluster_number);
-
-	do {
-
-		distance_matrix.push_back(distance_from_centroid);
-
-		k++;
-
-	} while (k < inGDB.size());
-
-	return distance_matrix;
-}
-
- vector <int> init_whichgroup (size_t cluster_number, vector <GDB> inGDB) {
-
-	vector <int> which_group;
-	size_t k = 0;
-	size_t j = 0;
-
-	do {
-
-		which_group.push_back(j);
-
-		if (j == cluster_number - 1) j = 0;
+		if (j == cluster_number) j = 1;
 		else j++;
 
-		k++;
-
-	} while (k < inGDB.size());
-
+		which_group.push_back(j);
+	}
 	return which_group;
 }
 
- vector <int> init_whichgroup_II (size_t cluster_number, vector <GDB> inGDB) {
+ vector <size_t> init_whichgroup_rnd (const size_t cluster_number, const vector <GDB>& inGDB) {
 
- 	vector <int> which_group;
- 	size_t k = 0;
- 	size_t l = 0;
+ 	vector <size_t> which_group;
 
  	uniform_generator_reset();
 
- 	do {
+ 	for (size_t i = 0; i < inGDB.size(); i++) {
 
  		double rnd = uniform_0_1() * cluster_number;
 
- 		do {
+ 		for (size_t j = 0; j < cluster_number; j++) {
 
- 			if ((rnd <= l + 1) && (rnd > l)) which_group.push_back(l);
-
- 			l++;
-
- 		} while (l < cluster_number);
-
- 		l = 0;
- 		k++;
-
- 	} while (k < inGDB.size());
-
+ 			if (is_in_range(j, j + 1, rnd)) which_group.push_back(j+1);
+ 		}
+ 	}
  	return which_group;
  }
 
-double compute_distance (CENTR_VECT centroid, GDB inGDB) {
+ vector <CENTR_VECT> init_centroid_vector (const size_t cluster_number) {
 
-	double distance;
+	 CENTR_VECT CV;
+	 vector <CENTR_VECT> OUT;
 
-	if ((inGDB.DATAGROUP == "STRIAE") || (inGDB.DATAGROUP == "SC"))
+	 for (size_t i = 0; i < cluster_number; i++) {
 
-		distance =
-				(	(centroid.U - inGDB.N.X)  * (centroid.U - inGDB.N.X) +
-					(centroid.V - inGDB.N.Y)  * (centroid.V - inGDB.N.Y) +
-					(centroid.W - inGDB.N.Z)  * (centroid.W - inGDB.N.Z) +
-					(centroid.X - inGDB.NC.X) * (centroid.X - inGDB.SV.X) +
-					(centroid.Y - inGDB.NC.Y) * (centroid.Y - inGDB.SV.Y) +
-					(centroid.Z - inGDB.NC.Z) * (centroid.Z - inGDB.SV.Z));
-	else
+		 CV = declare_vector (0.0, 0.0, 0.0, 0.0, 0.0, 0.0);
+		 OUT.push_back(CV);
+	 }
+	 return OUT;
+ }
 
-		distance =
-				(	(centroid.U - inGDB.N.X)  * (centroid.U - inGDB.N.X) +
-				    (centroid.V - inGDB.N.Y)  * (centroid.V - inGDB.N.Y) +
-				    (centroid.W - inGDB.N.Z)  * (centroid.W - inGDB.N.Z));
+ vector <CENTR_VECT> compute_centroid_from_which_group (const size_t cluster_number, const vector <size_t>& which_group, const vector <GDB>& inGDB) {
 
-	return distance * distance;
+	 vector <CENTR_VECT> new_centroid = init_centroid_vector (cluster_number);
 
-}
+	 const bool SC = is_allowed_SC_datatype(inGDB.at(0).DATATYPE);
+	 const bool STRIAE = is_allowed_striae_datatype(inGDB.at(0).DATATYPE);
 
-vector <vector <double> > compute_distance_matrix_from_centroid (vector <vector <double> > distance_matrix, vector <GDB> inGDB, vector <CENTR_VECT> centroid) {
+	 for (size_t i = 1; i < cluster_number + 1; i++) {
 
-	size_t j = 0;
-	size_t k = 0;
+		 size_t processed_data_number = 0;
 
-	do {
+		 for (size_t j = 0; j < which_group.size(); j++) {
 
-		do {
+			 const bool IDENTICAL = which_group.at(j) == i;
 
-			distance_matrix.at(k).at(j) = compute_distance (centroid.at(j), inGDB.at(k));
+			 if (IDENTICAL) {
 
-			j++;
+				 processed_data_number++;
 
-		} while (j < centroid.size());
+				 new_centroid.at(i-1).U = new_centroid.at(i-1).U + inGDB.at(j).N.X;
+				 new_centroid.at(i-1).V = new_centroid.at(i-1).V + inGDB.at(j).N.Y;
+				 new_centroid.at(i-1).W = new_centroid.at(i-1).W + inGDB.at(j).N.Z;
 
-		j = 0;
+				 if (SC) {
 
-		k++;
+					 new_centroid.at(i-1).X = new_centroid.at(i-1).X + inGDB.at(j).DC.X;
+					 new_centroid.at(i-1).Y = new_centroid.at(i-1).Y + inGDB.at(j).DC.Y;
+					 new_centroid.at(i-1).Z = new_centroid.at(i-1).Z + inGDB.at(j).DC.Z;
+				 }
+				 else if (STRIAE) {
 
-	} while (k <  inGDB.size());
+					 new_centroid.at(i-1).X = new_centroid.at(i-1).X + inGDB.at(j).SV.X;
+					 new_centroid.at(i-1).Y = new_centroid.at(i-1).Y + inGDB.at(j).SV.Y;
+					 new_centroid.at(i-1).Z = new_centroid.at(i-1).Z + inGDB.at(j).SV.Z;
+				 }
+				 else {}
+			 }
+			 else {}
+		 }
+		 if (processed_data_number > 0) new_centroid.at(i-1) = unitvector (new_centroid.at(i-1));
+	 }
+	 return new_centroid;
+ }
 
+ double compute_distance (const CENTR_VECT& centroid, const GDB& in) {
+
+	 const bool SC = is_allowed_SC_datatype(in.DATATYPE);
+	 const bool STRIAE = is_allowed_striae_datatype(in.DATATYPE);
+
+	 const CENTR_VECT C = centroid;
+	 const VCTR N = in.N;
+	 const VCTR SV = in.SV;
+	 const VCTR DC = in.DC;
+
+	 double distance = (C.U- N.X) * (C.U- N.X) + (C.V- N.Y) * (C.V- N.Y) + (C.W- N.Z) * (C.W- N.Z);
+
+	 if (STRIAE) {
+
+		 distance = distance + (C.X-SV.X) * (C.X-SV.X) + (C.Y-SV.Y) * (C.Y-SV.Y) + (C.Z-SV.Z) * (C.Z-SV.Z);
+	 }
+	 else if (SC) {
+
+		 distance = distance + (C.X-DC.X) * (C.X-DC.X) + (C.Y-DC.Y) * (C.Y-DC.Y) + (C.Z-DC.Z) * (C.Z-DC.Z);
+	 }
+	 return distance * distance;
+ }
+
+vector <vector <double> > compute_distance_matrix_from_centroid (const vector <GDB>& inGDB, const vector <CENTR_VECT>& centroid) {
+
+	vector <vector <double> > distance_matrix = init_matrix(inGDB.size(), centroid.size());
+
+	for (size_t i = 0; i < inGDB.size(); i++) {
+		for (size_t j = 0; j < centroid.size(); j++) {
+
+			distance_matrix.at(i).at(j) = compute_distance (centroid.at(j), inGDB.at(i));
+		}
+	}
 	return distance_matrix;
 }
 
-vector <int> compute_whichgroup_from_distances (vector <vector <double> > distance_matrix) {
+vector <size_t> compute_whichgroup_from_distances (const vector <vector <double> >& distance_matrix) {
 
-	size_t j = 0;
-	size_t k = 0;
-	int mingroup_j = 0;
+	vector <size_t> which_group;
 
-	double min_distance = 6.0;
+	size_t THIS_GROUP = 0;
 
-	size_t cluster_number = distance_matrix.at(0).size() - 1;
-	size_t record_number = distance_matrix.size();
+	const size_t record_number = distance_matrix.size();
+	const size_t cluster_number = distance_matrix.at(0).size();
 
-	vector <CENTR_VECT> new_centroid;
-	vector <int> which_group;
-	CENTR_VECT CV;
+	for (size_t i = 0; i < record_number; i++) {
 
-	do {
+		double DST_MIN = 36.0;
 
-		CV = declare_vector (0.0, 0.0, 0.0, 0.0, 0.0, 0.0);
-		new_centroid.push_back(CV);
+		for (size_t j = 0; j < cluster_number; j++) {
 
-		j++;
+			if (distance_matrix.at(i).at(j) < DST_MIN)  {
 
-	} while (j < cluster_number + 1);
-
-	j = 0;
-
-	do {
-
-		do {
-
-			if (distance_matrix.at(k).at(j) < min_distance)  {
-
-				min_distance = distance_matrix.at(k).at(j);
-				mingroup_j = j;
+				DST_MIN = distance_matrix.at(i).at(j);
+				THIS_GROUP = j+1;
 			}
-
-			j++;
-
-		} while (j < cluster_number + 1);
-
-		which_group.push_back(mingroup_j);
-
-		j = 0;
-		min_distance = 6.0;
-		k++;
-
-	} while (k <  record_number);
-
+		}
+		which_group.push_back(THIS_GROUP);
+	}
 	return which_group;
 }
 
-vector <CENTR_VECT> compute_centroid_from_which_group (size_t cluster_number, vector <int> which_group, vector <GDB> inGDB) {
-
-	size_t j = 0;
-	size_t k = 0;
-
-	size_t record_number = inGDB.size();
-	vector <CENTR_VECT> new_centroid;
-	CENTR_VECT CV;
-
-	do {
-		CV = declare_vector (0.0, 0.0, 0.0, 0.0, 0.0, 0.0);
-		new_centroid.push_back(CV);
-		j++;
-
-	} while (j < cluster_number);
-
-	j = 0;
-	size_t processed_data_number;
-
-	do {
-
-		processed_data_number = 0;
-
-		do {
-
-			if ((which_group.at(k)) == j) {
-
-				if ((inGDB.at(0).DATAGROUP == "STRIAE") || (inGDB.at(0).DATAGROUP == "SC")) {
-
-					new_centroid.at(j).U = new_centroid.at(j).U + inGDB.at(k).N.X;
-					new_centroid.at(j).V = new_centroid.at(j).V + inGDB.at(k).N.Y;
-					new_centroid.at(j).W = new_centroid.at(j).W + inGDB.at(k).N.Z;
-					new_centroid.at(j).X = new_centroid.at(j).X + inGDB.at(k).SV.X;
-					new_centroid.at(j).Y = new_centroid.at(j).Y + inGDB.at(k).SV.Y;
-					new_centroid.at(j).Z = new_centroid.at(j).Z + inGDB.at(k).SV.Z;
-
-					processed_data_number++;
-				}
-
-				else {
-
-					new_centroid.at(j).U = new_centroid.at(j).U + inGDB.at(k).N.X;
-					new_centroid.at(j).V = new_centroid.at(j).V + inGDB.at(k).N.Y;
-					new_centroid.at(j).W = new_centroid.at(j).W + inGDB.at(k).N.Z;
-
-					processed_data_number++;
-				}
-			}
-
-			k++;
-
-
-		} while (k < record_number);
-
-		if (processed_data_number > 0) new_centroid.at(j) = unitvector (new_centroid.at(j));
-
-		k = 0;
-		j++;
-
-	} while (j < cluster_number);
-
-	return new_centroid;
-}
-
-
-
-double cumulative_distance (vector <vector <double> > distance_matrix, vector <int> which_group) {
+double cumulative_distance (const vector <vector <double> >& distance_matrix, const vector <size_t>& which_group) {
 
 	double cml_dst = 0.0;
 
-	size_t k = 0;
-	size_t j;
+	for (size_t i = 0; i < distance_matrix.size(); i++) {
 
-	do {
+		const size_t j = which_group.at(i);
 
-		j = which_group.at(k);
-		cml_dst = cml_dst + distance_matrix.at(k).at(j);
-
-		k++;
-
-	} while (k < distance_matrix.size());
-
+		cml_dst = cml_dst + distance_matrix.at(i).at(j-1);
+	}
 	return cml_dst;
 }
 
-vector <vector <double> > clustering_cycle (size_t cluster_number, vector <GDB> inGDB, INPSET i) {
+vector <vector <double> > clustering_cycle (const size_t cluster_number, const vector <GDB>& inGDB) {
 
-	vector <CENTR_VECT> centroid;
-	vector <vector <double> > distance_matrix;
-	vector <int> whichgroup;
+	vector <vector <double> > distance_matrix_uni = init_matrix (inGDB.size(), cluster_number);
+	vector <size_t> whichgroup_uni = init_whichgroup_uni (cluster_number, inGDB);
+	vector <CENTR_VECT> centroid_uni;
 
-	int group_counter = 0;
+	for (size_t i = 0; i < 10; i++) {
 
-	size_t j = 0;
-
-	double cml_dst_1 = 0;
-	double cml_dst_2 = 0;
-
-	distance_matrix = init_distance_matrix (cluster_number, inGDB);
-	whichgroup = init_whichgroup (cluster_number, inGDB);
-
-	do {
-
-		centroid = compute_centroid_from_which_group (cluster_number, whichgroup, inGDB);
-		distance_matrix = compute_distance_matrix_from_centroid (distance_matrix, inGDB, centroid);
-		whichgroup = compute_whichgroup_from_distances (distance_matrix);
-
-		j++;
-
-	} while (j < 10);
-
-	cml_dst_1 = (cumulative_distance (distance_matrix, whichgroup) * 100.0) / inGDB.size();
-
-	j = 0;
-
-	distance_matrix = init_distance_matrix (cluster_number, inGDB);
-	whichgroup = init_whichgroup_II (cluster_number, inGDB);
-
-	do {
-
-		centroid = compute_centroid_from_which_group (cluster_number, whichgroup, inGDB);
-		distance_matrix = compute_distance_matrix_from_centroid (distance_matrix, inGDB, centroid);
-		whichgroup = compute_whichgroup_from_distances (distance_matrix);
-
-		j++;
-
-	} while (j < 10);
-
-	cml_dst_2 = (cumulative_distance (distance_matrix, whichgroup) * 100.0) / inGDB.size();
-
-	j = 0;
-
-	distance_matrix = init_distance_matrix (cluster_number, inGDB);
-
-	if (cml_dst_1 < cml_dst_2) 	whichgroup = init_whichgroup (cluster_number, inGDB);
-	else 						whichgroup = init_whichgroup_II (cluster_number, inGDB);
-
-	do {
-
-		centroid = compute_centroid_from_which_group (cluster_number, whichgroup, inGDB);
-		distance_matrix = compute_distance_matrix_from_centroid (distance_matrix, inGDB, centroid);
-		whichgroup = compute_whichgroup_from_distances (distance_matrix);
-
-		j++;
-
-	} while (j < 10);
-
-	cml_dst_1 = (cumulative_distance (distance_matrix, whichgroup) * 100.0) / inGDB.size();
-
-	if (existence_of_group (0, whichgroup)) group_counter++;
-	if (existence_of_group (1, whichgroup)) group_counter++;
-	if (existence_of_group (2, whichgroup)) group_counter++;
-	if (existence_of_group (3, whichgroup)) group_counter++;
-	if (existence_of_group (4, whichgroup)) group_counter++;
-	if (existence_of_group (5, whichgroup)) group_counter++;
-	if (existence_of_group (6, whichgroup)) group_counter++;
-	if (existence_of_group (7, whichgroup)) group_counter++;
-	if (existence_of_group (8, whichgroup)) group_counter++;
-	if (existence_of_group (9, whichgroup)) group_counter++;
-
-
-	if (i.clustering_RUP_ANG == "Y") {
-
-		cout
-		<< "    - RUP clustering into "
-		<< group_counter << " clusters with "
-		<< fixed << setprecision (2) << cml_dst_1 << "% error."
-		<< endl;
+		centroid_uni = compute_centroid_from_which_group (cluster_number, whichgroup_uni, inGDB);
+		distance_matrix_uni = compute_distance_matrix_from_centroid (inGDB, centroid_uni);
+		whichgroup_uni = compute_whichgroup_from_distances (distance_matrix_uni);
 	}
+	const double cml_dst_uni = (cumulative_distance (distance_matrix_uni, whichgroup_uni) * 100.0) / (inGDB.size() * cluster_number);
 
+	vector <vector <double> > distance_matrix_rnd = init_matrix(inGDB.size(), cluster_number);
+	vector <size_t> whichgroup_rnd = init_whichgroup_rnd (cluster_number, inGDB);
+	vector <CENTR_VECT> centroid_rnd;
+
+	for (size_t i = 0; i < 10; i++) {
+
+		centroid_rnd = compute_centroid_from_which_group (cluster_number, whichgroup_rnd, inGDB);
+		distance_matrix_rnd = compute_distance_matrix_from_centroid (inGDB, centroid_rnd);
+		whichgroup_rnd = compute_whichgroup_from_distances (distance_matrix_rnd);
+	}
+	const double cml_dst_rnd = (cumulative_distance (distance_matrix_rnd, whichgroup_rnd) * 100.0) / (inGDB.size() * cluster_number);
+
+	vector <size_t> whichgroup;
+	double cml_dst;
+	vector <vector <double> > distance_matrix;
+
+	if (cml_dst_uni < cml_dst_rnd) {
+
+		whichgroup = whichgroup_uni;
+		distance_matrix = distance_matrix_uni;
+		cml_dst = cml_dst_uni;
+	}
 	else {
 
-		if (i.clusternumber == "A")		cout << "  - Automatic k-means clustering of '" << flush;
-		else 							cout << "  - User defined k-means clustering of '" << flush;
-
-		cout
-		<< inGDB.at(0).LOC << "' location, '"
-		<< inGDB.at(0).DATATYPE << "' data set into "
-		<< group_counter << " clusters with "
-		<< fixed << setprecision (2) << cml_dst_1 << "% error." << endl;
+		whichgroup = whichgroup_rnd;
+		distance_matrix = distance_matrix_rnd;
+		cml_dst = cml_dst_rnd;
 	}
 
+	size_t group_counter = 0;
+
+	for (size_t i = 0; i < 9; i++) {
+
+		if (existence_of_group (i, whichgroup)) group_counter++;
+	}
+
+	const bool STRIAE = is_allowed_striae_datatype (inGDB.at(0).DATATYPE);
+
+	if (STRIAE && (is_RUP_CLUSTERING_ANG() || is_RUP_CLUSTERING_RUP())) {
+
+		if (!is_mode_DEBUG()) cout << "    - RUP clustering into "
+		<< group_counter << " clusters with "
+		<< fixed << setprecision (2) << cml_dst << "% error."
+		<< endl;
+	}
+	else {
+
+		if (!is_mode_DEBUG()) {
+
+			if (is_CLUSTERING_AUTOMATIC())	cout << "  - Automatic k-means clustering of '" << flush;
+			else 							cout << "  - User defined k-means clustering of '" << flush;
+
+
+			cout
+			<< inGDB.at(0).LOC << "' location, '"
+			<< inGDB.at(0).DATATYPE << "' data set into "
+			<< group_counter << " clusters with "
+			<< fixed << setprecision (2) << cml_dst << "% error." << endl;
+		}
+	}
 	return distance_matrix;
 }
 
-vector <GDB> k_means_clustering (size_t cluster_number, vector <GDB> inGDB, INPSET i) {
+vector <GDB> k_means_clustering (const size_t cluster_number, const vector <GDB>& inGDB) {
 
+	vector <GDB> outGDB = inGDB;
 	vector <vector <double> > distance_matrix;
-	vector <int> whichgroup;
-	vector <GDB> outGDB;
+	vector <size_t> whichgroup;
 
 	if (cluster_number > 1) {
 
-		distance_matrix = clustering_cycle (cluster_number, inGDB, i);
+		distance_matrix = clustering_cycle (cluster_number, outGDB);
+
 		whichgroup = compute_whichgroup_from_distances (distance_matrix);
 
-		outGDB = attach_group_codes (whichgroup, inGDB);
+		if (is_CHK_K_MEANS() && inGDB.at(0).ID == "BZ0066") {
 
-		return outGDB;
+			vector <vector <double> > standard_distance_matrix = return_standard_distance_matrix ();
+			check_standard_distance_matrix(distance_matrix, standard_distance_matrix);
+
+			vector <size_t> standard_whichgroup = return_standard_whichgroup ();
+			check_standard_whichgroup (whichgroup, standard_whichgroup);
+		}
 	}
-	else  {
+	outGDB = attach_k_means_group_codes (whichgroup, outGDB); //ok
 
-		cout
-		<< "  - No clustering of '"
-		<< inGDB.at(0).LOC << "' location, '"
-		<< inGDB.at(0).DATATYPE << "' data set." << endl;
-
-		return inGDB;
-	}
+	return outGDB;
 }
 
-vector <GDB> k_means (INPSET i, vector <GDB> inGDB) {
+vector <GDB> K_MEANS (const vector <GDB>& inGDB) {
 
 	size_t clusternumber = 0;
 
-	if (i.clusternumber == "1") clusternumber = 1;
-	if (i.clusternumber == "2") clusternumber = 2;
-	if (i.clusternumber == "3") clusternumber = 3;
-	if (i.clusternumber == "4") clusternumber = 4;
-	if (i.clusternumber == "5") clusternumber = 5;
-	if (i.clusternumber == "6") clusternumber = 6;
-	if (i.clusternumber == "7") clusternumber = 7;
-	if (i.clusternumber == "8") clusternumber = 8;
-	if (i.clusternumber == "9") clusternumber = 9;
+	if (is_CLUSTERING_AUTOMATIC()) clusternumber = 9;
 
-	vector <GDB> outGDB = inGDB;
+	else clusternumber = string_to_int (is_CLUSTERNUMBER());
 
-	if (i.clusternumber == "A") outGDB = k_means_clustering (9, inGDB, i);
-	else 						outGDB = k_means_clustering (clusternumber, inGDB, i);
+	vector <GDB> outGDB = k_means_clustering (clusternumber, inGDB);
 
 	return outGDB;
+}
+
+void dbg_distance_matrix (const vector <vector <double> >& distance_matrix) {
+
+	cout << fixed << setprecision(8) << endl;
+
+	cout << "-------- START DISTANCE MATRIX --------" << endl;
+
+	//note:
+	//distance_matrix.size() 		= inGDB.size
+	//distance_matrix.at(0).size() 	= cluster_number
+
+	for (size_t i = 0; i < distance_matrix.size(); i++) {
+		for (size_t j = 0; j < distance_matrix.at(0).size(); j++) {
+
+			cout << distance_matrix.at(i).at(j) << '\t' << flush;
+		}
+		cout << endl;
+	}
+	cout << "-------- END DISTANCE MATRIX --------" << endl;
+
+	return;
+}
+
+void dbg_whichgroup (const vector <size_t>& whichgroup) {
+
+	cout << fixed << setprecision(8) << endl;
+
+	cout << "-------- START WHICH GROUP --------" << endl;
+
+	for (size_t i = 0; i < whichgroup.size(); i++) {
+
+		cout << whichgroup.at(i) << endl;
+	}
+	cout << "-------- END WHICH GROUP --------" << endl;
+
+	return;
+}
+
+void dbg_centroid_vector (const vector <CENTR_VECT>& centroid) {
+
+	cout << fixed << setprecision(6) << endl;
+
+	cout << "-------- START CENTROID VECTOR --------" << endl;
+
+	for (size_t i = 0; i < centroid.size(); i++) {
+
+		cout
+		<< centroid.at(i).U << '\t'
+		<< centroid.at(i).V << '\t'
+		<< centroid.at(i).W << '\t'
+		<< centroid.at(i).X << '\t'
+		<< centroid.at(i).Y << '\t'
+		<< centroid.at(i).Z << '\t'
+		<< endl;
+	}
+	cout << "-------- END CENTROID VECTOR --------" << endl;
+
+	return;
 }

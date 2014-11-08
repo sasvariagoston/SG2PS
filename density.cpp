@@ -10,13 +10,17 @@
 
 #include "assertions.hpp"
 #include "common.h"
+#include "homogenity_check.hpp"
+#include "run_mode.h"
 #include "rgf.h"
 #include "kaalsbeek.hpp"
 #include "density.h"
 #include "ps.h"
+#include "settings.hpp"
+#include "standard_output.hpp"
 #include "structs.h"
 
-XY stereonet_coordinate_from_DIPDIR_DIP (const DIPDIR_DIP& in, const CENTER& center, const INPSET& inset) {
+XY stereonet_coordinate_from_DIPDIR_DIP (const DIPDIR_DIP& in, const CENTER& center) {
 
 	XY out;
 
@@ -24,7 +28,7 @@ XY stereonet_coordinate_from_DIPDIR_DIP (const DIPDIR_DIP& in, const CENTER& cen
 
 	if (D.Z > 0.0) D.Z = - D.Z;
 
-	if (inset.plottype == "S") {
+	if (is_NET_SCHMIDT()) {
 
 		out.X = (D.X / sqrt (1.00 - D.Z)) * center.radius;
 		out.Y = (D.Y / sqrt (1.00 - D.Z)) * center.radius;
@@ -35,7 +39,7 @@ XY stereonet_coordinate_from_DIPDIR_DIP (const DIPDIR_DIP& in, const CENTER& cen
 		out.Y = (D.Y / (1.00 - D.Z)) * center.radius;
 	}
 
-	if (inset.hemisphere == "U") {
+	if (is_HEMISPHERE_UPPER()) {
 
 		out.X = - out.X;
 		out.Y = - out.Y;
@@ -1340,7 +1344,9 @@ vector <VCTR> close_contourline (const vector <VCTR>& I, const double START_ANGL
 	return OUT;
 }
 
-void contourline_to_ps (ofstream& o, const INPSET& inset, const PAPER& P, const CENTER& center, const vector <VCTR>& BZ, const double& FRST_ANGLE, const double& LAST_ANGLE, const double& CONTOUR, const double& C_MN, const double& C_MX, const double& MAX) {
+void contourline_to_ps (ofstream& o, const PAPER& P, const CENTER& center, const vector <VCTR>& BZ, const double& FRST_ANGLE, const double& LAST_ANGLE, const double& CONTOUR, const double& C_MN, const double& C_MX, const double& MAX) {
+
+	o << "%% contourline_to_ps" << endl;
 
 	VCTR FRST_PNT = BZ.at(0);
 	VCTR LAST_PNT = BZ.at(BZ.size() - 1);
@@ -1405,7 +1411,7 @@ void contourline_to_ps (ofstream& o, const INPSET& inset, const PAPER& P, const 
 
 }
 
-void output_contourline (ofstream& o, const INPSET& inset, const PAPER& P, const CENTER& center, vector <vector <VCTR> >& BZ,  vector < vector <GRID_CENTER> >& RECT_GRID, const double& CONTOUR, const double C_MN, const double C_MX, const double& MAX, const bool is_debug) {
+void output_contourline (ofstream& o, const PAPER& P, const CENTER& center, vector <vector <VCTR> >& BZ,  vector < vector <GRID_CENTER> >& RECT_GRID, const double& CONTOUR, const double C_MN, const double C_MX, const double& MAX) {
 
 	double CELL = return_grid_size(RECT_GRID);
 
@@ -1413,7 +1419,7 @@ void output_contourline (ofstream& o, const INPSET& inset, const PAPER& P, const
 
 		vector <VCTR> A =  BZ.at(i);
 
-		if (is_debug) dbg_bezier_points (A);
+		//if (is_mode_DEBUG()) dbg_bezier_points (A);
 
 		VCTR FRST_PNT = A.at(0);
 		VCTR LAST_PNT = A.at(A.size() - 1);
@@ -1421,7 +1427,7 @@ void output_contourline (ofstream& o, const INPSET& inset, const PAPER& P, const
 		FRST_PNT.Z = 0.0;
 		LAST_PNT.Z = 0.0;
 
-		if (!is_closed_line(FRST_PNT, LAST_PNT)) {
+		if (!is_closed_line (FRST_PNT, LAST_PNT)) {
 
 			double FRST_ANGLE = dipdir_dip_from_DXDYDZ(FRST_PNT).DIPDIR;
 			double LAST_ANGLE = dipdir_dip_from_DXDYDZ(LAST_PNT).DIPDIR;
@@ -1440,13 +1446,15 @@ void output_contourline (ofstream& o, const INPSET& inset, const PAPER& P, const
 			double A1_AREA = polygon_area (A1);
 			double A2_AREA = polygon_area (A2);
 
-			if (is_debug) {
+			/*
+			if (is_mode_DEBUG()) {
 
 				cout << endl;
 				cout << "A1 AREA: " << A1_AREA << " A2 AREA: " << A1_AREA << endl;
 				cout << "A1_HAS_PEAK: " << A1_HAS_PEAK << " A2_HAS_PEAK: " << A2_HAS_PEAK << endl;
 				cout << endl;
 			}
+			*/
 
 			bool LARGER_HAS_PEAKS = (
 					(A1_AREA > A2_AREA && A1_HAS_PEAK && !A2_HAS_PEAK) ||
@@ -1454,12 +1462,14 @@ void output_contourline (ofstream& o, const INPSET& inset, const PAPER& P, const
 			bool LARGE_AT_LEAST_DOUBLE = (
 					A1_AREA > A2_AREA * 2.0 || A2_AREA > A1_AREA * 2.0);
 
-			if (is_debug) {
+			/*
+			if (is_mode_DEBUG()) {
 
 				cout << endl;
 				cout << "LARGER_HAS_PEAKS: " << LARGER_HAS_PEAKS << " LARGE_AT_LEAST_DOUBLE: " << LARGE_AT_LEAST_DOUBLE << endl;
 				cout << endl;
 			}
+			*/
 
 			bool DRAW_IT = true;
 
@@ -1467,18 +1477,18 @@ void output_contourline (ofstream& o, const INPSET& inset, const PAPER& P, const
 
 			if (DRAW_IT) {
 
-				if (A1_HAS_PEAK && !A2_HAS_PEAK) 		contourline_to_ps (o, inset, P, center, A, FRST_ANGLE, LAST_ANGLE, CONTOUR, C_MN, C_MX, MAX);
-				else if (!A1_HAS_PEAK && A2_HAS_PEAK) 	contourline_to_ps (o, inset, P, center, A, LAST_ANGLE, FRST_ANGLE, CONTOUR, C_MN, C_MX, MAX);
+				if (A1_HAS_PEAK && !A2_HAS_PEAK) 		contourline_to_ps (o, P, center, A, FRST_ANGLE, LAST_ANGLE, CONTOUR, C_MN, C_MX, MAX);
+				else if (!A1_HAS_PEAK && A2_HAS_PEAK) 	contourline_to_ps (o, P, center, A, LAST_ANGLE, FRST_ANGLE, CONTOUR, C_MN, C_MX, MAX);
 				else if (A1_HAS_PEAK && A2_HAS_PEAK) {
 
-					if (A1_AREA < A2_AREA) 	contourline_to_ps (o, inset, P, center, A, FRST_ANGLE, LAST_ANGLE, CONTOUR, C_MN, C_MX, MAX);
-					else 					contourline_to_ps (o, inset, P, center, A, LAST_ANGLE, FRST_ANGLE, CONTOUR, C_MN, C_MX, MAX);
+					if (A1_AREA < A2_AREA) 	contourline_to_ps (o, P, center, A, FRST_ANGLE, LAST_ANGLE, CONTOUR, C_MN, C_MX, MAX);
+					else 					contourline_to_ps (o, P, center, A, LAST_ANGLE, FRST_ANGLE, CONTOUR, C_MN, C_MX, MAX);
 				}
 				else ASSERT_DEAD_END();
 			}
 			else {}
 		}
-		else contourline_to_ps (o, inset, P, center, A, 999.99, 999.99, CONTOUR, C_MN, C_MX, MAX);
+		else contourline_to_ps (o, P, center, A, 999.99, 999.99, CONTOUR, C_MN, C_MX, MAX);
 	}
 }
 
@@ -1487,19 +1497,20 @@ bool is_processable_for_contouring (const vector <GDB>& inGDB) {
 	vector <GDB> test = return_GDB_with_no_homogeneous_data (inGDB);
 
 	if (test.size() < 2) return false;
-	else return true;
+
+	return true;
 }
 
-void contouring (const vector <GDB>& inGDB, ofstream& o, const INPSET& inset, const PAPER& P, const CENTER center, bool is_debug) {
+void CONTOURING (const vector <GDB>& inGDB, ofstream& o, const PAPER& P, const CENTER center) {
 
-	if (inset.contouring == "N") return;
-	if (!is_processable_for_contouring(inGDB)) return;
+	if (is_CONTOURING_NO()) return;
+	if (!is_processable_for_contouring (inGDB)) return;
 
 	vector <vector <vector <VCTR> > > NET = generate_net (9);
 
-	vector <TRIANGLE> TRI_GRID = generate_net_count (inGDB, NET, inset);
+	vector <TRIANGLE> TRI_GRID = generate_net_count (inGDB, NET);
 
-	if (is_debug) dbg_cout_TRI_GRID (TRI_GRID);
+	debug_TRI_GRID (inGDB, TRI_GRID);
 
 	vector <GRID_CENTER> TRI_CENTER = generate_triangle_center (TRI_GRID);
 
@@ -1511,7 +1522,7 @@ void contouring (const vector <GDB>& inGDB, ofstream& o, const INPSET& inset, co
 
 	RECT_GRID = calculate_grid_cell_values_from_triangle (RECT_GRID, TRI_CENTER);
 
-	if (is_debug) dbg_cout_rect_grid (RECT_GRID, true);
+	debug_RECT_GRID (inGDB, RECT_GRID);
 
 	double C_MN = 0.5;
 	double C_MX = 0.9;
@@ -1526,7 +1537,7 @@ void contouring (const vector <GDB>& inGDB, ofstream& o, const INPSET& inset, co
 
 		vector < vector <GRID_CENTER> > M_SQ = generate_marching_squares (BIN_GRID);
 
-		if (is_debug) dbg_cout_rect_grid(M_SQ, false);
+		//if (is_mode_DEBUG()) dbg_cout_rect_grid(M_SQ, false);
 
 		if (M_SQ.size() + 1 != BIN_GRID.size()) ASSERT3("rectangular density grid and/or maching sqare grid error");
 
@@ -1534,7 +1545,7 @@ void contouring (const vector <GDB>& inGDB, ofstream& o, const INPSET& inset, co
 
 		vector <LINE> C_LINE = generate_raw_lines (M_SQ, RECT_GRID, CNTR_AT.at(i) * MAX);
 
-		if (is_debug) dbg_cout_line (C_LINE);
+		//if (is_mode_DEBUG()) dbg_cout_line (C_LINE);
 
 		vector <vector <LINE> > LINE_VCTR = generate_line_vector (C_LINE);
 
@@ -1548,7 +1559,7 @@ void contouring (const vector <GDB>& inGDB, ofstream& o, const INPSET& inset, co
 
 		BZ = eliminate_short_distances (BZ);
 
-		output_contourline (o, inset, P, center, BZ, RECT_GRID, CNTR_AT.at(i), C_MN, C_MX, MAX, is_debug);
+		output_contourline (o, P, center, BZ, RECT_GRID, CNTR_AT.at(i), C_MN, C_MX, MAX);
 	}
 }
 
@@ -1574,7 +1585,7 @@ void dbg_cout_NET (const vector <vector <vector <VCTR> > >& NET) {
 void dbg_cout_TRI_GRID (const vector <TRIANGLE>& TRI_GRID) {
 
 	cout << "**** DEBUGGING TRIANGULAR GRID WITH COUNTS FOR CONTOURING ****" << endl;
-	cout << fixed << setprecision (6) << endl;
+	cout << fixed << setprecision (8) << endl;
 
 	cout
 	<< "A.X" << '\t' << "A.Y" << '\t' << "A.Z" << '\t'
@@ -1643,7 +1654,7 @@ void dbg_cout_rect_grid (const vector < vector <GRID_CENTER> >& rect_grid, const
 
 			if (display_coordinates) {
 				cout
-				<< fixed << setprecision(6)
+				<< fixed << setprecision(8)
 				<< rect_grid.at(i).at(j).CENTER.X << '\t'
 				<< rect_grid.at(i).at(j).CENTER.Y << '\t'<< flush;
 			}
@@ -1727,7 +1738,7 @@ void dbg_bezier_curve (const vector <BEZIER>& B) {
 	cout << "**** END BEZIER CURVE FOR CONTOURING ****" << endl;
 }
 
-void cout_rect_grid_to_ps (const vector <vector < GRID_CENTER> >& rect_grid, ofstream& o, const INPSET& inset) {
+void cout_rect_grid_to_ps (const vector <vector < GRID_CENTER> >& rect_grid, ofstream& o) {
 
 	for (size_t j = 0; j < rect_grid.size() - 1; j++) {
 
@@ -1752,7 +1763,7 @@ void cout_rect_grid_to_ps (const vector <vector < GRID_CENTER> >& rect_grid, ofs
 
 			//inset.grayscale = "N";
 
-			VCTR COLOR = generate_stress_colors(COUNT, inset);
+			const string COLOR = generate_stress_colors(COUNT);
 
 			if (COUNT > 0.01) {
 
@@ -1762,7 +1773,7 @@ void cout_rect_grid_to_ps (const vector <vector < GRID_CENTER> >& rect_grid, ofs
 				<< " " << CX * 200.0 + 220.0 << " " << CY * 200.0 + 220.0 << " lineto"
 				<< " " << DX * 200.0 + 220.0 << " " << DY * 200.0 + 220.0 << " lineto"
 
-				<< " " << COLOR.X << " " << COLOR.Y << " " << COLOR.Z
+				<< " " << COLOR
 
 				<< " setrgbcolor fill stroke" << endl;
 			}

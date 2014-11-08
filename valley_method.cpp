@@ -10,14 +10,14 @@
 
 using namespace std;
 
-vector <HISTOGRAM> generate_DATA_histogram (vector <double> in, size_t bin_number) {
+vector <HISTOGRAM> generate_DATA_histogram (const vector <double>& in, const size_t bin_number) {
 
-	double bin_size = bin_size_for_DATA (in, bin_number);
-
-	vector <HISTOGRAM> H;
+	const double bin_size = bin_size_for_DATA (in, bin_number);
 
 	double range_min = in.at(0);
 	double range_max = range_min + bin_size;
+
+	vector <HISTOGRAM> H;
 
 	for (size_t i = 0; i < bin_number; i++) {
 
@@ -31,13 +31,12 @@ vector <HISTOGRAM> generate_DATA_histogram (vector <double> in, size_t bin_numbe
 		range_min = range_min + bin_size;
 		range_max = range_max + bin_size;
 	}
-
-	if (H.size() == 1) H.at(0).COUNT = 999;
+	if (H.size() == 1) H.at(0).COUNT = 999;  //CHECK!!!
 
 	return H;
 }
 
-vector <VALLEY> generate_valley_graph (vector <HISTOGRAM> H) {
+vector <VALLEY> generate_valley_graph (const vector <HISTOGRAM>& H) {
 
 	vector <VALLEY> V;
 
@@ -62,7 +61,7 @@ vector <VALLEY> generate_valley_graph (vector <HISTOGRAM> H) {
 	return V;
 }
 
-vector <VALLEY> reduce_N_valley_graph (vector <VALLEY> inV) {
+vector <VALLEY> reduce_N_valley_graph (const vector <VALLEY>& inV) {
 
 	vector <VALLEY> outV;
 
@@ -84,34 +83,7 @@ vector <VALLEY> reduce_N_valley_graph (vector <VALLEY> inV) {
 	return outV;
 }
 
-vector <VALLEY> reduce_UD_valley_graph (vector <VALLEY> inV) {
-
-	vector <VALLEY> outV;
-
-	size_t bin_number = inV.size();
-
-	string prev_UD = "";
-
-	for (size_t i = 0; i < bin_number; i++) {
-
-		VALLEY buffer;
-
-		buffer.BIN_ID = i + 1;
-
-		if (inV.at(i).DIR != prev_UD) {
-
-			buffer = inV.at(i);
-
-			prev_UD = inV.at(i).DIR;
-
-			outV.push_back(buffer);
-		}
-		else {};
-	}
-	return outV;
-}
-
-vector <VALLEY> create_valley_graph (vector <VALLEY> V) {
+vector <VALLEY> create_valley_graph (const vector <VALLEY>& V) {
 
 	vector <VALLEY> out;
 
@@ -140,7 +112,7 @@ vector <VALLEY> create_valley_graph (vector <VALLEY> V) {
 	return out;
 }
 
-vector <VALLEY> return_valleys (vector <double> in, size_t bin_number) {
+vector <VALLEY> return_valleys (const vector <double>& in, const size_t bin_number) {
 
 	vector <HISTOGRAM> H = generate_DATA_histogram (in, bin_number);
 
@@ -158,7 +130,6 @@ vector <VALLEY> return_valleys (vector <double> in, size_t bin_number) {
 
 		return V;
 	}
-
 	V = generate_valley_graph (H);
 
 	V = reduce_N_valley_graph (V);
@@ -170,7 +141,7 @@ void dbg_cout_H (vector <HISTOGRAM> inH) {
 
 	cout << endl;
 
-	cout << fixed << setprecision (4) << endl;
+	cout << fixed << setprecision (8) << endl;
 
 	for (size_t i = 0; i < inH.size(); i++) {
 
@@ -190,7 +161,7 @@ void dbg_cout_V (vector <VALLEY> inV) {
 
 	cout << endl;
 
-	cout << fixed << setprecision (4) << endl;
+	cout << fixed << setprecision (8) << endl;
 
 	for (size_t i = 0; i < inV.size(); i++) {
 
@@ -209,9 +180,11 @@ bool by_COUNT(const HISTOGRAM& x, const HISTOGRAM& y) {
 	return x.COUNT < y.COUNT;
 }
 
-vector <HISTOGRAM> sort_by_COUNT (vector <HISTOGRAM> H) {
+vector <HISTOGRAM> sort_by_COUNT (const vector <HISTOGRAM>& H) {
 
-	sort(H.begin(), H.end(), by_COUNT);
+	vector <HISTOGRAM> OUT = H;
 
-	return H;
+	sort(OUT.begin(), OUT.end(), by_COUNT);
+
+	return OUT;
 }

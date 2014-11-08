@@ -8,10 +8,12 @@
 
 using namespace std;
 
-vector <vector <double> > SHAN_matrix (vector <GDB> inGDB, INPSET inset);
+vector <vector <double> > shan_matrix_from_GDB (const GDB& inGDB); //ok
 
-STRESSTENSOR st_SHAN (vector <GDB> inGDB, INPSET inset);
+vector <vector <double> > SHAN_matrix (const vector <GDB>& inGDB); //ok
 
-STRESSFIELD sf_SHAN (STRESSTENSOR st);
+STRESSTENSOR st_SHAN (const vector <GDB>& inGDB); //ok
+
+STRESSFIELD sf_SHAN (const STRESSTENSOR& st); //ok
 
 #endif

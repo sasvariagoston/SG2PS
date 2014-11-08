@@ -10,13 +10,13 @@
 
 using namespace std;
 
-void pushbach_settings_item (vector < vector <string> >& defitem, string key, string output);
-void pushbach_settings_option (vector < vector <string> >& defitem, string value, string opt1, string opt2);
-void pushbach_settings_range (vector < vector <string> >& defitem, string min, string max, string opt1, string opt2, string opt3, string dflt);
+void pushbach_settings_item (vector < vector <string> >& defitem, const string key, const string output);
+void pushbach_settings_option (vector < vector <string> >& defitem, const string value, const string opt1, const string opt2);
+void pushbach_settings_range (vector < vector <string> >& defitem, const string min, const string max, const string opt1, const string opt2, const string opt3, const string dflt);
 
 vector <vector < vector <string> > > return_default_settings_database ();
 
-void dbg_default_settings_database (vector <vector < vector <string> > > DEF);
+void dbg_default_settings_database (const  vector <vector < vector <string> > >& DEF);
 
 void dbg_generate_settings_file_list ();
 

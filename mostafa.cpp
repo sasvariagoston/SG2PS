@@ -12,52 +12,50 @@
 #include "mostafa.h"
 #include "ps.h"
 #include "rgf.h"
+#include "stresstensor.hpp"
 
 using namespace std;
 
 namespace {
 
-STRESSTENSOR MOSTAFA_st;
+//STRESSTENSOR MOSTAFA_st;
+
+vector <STRESSTENSOR> MOSTAFA_stv;
 
 }
 
-STRESSTENSOR st_MOSTAFA () {
+vector <STRESSTENSOR> stv_MOSTAFA () {
 
-	return MOSTAFA_st;
-
+	return MOSTAFA_stv;
 }
 
-STRESSFIELD sf_MOSTAFA (vector <GDB> inGDB, ofstream& o, INPSET inset, CENTER center) {
+vector <STRESSFIELD> sfv_MOSTAFA (const vector <GDB>& inGDB) {
 
-	STRESSFIELD sf;
+	vector <STRESSFIELD> SFV;
 
-	int i = 0;
-	int iteration_number = 100;
+	vector <GDB> process_GDB = inGDB;
 
-	do {
+	const size_t iteration_number = 100;
 
-		MOSTAFA_st = st_ANGELIER (inGDB, inset);
+	MOSTAFA_stv.clear();
 
-		if (i == 0) inGDB = return_stressvector_estimators (MOSTAFA_st, inGDB, "ANGELIER", false);
-		else 		inGDB = return_stressvector_estimators (MOSTAFA_st, inGDB, "MOSTAFA", false);
+	for (size_t i = 0; i < iteration_number; i++) {
 
-		sf = eigenvalue_eigenvector (MOSTAFA_st);
+		STRESSTENSOR MOSTAFA_st = st_ANGELIER (process_GDB);
+
+		string METHOD;
+
+		if (i == 0)	METHOD = "ANGELIER";
+		else 		METHOD = "MOSTAFA";
+
+		process_GDB = return_stressvector_estimators (MOSTAFA_st, process_GDB, METHOD);
+
+		STRESSFIELD sf = eigenvalue_eigenvector (MOSTAFA_st);
 		sf = computestressfield_DXDYDZ (sf);
 		sf = stress_regime (sf);
 
-		PS_lineation (inGDB.at(0), o, inset, center, sf, false, "S1_ITER");
-		PS_lineation (inGDB.at(0), o, inset, center, sf, false, "S2_ITER");
-		PS_lineation (inGDB.at(0), o, inset, center, sf, false, "S3_ITER");
-
-		PS_idealmovement (inGDB, o, inset, center);
-
-		i++;
-
-	} while (i < iteration_number);
-
-	sf = eigenvalue_eigenvector (MOSTAFA_st);
-
-	sf = computestressfield_DXDYDZ (sf);
-
-	return stress_regime (sf);
+		SFV.push_back(sf);
+		MOSTAFA_stv.push_back(MOSTAFA_st);
+	}
+	return SFV;
 }

@@ -6,17 +6,68 @@
 #include <iomanip>
 #include <iostream>
 
+#include "allowed_keys.hpp"
 #include "common.h"
 #include "inversion.h"
 #include "ptn.h"
 #include "rgf.h"
+#include "settings.hpp"
+#include "stresstensor.hpp"
 #include "structs.h"
 
 using namespace std;
 
-STRESSTENSOR PTN_matrix (vector <GDB> inGDB, string axis) {
+vector <GDB> ptn (const vector <GDB>& inGDB) {
 
-	size_t i = 0;
+	vector <GDB> outGDB = inGDB;
+
+	const double r = is_STRESSANGLE() / 90.0;
+	const double q = 1.0 - r;
+
+	for (size_t i = 0; i < inGDB.size(); i++) {
+
+		const string DT = inGDB.at(i).DATATYPE;
+		const string O = inGDB.at(i).OFFSET;
+
+		const bool SC = is_allowed_SC_datatype(DT);
+		const bool STRIAE = is_allowed_striae_datatype(DT);
+		const bool HAS_OFFSET = !is_allowed_striae_none_sense(O);
+
+		if ((SC || STRIAE) && HAS_OFFSET) {
+
+			VCTR temp1 = declare_vector(
+					q * inGDB.at(i).N.X + r * inGDB.at(i).SV.X,
+					q * inGDB.at(i).N.Y + r * inGDB.at(i).SV.Y,
+					q * inGDB.at(i).N.Z + r * inGDB.at(i).SV.Z);
+			temp1 = unitvector (temp1);
+			temp1 = flip_D_vector (temp1);
+			DIPDIR_DIP dd = dipdir_dip_from_DXDYDZ (temp1);
+			outGDB.at(i).ptnT = temp1;
+			outGDB.at(i).ptnTd = dd;
+
+			VCTR temp2 = declare_vector(
+					q * inGDB.at(i).SV.X - r * inGDB.at(i).N.X,
+					q * inGDB.at(i).SV.Y - r * inGDB.at(i).N.Y,
+					q * inGDB.at(i).SV.Z - r * inGDB.at(i).N.Z);
+			temp2 = unitvector (temp2);
+			temp2 = flip_D_vector (temp2);
+			dd = dipdir_dip_from_DXDYDZ (temp2);
+			outGDB.at(i).ptnP = temp2;
+			outGDB.at(i).ptnPd = dd;
+
+			VCTR temp3 = crossproduct (temp2, temp1);
+			temp3 = unitvector (temp3); // FIXME What if temp3 has approximately 0 length?
+			temp3 = flip_D_vector (temp3);
+			dd = dipdir_dip_from_DXDYDZ (temp3);
+			outGDB.at(i).ptnN = temp3;
+			outGDB.at(i).ptnNd = dd;
+		}
+	}
+	return outGDB;
+}
+
+STRESSTENSOR PTN_matrix (const vector <GDB>& inGDB, const string& axis) {
+
 	STRESSTENSOR st;
 
 	st._11 = 0.0;
@@ -26,12 +77,14 @@ STRESSTENSOR PTN_matrix (vector <GDB> inGDB, string axis) {
 	st._23 = 0.0;
 	st._33 = 0.0;
 
-	VCTR N = declare_vector (0.0, 1.0, 0.0);
-	VCTR E = declare_vector (1.0, 0.0, 0.0);
-	VCTR U = declare_vector (0.0, 0.0, 1.0);
+	const VCTR N = declare_vector (0.0, 1.0, 0.0);
+	const VCTR E = declare_vector (1.0, 0.0, 0.0);
+	const VCTR U = declare_vector (0.0, 0.0, 1.0);
+
 	VCTR AX;
 
-	do {
+	for (size_t i = 0; i < inGDB.size(); i++) {
+
 
 		if 		(axis == "P") AX = inGDB.at(i).ptnP;
 		else if (axis == "T") AX = inGDB.at(i).ptnT;
@@ -44,27 +97,19 @@ STRESSTENSOR PTN_matrix (vector <GDB> inGDB, string axis) {
 		st._22 = st._22 + (dotproduct (AX, N, false) * dotproduct (AX, N, false));
 		st._23 = st._23 + (dotproduct (AX, N, false) * dotproduct (AX, U, false));
 		st._33 = st._33 + (dotproduct (AX, U, false) * dotproduct (AX, U, false));
-
-		i++;
-
-	} while (i < inGDB.size());
-
+	}
 	return st;
 }
 
+STRESSFIELD sf_PTN (const vector <GDB>& inGDB) {
 
-STRESSTENSOR st_PTN (STRESSFIELD sf) {
-
-	return stresstensor_from_eigenvalue_eigenvector (sf);
-}
-
-STRESSFIELD sf_PTN (vector <GDB> inGDB, INPSET inset) {
-
-	vector <GDB> processGDB;
 	STRESSFIELD sf, sf_ptn;
 
-	if (inset.virt_striae == "Y" ) 	processGDB = generate_virtual_striae (inGDB);
-	else 							processGDB = inGDB;
+	vector <GDB> processGDB = inGDB;
+
+	processGDB = ptn (processGDB);
+
+	//if (inset.virt_striae == "Y" ) 	processGDB = generate_virtual_striae (processGDB);
 
 	sf_ptn = computestressfield_DXDYDZ (eigenvalue_eigenvector (PTN_matrix (processGDB, "P")));
 	sf.EIGENVALUE.X = sf_ptn.EIGENVALUE.X;
@@ -82,4 +127,9 @@ STRESSFIELD sf_PTN (vector <GDB> inGDB, INPSET inset) {
 	sf.S_2 = sf_ptn.S_1;
 
 	return stress_regime (sf);
+}
+
+STRESSTENSOR st_PTN (const STRESSFIELD& sf) {
+
+	return stresstensor_from_eigenvalue_eigenvector (sf);
 }

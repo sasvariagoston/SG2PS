@@ -18,21 +18,21 @@
 using namespace std;
 
 bool by_border (const BRDR& x, const BRDR& y);
-vector <BRDR> sort_by_border (vector <BRDR> in);
+vector <BRDR> sort_by_border (const vector <BRDR>& in);
 
-double return_datamin (vector <GDB> inGDB, string field);
-double return_datamax (vector <GDB> inGDB, string field);
+double return_datamin (const vector <GDB>& inGDB, const string field);
+double return_datamax (const vector <GDB>& inGDB, const string field);
 
-size_t return_count_max (vector <GDB> inGDB, string method, size_t bin_number);
+size_t return_count_max (const vector <GDB>& inGDB, const string& method, const size_t bin_number);
 
-double return_step (double DATA_max);
+size_t return_step (const double DATA_max);
 
-void ps_draw_histogram_bars (vector <GDB> inGDB, vector <line_RUP_ANG> L_R_A, INPSET inset, ofstream& o, CENTER center, PAPER P, double DATA_min, double DATA_max, size_t bin_number, double binsize, string method);
+void ps_draw_histogram_bars (const vector <GDB>& inGDB, const vector <line_RUP_ANG>& L_R_A, ofstream& o, const CENTER& center, const PAPER& P, const double DATA_min, const double DATA_max, const size_t bin_number, const double binsize, const string method);
 
-void ps_RUP_ANG_header (ofstream& o, CENTER center, PAPER P, string method);
-void ps_percentage (ofstream& o, CENTER center, PAPER P, string method, double DATA_max);
-void ps_percentage_max (ofstream& o, CENTER center, PAPER P, string method, double DATA_max);
+void ps_RUP_ANG_header (ofstream& o, const CENTER& center, const PAPER& P);
+void ps_percentage (ofstream& o, const CENTER& center, const PAPER& P, const string METHOD, const double DATA_max);
+void ps_percentage_max (ofstream& o, const CENTER& center, const PAPER& P, const string METHOD, const double DATA_max);
 
-vector <line_RUP_ANG> generate_graph_histogram (vector <HISTOGRAM> H, vector <VALLEY> V, double DATA_MAX);
+vector <line_RUP_ANG> generate_graph_histogram (const vector <HISTOGRAM>& H, const vector <VALLEY>& V, const double DATA_MAX);
 
 #endif

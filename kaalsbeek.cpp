@@ -12,10 +12,11 @@
 #include "assertions.hpp"
 #include "common.h"
 #include "kaalsbeek.hpp"
+#include "settings.hpp"
 
 using namespace std;
 
-vector <VCTR> generate_arc (const size_t& SEG_CNT, const size_t& ARC_CNT, const size_t& POINTS_DISTANCE) {
+vector <VCTR> generate_arc (const size_t SEG_CNT, const size_t ARC_CNT, const size_t POINTS_DISTANCE) {
 
 	VCTR buf;
 	vector <VCTR> arc;
@@ -46,7 +47,7 @@ vector <VCTR> generate_arc (const size_t& SEG_CNT, const size_t& ARC_CNT, const 
 	return arc;
 }
 
-vector <vector <VCTR> > generate_segment (const size_t& SEG_CNT, const size_t& POINTS_DISTANCE) {
+vector <vector <VCTR> > generate_segment (const size_t SEG_CNT, const size_t POINTS_DISTANCE) {
 
 	vector <VCTR > buf;
 	vector <vector <VCTR> > out;
@@ -61,7 +62,7 @@ vector <vector <VCTR> > generate_segment (const size_t& SEG_CNT, const size_t& P
 	return out;
 }
 
-vector <vector <vector <VCTR> > > generate_net (const size_t& POINTS_DISTANCE) {
+vector <vector <vector <VCTR> > > generate_net (const size_t POINTS_DISTANCE) {
 
 	vector <vector <vector <VCTR> > > NET;
 
@@ -76,13 +77,13 @@ vector <vector <vector <VCTR> > > generate_net (const size_t& POINTS_DISTANCE) {
 	return NET;
 }
 
-vector <TRIANGLE>  generate_net_count (const vector <GDB>& inGDB, const vector <vector <vector <VCTR> > >& NET, const INPSET& inset) {
+vector <TRIANGLE>  generate_net_count (const vector <GDB>& inGDB, const vector <vector <vector <VCTR> > >& NET) {
 
 	vector <vector <VCTR> > buf;
 
 	vector <TRIANGLE> TRI = generate_triangle (NET);
 
-	TRI = return_count_in_net (inGDB, inset, TRI);
+	TRI = return_count_in_net (inGDB, TRI);
 
 	return TRI;
 }
@@ -119,7 +120,7 @@ vector <GRID_CENTER> reduce_triangle_center (const vector <GRID_CENTER>& in) {
 	return out;
 }
 
-vector <TRIANGLE> merge_triangle (vector <TRIANGLE> target, vector <TRIANGLE> record) {
+vector <TRIANGLE> merge_triangle (vector <TRIANGLE>& target, const vector <TRIANGLE>& record) {
 
 	TRIANGLE buf;
 
@@ -129,11 +130,10 @@ vector <TRIANGLE> merge_triangle (vector <TRIANGLE> target, vector <TRIANGLE> re
 
 		target.push_back(buf);
 	}
-
 	return target;
 }
 
-VCTR create_offnet_point (VCTR A, VCTR B) {
+VCTR create_offnet_point (const VCTR& A, const VCTR& B) {
 
 	VCTR out;
 
@@ -145,7 +145,7 @@ VCTR create_offnet_point (VCTR A, VCTR B) {
 }
 
 //6
-vector <TRIANGLE> generate_triangle_offnet(vector <vector <vector <VCTR> > > net, size_t SEG_CNT) {
+vector <TRIANGLE> generate_triangle_offnet(const vector <vector <vector <VCTR> > >& net, const size_t SEG_CNT) {
 
 	TRIANGLE buf;
 	vector <TRIANGLE> out;
@@ -170,7 +170,7 @@ vector <TRIANGLE> generate_triangle_offnet(vector <vector <vector <VCTR> > > net
 }
 
 //7
-vector <TRIANGLE> generate_triangle_offnet_between_segments (vector <vector <vector <VCTR> > > net, size_t SEG_CNT) {
+vector <TRIANGLE> generate_triangle_offnet_between_segments (const vector <vector <vector <VCTR> > >& net, const size_t SEG_CNT) {
 
 	TRIANGLE buf;
 	vector <TRIANGLE> out;
@@ -204,7 +204,7 @@ vector <TRIANGLE> generate_triangle_offnet_between_segments (vector <vector <vec
 	return out; // OK
 }
 
-vector <TRIANGLE> generate_triangle_in_arc (vector <vector <vector <VCTR> > > net, size_t SEG_CNT, size_t ARC_CNT) {
+vector <TRIANGLE> generate_triangle_in_arc (const vector <vector <vector <VCTR> > >& net, const size_t SEG_CNT, const size_t ARC_CNT) {
 
 	TRIANGLE buf;
 	vector <TRIANGLE> out;
@@ -229,7 +229,7 @@ vector <TRIANGLE> generate_triangle_in_arc (vector <vector <vector <VCTR> > > ne
 	return out; //OK
 }
 
-vector <TRIANGLE> generate_triangle_in_arc_II (vector <vector <vector <VCTR> > > net, size_t SEG_CNT, size_t ARC_CNT) {
+vector <TRIANGLE> generate_triangle_in_arc_II (const vector <vector <vector <VCTR> > >& net, const size_t SEG_CNT, const size_t ARC_CNT) {
 
 	TRIANGLE buf;
 	vector <TRIANGLE> out;
@@ -254,7 +254,7 @@ vector <TRIANGLE> generate_triangle_in_arc_II (vector <vector <vector <VCTR> > >
 	return out; // OK
 }
 
-vector <TRIANGLE> generate_triangle_between_arcs (vector <vector <vector <VCTR> > > net, size_t SEG_CNT, size_t ARC_CNT) {
+vector <TRIANGLE> generate_triangle_between_arcs (const vector <vector <vector <VCTR> > >& net, const size_t SEG_CNT, const size_t ARC_CNT) {
 
 	TRIANGLE buf;
 	vector <TRIANGLE> out;
@@ -302,7 +302,7 @@ vector <TRIANGLE> generate_triangle_between_arcs (vector <vector <vector <VCTR> 
 	return out; // OK
 }
 
-vector <TRIANGLE> generate_central_triangles (vector <vector <vector <VCTR> > > net, size_t SEG_CNT) {
+vector <TRIANGLE> generate_central_triangles (const vector <vector <vector <VCTR> > >& net, const size_t SEG_CNT) {
 
 	TRIANGLE buf;
 	vector <TRIANGLE> out;
@@ -336,7 +336,7 @@ vector <TRIANGLE> generate_central_triangles (vector <vector <vector <VCTR> > > 
 	return out; // OK
 }
 
-vector <TRIANGLE> generate_triangle_in_segment (vector <vector <vector <VCTR> > > net, size_t SEG_CNT) {
+vector <TRIANGLE> generate_triangle_in_segment (const vector <vector <vector <VCTR> > >& net, const size_t SEG_CNT) {
 
 	vector <TRIANGLE> buf;
 	vector <TRIANGLE> out;
@@ -359,7 +359,7 @@ vector <TRIANGLE> generate_triangle_in_segment (vector <vector <vector <VCTR> > 
 	return out;
 }
 
-vector <TRIANGLE> generate_triangle (vector <vector <vector <VCTR> > > net) {
+vector <TRIANGLE> generate_triangle (const  vector <vector <vector <VCTR> > >& net) {
 
 	vector <TRIANGLE> buf;
 	vector <TRIANGLE> out;
@@ -386,13 +386,13 @@ vector <TRIANGLE> generate_triangle (vector <vector <vector <VCTR> > > net) {
 	return out;
 }
 
-vector <TRIANGLE> convert_S_W_net (vector <TRIANGLE> in, INPSET inset) {
+vector <TRIANGLE> convert_S_W_net (vector <TRIANGLE>& in) {
 
 	for (size_t i = 0; i < in.size(); i++) {
 
 		if (in.at(i).GROUP < 6) {
 
-			if (inset.plottype == "W") {
+			if (is_NET_WULFF()) {
 
 				if (in.at(i).A.Z < 1.00) {
 
@@ -438,7 +438,7 @@ vector <TRIANGLE> convert_S_W_net (vector <TRIANGLE> in, INPSET inset) {
 	return in;
 }
 
-vector <TRIANGLE> increase_triange_density (vector <TRIANGLE> in) {
+vector <TRIANGLE> increase_triange_density (const vector <TRIANGLE>& in) {
 
 	vector <TRIANGLE> out;
 	TRIANGLE buf;
@@ -507,7 +507,7 @@ vector <TRIANGLE> increase_triange_density (vector <TRIANGLE> in) {
 	return out;
 }
 
-bool is_data_in_triangle (TRIANGLE in, VCTR D) {
+bool is_data_in_triangle (const TRIANGLE& in, const VCTR& D) {
 
 	VCTR A = in.A;
 	VCTR B = in.B;
@@ -520,7 +520,7 @@ bool is_data_in_triangle (TRIANGLE in, VCTR D) {
 	return (B1 == B2 && B2 == B3);
 }
 
-bool is_neighbouring_internal_triange (TRIANGLE inTRI, TRIANGLE offTRI) {
+bool is_neighbouring_internal_triange (const TRIANGLE& inTRI, const TRIANGLE& offTRI) {
 
 	size_t fit_counter = 0;
 
@@ -538,7 +538,7 @@ bool is_neighbouring_internal_triange (TRIANGLE inTRI, TRIANGLE offTRI) {
 	else return false;
 }
 
-vector <TRIANGLE> add_external_to_internal (vector <TRIANGLE> innet, TRIANGLE offnet) {
+vector <TRIANGLE> add_external_to_internal (vector <TRIANGLE>& innet, const TRIANGLE& offnet) {
 
 	for (size_t i = 0; i < innet.size(); i++) {
 
@@ -548,36 +548,16 @@ vector <TRIANGLE> add_external_to_internal (vector <TRIANGLE> innet, TRIANGLE of
 	return innet;
 }
 
-bool is_computing_for_dipdir_bearing (const INPSET& I) {
-
-	return (I.contouring == "D");
-}
-
-bool is_computing_for_strike_bearing (const INPSET& I) {
-
-	return (I.contouring == "S");
-}
-
-bool is_computing_for_planenormal_bearing (const INPSET& I) {
-
-	return (I.contouring == "O");
-}
-
-bool is_computing_for_striaebearing_bearing (const INPSET& I) {
-
-	return (I.contouring == "B");
-}
-
-vector <TRIANGLE> return_count_in_net (const vector <GDB>& inGDB, const INPSET& inset, vector <TRIANGLE>& innet) {
+vector <TRIANGLE> return_count_in_net (const vector <GDB>& inGDB, vector <TRIANGLE>& innet) {
 
 	for (size_t i = 0; i < innet.size(); i++) {
 
 		size_t counter = 0;
 
-		bool DIPDIR = is_computing_for_dipdir_bearing(inset);
-		bool STRIKE = is_computing_for_strike_bearing(inset);
-		bool NORMAL = is_computing_for_planenormal_bearing(inset);
-		bool STRIAE = is_computing_for_striaebearing_bearing(inset);
+		bool DIPDIR = is_CONTOURING_DIPDIR_BEARING();
+		bool STRIKE = is_CONTOURING_STRIKEDIR_BEARING();
+		bool NORMAL = is_CONTOURING_PLANE_NORMAL_BEARING();
+		bool STRIAE = is_CONTOURING_STRIAE_BEARING_BEARING();
 
 		for (size_t j = 0; j < inGDB.size(); j++) {
 
@@ -627,7 +607,7 @@ vector <TRIANGLE> return_count_in_net (const vector <GDB>& inGDB, const INPSET& 
 	return innet;
 }
 
-void dbg_cout_triangle (string method, VCTR A, VCTR B, VCTR C, size_t SC1, size_t AC1, size_t PC1, size_t SC2, size_t AC2, size_t PC2, size_t SC3, size_t AC3, size_t PC3) {
+void dbg_cout_triangle (const string method, const VCTR& A, const VCTR& B, const VCTR& C, const size_t SC1, const size_t AC1, const size_t PC1, const size_t SC2, const size_t AC2, const size_t PC2, const size_t SC3, const size_t AC3, const size_t PC3) {
 
 	cout << fixed << setprecision(4) << endl;
 
@@ -641,7 +621,7 @@ void dbg_cout_triangle (string method, VCTR A, VCTR B, VCTR C, size_t SC1, size_
 	<< SC3 << AC3 << PC3 << endl;
 }
 
-void dbg_test_triangle_points_direction (VCTR A, VCTR B, VCTR C, string msg) {
+void dbg_test_triangle_points_direction (const VCTR& A, const VCTR& B, const VCTR& C, const string msg) {
 
 	TRIANGLE T;
 
@@ -651,14 +631,12 @@ void dbg_test_triangle_points_direction (VCTR A, VCTR B, VCTR C, string msg) {
 
 	VCTR pole = declare_vector(-2.0, -2.0, NaN());
 
-	//cout << fixed << setprecision(5) << endl;
-
 	if (is_data_in_triangle(T, pole)) ASSERT3(msg);
 
 	return;
 }
 
-void dbg_cout_triangle_coordinates (vector <TRIANGLE> in) {
+void dbg_cout_triangle_coordinates (const vector <TRIANGLE>& in) {
 
 	//660 triangles are in the normal Kaalsbeek grid
 
@@ -683,7 +661,7 @@ void dbg_cout_triangle_coordinates (vector <TRIANGLE> in) {
 	}
 }
 
-void dbg_cout_kaalsbeek_ps (vector <TRIANGLE> in) {
+void dbg_cout_kaalsbeek_ps (const vector <TRIANGLE>& in) {
 
 	string filename = "KAALSBEEK.PS";
 

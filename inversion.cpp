@@ -9,6 +9,7 @@
 
 #include "angelier.h"
 #include "assertions.hpp"
+#include "allowed_keys.hpp"
 #include "brute_force.hpp"
 #include "bingham.h"
 #include "common.h"
@@ -21,429 +22,267 @@
 #include "ps.h"
 #include "ptn.h"
 #include "rgf.h"
+#include "run_mode.h"
 #include "rup_clustering.hpp"
+#include "settings.hpp"
 #include "shan.h"
+#include "stresstensor.hpp"
 #include "structs.h"
 #include "valley_method.hpp"
 #include "yamaji.hpp"
 
 using namespace std;
 
-bool is_method_BINGHAM (vector <GDB> inGDB, INPSET inset) {
+namespace {
 
-	return (inGDB.at(0).DATATYPE == "FRACTURE" && inset.fracture == "B");
+vector <STRESSTENSOR> STV;
+vector <STRESSFIELD> SFV;
+
 }
 
-bool is_method_FRY (vector <GDB> inGDB, INPSET inset) {
-
-	return (inGDB.at(0).DATATYPE == "STRIAE" && inset.inversion == "F");
-}
-
-bool is_method_MICHAEL (vector <GDB> inGDB, INPSET inset) {
-
-	return (inGDB.at(0).DATATYPE == "STRIAE" && inset.inversion == "M");
-}
-
-bool is_method_SHAN (vector <GDB> inGDB, INPSET inset) {
-
-	return (inGDB.at(0).DATATYPE == "STRIAE" && inset.inversion == "S");
-}
-
-bool is_method_ANGELIER (vector <GDB> inGDB, INPSET inset) {
-
-	return (inGDB.at(0).DATATYPE == "STRIAE" && inset.inversion == "A");
-}
-
-bool is_method_MOSTAFA (vector <GDB> inGDB, INPSET inset) {
-
-	return (inGDB.at(0).DATATYPE == "STRIAE" && inset.inversion == "O");
-}
-
-bool is_method_NDA (vector <GDB> inGDB, INPSET inset) {
-
-	return (inGDB.at(0).DATATYPE == "STRIAE" && inset.inversion == "D");
-}
-
-bool is_method_BRUTEFORCE (vector <GDB> inGDB, INPSET inset) {
-
-	return (inGDB.at(0).DATATYPE == "STRIAE" && inset.inversion == "B");
-}
-
-bool is_method_PTN (vector <GDB> inGDB, INPSET inset) {
-
-	return (inGDB.at(0).DATATYPE == "STRIAE" && inset.inversion == "P");
-}
-
-bool is_method_YAMAJI (vector <GDB> inGDB, INPSET inset) {
-
-	return (inGDB.at(0).DATATYPE == "STRIAE" && inset.inversion == "Y");
-}
-
-size_t useful_striae_number (vector <GDB> inGDB) {
-
-	size_t useful_striae_number = 0;
-
-	for (size_t i = 0; i < inGDB.size(); i++) {
-
-		if (inGDB.at(i).OFFSET != "NONE") useful_striae_number++;
-	}
-
-	return useful_striae_number;
-}
-
-vector <GDB> return_striae_with_offset (vector <GDB> inGDB) {
+vector <GDB> return_striae_with_offset (const vector <GDB>& inGDB) {
 
 	vector <GDB> outGDB;
 
 	for (size_t i = 0; i < inGDB.size(); i++) {
 
-		if (inGDB.at(i).OFFSET != "NONE") outGDB.push_back(inGDB.at(i));
-	}
+		const string O = inGDB.at(i).OFFSET;
 
+		if (! is_allowed_striae_none_sense (O)) outGDB.push_back (inGDB.at(i));
+	}
 	return outGDB;
 }
 
-vector <GDB> return_stressvector_estimators (const STRESSTENSOR& st, const vector <GDB>& inGDB, const string& method, const bool& compression_positive) {
+vector <GDB> generate_virtual_striae (const vector <GDB>& inGDB) {
 
 	vector <GDB> outGDB = inGDB;
 
-	for (size_t i  =0; i < inGDB.size(); i++) {
+	for (size_t i = 0; i < inGDB.size(); i++) {
 
-		VCTR N = inGDB.at(i).N;
-		VCTR SV = inGDB.at(i).SV;
-		VCTR UPSILON = inGDB.at(i).UPSILON;
-		double lambda = inGDB.at(i).lambda;
+		GDB buf = inGDB.at(i);
 
-		outGDB.at(i).SHEAR_S  = return_shearstress  (st, N, compression_positive);
+		buf.N =  declare_vector (- buf.N.X, - buf.N.Y, buf.N.Z);
+		buf.D =  declare_vector (- buf.D.X, - buf.D.Y, buf.D.Z);
+		buf.S =  declare_vector (- buf.S.X, - buf.S.Y, buf.S.Z);
 
-		outGDB.at(i).NORMAL_S = return_normalstress (st, N, compression_positive);
+		buf.SV = declare_vector (- buf.SV.X, - buf.SV.Y, buf.SV.Z);
 
-		outGDB.at(i).UPSILON  = return_upsilon (st, N, SV, UPSILON, lambda , method, compression_positive);
+		buf.NC = declare_vector (- buf.NC.X, - buf.NC.Y, buf.NC.Z);
+		buf.DC = declare_vector (- buf.DC.X, - buf.DC.Y, buf.DC.Z);
+		buf.SC = declare_vector (- buf.SC.X, - buf.SC.Y, buf.SC.Z);
 
-		outGDB.at(i).ANG  = return_ANG (st, N, SV, compression_positive);
-
-		outGDB.at(i).RUP  = return_RUP (st, N, SV, lambda, compression_positive);
-
-		if (method == "MOSTAFA")
-
-			outGDB.at(i).lambda =  sqrt(
-					outGDB.at(i).SHEAR_S.X * outGDB.at(i).SHEAR_S.X +
-					outGDB.at(i).SHEAR_S.Y * outGDB.at(i).SHEAR_S.Y +
-					outGDB.at(i).SHEAR_S.Z * outGDB.at(i).SHEAR_S.Z);
+		outGDB.push_back(buf);
 	}
+
+	outGDB = manipulate_N (outGDB);
 
 	return outGDB;
 }
 
-STRESSTENSOR return_stresstensor_from_n1_ang_phi (const VCTR& N1, const double& ANG, const double& PHI) {
+void cout_inversion_results (const vector <GDB>& inGDB, const vector <STRESSFIELD>& SFV) {
 
-	vector <vector <double> > M1 = DIR_MX1_from_n1 (N1, ANG);
+	if (is_mode_DEBUG()) return;
 
-	vector <vector <double> > T = st_from_reduced_stresstensor (M1, PHI);
+	const bool IS_STRIAE = is_allowed_striae_datatype(inGDB.at(0).DATATYPE);
 
-	return convert_matrix_to_stresstensor (T);
+	if (SFV.size() < 1) {
+
+		cout << "no stress field was computed for the input data set." << endl;
+		return;
+	}
+
+	const STRESSFIELD MSF = SFV.at (SFV.size() - 1);
+
+	if (is_BINGHAM_USE() && !IS_STRIAE) {
+
+		cout
+		<<  fixed << setprecision (0)
+		<< "e1: " << setfill ('0') << setw (3) << MSF.S_1.DIPDIR
+		<<  "/"   << setfill ('0') << setw (2) << MSF.S_1.DIP << flush;
+
+		cout
+		<<  fixed << setprecision (1)
+		<< " (" << setfill ('0') << setw (4) << MSF.EIGENVALUE.X * 100.0 << flush;
+
+		cout
+		<<  fixed << setprecision (0)
+		<< "%), e2: " << setfill ('0') << setw (3) << MSF.S_2.DIPDIR
+		<<  "/"       << setfill ('0') << setw (2) << MSF.S_2.DIP << flush;
+
+		cout
+		<<  fixed << setprecision (1)
+		<< " ("	<< setfill ('0') << setw (4) << MSF.EIGENVALUE.Y * 100.0 << flush;
+
+		cout
+		<<  fixed << setprecision (0)
+		<< "%), e3: " << setfill ('0') << setw (3) << MSF.S_3.DIPDIR
+		<<  "/"       << setfill ('0') << setw (2) << MSF.S_3.DIP << flush;
+
+		cout
+		<<  fixed << setprecision (1)
+		<< " ("	 << setfill ('0') << setw (4)  << MSF.EIGENVALUE.Z * 100.0 << "%)" << endl;
+	}
+	else {
+
+		cout << fixed << setprecision (0) << flush;
+		cout
+		<< "s1: "  	<< setfill ('0') << setw (3)  << MSF.S_1.DIPDIR
+		<<  "/"     << setfill ('0') << setw (2)  << MSF.S_1.DIP
+		<< ", s2: " << setfill ('0') << setw (3)  << MSF.S_2.DIPDIR
+		<<  "/"     << setfill ('0') << setw (2)  << MSF.S_2.DIP
+		<< ", s3: " << setfill ('0') << setw (3)  << MSF.S_3.DIPDIR
+		<<  "/"     << setfill ('0') << setw (2)  << MSF.S_3.DIP
+		<< ", " 	<< flush;
+
+		cout << setfill (' ') << setw (18) << MSF.delvaux_rgm << flush;
+
+		cout << fixed << setprecision (3) << flush;
+		cout
+		<< ", R: "  << setfill ('0') << setw (4)  << MSF.stressratio
+		<< ", R': " << setfill ('0') << setw (4)  << MSF.delvaux_str << flush;
+
+		cout << fixed << setprecision (1) << flush;
+		cout
+		<< ", av. misfit: " << setfill (' ') << setw (4)  << inGDB.at(0).AV_MISF
+		<< " deg." << endl;
+	}
 }
 
-vector <GDB> generate_virtual_striae (vector <GDB> inGDB) {
+vector <STRESSTENSOR> return_STV () {
+
+	return STV;
+}
+
+vector <STRESSFIELD> return_SFV () {
+
+	return SFV;
+}
+
+vector <GDB> ASSOCIATE_STV_SFV (const vector <GDB>& inGDB, const vector <STRESSTENSOR>& STV, const vector <STRESSFIELD>& SFV) {
 
 	vector <GDB> outGDB = inGDB;
-	size_t original_set_size = inGDB.size();
-	size_t i = 0;
 
-	do {
+	for (size_t i = 0; i < outGDB.size(); i++) {
 
-		GDB buffer = inGDB.at(i);
+		outGDB.at(i).STV = STV;
+		outGDB.at(i).SFV = SFV;
+	}
+	return outGDB;
+}
 
-		buffer.N = declare_vector (- buffer.N.X, - buffer.N.Y, buffer.N.Z);
-		buffer.D = declare_vector (- buffer.D.X, - buffer.D.Y, buffer.D.Z);
-		buffer.S = declare_vector (- buffer.S.X, - buffer.S.Y, buffer.S.Z);
+vector <GDB> apply_inversion_result (const vector <GDB>& inGDB, const STRESSTENSOR st) {
 
-		buffer.SV = declare_vector (- buffer.SV.X, - buffer.SV.Y, buffer.SV.Z);
+	vector <GDB> outGDB = inGDB;
 
-		buffer.NC = declare_vector (- buffer.NC.X, - buffer.NC.Y, buffer.NC.Z);
-		buffer.DC = declare_vector (- buffer.DC.X, - buffer.DC.Y, buffer.DC.Z);
-		buffer.SC = declare_vector (- buffer.SC.X, - buffer.SC.Y, buffer.SC.Z);
+	const double AV_MISF = return_average_misfit (st, inGDB);
 
-		outGDB.push_back(buffer);
+	string METHOD ;
 
-		i++;
+	if (is_INVERSION_MOSTAFA()) METHOD = "MOSTAFA";
+	else METHOD = "ANGELIER";
 
-	} while (i < original_set_size);
+	outGDB = return_stressvector_estimators (st, outGDB, METHOD);
 
-	i = 0;
+	for (size_t i = 0; i < inGDB.size(); i++) {
 
-	outGDB =  manipulate_N (outGDB);
+		outGDB.at(i).AV_MISF = AV_MISF;
+	}
 
 	return outGDB;
 }
 
-string inversion_method (vector <GDB> inGDB, INPSET inset) {
+void INVERSION (const vector <GDB>& inGDB) {
 
-	bool ANGELIER = 	is_method_ANGELIER(inGDB, inset);
-	bool BINGHAM = 		is_method_BINGHAM(inGDB, inset);
-	bool BRUTEFORCE = 	is_method_BRUTEFORCE(inGDB, inset);
-	bool FRY = 			is_method_FRY(inGDB, inset);
-	bool MICHAEL = 		is_method_MICHAEL(inGDB, inset);
-	bool MOSTAFA = 		is_method_MOSTAFA(inGDB, inset);
-	bool NDA = 			is_method_NDA(inGDB, inset);
-	bool PTN = 			is_method_PTN(inGDB, inset);
-	bool SHAN = 		is_method_SHAN(inGDB, inset);
-	bool YAMAJI = 		is_method_YAMAJI(inGDB, inset);
+	STV.clear();
+	SFV.clear();
 
-	if (!ANGELIER && !BINGHAM && !BRUTEFORCE && !FRY &&!MICHAEL && !MOSTAFA && !NDA && !PTN && !SHAN && !YAMAJI) ASSERT_DEAD_END();
+	const bool IS_STRIAE = is_allowed_striae_datatype(inGDB.at(0).DATATYPE);
 
-	if (ANGELIER) return "ANGELIER";
-	else if (BINGHAM) return "BINGHAM";
-	else if (BRUTEFORCE) return "BRUTEFORCE";
-	else if (FRY) return "FRY";
-	else if (MICHAEL) return "MICHAEL";
-	else if (MOSTAFA) return "MOSTAFA";
-	else if (NDA) return "NDA";
-	else if (PTN) return "PTN";
-	else if (YAMAJI) return "YAMAJI";
-	else return "SHAN";
-}
-
-void ps_inversion (STRESSTENSOR st, STRESSFIELD sf, vector <GDB> inGDB, vector <VALLEY> V, INPSET inset, ofstream& o, CENTER center, CENTER mohr_center, PAPER P) {
-
-	bool ANGELIER = 	is_method_ANGELIER(inGDB, inset);
-	bool BINGHAM = 		is_method_BINGHAM(inGDB, inset);
-	bool BRUTEFORCE = 	is_method_BRUTEFORCE(inGDB, inset);
-	bool FRY = 			is_method_FRY(inGDB, inset);
-	bool MICHAEL = 		is_method_MICHAEL(inGDB, inset);
-	bool MOSTAFA = 		is_method_MOSTAFA(inGDB, inset);
-	bool NDA = 			is_method_NDA(inGDB, inset);
-	bool PTN = 			is_method_PTN(inGDB, inset);
-	bool SHAN = 		is_method_SHAN(inGDB, inset);
-
-	if (!ANGELIER && !BINGHAM && !BRUTEFORCE && !FRY &&!MICHAEL && !MOSTAFA && !NDA && !PTN && !SHAN) ASSERT_DEAD_END();
-
-	string method = inversion_method (inGDB, inset);
-	PS_stressdata (o, center, P, sf, method);
-
-	if (BINGHAM) return;
-	else {}
-
-	PS_stressarrows (o, center, P,  sf);
-
-	if (PTN)	PS_mohr_circle (inGDB, o, inset, mohr_center, P, sf, st, true);
-	else 		PS_mohr_circle (inGDB, o, inset, mohr_center, P, sf, st, false);
-
-	if (ANGELIER || MOSTAFA || SHAN || FRY) PS_RUP_ANG_distribution (inGDB, inset, V, o, center, P, "RUP");
-	else {}
-
-	PS_RUP_ANG_distribution (inGDB, inset, V, o, center, P, "ANG");
-
-	PS_stress_state (o, P, center, sf);
-
-	sf = stressvector_to_DXDYDZ (sf);
-}
-
-void bingham_result_output (STRESSFIELD sf) {
-
-	cout
-	<< "e1: "   	<< setfill ('0') << setw (3) << fixed << setprecision (0) << sf.S_1.DIPDIR
-	<<  "/"     	<< setfill ('0') << setw (2) << fixed << setprecision (0) << sf.S_1.DIP
-	<< " (" 		<< setfill ('0') << setw (4) << fixed << setprecision (1) << sf.EIGENVALUE.X * 100.0
-	<< "%), e2: " 	<< setfill ('0') << setw (3) << fixed << setprecision (0) << sf.S_2.DIPDIR
-	<<  "/"     	<< setfill ('0') << setw (2) << fixed << setprecision (0) << sf.S_2.DIP
-	<< " ("			<< setfill ('0') << setw (4) << fixed << setprecision (1) << sf.EIGENVALUE.Y * 100.0
-	<< "%), e3: " 	<< setfill ('0') << setw (3) << fixed << setprecision (0) << sf.S_3.DIPDIR
-	<<  "/"     	<< setfill ('0') << setw (2) << fixed << setprecision (0) << sf.S_3.DIP
-	<< " ("			<< setfill ('0') << setw (4) << fixed << setprecision (1) << sf.EIGENVALUE.Z * 100.0
-	<< "%)"
-	<< endl;
-}
-
-void inversion_result_output (STRESSFIELD sf, double average_misfit) {
-
-	cout
-	<< "s1: "   		<< setfill ('0') << setw (3)  << fixed << setprecision (0) << sf.S_1.DIPDIR
-	<<  "/"     		<< setfill ('0') << setw (2)  << fixed << setprecision (0) << sf.S_1.DIP
-	<< ", s2: " 		<< setfill ('0') << setw (3)  << fixed << setprecision (0) << sf.S_2.DIPDIR
-	<<  "/"     		<< setfill ('0') << setw (2)  << fixed << setprecision (0) << sf.S_2.DIP
-	<< ", s3: " 		<< setfill ('0') << setw (3)  << fixed << setprecision (0) << sf.S_3.DIPDIR
-	<<  "/"     		<< setfill ('0') << setw (2)  << fixed << setprecision (0) << sf.S_3.DIP
-	<< ", " 			<< setfill (' ') << setw (18) << sf.delvaux_rgm
-	<< ", R: "  		<< setfill ('0') << setw (4)  << fixed << setprecision (3) << sf.stressratio
-	<< ", R': " 		<< setfill ('0') << setw (4)  << fixed << setprecision (3) << sf.delvaux_str
-	<< ", av. misfit: " << setfill (' ') << setw (4)  << fixed << setprecision (1) << average_misfit
-	<< " deg." << endl;
-}
-
-vector <GDB> inversion (vector <GDB> inGDB, ofstream& o, INPSET inset, CENTER center, CENTER mohr_center, PAPER P, bool tilt, const bool is_debug) {
-
-	bool is_ANG = (inset.clustering_RUP_ANG == "A");
-	bool is_RUP = (inset.clustering_RUP_ANG == "R");
-
-	STRESSFIELD sf;
-	STRESSTENSOR st;
-
-	bool ANGELIER = 	is_method_ANGELIER(inGDB, inset);
-	bool BINGHAM = 		is_method_BINGHAM(inGDB, inset);
-	bool BRUTEFORCE = 	is_method_BRUTEFORCE(inGDB, inset);
-	bool FRY = 			is_method_FRY(inGDB, inset);
-	bool MICHAEL = 		is_method_MICHAEL(inGDB, inset);
-	bool MOSTAFA = 		is_method_MOSTAFA(inGDB, inset);
-	bool NDA = 			is_method_NDA(inGDB, inset);
-	bool PTN = 			is_method_PTN(inGDB, inset);
-	bool SHAN = 		is_method_SHAN(inGDB, inset);
-	bool YAMAJI = 		is_method_YAMAJI(inGDB, inset);
-
-	if (!ANGELIER && !BINGHAM && !BRUTEFORCE && !FRY && !MICHAEL && !MOSTAFA && !NDA && !PTN && !SHAN && !YAMAJI) ASSERT_DEAD_END();
-
-	bool successfull = false;
-	double average_misfit;
-	vector <VALLEY> V;
-
-	if (ANGELIER) {
-
-		st = st_ANGELIER (inGDB, inset);
-
-		sf = sf_ANGELIER (st);
-
-		sf = computestressfield_DXDYDZ (sf);
-
-		sf =  stress_regime (sf);
+	if (is_INVERSION_ANGELIER() && IS_STRIAE) {
+		STV.push_back (st_ANGELIER (inGDB));
+		SFV.push_back (sf_ANGELIER (STV.at(0)));
 	}
-	else if (BINGHAM) {
-
-		st = st_BINGHAM (inGDB);
-
-		sf = eigenvalue_eigenvector (st);
-
-		sf = sf_BINGHAM (sf);
-
-		sf = computestressfield_DXDYDZ (sf);
+	else if (is_BINGHAM_USE() && !IS_STRIAE) {
+		STV.push_back (st_BINGHAM (inGDB));
+		SFV.push_back (sf_BINGHAM (STV.at(0)));
 	}
-	else if (FRY) {
-
-		if (fry_correct (inGDB, inset)) {
-
-			st = st_FRY (inGDB);
-
-			sf = sf_FRY (st);
-
-			sf = computestressfield_DXDYDZ (sf);
-
-			sf = stress_regime (sf);
-		}
-		else successfull = false;
+	else if (is_INVERSION_BRUTEFORCE() && IS_STRIAE) {
+		STV.push_back (st_BRUTEFORCE (inGDB));
+		SFV.push_back (sf_BRUTEFORCE (STV.at(0)));
 	}
-	else if (MICHAEL) {
-
-		st = st_MICHAEL (inGDB, inset);
-
-		sf = sf_MICHAEL (st);
-
-		sf = computestressfield_DXDYDZ (sf);
-
-		sf = stress_regime (sf);
+	else if (is_INVERSION_FRY() && fry_correct (inGDB) && IS_STRIAE) {
+		STV.push_back (st_FRY (inGDB));
+		SFV.push_back (sf_FRY (STV.at(0)));
 	}
-	else if (MOSTAFA) {
-
-		sf = sf_MOSTAFA (inGDB, o, inset, center);
-
-		st = st_MOSTAFA ();
+	else if (is_INVERSION_MICHAEL() && IS_STRIAE) {
+		STV.push_back (st_MICHAEL(inGDB));
+		SFV.push_back (sf_MICHAEL(STV.at(0)));
 	}
-	else if (NDA) {
-
-		st = st_NDA (inGDB, inset);
-
-		sf = sf_NDA (st);
-
-		sf = computestressfield_DXDYDZ (sf);
-
-		sf =  stress_regime (sf);
+	else if (is_INVERSION_MOSTAFA() && IS_STRIAE) {
+		SFV = sfv_MOSTAFA (inGDB);
+		STV = stv_MOSTAFA ();
 	}
-	else if (BRUTEFORCE) {
-
-		st = st_BRUTEFORCE (inGDB, inset);
-
-		sf = eigenvalue_eigenvector (st);
-
-		sf = computestressfield_DXDYDZ (sf);
-
-		sf =  stress_regime (sf);
+	else if (is_INVERSION_SPRANG() && IS_STRIAE) {
+		STV.push_back (st_NDA (inGDB));
+		SFV.push_back (sf_NDA (STV.at(0)));
 	}
-
-	else if (YAMAJI) {
-
-		cout << "YAMAJI" << endl;
-
-		vector <BRUTEFORCE_RESULT> BR = st_YAMAJI (inGDB, inset);
-
+	else if (is_INVERSION_YAMAJI() && IS_STRIAE) {
+		//STV.push_back (st_YAMAJI (inGDB));
+		//SFV has to be coded
 		exit (1);
 	}
-
-	else if (PTN) {
-
-		sf = sf_PTN (inGDB, inset);
-
-		st = st_PTN (sf);
+	else if (is_INVERSION_TURNER() && IS_STRIAE) {
+		SFV.push_back (sf_PTN (inGDB));
+		STV.push_back (st_PTN (SFV.at(0)));
 	}
-	else if (SHAN) {
-
-		st = st_SHAN (inGDB, inset);
-
-		sf = sf_SHAN (st);
-
-		sf = computestressfield_DXDYDZ (sf);
-
-		sf = stress_regime (sf);
+	else if (is_INVERSION_SHAN() && IS_STRIAE) {
+		STV.push_back (st_SHAN(inGDB));
+		SFV.push_back (sf_SHAN(STV.at(0)));
 	}
-	else ASSERT_DEAD_END()
+	else ASSERT_DEAD_END();
 
-	successfull = check_correct_stressfield (sf);
+	const size_t MAX = SFV.size() - 1;
 
-	if 		(MOSTAFA) 				inGDB = return_stressvector_estimators (st, inGDB, "MOSTAFA", false);
-	else if (!MOSTAFA && !BINGHAM) 	inGDB = return_stressvector_estimators (st, inGDB, "ANGELIER", false);
-	else {};
+	const bool successfull = check_correct_stressfield (SFV.at(MAX));
 
+	if (MAX > 0 && !successfull) SFV.clear();
+}
 
-	if (successfull) {
+void cout_dbg_sf (const vector <GDB>& inGDB) {
 
-		average_misfit = return_average_misfit (st, inGDB, false);
+	const STRESSFIELD SF = inGDB.at(0).SFV.at (inGDB.at(0).SFV.size() - 1);
 
-		if (BINGHAM) bingham_result_output (sf);
+	cout
+	<< "EIGENVECTOR1.X" << '\t'	<< "EIGENVECTOR1.Y" << '\t'	<< "EIGENVECTOR1.Z" << '\t'
+	<< "EIGENVECTOR2.X" << '\t'	<< "EIGENVECTOR2.Y" << '\t'	<< "EIGENVECTOR2.Z" << '\t'
+	<< "EIGENVECTOR3.X" << '\t'	<< "EIGENVECTOR3.Y" << '\t'	<< "EIGENVECTOR3.Z" << '\t'
+	<< "EIGENVALUE.X" << '\t'	<< "EIGENVALUE.Y" << '\t'	<< "EIGENVALUE.Z" << '\t'
 
-		else {
+	<< "S_1.DIPDIR" << '\t'	<< "S_1.DIP" << '\t'
+	<< "S_2.DIPDIR" << '\t'	<< "S_2.DIP" << '\t'
+	<< "S_3.DIPDIR" << '\t'	<< "S_3.DIP" << '\t'
 
-			inversion_result_output (sf, average_misfit);
+	<< "stressratio" << '\t' 	<< "delvaux_str" << '\t'
+	<< "regime" << '\t'			<< "delvaux_rgm" << '\t'
+	<< "shmax" << '\t'			<< "shmin" << '\t'
+	<< endl;
 
-			if 		(is_ANG) V = return_valleygraph_for_dataset (inGDB, "ANG");
-			else if (is_RUP) V = return_valleygraph_for_dataset (inGDB, "RUP");
-			else {}
+	cout << fixed << setprecision(8) << flush;
 
-			if (V.size() == 1 && V.at(0).DIR == "X") V.clear();
+	cout
+	<< SF.EIGENVECTOR1.X << '\t'	<< SF.EIGENVECTOR1.Y << '\t'	<< SF.EIGENVECTOR1.Z << '\t'
+	<< SF.EIGENVECTOR2.X << '\t'	<< SF.EIGENVECTOR2.Y << '\t'	<< SF.EIGENVECTOR2.Z << '\t'
+	<< SF.EIGENVECTOR3.X << '\t'	<< SF.EIGENVECTOR3.Y << '\t'	<< SF.EIGENVECTOR3.Z << '\t'
+	<< SF.EIGENVALUE.X << '\t'		<< SF.EIGENVALUE.Y << '\t'		<< SF.EIGENVALUE.Z << '\t'
 
-			if (is_RUP || is_ANG) {
+	<< SF.S_1.DIPDIR << '\t'	<< SF.S_1.DIP << '\t'
+	<< SF.S_2.DIPDIR << '\t'	<< SF.S_2.DIP << '\t'
+	<< SF.S_3.DIPDIR << '\t'	<< SF.S_3.DIP << '\t'
 
-				if 		(V.size() == 0) cout << "    - Cannot cluster input data set using RUP / ANG values." << endl;
-				else if (V.size() > 9) 	cout << "    - Clustering result not reliable: more than 9 clusters." << endl;
-				else					cout << "    - Input data set separated into " << V.size() + 1 << " clusters." << endl;
-
-				if 		(is_RUP) inGDB = associate_GDB_DATA_clusters (inGDB, V, inset, "RUP");
-				else if (is_ANG) inGDB = associate_GDB_DATA_clusters (inGDB, V, inset, "ANG");
-				else    		 inGDB = associate_GDB_DATA_clusters (inGDB, V, inset, "");
-			}
-
-			PS_idealmovement (inGDB, o, inset, center);
-		}
-
-		//process_one_by_one (inGDB, o, inset, center, P, tilt);
-
-		ps_inversion (st, sf, inGDB, V, inset, o, center, mohr_center, P);
-
-		PS_lineation (inGDB.at(0), o, inset, center, sf, false, "S1");
-		PS_lineation (inGDB.at(0), o, inset, center, sf, false, "S2");
-		PS_lineation (inGDB.at(0), o, inset, center, sf, false, "S3");
-
-		if (is_debug) cout_dbg_stressfield (sf);
-	}
-	else cout << "unable to compute stress field for the data set." << endl;
-
-	return inGDB;
+	<< SF.stressratio << '\t'	<< SF.delvaux_str << '\t'
+	<< SF.regime << '\t'		<< SF.delvaux_rgm << '\t'
+	<< SF.shmax << '\t'			<< SF.shmin << '\t'
+	<< endl;
 }
 
 void cout_dbg_stressfield (const STRESSFIELD& sf) {
@@ -462,4 +301,39 @@ void cout_dbg_stressfield (const STRESSFIELD& sf) {
 	cout << " ("   << sf.EIGENVECTOR3.X << ", " << sf.EIGENVECTOR3.Y << ", " << sf.EIGENVECTOR3.Z << ")" << endl;
 
 	cout << "EIGENVALUES: " << sf.EIGENVALUE.X << ", " << sf.EIGENVALUE.Y << ", " << sf.EIGENVALUE.Z << ")" << endl;
+}
+
+void cout_dbg_stressfield (const vector <STRESSFIELD>& sf) {
+
+	for (size_t i = 0; i < sf.size(); i++) {
+
+		cout << fixed << setprecision(0) << flush;
+		cout << "S1: " << sf.at(i).S_1.DIPDIR << "/" << sf.at(i).S_1.DIP << flush;
+		cout << fixed << setprecision(6) << flush;
+		cout << " ("   << sf.at(i).EIGENVECTOR1.X << ", " << sf.at(i).EIGENVECTOR1.Y << ", " << sf.at(i).EIGENVECTOR1.Z << ")" << endl;
+		cout << fixed << setprecision(0) << flush;
+		cout << "S2: " << sf.at(i).S_2.DIPDIR << "/" << sf.at(i).S_2.DIP << flush;
+		cout << fixed << setprecision(6) << flush;
+		cout << " ("   << sf.at(i).EIGENVECTOR2.X << ", " << sf.at(i).EIGENVECTOR2.Y << ", " << sf.at(i).EIGENVECTOR2.Z << ")" << endl;
+		cout << fixed << setprecision(0) << flush;
+		cout << "S3: " << sf.at(i).S_3.DIPDIR << "/" << sf.at(i).S_3.DIP << flush;
+		cout << fixed << setprecision(6) << flush;
+		cout << " ("   << sf.at(i).EIGENVECTOR3.X << ", " << sf.at(i).EIGENVECTOR3.Y << ", " << sf.at(i).EIGENVECTOR3.Z << ")" << endl;
+
+		cout << "EIGENVALUES: " << sf.at(i).EIGENVALUE.X << ", " << sf.at(i).EIGENVALUE.Y << ", " << sf.at(i).EIGENVALUE.Z << ")" << endl;
+	}
+}
+
+void cout_dbg_STV (const vector <STRESSTENSOR>& STV) {
+
+	for (size_t i = 0; i < STV.size(); i++) {
+
+		STRESSTENSOR A = STV.at(i);
+
+		cout << fixed << setprecision (6) << endl;
+
+		cout << A._11 << "    " << A._12  << "    " << A._13 << endl;
+		cout << A._12 << "    " << A._22  << "    " << A._23 << endl;
+		cout << A._13 << "    " << A._23  << "    " << A._33 << endl;
+	}
 }

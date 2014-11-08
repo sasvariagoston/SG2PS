@@ -6,9 +6,19 @@
 
 using namespace std;
 
-bool is_GUI();
-bool is_BATCH();
-bool is_COMMANDLINE();
-bool is_DEBUG();
+bool is_mode_GUI ();
+bool is_mode_BATCH ();
+bool is_mode_COMMANDLINE ();
+bool is_mode_DEBUG ();
+bool is_mode_VERSION ();
+bool is_mode_VERSION_ID ();
+bool is_mode_GENERATE_TEST_FILES ();
+
+void setup_run_mode (const vector <string>& ARG_V);
+
+size_t return_min_argument_number ();
+size_t return_max_argument_number ();
+
+void check_arguments_number (const vector <string>& ARG_V);
 
 #endif

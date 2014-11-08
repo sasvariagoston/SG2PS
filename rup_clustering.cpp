@@ -7,9 +7,12 @@
 #include <vector>
 
 #include "allowed_keys.hpp"
+#include "assertions.hpp"
 #include "common.h"
 #include "math.h"
+#include "settings.hpp"
 #include "structs.h"
+#include "run_mode.h"
 #include "rup_clustering.hpp"
 #include "valley_method.hpp"
 
@@ -21,45 +24,45 @@ namespace {
 	const double SN = 10e-8;
 }
 
-vector <double> GDB_to_table (vector <GDB> inGDB, string field) {
+vector <double> GDB_to_table (const vector <GDB>& inGDB, const string field) {
 
-	vector <double> out;
+	vector <double> OUT;
 
-	if		(field == "ANG") inGDB = sort_by_ANG (inGDB);
-	else if	(field == "RUP") inGDB = sort_by_RUP (inGDB);
-	else {};
+	vector <GDB> outGDB = inGDB;
+
+	if		(field == "ANG") outGDB = sort_by_ANG (inGDB);
+	else if	(field == "RUP") outGDB = sort_by_RUP (inGDB);
+	else ASSERT_DEAD_END();
 
 	for (size_t i = 0; i < inGDB.size(); i++) {
 
-		if 		(field == "ANG") out.push_back(inGDB.at(i).ANG);
-		else if (field == "RUP") out.push_back(inGDB.at(i).RUP);
-		else {};
+		if 		(field == "ANG") OUT.push_back (outGDB.at(i).ANG);
+		else if (field == "RUP") OUT.push_back (outGDB.at(i).RUP);
+		else ASSERT_DEAD_END();
 	}
-
-	return out;
+	return OUT;
 }
 
-size_t DATA_number_in_range (vector <double> in, double range_min, double range_max) {
+size_t DATA_number_in_range (const vector <double>& in, const double range_min, const double range_max) {
 
 	size_t counter = 0;
 
 	for (size_t i = 0; i < in.size(); i++) {
 
-		if (is_in_range(range_min, range_max, in.at(i))) counter++;
+		if (is_in_range (range_min, range_max, in.at(i))) counter++;
 	}
-
 	return counter;
 }
 
-double bin_size_for_DATA (vector <double> in, size_t bin_number) {
+double bin_size_for_DATA (const vector <double>& in, const size_t bin_number) {
 
-	double min = in.at(0);
-	double max = in.at(in.size() - 1);
+	const double min = in.at(0);
+	const double max = in.at(in.size() - 1);
 
 	return (max - min) / bin_number;
 }
 
-RUP_table return_cost_function_member (vector <double> in, size_t bin_number) {
+RUP_table return_cost_function_member (const vector <double>& in, const size_t bin_number) {
 
 	RUP_table out;
 
@@ -75,12 +78,11 @@ RUP_table return_cost_function_member (vector <double> in, size_t bin_number) {
 
 	for (size_t i = 0; i < out.clusternumber; i++) {
 
-		size_t k_i = DATA_number_in_range (in, range_min, range_max);
+		const size_t k_i = DATA_number_in_range (in, range_min, range_max);
 
 		cml_mean = cml_mean + k_i;
 
 		range_min = range_min + out.delta;
-
 		range_max = range_max + out.delta;
 	}
 
@@ -91,15 +93,13 @@ RUP_table return_cost_function_member (vector <double> in, size_t bin_number) {
 	range_max = in.at(0) + out.delta;
 
 
-
 	for (size_t i = 0; i < out.clusternumber; i++) {
 
-		size_t k_i = DATA_number_in_range (in, range_min, range_max);
+		const size_t k_i = DATA_number_in_range (in, range_min, range_max);
 
 		cml_variance = cml_variance + ((k_i - out.k) * (k_i - out.k));
 
 		range_min = range_min + out.delta;
-
 		range_max = range_max + out.delta;
 	}
 
@@ -137,46 +137,49 @@ vector <GDB> sort_by_GC (vector <GDB> inGDB) {
 	return inGDB;
 }
 
-vector <GDB> sort_by_RUP (vector <GDB> inGDB) {
+vector <GDB> sort_by_RUP (const vector <GDB>& inGDB) {
 
-	sort(inGDB.begin(), inGDB.end(), by_RUP);
+	vector <GDB> outGDB = inGDB;
 
-	return inGDB;
+	sort(outGDB.begin(), outGDB.end(), by_RUP);
+
+	return outGDB;
 }
 
-vector <GDB> sort_by_ANG (vector <GDB> inGDB) {
+vector <GDB> sort_by_ANG (const vector <GDB>& inGDB) {
 
-	sort(inGDB.begin(), inGDB.end(), by_ANG);
+	vector <GDB> outGDB = inGDB;
 
-	return inGDB;
+	sort(outGDB.begin(), outGDB.end(), by_ANG);
+
+	return outGDB;
 }
 
-vector <RUP_table> sort_by_C (vector <RUP_table> RT) {
+vector <RUP_table> sort_by_C (const vector <RUP_table>& RT) {
 
-	sort(RT.begin(), RT.end(), by_C);
+	vector <RUP_table> OUT = RT;
 
-	return RT;
+	sort(OUT.begin(), OUT.end(), by_C);
+
+	return OUT;
 }
 
-size_t return_DATA_ideal_bin_number (vector <double> in) {
-
-	RUP_table buffer;
+size_t return_DATA_ideal_bin_number (const vector <double>& in) {
 
 	vector <RUP_table> RT;
 
 	for (size_t bin_number = 1; bin_number < sqrt(static_cast<double>(in.size())) * 2.0; bin_number++) {
 
-		buffer = return_cost_function_member (in, bin_number);
+		const RUP_table buffer = return_cost_function_member (in, bin_number);
 
-		RT.push_back(buffer);
+		RT.push_back (buffer);
 	}
-
 	RT = sort_by_C (RT);
 
 	return RT.at(0).clusternumber;
 }
 
-vector <VALLEY> return_valleygraph_for_dataset (vector <GDB> inGDB, string field) {
+vector <VALLEY> return_valleygraph_for_dataset (const vector <GDB>& inGDB, const string field) {
 
 	vector <double> in = GDB_to_table (inGDB, field);
 
@@ -243,31 +246,78 @@ void dbg_cout_RUP_table (vector <RUP_table> RT) {
 	}
 }
 
-vector <GDB> associate_GDB_DATA_clusters (vector <GDB> inGDB, vector <VALLEY> V, INPSET inset, string method) {
+vector <GDB> associate_GDB_DATA_clusters (const vector <GDB>& inGDB, const vector <VALLEY>& V, const string method) {
 
-	vector <string> GC = allowed_groupcode_str_vector();
+	vector <GDB> outGDB = inGDB;
+	vector <string> GC = allowed_basic_groupcode_str_vector();
 
 	bool is_RUP = (method == "RUP");
 	bool is_ANG = (method == "ANG");
-	bool is_RUP_clustering = (inset.clustering_RUP_ANG == "R");
-	bool is_ANG_clustering = (inset.clustering_RUP_ANG == "A");
 
 	for (size_t j = 0; j < inGDB.size(); j++) {
 
-		if ((is_RUP_clustering || is_ANG_clustering) && (V.size() == 0))	inGDB.at(j).GC = GC.at(0);
-		else if (is_RUP && !is_RUP_clustering) 								inGDB.at(j).GC = GC.at(0);
-		else if (is_ANG && !is_ANG_clustering) 								inGDB.at(j).GC = GC.at(0);
+		if ((is_RUP_CLUSTERING_RUP() || is_RUP_CLUSTERING_ANG()) && (V.size() == 0)) {
+
+			outGDB.at(j).GC.at(2) = GC.at(0).at(0);
+		}
+		else if (is_RUP && !is_RUP_CLUSTERING_RUP()) {
+
+			outGDB.at(j).GC.at(2) = GC.at(0).at(0);
+		}
+		else if (is_ANG && !is_RUP_CLUSTERING_ANG()){
+
+			outGDB.at(j).GC.at(2) = GC.at(0).at(0);
+		}
 		else {
 
 			for (size_t i = 0; i < V.size(); i++) {
 
-				if 	(inGDB.at(j).RUP < V.at(0).BIN_CENTER) inGDB.at(j).GC = GC.at(0);
-				else if (inGDB.at(j).RUP > V.at(V.size()-1).BIN_CENTER) inGDB.at(j).GC = GC.at(i+1);  //was i+=2
-				else if (i > 0 && is_in_range (V.at(i-1).BIN_CENTER, V.at(i).BIN_CENTER, inGDB.at(j).RUP)) inGDB.at(j).GC = GC.at(i);  //was i+1
+				double ACT = NaN();
+
+				if (is_ANG && is_RUP_CLUSTERING_ANG()) 		ACT = outGDB.at(j).ANG;
+				else if (is_RUP && is_RUP_CLUSTERING_RUP()) ACT = outGDB.at(j).RUP;
+				else ASSERT_DEAD_END();
+
+				if (ACT < V.at(0).BIN_CENTER) {
+					outGDB.at(j).GC.at(2) = GC.at(1).at(0); //was 0
+				}
+				else if (ACT > V.at(V.size()-1).BIN_CENTER) {
+					outGDB.at(j).GC.at(2) = GC.at(i+2).at(0);  //was i+=1
+				}
+				else if (i > 0 && is_in_range (V.at(i-1).BIN_CENTER, V.at(i).BIN_CENTER, ACT)){
+					outGDB.at(j).GC.at(2) = GC.at(i+1).at(0);  //was i
+				}
 				else {}
 			}
 		}
 	}
+	return outGDB;
+}
 
+vector <GDB> apply_RUP_ANG_CLUSTERING_result (const vector <GDB>& inGDB) {
+
+	if (! is_allowed_striae_datatype (inGDB.at(0).DATATYPE)) ASSERT_DEAD_END();
+
+	vector <VALLEY> V;
+
+	if 		(is_RUP_CLUSTERING_ANG()) V = return_valleygraph_for_dataset (inGDB, "ANG");
+	else if (is_RUP_CLUSTERING_RUP()) V = return_valleygraph_for_dataset (inGDB, "RUP");
+	else return inGDB;
+
+	if (V.size() == 1 && V.at(0).DIR == "X") V.clear();
+
+	if (is_RUP_CLUSTERING_RUP() || is_RUP_CLUSTERING_ANG()) {
+
+		if (!is_mode_DEBUG()) {
+
+			if 		(V.size() == 0) cout << "    - Cannot cluster input data set using RUP / ANG values." << endl;
+			else if (V.size() > 9) 	cout << "    - Clustering result not reliable: more than 9 clusters." << endl;
+			else					cout << "    - Input data set separated into " << V.size() + 1 << " clusters." << endl;
+		}
+
+		if 		(is_RUP_CLUSTERING_RUP()) 	return associate_GDB_DATA_clusters (inGDB, V, "RUP");
+		else if (is_RUP_CLUSTERING_ANG()) 	return associate_GDB_DATA_clusters (inGDB, V, "ANG");
+		else    		 					return associate_GDB_DATA_clusters (inGDB, V, "");
+	}
 	return inGDB;
 }

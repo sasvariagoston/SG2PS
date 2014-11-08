@@ -11,15 +11,13 @@
 #include "common.h"
 #include "inversion.h"
 #include "rgf.h"
+#include "stresstensor.hpp"
 
 using namespace std;
 
-ANG_PRM angelier_parameters (vector <GDB> inGDB) {
+ANG_PRM angelier_parameters (const vector <GDB>& inGDB) {
 
-	size_t i = 0;
 	ANG_PRM rs;
-	VCTR N, S;
-	double lambda = 0.0;
 
 	rs.a = 0.0;		rs.b = 0.0;		rs.c = 0.0;		rs.d = 0.0;
 	rs.e = 0.0;		rs.f = 0.0;		rs.g = 0.0;		rs.h = 0.0;
@@ -27,13 +25,11 @@ ANG_PRM angelier_parameters (vector <GDB> inGDB) {
 	rs.m = 0.0;		rs.n = 0.0;		rs.p = 0.0;		rs.q = 0.0;
 	rs.u = 0.0;		rs.v = 0.0;		rs.w = 0.0;
 
-	do {
+	for (size_t i = 0; i < inGDB.size(); i++) {
 
-		N = inGDB.at(i).N;
-		S = inGDB.at(i).SV;
-		lambda = inGDB.at(i).lambda;
-
-		S = declare_vector (- inGDB.at(i).SV.X, - inGDB.at(i).SV.Y, - inGDB.at(i).SV.Z);
+		const VCTR N = inGDB.at(i).N;
+		const VCTR S = flip_vector (inGDB.at(i).SV);
+		const double lambda = inGDB.at(i).lambda;
 
 		rs.a = rs.a + (N.X * N.X) + (N.Y * N.Y) - 4.0 * (N.X * N.X) * (N.Y * N.Y);
 		rs.b = rs.b + (N.X * N.X) + (N.Z * N.Z) - 4.0 * (N.X * N.X) * (N.Z * N.Z);
@@ -64,82 +60,51 @@ ANG_PRM angelier_parameters (vector <GDB> inGDB) {
 		rs.u = rs.u + lambda * (N.X * S.Y + N.Y * S.X);
 		rs.v = rs.v + lambda * (N.X * S.Z + N.Z * S.X);
 		rs.w = rs.w + lambda * (N.Y * S.Z + N.Z * S.Y);
-
-		i++;
-
-	} while (i < inGDB.size());
-
+	}
 	return rs;
 }
 
-STRESSTENSOR compute_angelier_stresstensor (ANG_PRM p, vector <GDB> inGDB) {
+STRESSTENSOR compute_angelier_stresstensor (const ANG_PRM& p, const vector <GDB>& inGDB) {
 
-	vector < vector < double > > temp;
-	vector < double > quartic_result;
-	vector < double > quartic_roots_for_psi;
+	vector <double> quartic_roots_for_psi;
 
-	double psi, alpha, beta, gamma;
-	double misfit = 0.0;
 	double prev_misfit = 1E20;
-	STRESSTENSOR st, min_st;
-	size_t i = 0;
-	double A, B, C, D, E;
-	double Y1, Y2, Y3, Y4;
 	const double pi = 3.1415926535;
 
-	temp = declare_3x3_matrix (p.a, p.d, p.e, p.d, p.b, p.f, p.e, p.f, p.c);
-	double d_0 = det_3 (temp);
+	STRESSTENSOR st, min_st;
+
+	const double d_0 = det_3 (declare_3x3_matrix (p.a, p.d, p.e, p.d, p.b, p.f, p.e, p.f, p.c));
+
+	const double d_1 = det_3 (declare_3x3_matrix (p.g, p.d, p.e, p.h, p.b, p.f, p.i, p.f, p.c));
+	const double d_2 = det_3 (declare_3x3_matrix (p.a, p.g, p.e, p.d, p.h, p.f, p.e, p.i, p.c));
+	const double d_3 = det_3 (declare_3x3_matrix (p.a, p.d, p.g, p.d, p.b, p.h, p.e, p.f, p.i));
+
+	const double d_i_1 = det_3 (declare_3x3_matrix (p.j, p.d, p.e, p.k, p.b, p.f, p.l, p.f, p.c));
+	const double d_i_2 = det_3 (declare_3x3_matrix (p.a, p.j, p.e, p.d, p.k, p.f, p.e, p.l, p.c));
+	const double d_i_3 = det_3 (declare_3x3_matrix (p.a, p.d, p.j, p.d, p.b, p.k, p.e, p.f, p.l));
+
+	const double d_ii_1 = det_3 (declare_3x3_matrix (p.u, p.d, p.e, p.v, p.b, p.f, p.w, p.f, p.c));
+	const double d_ii_2 = det_3 (declare_3x3_matrix (p.a, p.u, p.e, p.d, p.v, p.f, p.e, p.w, p.c));
+	const double d_ii_3 = det_3 (declare_3x3_matrix (p.a, p.d, p.u, p.d, p.b, p.v, p.e, p.f, p.w));
 
 
-	temp = declare_3x3_matrix (p.g, p.d, p.e, p.h, p.b, p.f, p.i, p.f, p.c);
-	double d_1 = det_3 (temp);
+	const double Y1 = p.j * d_1 +    p.k * d_2 +    p.l * d_3;
 
-	temp = declare_3x3_matrix (p.a, p.g, p.e, p.d, p.h, p.f, p.e, p.i, p.c);
-	double d_2 = det_3 (temp);
+	const double Y2 = p.j * d_i_1 +  p.k * d_i_2 +  p.l * d_i_3 -
+					  p.g * d_1   -  p.h * d_2   -  p.i * d_3;
 
-	temp = declare_3x3_matrix (p.a, p.d, p.g, p.d, p.b, p.h, p.e, p.f, p.i);
-	double d_3 = det_3 (temp);
+	const double Y3 = p.j * d_ii_1 + p.k * d_ii_2 + p.l * d_ii_3 + p.p * d_0;
 
-
-	temp = declare_3x3_matrix (p.j, p.d, p.e, p.k, p.b, p.f, p.l, p.f, p.c);
-	double d_i_1 = det_3 (temp);
-
-	temp = declare_3x3_matrix (p.a, p.j, p.e, p.d, p.k, p.f, p.e, p.l, p.c);
-	double d_i_2 = det_3 (temp);
-
-	temp = declare_3x3_matrix (p.a, p.d, p.j, p.d, p.b, p.k, p.e, p.f, p.l);
-	double d_i_3 = det_3 (temp);
+	const double Y4 = p.g * d_ii_1 + p.h * d_ii_2 + p.i * d_ii_3 + p.q * d_0;
 
 
-	temp = declare_3x3_matrix (p.u, p.d, p.e, p.v, p.b, p.f, p.w, p.f, p.c);
-	double d_ii_1 = det_3 (temp);
+	const double A =          p.m * d_0 + Y1 - Y3;
+	const double B = - 2.0 * (p.n * d_0 + Y2 + Y4);
+	const double C = - 6.0 * (p.m * d_0 + Y1);
+	const double D =   2.0 * (p.n * d_0 + Y2 - Y4);
+	const double E =          p.m * d_0 + Y1 + Y3;
 
-	temp = declare_3x3_matrix (p.a, p.u, p.e, p.d, p.v, p.f, p.e, p.w, p.c);
-	double d_ii_2 = det_3 (temp);
-
-	temp = declare_3x3_matrix (p.a, p.d, p.u, p.d, p.b, p.v, p.e, p.f, p.w);
-	double d_ii_3 = det_3 (temp);
-
-
-
-	Y1 = p.j * d_1 +    p.k * d_2 +    p.l * d_3;
-
-	Y2 = p.j * d_i_1 +  p.k * d_i_2 +  p.l * d_i_3 -
-		 p.g * d_1   -  p.h * d_2   -  p.i * d_3;
-
-	Y3 = p.j * d_ii_1 + p.k * d_ii_2 + p.l * d_ii_3 + p.p * d_0;
-
-	Y4 = p.g * d_ii_1 + p.h * d_ii_2 + p.i * d_ii_3 + p.q * d_0;
-
-
-
-	A =          p.m * d_0 + Y1 - Y3;
-	B = - 2.0 * (p.n * d_0 + Y2 + Y4);
-	C = - 6.0 * (p.m * d_0 + Y1);
-	D =   2.0 * (p.n * d_0 + Y2 - Y4);
-	E =          p.m * d_0 + Y1 + Y3;
-
-	quartic_result = quartic_solution (A, B, C, D, E);
+	const vector <double> quartic_result = quartic_solution (A, B, C, D, E);
 
 	if (quartic_result.at(0) > 999.0) {
 
@@ -152,13 +117,11 @@ STRESSTENSOR compute_angelier_stresstensor (ANG_PRM p, vector <GDB> inGDB) {
 
 		return min_st;
 	}
-
 	else if ((quartic_result.at(4) != 0.0) && (quartic_result.at(5) != 0.0)) {
 
 		quartic_roots_for_psi.push_back (quartic_result.at(0));
 		quartic_roots_for_psi.push_back (quartic_result.at(3));
 	}
-
 	else {
 
 		quartic_roots_for_psi.push_back (quartic_result.at(0));
@@ -167,15 +130,15 @@ STRESSTENSOR compute_angelier_stresstensor (ANG_PRM p, vector <GDB> inGDB) {
 		quartic_roots_for_psi.push_back (quartic_result.at(3));
 	}
 
-	do {
+	for (size_t i = 0; i < quartic_roots_for_psi.size(); i++) {
 
-		psi = 2.0 * atan (quartic_roots_for_psi.at(i));
+		const double psi = 2.0 * atan (quartic_roots_for_psi.at(i));
 
 		ASSERT(!isnan(psi));
 
-		alpha = (d_1 * cos (psi) + d_i_1 * sin (psi) + d_ii_1) / d_0;
-		gamma = (d_2 * cos (psi) + d_i_2 * sin (psi) + d_ii_2) / d_0;
-		beta  = (d_3 * cos (psi) + d_i_3 * sin (psi) + d_ii_3) / d_0;
+		const double alpha = (d_1 * cos (psi) + d_i_1 * sin (psi) + d_ii_1) / d_0;
+		const double gamma = (d_2 * cos (psi) + d_i_2 * sin (psi) + d_ii_2) / d_0;
+		const double beta  = (d_3 * cos (psi) + d_i_3 * sin (psi) + d_ii_3) / d_0;
 
 		st._11 = cos (psi);
 		st._12 = alpha;
@@ -184,32 +147,31 @@ STRESSTENSOR compute_angelier_stresstensor (ANG_PRM p, vector <GDB> inGDB) {
 		st._23 = beta;
 		st._33 = cos (psi + (4.0 * pi) / 3.0);
 
-		misfit = return_average_misfit (st, inGDB, false);
+		const double misfit = return_average_misfit (st, inGDB);
 
 		if (misfit < prev_misfit) {
 
 			min_st = st;
 			prev_misfit = misfit;
 		}
-
-		i++;
-
-	} while (i < quartic_roots_for_psi.size());
-
+	}
 	return min_st;
 }
 
-STRESSTENSOR st_ANGELIER (vector <GDB> inGDB, INPSET inset) {
+STRESSTENSOR st_ANGELIER (const vector <GDB>& inGDB) {
 
-	if (inset.virt_striae == "Y" ) inGDB = generate_virtual_striae (inGDB);
+	vector <GDB> processGDB = inGDB;
 
-	ANG_PRM parameters = angelier_parameters (inGDB);
+	ANG_PRM parameters = angelier_parameters (processGDB);
 
-	return compute_angelier_stresstensor (parameters, inGDB);
+	return compute_angelier_stresstensor (parameters, processGDB);
 }
 
-STRESSFIELD sf_ANGELIER (STRESSTENSOR st) {
+STRESSFIELD sf_ANGELIER (const STRESSTENSOR& st) {
 
-	return eigenvalue_eigenvector (st);
+	STRESSFIELD sf =  eigenvalue_eigenvector (st);
+
+	sf = computestressfield_DXDYDZ (sf);
+
+	return stress_regime (sf);
 }
-

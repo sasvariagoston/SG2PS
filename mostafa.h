@@ -10,8 +10,8 @@
 
 using namespace std;
 
-STRESSTENSOR st_MOSTAFA ();
+vector <STRESSTENSOR> stv_MOSTAFA ();
 
-STRESSFIELD sf_MOSTAFA (vector <GDB> inGDB, ofstream& o, INPSET inset, CENTER center);
+vector <STRESSFIELD> sfv_MOSTAFA (const vector <GDB>& inGDB);
 
 #endif

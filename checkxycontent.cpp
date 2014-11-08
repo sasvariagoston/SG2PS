@@ -50,7 +50,7 @@ bool needxyfile () {
 
 		if (need_xy_file == "X") {
 
-			if (is_GUI()) throw exit_requested();
+			if (is_mode_GUI()) throw exit_requested();
 			else return false;
 		}
 	}
@@ -101,14 +101,13 @@ bool input_xy (const string& projectname) {
 
 	if (n_records <= 1) {
 
-		cout << "  - Cannot process " << capslock(projectname + ".xy") << " file or the file is empty." << endl;
+		if (!is_mode_DEBUG()) cout << "  - Cannot process " << capslock(projectname + ".xy") << " file or the file is empty." << endl;
 
 		return false;
 	}
-
 	else {
 
-		cout << "  - Input " << capslock(projectname + ".xy") << " file read, " << n_records - 1 << " record(s) imported." << endl;
+		if (!is_mode_DEBUG()) cout << "  - Input " << capslock(projectname + ".xy") << " file read, " << n_records - 1 << " record(s) imported." << endl;
 
 		return true;
 	}
@@ -127,21 +126,21 @@ bool LOCATIONcheck () {
 
 	if (bad_records.size() == 0) {
 
-		cout << "    - Existing LOCATION's in all records of XY file." << endl;
+		if (!is_mode_DEBUG()) cout << "    - Existing LOCATION's in all records of XY file." << endl;
 
 		return true;
 	}
 
 	else {
 
-		cout <<"    - XY ERROR: empty LOCATION(s) in the following record(s):  " << flush;
+		if (!is_mode_DEBUG()) cout <<"    - XY ERROR: empty LOCATION(s) in the following record(s):  " << flush;
 
 		for (size_t j = 0; j < bad_records.size() - 1; j++) {
 
-			cout << bad_records.at(j) << ", " << flush;
+			if (!is_mode_DEBUG()) cout << bad_records.at(j) << ", " << flush;
 		}
 
-		cout << bad_records.at(bad_records.size()-1) << "." << endl;
+		if (!is_mode_DEBUG()) cout << bad_records.at(bad_records.size()-1) << "." << endl;
 
 		return false;
 	}
@@ -163,7 +162,7 @@ bool LOCATIONcheck_duplicate () {
 
 		if (!(p.second)) {
 
-			cout << "    - XY ERROR: LOCATION " << LOC << " used in line " << i + 1 << " is already used at line " << (*(p.first)).second + 1 << "." <<endl;
+			if (!is_mode_DEBUG())  cout << "    - XY ERROR: LOCATION " << LOC << " used in line " << i + 1 << " is already used at line " << (*(p.first)).second + 1 << "." <<endl;
 
 			error = true;
 		}
@@ -171,7 +170,7 @@ bool LOCATIONcheck_duplicate () {
 
 	if (error) return false;
 
-	cout << "    - Correct LOCATION's in all records of XY file." << endl;
+	if (!is_mode_DEBUG())  cout << "    - Correct LOCATION's in all records of XY file." << endl;
 
 	return true;
 }
@@ -194,7 +193,7 @@ bool xyfile_correct (string projectname) {
 
 	if  (!(LOCATIONcheck () && LOCATIONcheck_duplicate () && XYcheck ())) {
 
-		if (is_GUI()) throw xy_error ();
+		if (is_mode_GUI()) throw xy_error ();
 
 		else return false;
 	}
@@ -204,49 +203,46 @@ bool xyfile_correct (string projectname) {
 
 string check_xy_inputs (string inputfilename) {
 
-	cout << "CHECKING OF '" << capslock (inputfilename) << ".XY' FILE INTEGRITY" << endl;
+	if (!is_mode_DEBUG())  cout << "CHECKING OF '" << capslock (inputfilename) << ".XY' FILE INTEGRITY" << endl;
 
-	if (is_COMMANDLINE()) {
+	if (is_mode_COMMANDLINE()) {
 
 		if (capslock (inputfilename) == "X") return "NONE";
 
 		while (!(xyfile_correct(inputfilename))) {
 
-			cout << "  - Input " << capslock(inputfilename) << ".XY file structure is incorrect." << endl;
+			if (!is_mode_DEBUG()) cout << "  - Input " << capslock(inputfilename) << ".XY file structure is incorrect." << endl;
 
 			inputfilename = inputxyfilename();
 
 			if (capslock (inputfilename) == "X") return "NONE";
 		}
-
-		cout << "  - Input " << capslock(inputfilename) << ".XY file structure is correct." << endl;
+		if (!is_mode_DEBUG()) cout << "  - Input " << capslock(inputfilename) << ".XY file structure is correct." << endl;
 
 		return inputfilename;
 	}
-
-	else { // GUI, BATCH, DEBUG
+	else {
 
 		if (xyfile_correct(inputfilename)) {
 
-			cout << "  - Input " << capslock(inputfilename) << ".XY file structure is correct." << endl;
+			if (!is_mode_DEBUG()) cout << "  - Input " << capslock(inputfilename) << ".XY file structure is correct." << endl;
 
 			return inputfilename;
 		}
-
 		else {
 
-			cout << "  - Input " << capslock(inputfilename) << ".XY file does not exist or file structure is incorrect, file will not be used." << endl;
+			if (!is_mode_DEBUG()) cout << "  - Input " << capslock(inputfilename) << ".XY file does not exist or file structure is incorrect, file will not be used." << endl;
 
 			 return "NONE";
 		}
 	}
 }
 
-GDB insertxy (GDB inGDB) {
+GDB insertxy (const GDB& inGDB) {
 
 	GDB outGDB = inGDB; // TODO Not needed
 
-	bool failed; // TODO Failures ignored?
+	bool failed;
 
 	for (size_t i = 0; i < xy_to_check.size(); i++) {
 
@@ -258,6 +254,5 @@ GDB insertxy (GDB inGDB) {
 			outGDB.FORMATION = 	xy_to_check.at(i).at(FORMATION);
 		}
 	}
-
 	return outGDB;
 }

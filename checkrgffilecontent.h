@@ -30,16 +30,16 @@ bool PALEONcheck ();
 
 vector <string> check_rgf_inputs (vector <string> inputfilename_vector);
 
-bool rgffile_correct (string projectname);
+bool rgffile_correct (const string projectname);
 
-bool is_OTHERcorrect (vector <string> in);
-bool is_BEDDINGcorrect (vector <string> in);
-bool is_SCcorrect (vector <string> in);
-bool is_LINEATIONcorrect (vector <string> in);
-bool is_PITCHcorrect (vector <string> in);
+bool is_OTHERcorrect (const vector <string>& in);
+bool is_BEDDINGcorrect (const vector <string>& in);
+bool is_SCcorrect (const vector <string>& in);
+bool is_LINEATIONcorrect (const vector <string>& in);
+bool is_PITCHcorrect (const vector <string>& in);
 
 vector <GDB> create_GDB_from_rgf (const string& file_name);
 
-bool error_cout (vector <string> bad_records, string recordtype);
+bool error_cout (const vector <string>& bad_records, const string recordtype);
 
 #endif

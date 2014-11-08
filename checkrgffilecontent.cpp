@@ -122,9 +122,9 @@ bool input_rgf (const string& projectname) {
 	}
 	else {
 
-		cout << "    - Input " << capslock(projectname + ".rgf") << " file read, ";
+		if (!is_mode_DEBUG()) cout << "    - Input " << capslock(projectname + ".rgf") << " file read, ";
 
-		cout << n_records << " record(s) imported." << endl;
+		if (!is_mode_DEBUG()) cout << n_records << " record(s) imported." << endl;
 	}
 
 	return true;
@@ -140,7 +140,6 @@ void complete_rgf_to_check () {
 		if (rgf_to_check.at(i).at(FORMATION) == "") rgf_to_check.at(i).at(FORMATION) = 	rgf_to_check.at(i-1).at(FORMATION);
 		if (rgf_to_check.at(i).at(DATATYPE) == "") 	rgf_to_check.at(i).at(DATATYPE) = 	rgf_to_check.at(i-1).at(DATATYPE);
 	}
-
 	return;
 }
 
@@ -162,7 +161,7 @@ bool IDcheck_duplicate () {
 
 		if (!(p.second)) {
 
-			cout << "    - ERROR: DATA_ID " << ID << " used in line " << i + 1 << " is already used at line " << (*(p.first)).second + 1 << "." <<endl;
+			if (!is_mode_DEBUG()) cout << "    - ERROR: DATA_ID " << ID << " used in line " << i + 1 << " is already used at line " << (*(p.first)).second + 1 << "." <<endl;
 
 			error = true;
 		}
@@ -170,7 +169,7 @@ bool IDcheck_duplicate () {
 
 	if (error) return false;
 
-	cout << "    - Correct DATA_ID's in all records." << endl;
+	if (!is_mode_DEBUG()) cout << "    - Correct DATA_ID's in all records." << endl;
 
 	return true;
 }
@@ -188,14 +187,14 @@ bool IDcheck () {
 
 	if (bad_records.size() == 0) {
 
-		cout << "    - Existing DATA_ID's in all records." << endl;
+		if (!is_mode_DEBUG()) cout << "    - Existing DATA_ID's in all records." << endl;
 
 		return true;
 	}
 
 	else {
 
-		cout <<"    - ERROR: empty DATA_ID(s) in the following record(s):  " << flush;
+		if (!is_mode_DEBUG()) cout <<"    - ERROR: empty DATA_ID(s) in the following record(s):  " << flush;
 
 		for (size_t j = 0; j < bad_records.size() - 1; j++) {
 
@@ -216,13 +215,11 @@ bool GCcheck () {
 
 		string GC = rgf_to_check.at(i).at(GROUP);
 
-		bool GC_STR = is_allowed_groupcode_str		(GC);
-		bool GC_EMP = is_allowed_groupcode_empty	(GC);
+		bool GC_STR = is_allowed_groupcode (GC);
+		bool GC_EMP = is_allowed_groupcode_empty (GC);
 
-
-		if (!GC_EMP && ! GC_STR) bad_records.push_back(rgf_to_check.at(i).at(DATA_ID));
+		if (!GC_EMP && !GC_STR) bad_records.push_back(rgf_to_check.at(i).at(DATA_ID));
 	}
-
 	return error_cout (bad_records, "group code");
 }
 
@@ -242,7 +239,6 @@ bool COLORcheck () {
 
 		if (!CORR_CLR) bad_records.push_back(rgf_to_check.at(i).at(DATA_ID));
 	}
-
 	return error_cout (bad_records, "color code");
 }
 
@@ -367,7 +363,7 @@ vector <string> check_rgf_inputs (vector <string> inputfilename_vector) {
 
 	vector <string> out_inputfilename_vector;
 
-	if (is_COMMANDLINE()) {
+	if (is_mode_COMMANDLINE()) {
 
 		while (!(rgffile_correct (inputfilename_vector.at(0)))) {
 
@@ -379,7 +375,7 @@ vector <string> check_rgf_inputs (vector <string> inputfilename_vector) {
 		return inputfilename_vector;
 	}
 
-	else if (is_GUI() || is_DEBUG()) {
+	else if (is_mode_GUI() || is_mode_DEBUG()) {
 
 		if (rgffile_correct(inputfilename_vector.at(0))) {
 
@@ -420,7 +416,7 @@ vector <string> check_rgf_inputs (vector <string> inputfilename_vector) {
 	}
 }
 
-bool rgffile_correct (string projectname) {
+bool rgffile_correct (const string projectname) {
 
 	if (!(input_rgf (projectname))) return false;
 
@@ -439,7 +435,7 @@ bool rgffile_correct (string projectname) {
 			STRIAE_SC_check	() &&
 			PALEONcheck ()		)) {
 
-		if (is_GUI()) {
+		if (is_mode_GUI()) {
 
 			throw rgf_error();
 		}
@@ -449,22 +445,24 @@ bool rgffile_correct (string projectname) {
 	return true;
 }
 
-bool is_OTHERcorrect (vector <string> in) {
+bool is_OTHERcorrect (const vector <string>& in) {
 
 	return (
 			!is_allowed_SC_datatype(in.at(DATATYPE)) &&
 			!is_allowed_striae_datatype(in.at(DATATYPE)) &&
-			!(in.at(DATATYPE) == "BEDDING") &&
+			//!(in.at(DATATYPE) == "BEDDING") &&
+			!is_allowed_handle_as_bedding (in.at(DATATYPE)) &&
 			in.at(LDIR) == "" &&
 			in.at(LDIP) == "" &&
 			in.at(SENSE) == ""
 	);
 }
 
-bool is_BEDDINGcorrect (vector <string> in) {
+bool is_BEDDINGcorrect (const vector <string>& in) {
 
 	return (
-			(in.at(DATATYPE) == "BEDDING") &&
+			//(in.at(DATATYPE) == "BEDDING") &&
+			is_allowed_handle_as_bedding (in.at(DATATYPE)) &&
 			is_allowed_dir (in.at(DIR)) &&
 			is_allowed_dip (in.at(DIP)) &&
 			in.at(LDIR) == "" &&
@@ -473,7 +471,7 @@ bool is_BEDDINGcorrect (vector <string> in) {
 	);
 }
 
-bool is_SCcorrect (vector <string> in) {
+bool is_SCcorrect (const vector <string>& in) {
 
 	return (
 			is_allowed_SC_datatype (in.at(DATATYPE)) &&
@@ -485,7 +483,7 @@ bool is_SCcorrect (vector <string> in) {
 	);
 }
 
-bool is_LINEATIONcorrect (vector <string> in) {
+bool is_LINEATIONcorrect (const vector <string>& in) {
 
 	return (
 			is_allowed_striae_datatype (in.at(DATATYPE)) &&
@@ -496,7 +494,7 @@ bool is_LINEATIONcorrect (vector <string> in) {
 			is_allowed_striae_sense (in.at(SENSE)));
 }
 
-bool is_PITCHcorrect (vector <string> in) {
+bool is_PITCHcorrect (const vector <string>& in) {
 
 	return (
 			is_allowed_striae_datatype (in.at(DATATYPE)) &&
@@ -508,18 +506,18 @@ bool is_PITCHcorrect (vector <string> in) {
 	);
 }
 
-bool error_cout (vector <string> bad_records, string recordtype) {
+bool error_cout (const vector <string>& bad_records, const string recordtype) {
 
 	if (bad_records.size() == 0) {
 
-		cout << "    - Correct " << recordtype << "(s) in all records." << endl;
+		if (!is_mode_DEBUG()) cout << "    - Correct " << recordtype << "(s) in all records." << endl;
 
 		return true;
 	}
 
 	else {
 
-		cout << "    - ERROR: incorrect " << recordtype << "(s) in the following record(s):  " << flush;
+		if (!is_mode_DEBUG()) cout << "    - ERROR: incorrect " << recordtype << "(s) in the following record(s):  " << flush;
 
 		for (size_t j = 0; j < bad_records.size() - 1; j++) {
 
@@ -549,17 +547,17 @@ vector <GDB> create_GDB_from_rgf (const string& file_name) {
 
 		GDB buffer;
 		// TODO Should be moved to ctor   -------------------------------------
-		buffer.DIPDIR = 999.99;
-		buffer.DIP = 	999.99;
-		buffer.LDIR = 	999.99;
-		buffer.LDIP = 	999.99;
+		buffer.DIPDIR = NaN();
+		buffer.DIP = NaN();
+		buffer.LDIR = NaN();
+		buffer.LDIP = NaN();
 
-		buffer.corr.DIPDIR = 	999.99;
-		buffer.corr.DIP = 		999.99;
-		buffer.corrL.DIPDIR =	999.99;
-		buffer.corrL.DIP = 		999.99;
+		buffer.corr.DIPDIR = NaN();
+		buffer.corr.DIP = NaN();
+		buffer.corrL.DIPDIR = NaN();
+		buffer.corrL.DIP = NaN();
 
-		buffer.LPITCH = 999.99;
+		buffer.LPITCH = NaN();
 
 		buffer.OFFSET = 		"NONE";
 		buffer.LINEATION =		"NONE";
@@ -627,7 +625,12 @@ vector <GDB> create_GDB_from_rgf (const string& file_name) {
 		if (is_allowed_striae_datatype (row.at(DATATYPE))) 		buffer.DATAGROUP = "STRIAE";
 		if (is_allowed_SC_datatype (row.at(DATATYPE))) 			buffer.DATAGROUP = "SC";
 
-		if ((row.at(DATATYPE)) == "BEDDING") {
+		//cout << row.at(DATATYPE) << endl;
+		//cout << buffer.DATAGROUP << endl;
+
+		//if ((row.at(DATATYPE)) == "BEDDING") {
+		if (is_allowed_handle_as_bedding (row.at(DATATYPE))) {
+
 
 			if (is_allowed_bedding_overturned_sense(row.at(SENSE))) 	buffer.OFFSET = "OVERTURNED";
 			if (is_allowed_bedding_normal_sense(row.at(SENSE))) 		buffer.OFFSET = "NORMAL";
@@ -642,7 +645,10 @@ vector <GDB> create_GDB_from_rgf (const string& file_name) {
 		}
 
 		if (is_LINEATIONcorrect (row))	buffer.LINEATION = "LINEATION";
-		if (is_PITCHcorrect (row)) 		buffer.LINEATION = "PITCH";
+		if (is_PITCHcorrect (row)) {
+
+			buffer.LINEATION = "PITCH";
+		}
 		if (is_SCcorrect (row)) 		buffer.LINEATION = "SC";
 
 		if (row.at(PALEONORTH) == "") buffer.PALEON = 0.0;
@@ -655,7 +661,7 @@ vector <GDB> create_GDB_from_rgf (const string& file_name) {
 
 	ASSERT(outGDB.size()==rgf_to_check.size());
 
-	cout << "  - Geodatabase completed for " << outGDB.size() << " records." << endl; // TODO The original message was lying
+	if (!is_mode_DEBUG()) cout << "  - Geodatabase completed for " << outGDB.size() << " records." << endl; // TODO The original message was lying
 
 	return outGDB;
 }
@@ -700,6 +706,8 @@ const vector<T> set_difference(vector<T> A, vector<T> B) {
 
 void show_col_names(const string& msg, const vector<string>& v) {
 
+	if (is_mode_DEBUG()) return;
+
 	if (v.empty()) {
 
 		return;
@@ -718,7 +726,7 @@ void dump_col_status(const vector<string>& found, const vector<string>& ignored)
 
 	vector<string> unused = set_difference(reserved_column_names(), found);
 
-	cout << "    - The header (column names) of the data file has been processed.\n";
+	if (!is_mode_DEBUG()) cout << "    - The header (column names) of the data file has been processed.\n";
 
 	show_col_names("reserved but unused", unused);
 

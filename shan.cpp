@@ -9,47 +9,60 @@
 #include "common.h"
 #include "rgf.h"
 #include "shan.h"
+#include "stresstensor.hpp"
 
 using namespace std;
 
-vector <vector <double> > SHAN_matrix (vector <GDB> inGDB, INPSET inset) {
+vector < vector <double> > shan_matrix_from_GDB (const GDB& inGDB)  {
 
-	size_t i = 0;
+	vector <double>  o = init_vector (5);
+
+	const VCTR n = inGDB.N;
+	const VCTR s = inGDB.DC;
+
+	const VCTR t = unitvector (crossproduct (s, n));
+
+	o.at(0) = n.X * t.X - n.Z * t.Z;
+	o.at(1) = n.Y * t.Y - n.Z * t.Z;
+	o.at(2) = n.X * t.Y + n.Y * t.X;
+	o.at(3) = n.X * t.Z + n.Z * t.X;
+	o.at(4) = n.Y * t.Z + n.Z * t.Y;
+
+	return outer_product (o);
+}
+
+vector <vector <double> > SHAN_matrix (const vector <GDB>& inGDB) {
+
+	vector <GDB> processGDB = inGDB;
 
 	vector <vector <double> > shan_matrix = init_matrix (5);
-	vector <vector <double> > temp = init_matrix (5);
 
-	if (inset.virt_striae == "Y" ) inGDB = generate_virtual_striae (inGDB);
+	//if (inset.virt_striae == "Y" ) processGDB = generate_virtual_striae (processGDB);
 
-	do {
+	for (size_t i = 0; i < processGDB.size(); i++) {
 
-		temp = shan_matrix_from_GDB (inGDB .at(i));
+		vector <vector <double> > temp = init_matrix (5);
+
+		temp = shan_matrix_from_GDB (processGDB.at(i));
+
 		shan_matrix = add_mtrx (shan_matrix, temp);
-
-		i++;
-
-	} while (i < inGDB.size());
-
+	}
 	return jacobi (shan_matrix);
 }
 
 
-STRESSTENSOR st_SHAN (vector <GDB> inGDB, INPSET inset) {
+STRESSTENSOR st_SHAN (const vector <GDB>& inGDB) {
+
+	STRESSTENSOR st;
 
 	vector <vector <double> > A = init_matrix (5);
 	vector <vector <double> > D = init_matrix (5);
-	vector <vector <double> > EVEV = SHAN_matrix (inGDB, inset);
-
-	int first_eigenvalue = 0;
-	double misfit1 = 0.0;
-	double misfit2 = 0.0;
-
-	STRESSTENSOR st;
+	vector <vector <double> > EVEV = SHAN_matrix (inGDB);
 
 	A = generate_A (EVEV);
 	D = generate_D (EVEV);
 
-	first_eigenvalue = return_first_eigenvalue (A);
+	const int first_eigenvalue = return_first_eigenvalue (A);
 
 	st._11 = D.at(first_eigenvalue).at(0);
 	st._22 = D.at(first_eigenvalue).at(1);
@@ -58,16 +71,19 @@ STRESSTENSOR st_SHAN (vector <GDB> inGDB, INPSET inset) {
 	st._23 = D.at(first_eigenvalue).at(4);
 	st._33 = 0.0 - st._11 - st._22;
 
-	misfit1 = return_average_misfit (st, inGDB, false);
+	const double misfit1 = return_average_misfit (st, inGDB);
 	st = invert_stress_tensor (st);
-	misfit2 = return_average_misfit (st, inGDB, false);
-
+	const double misfit2 = return_average_misfit (st, inGDB);
 
 	if (misfit1 < misfit2) return invert_stress_tensor (st);
-	else return st;
+	return st;
 }
 
-STRESSFIELD sf_SHAN (STRESSTENSOR st) {
+STRESSFIELD sf_SHAN (const STRESSTENSOR& st) {
 
-	return eigenvalue_eigenvector (st);
+	STRESSFIELD sf = eigenvalue_eigenvector (st);
+
+	sf = computestressfield_DXDYDZ (sf);
+
+	return stress_regime (sf);
 }

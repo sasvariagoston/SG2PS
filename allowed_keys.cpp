@@ -14,10 +14,10 @@ bool contains(const vector<T>& vec, const T& elem) {
 }
 
 namespace {
-const string groupcode_allowed_str [] = {
-		"X", "A", "B", "C", "D", "E", "F", "G", "H", "I"
+const string groupcode_basic_allowed_str [] = {
+		"X", "A", "B", "C", "D", "E", "F", "G", "H", "I", "J"
 };
-const vector<string> allowed_groupcodes_str(from_array(groupcode_allowed_str));
+const vector<string> allowed_basic_groupcodes_str(from_array(groupcode_basic_allowed_str));
 
 const string groupcode_allowed_empty [] = {
 		""
@@ -167,14 +167,69 @@ const vector<string> allowed_bingham_datatype(from_array(bingham_datatype_allowe
 
 const string handle_as_bedding_allowed [] = {
 		"BEDDING"
-		"FOLDSURFACE"
 };
 const vector<string> allowed_handle_as_bedding (from_array(handle_as_bedding_allowed));
+
+
+
+
+
+const string gui_mode_allowed [] = {
+		"-G",
+		"--G",
+		"-GUI_CALLS",
+		"--GUI_CALLS"
+};
+const vector<string> allowed_gui_mode(from_array(gui_mode_allowed));
+
+const string debug_mode_allowed [] = {
+		"-D",
+		"--D",
+		"-DEBUG",
+		"--DEBUG"
+};
+const vector<string> allowed_debug_mode(from_array(debug_mode_allowed));
+
+const string version_mode_allowed [] = {
+		"-V",
+		"--V",
+		"-VERSION",
+		"--VERSION"
+};
+const vector<string> allowed_version_mode(from_array(version_mode_allowed));
+
+const string version_id_mode_allowed [] = {
+		"-ID",
+		"--ID",
+		"-VID",
+		"--VID",
+		"-VERSION-ID",
+		"--VERSION-ID",
+		"-VERSION_ID",
+		"--VERSION_ID"
+};
+const vector<string> allowed_version_id_mode(from_array(version_id_mode_allowed));
+
+const string test_data_generation_mode_allowed [] = {
+		"-T",
+		"--T",
+		"-TEST",
+		"--TEST",
+};
+const vector<string> allowed_test_data_generation_mode(from_array(test_data_generation_mode_allowed));
+
+
+
+
+
+
+
 
 }
 
 const string pscolor_rgb_allowed [] = {
 
+		"0.00 0.00 0.00",
 		"0.00 0.00 0.00",
 		"0.00 0.00 1.00",
 		"1.00 0.00 0.67",
@@ -190,10 +245,11 @@ const vector<string> allowed_pscolor_rgb(from_array(pscolor_rgb_allowed));
 
 const string pscolor_gray_allowed [] = {
 
+		"0.00 0.00 0.00",
+		"0.00 0.00 0.00",
 		"0.20 0.20 0.20",
 		"0.20 0.20 0.20",
 		"0.20 0.20 0.20",
-		"0.40 0.40 0.40",
 		"0.40 0.40 0.40",
 		"0.40 0.40 0.40",
 		"0.40 0.40 0.40",
@@ -206,11 +262,12 @@ const vector<string> allowed_pscolor_gray(from_array(pscolor_gray_allowed));
 const string dash_allowed [] = {
 
 		"   ",
+		"   ",
+		"   ",
 		"3 3",
 		"6 6",
 		"   ",
 		"3 3",
-		"3 6",
 		"6 6",
 		"   ",
 		"3 3",
@@ -218,14 +275,14 @@ const string dash_allowed [] = {
 };
 const vector<string> allowed_dash(from_array(dash_allowed));
 
-bool is_allowed_groupcode_str(const string& groupcode) {
+bool is_allowed_basic_groupcode_str(const string& groupcode) {
 
-	return contains(allowed_groupcodes_str, groupcode);
+	return contains(allowed_basic_groupcodes_str, groupcode);
 }
 
-vector <string> allowed_groupcode_str_vector () {
+vector <string> allowed_basic_groupcode_str_vector () {
 
-	return allowed_groupcodes_str;
+	return allowed_basic_groupcodes_str;
 }
 
 bool is_allowed_groupcode_empty(const string& groupcode) {
@@ -237,6 +294,31 @@ vector <string> allowed_groupcode_empty_vector () {
 
 	return allowed_groupcodes_empty;
 }
+
+bool is_allowed_groupcode (const string& groupcode) {
+
+	size_t L = groupcode.size();
+
+	if (L == 1) {
+
+		const string GC = char_to_string(groupcode.at(0));
+		return is_allowed_basic_groupcode_str (GC);
+	}
+	else if (L == 3) {
+
+		const string GC1 = char_to_string(groupcode.at(0));
+		const string GC2 = char_to_string(groupcode.at(1));
+		const string GC3 = char_to_string(groupcode.at(2));
+
+		if (
+				is_allowed_basic_groupcode_str (GC1) &&
+				is_allowed_basic_groupcode_str (GC2) &&
+				is_allowed_basic_groupcode_str (GC3)) return true;
+		return false;
+	}
+	else return false;
+}
+
 
 bool is_allowed_colorcode_str(const string& colorcode) {
 
@@ -323,22 +405,32 @@ bool is_allowed_foldsurface_processing(const string& datatype) {
 	return (contains(allowed_foldsurface_processing, datatype));
 }
 
-bool is_allowed_dir(const string& s){
-
-	bool failed = true;
-
-	double value = string_to_double (s, failed);
-
-	return (is_in_range(0.0, 360.0, value) && !failed);
-}
-
 bool is_allowed_dip(const string& s) {
 
 	bool failed = true;
 
 	double value = string_to_double (s, failed);
 
-	return (is_in_range(0.0, 90.0, value) && !failed);
+	return is_allowed_DIP (value) && !failed;
+}
+
+bool is_allowed_DIP(const double dip) {
+
+	return is_in_range (0.0, 90.0, dip);
+}
+
+bool is_allowed_dir (const string& s){
+
+	bool failed = true;
+
+	double value = string_to_double (s, failed);
+
+	return is_allowed_DIR (value) && !failed;
+}
+
+bool is_allowed_DIR (const double dir) {
+
+	return is_in_range (0.0, 360.0, dir);
 }
 
 bool is_allowed_striae_inverse_sense(const string& sense) {
@@ -447,14 +539,50 @@ vector <string> allowed_dash_vector () {
 	return allowed_dash;
 }
 
+bool is_allowed_gui_mode(const string& arg) {
 
+	return contains(allowed_gui_mode, arg);
+}
+vector <string> allowed_gui_mode_vector () {
 
+	return allowed_gui_mode;
+}
 
+bool is_allowed_debug_mode(const string& arg) {
 
+	return contains(allowed_debug_mode, arg);
+}
+vector <string> allowed_debug_mode_vector () {
 
+	return allowed_debug_mode;
+}
 
+bool is_allowed_version_mode(const string& arg) {
 
+	return contains(allowed_version_mode, arg);
+}
+vector <string> allowed_version_mode_vector () {
 
+	return allowed_version_mode;
+}
+
+bool is_allowed_version_id_mode(const string& arg) {
+
+	return contains(allowed_version_id_mode, arg);
+}
+vector <string> allowed_version_id_mode_vector () {
+
+	return allowed_version_id_mode;
+}
+
+bool is_allowed_test_data_generation_mode(const string& arg) {
+
+	return contains(allowed_test_data_generation_mode, arg);
+}
+vector <string> is_allowed_test_data_generation_mode_vector () {
+
+	return allowed_test_data_generation_mode;
+}
 
 bool is_double (const string& s) {
 

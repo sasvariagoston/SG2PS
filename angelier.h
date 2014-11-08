@@ -11,12 +11,12 @@
 
 using namespace std;
 
-ANG_PRM angelier_parameters (vector <GDB> inGDB);
+ANG_PRM angelier_parameters (const vector <GDB>& inGDB);
 
-STRESSTENSOR compute_angelier_stresstensor (ANG_PRM p, vector <GDB> inGDB);
+STRESSTENSOR compute_angelier_stresstensor (const ANG_PRM& p, const vector <GDB>& inGDB);
 
-STRESSTENSOR st_ANGELIER (vector <GDB> inGDB, INPSET inset);
+STRESSTENSOR st_ANGELIER (const vector <GDB>& inGDB);
 
-STRESSFIELD sf_ANGELIER (STRESSTENSOR st);
+STRESSFIELD sf_ANGELIER (const STRESSTENSOR& st);
 
 #endif

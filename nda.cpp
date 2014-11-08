@@ -6,23 +6,24 @@
 #include <iomanip>
 #include <iostream>
 
+#include "allowed_keys.hpp"
 #include "common.h"
 #include "inversion.h"
 #include "nda.h"
 #include "rgf.h"
+#include "settings.hpp"
+#include "stresstensor.hpp"
 
 using namespace std;
 
-STRESSTENSOR st_NDA (vector <GDB> inGDB, INPSET inset) {
-
-	double r = inset.angle / 90.0;
-	double q = 1.0 - r;
-
-	size_t i = 0;
+STRESSTENSOR st_NDA (const vector <GDB>& inGDB) {
 
 	STRESSTENSOR st;
 
-	if (inset.virt_striae == "Y" ) inGDB = generate_virtual_striae (inGDB);
+	vector <GDB> processGDB = inGDB;
+
+	double r = is_STRESSANGLE() / 90.0;
+	double q = 1.0 - r;
 
 	st._11 = 0.0;
 	st._12 = 0.0;
@@ -35,29 +36,24 @@ STRESSTENSOR st_NDA (vector <GDB> inGDB, INPSET inset) {
 	VCTR E = declare_vector (1.0, 0.0, 0.0);
 	VCTR U = declare_vector (0.0, 0.0, 1.0);
 
-	VCTR p, t;
+	for (size_t i = 0; i < processGDB.size(); i++) {
 
-	do {
+		const bool HAS_SENSE = !is_allowed_striae_none_sense (processGDB.at(i).OFFSET);
 
-		if (inGDB.at(i).OFFSET != "NONE") {
+		VCTR p = declare_vector(0.0, 0.0, 0.0);
+		VCTR t = declare_vector(0.0, 0.0, 0.0);
+
+		if (HAS_SENSE)  {
 
 			t = declare_vector(
-					q * inGDB.at(i).N.X + r * inGDB.at(i).SV.X,
-					q * inGDB.at(i).N.Y + r * inGDB.at(i).SV.Y,
-					q * inGDB.at(i).N.Z + r * inGDB.at(i).SV.Z
-			);
+					q * processGDB.at(i).N.X + r * processGDB.at(i).SV.X,
+					q * processGDB.at(i).N.Y + r * processGDB.at(i).SV.Y,
+					q * processGDB.at(i).N.Z + r * processGDB.at(i).SV.Z);
 
 			p = declare_vector(
-					q * inGDB.at(i).SV.X - r * inGDB.at(i).N.X,
-					q * inGDB.at(i).SV.Y - r * inGDB.at(i).N.Y,
-					q * inGDB.at(i).SV.Z - r * inGDB.at(i).N.Z
-			);
-		}
-
-		else {
-
-			p = declare_vector(0.0, 0.0, 0.0);
-			t = declare_vector(0.0, 0.0, 0.0);
+					q * processGDB.at(i).SV.X - r * processGDB.at(i).N.X,
+					q * processGDB.at(i).SV.Y - r * processGDB.at(i).N.Y,
+					q * processGDB.at(i).SV.Z - r * processGDB.at(i).N.Z);
 		}
 
 		st._11 = st._11 +
@@ -83,15 +79,15 @@ STRESSTENSOR st_NDA (vector <GDB> inGDB, INPSET inset) {
 		st._33 = st._33 +
 				(dotproduct (p, U, false) * dotproduct (p, U, false)) -
 				(dotproduct (t, U, false) * dotproduct (t, U, false));
-
-		i++;
-
-	} while (i < inGDB.size());
-
+	}
 	return st;
 }
 
-STRESSFIELD sf_NDA (STRESSTENSOR st) {
+STRESSFIELD sf_NDA (const STRESSTENSOR& st) {
 
-	return eigenvalue_eigenvector (st);
+	STRESSFIELD sf = eigenvalue_eigenvector (st);
+
+	sf = computestressfield_DXDYDZ (sf);
+
+	return stress_regime (sf);
 }

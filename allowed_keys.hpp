@@ -9,10 +9,11 @@
 
 using namespace std;
 
-bool is_allowed_groupcode_str (const string& groupcode);
-vector <string> allowed_groupcode_str_vector ();
+bool is_allowed_basic_groupcode_str (const string& groupcode);
+vector <string> allowed_basic_groupcode_str_vector ();
 bool is_allowed_groupcode_empty (const string& groupcode);
 vector <string> allowed_groupcode_empty_vector ();
+bool is_allowed_groupcode (const string& groupcode);
 
 bool is_allowed_colorcode_str(const string& colorcode);
 vector <string> allowed_colorcode_str_vector  ();
@@ -40,7 +41,9 @@ vector <string> allowed_SC_datatype_vector ();
 bool is_allowed_foldsurface_processing(const string& datatype);
 
 bool is_allowed_dip(const string& dip);
+bool is_allowed_DIP(const double dip);
 bool is_allowed_dir(const string& dir);
+bool is_allowed_DIR(const double dir);
 
 bool is_allowed_striae_inverse_sense(const string& sense);
 bool is_allowed_striae_normal_sense(const string& sense);
@@ -68,6 +71,20 @@ bool is_allowed_pscolor_gray (const string& datatype);
 vector <string> allowed_pscolor_gray_vector ();
 bool is_allowed_dash (const string& datatype);
 vector <string> allowed_dash_vector ();
+
+bool is_allowed_groupcode_str (const string& groupcode);
+vector <string> allowed_groupcode_str_vector ();
+
+bool is_allowed_gui_mode (const string& arg);
+vector <string> allowed_gui_mode_vector ();
+bool is_allowed_debug_mode(const string& arg);
+vector <string> allowed_debug_mode_vector ();
+bool is_allowed_version_mode(const string& arg);
+vector <string> allowed_version_mode_vector ();
+bool is_allowed_version_id_mode(const string& arg);
+vector <string> allowed_version_id_mode_vector ();
+bool is_allowed_test_data_generation_mode(const string& arg);
+vector <string> is_allowed_test_data_generation_mode_vector ();
 
 bool is_double (const string& coordinate);
 

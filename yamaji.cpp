@@ -22,6 +22,7 @@
 //#include "random.hpp"
 //#include "retilt.hpp"
 //#include "rgf.h"
+#include "stresstensor.hpp"
 #include "structs.h"
 #include "yamaji.hpp"
 
@@ -128,7 +129,7 @@ const static double SUBSET_MISFIT (const vector <VCTR>& N_GDB, const vector <VCT
 	return MISFIT;
 }
 
-vector <BRUTEFORCE_RESULT> st_YAMAJI (const vector <GDB>& inGDB, const INPSET& inset) {
+vector <BRUTEFORCE_RESULT> st_YAMAJI (const vector <GDB>& inGDB) {
 
 	vector <BRUTEFORCE_RESULT> OUT;
 
@@ -137,12 +138,12 @@ vector <BRUTEFORCE_RESULT> st_YAMAJI (const vector <GDB>& inGDB, const INPSET& i
 	vector <vector <VCTR> > N_GDB = generate_GDB_VECTORS_for_yamaji (inGDB, "N");
 	vector <vector <VCTR> > S_GDB = generate_GDB_VECTORS_for_yamaji (inGDB, "S");
 
-	cout << "YAMAJI INVERSION4" << endl;
+	cout << "YAMAJI INVERSION" << endl;
 
 	for (size_t str = 0; str < TNSR.size(); str++) {
 		for (size_t rec_cnt = 0; rec_cnt < N_GDB.size(); rec_cnt++) {
 
-			double MISFIT = SUBSET_MISFIT (N_GDB.at(rec_cnt), S_GDB.at(rec_cnt), TNSR.at(str));
+			//double MISFIT = SUBSET_MISFIT (N_GDB.at(rec_cnt), S_GDB.at(rec_cnt), TNSR.at(str));
 		}
 		cout << str << endl;
 	}

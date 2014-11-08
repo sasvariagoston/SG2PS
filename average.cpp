@@ -11,172 +11,162 @@
 #include "assertions.hpp"
 #include "bingham.h"
 #include "common.h"
+#include "data_io.h"
 #include "foldsurface.hpp"
+#include "homogenity_check.hpp"
 #include "rgf.h"
+#include "run_mode.h"
 
 using namespace std;
 
-VCTR N_to_S (VCTR in) {
+VCTR N_to_S (const VCTR& in) {
 
-	if (in.Z < 0.0) return (unitvector(declare_vector( in.Y, -in.X, 0.0)));
-	else 			return (unitvector(declare_vector(-in.Y,  in.X, 0.0)));
+	if (in.Z < 0.0) return unitvector(declare_vector( in.Y, -in.X, 0.0));
+	else 			return unitvector(declare_vector(-in.Y,  in.X, 0.0));
 }
 
-VCTR N_to_D (VCTR in) {
+VCTR N_to_D (const VCTR& in) {
 
-	VCTR S = N_to_S (in);
+	const VCTR S = N_to_S (in);
 
 	return crossproduct(S, in);
 }
 
-bool is_overturned (GDB in){
+bool is_overturned (const GDB& in){
 
-	return is_allowed_bedding_overturned_sense(in.OFFSET);
+	return is_allowed_bedding_overturned_sense (in.OFFSET);
 }
 
-bool is_bedding_present (vector <GDB> to_process) {
+bool is_bedding_present (const vector <GDB>& to_process) {
 
 	for (size_t i = 0; i < to_process.size(); i++) {
 
-		if (to_process.at(i).DATATYPE == "BEDDING" && to_process.at(i).avd.DIP < 91.0) return true;
+		if (is_allowed_handle_as_bedding(to_process.at(i).DATATYPE) && to_process.at(i).avd.DIP < 91.0) return true;
 	}
 	return false;
 }
 
-bool is_plane_dataset_singular (vector <GDB> inGDB, string METHOD) {
+bool is_plane_dataset_singular (const vector <GDB>& inGDB) {
 
-	vector <GDB> temp_for_Bingham = generate_Bingham_dataset (inGDB, METHOD);
+	const vector <GDB> T = generate_Bingham_dataset (inGDB);
 
-	STRESSTENSOR st = st_BINGHAM (temp_for_Bingham);
+	const STRESSTENSOR st = st_BINGHAM (T);
 
-	double det = stresstensor_determinant (st);
+	const double det = stresstensor_determinant (st);
 
 	return (fabs(det) < 10e-15);
 }
 
-bool is_datatype_processable_for_average (vector <GDB> inGDB) {
+bool is_datatype_processable_for_average (const string DT) {
 
-	string DT = inGDB.at(0).DATATYPE;
-	string LOC = inGDB.at(0).LOC;
-
-	bool IS_STRIAE = is_allowed_striae_datatype(DT);
-	bool IS_SC = is_allowed_SC_datatype(DT);
-	bool IS_lithology = is_allowed_lithology_datatype(DT);
+	bool IS_STRIAE = 		is_allowed_striae_datatype(DT);
+	bool IS_SC = 			is_allowed_SC_datatype(DT);
+	bool IS_lithology = 	is_allowed_lithology_datatype(DT);
 
 	return (!IS_STRIAE && !IS_SC && !IS_lithology);
 }
 
-bool is_processable_for_average_MT2 (vector <GDB> inGDB) {
+bool is_processable_for_average_MT2 (const vector <GDB>& inGDB) {
 
 	return ((inGDB.size() > 2) && check_dataset_homogenity (inGDB));
 }
 
-bool is_processable_for_average_EQ2 (vector <GDB> inGDB) {
+bool is_processable_for_average_EQ2 (const vector <GDB>& inGDB) {
 
 	return ((inGDB.size() == 2) && check_dataset_homogenity (inGDB));
 }
 
-bool is_processable_for_average_EQ1 (vector <GDB> inGDB) {
+bool is_processable_for_average_EQ1 (const vector <GDB>& inGDB) {
 
 	return ((inGDB.size() == 1) && check_dataset_homogenity (inGDB));
 }
 
-bool is_processable_for_average_HMG (vector <GDB> inGDB) {
+bool is_processable_for_average_HMG (const vector <GDB>& inGDB) {
 
 	return (!check_dataset_homogenity (inGDB));
 }
 
-vector <GDB> generate_Bingham_dataset (vector <GDB> inGDB, string method) {
+vector <GDB> generate_Bingham_dataset (const vector <GDB>& inGDB) {
 
-	vector <GDB> temp_for_Bingham;
+	vector <GDB> T = inGDB;
 
-	bool FOR_AVERAGE = 			(method == "AVERAGE");
-	bool FOR_BEDDING_AVERAGE = 	(method == "BEDDING_AVERAGE");
-	bool FOR_FOLDSURFACE = 		(method == "FOLDSURFACE");
+	const bool FOR_FOLDSURFACE = is_allowed_foldsurface_processing(T.at(0).DATATYPE);
 
-	if (!FOR_AVERAGE && !FOR_FOLDSURFACE && !FOR_BEDDING_AVERAGE) ASSERT_DEAD_END();
+	for (size_t i = 0; i < T.size(); i++) {
 
-	for (size_t i = 0; i < inGDB.size(); i++) {
+		bool OTB = (is_overturned (inGDB.at(i)) && is_allowed_foldsurface_processing(inGDB.at(i).DATATYPE));
 
-			bool OTB = (is_overturned (inGDB.at(i)) && is_allowed_foldsurface_processing(inGDB.at(i).DATATYPE));
+		if (FOR_FOLDSURFACE) {
 
-			GDB buf;
-
-			temp_for_Bingham.push_back(buf);
-			temp_for_Bingham.at(i) = inGDB.at(i);
-
-
-			if (FOR_AVERAGE || FOR_BEDDING_AVERAGE) {
-
-				if (OTB) 	temp_for_Bingham.at(i).N = flip_vector(inGDB.at(i).D);
-				else 		temp_for_Bingham.at(i).N =             inGDB.at(i).D;
-			}
-			else if (FOR_FOLDSURFACE) {
-
-				if (OTB) 	temp_for_Bingham.at(i).N = flip_vector(inGDB.at(i).N);
-				else 		temp_for_Bingham.at(i).N =             inGDB.at(i).N;
-			}
-			else ASSERT_DEAD_END()
+			if (OTB) 	T.at(i).N = flip_vector (inGDB.at(i).N);
+			else		T.at(i).N =              inGDB.at(i).N;
 		}
-	return temp_for_Bingham;
+		else {
+
+			if (OTB) 	T.at(i).N = flip_vector (inGDB.at(i).D);
+			else 		T.at(i).N =              inGDB.at(i).D;
+		}
+	}
+	return T;
 }
 
-VCTR process_for_average_MT2 (vector <GDB> inGDB, string method) {
+VCTR process_for_average_MT2 (const vector <GDB>& inGDB) {
 
-	vector <GDB> temp_for_Bingham = generate_Bingham_dataset (inGDB, method);
+	vector <GDB> temp_for_Bingham = generate_Bingham_dataset (inGDB);
 
-	bool FOR_AVERAGE = 		(method == "AVERAGE");
-	bool FOR_FOLDSURFACE = 	(method == "FOLDSURFACE");
-
-	if (!FOR_AVERAGE && !FOR_FOLDSURFACE) ASSERT_DEAD_END();
+	const bool FOR_FOLDSURFACE = is_allowed_foldsurface_processing(inGDB.at(0).DATATYPE);
 
 	STRESSTENSOR st = st_BINGHAM (temp_for_Bingham);
 
-	STRESSFIELD sf = eigenvalue_eigenvector (st);
+	STRESSFIELD sf = sf_BINGHAM (st);
 
 	bool OVERTURNED = (fabs(sf.EIGENVALUE.Z) > fabs(sf.EIGENVALUE.X));
 
-	sf = sf_BINGHAM (sf);
-
-	if (FOR_AVERAGE) {
-
-
-		if (OVERTURNED) return (sf.EIGENVECTOR3);
-		else return flip_vector(sf.EIGENVECTOR3);
-	}
-	else {
+	if (FOR_FOLDSURFACE) {
 
 		if (!OVERTURNED) return (sf.EIGENVECTOR1);
 		else return flip_vector(sf.EIGENVECTOR1);
 	}
+	else {
+
+		if (OVERTURNED) return (sf.EIGENVECTOR3);
+		else return flip_vector(sf.EIGENVECTOR3);
+	}
 }
 
-bool data_EQ2_homogeneous_and_one_overturned (vector <GDB> inGDB) {
+bool data_EQ2_homogeneous_and_one_overturned (const vector <GDB>& inGDB) {
 
 	ASSERT2((inGDB.size() == 2), "More than 2 records for the average calculation despite 2 ones were expected");
 
 	return check_dataset_geometry_homogenity (inGDB);
 }
 
-VCTR process_for_average_EQ2 (vector <GDB> inGDB) {
+VCTR process_for_average_EQ2 (const vector <GDB>& inGDB) {
 
 	ASSERT2((inGDB.size() == 2), "More than 2 records for the average calculation despite 2 ones were expected");
 
 	VCTR N1 = inGDB.at(0).N;
 	VCTR N2 = inGDB.at(1).N;
 
-	bool OTB_1 = (is_overturned (inGDB.at(0)) && (inGDB.at(0).DATATYPE) == "BEDDING");
-	bool OTB_2 = (is_overturned (inGDB.at(1)) && (inGDB.at(1).DATATYPE) == "BEDDING");
+	//const bool OTB_1 = is_overturned (inGDB.at(0)) && (inGDB.at(0).DATATYPE) == "BEDDING";
+	//const bool OTB_2 = is_overturned (inGDB.at(1)) && (inGDB.at(1).DATATYPE) == "BEDDING";
+
+	const bool OTB_1 = is_overturned (inGDB.at(0)) && is_allowed_handle_as_bedding (inGDB.at(0).DATATYPE);
+	const bool OTB_2 = is_overturned (inGDB.at(1)) && is_allowed_handle_as_bedding (inGDB.at(1).DATATYPE);
+
 
 	if (OTB_1) N1 = flip_vector(N1);
 	if (OTB_2) N2 = flip_vector(N2);
 
-	bool is_SYMMETRICAL =
+	const bool is_SYMMETRICAL =
 			is_in_range(N1.X, N1.X, -N2.X) &&
 			is_in_range(N1.Y, N1.Y, -N2.Y) &&
 			is_in_range(N1.Z, N1.Z,  N2.Z);
 
-	if (!data_EQ2_homogeneous_and_one_overturned (inGDB)) return (declare_vector (0.0, 1.0, 0.0));
+	if (!data_EQ2_homogeneous_and_one_overturned (inGDB)) {
+
+		return declare_vector (0.0, 1.0, 0.0);
+	}
 
 	if (is_SYMMETRICAL) return inGDB.at(0).S;
 
@@ -188,107 +178,46 @@ VCTR process_for_average_EQ2 (vector <GDB> inGDB) {
 	return OUT;
 }
 
-VCTR process_for_average_EQ1 (vector <GDB> inGDB) {
+VCTR process_for_average_EQ1 (const vector <GDB>& inGDB) {
 
 	GDB I = inGDB.at(0);
 
-	if (is_overturned (I) && (I.DATATYPE) == "BEDDING") return (flip_vector(I.D));
+	//if (is_overturned (I) && (I.DATATYPE) == "BEDDING") return (flip_vector(I.D));
+
+	if (is_overturned (I) && is_allowed_handle_as_bedding(I.DATATYPE)) return (flip_vector(I.D));
+
 	else return I.D;
 }
 
-vector <GDB> init_average (vector <GDB> inGDB) {
+vector <GDB> init_average (const vector <GDB>& inGDB) {
 
-	for (size_t i = 0; i < inGDB.size(); i++) {
+	vector <GDB> outGDB = inGDB;
 
-		inGDB.at(i).avD = 	declare_vector (0.0, 1.0, 0.0);
-		inGDB.at(i).avS0D = 	declare_vector (0.0, 1.0, 0.0);
+	for (size_t i = 0; i < outGDB.size(); i++) {
 
-		inGDB.at(i).avd.DIPDIR = 	999.99;
-		inGDB.at(i).avd.DIP = 		999.99;
-		inGDB.at(i).avS0d.DIPDIR =	999.99;
-		inGDB.at(i).avS0d.DIP = 	999.99;
+		outGDB.at(i).avD = 		declare_vector (NaN(), NaN(), NaN());
+		outGDB.at(i).avS0D = 	declare_vector (NaN(), NaN(), NaN());
+
+		outGDB.at(i).avd.DIPDIR = 	NaN();
+		outGDB.at(i).avd.DIP = 		NaN();
+		outGDB.at(i).avS0d.DIPDIR =	NaN();
+		outGDB.at(i).avS0d.DIP = 	NaN();
 	}
-	return inGDB;
+	return outGDB;
 }
 
-vector <size_t> generate_block_length (vector <GDB> inGDB, string METHOD) {
-
-	vector <size_t> length_container;
-
-	size_t records_counter = 0;
-
-	if (inGDB.size() == 1) {
-
-		length_container.push_back(1);
-		return length_container;
-	}
-
-	bool FOR_DATA_AVERAGE = 	(METHOD == "DATA_AVERAGE");
-	bool FOR_BEDDING_AVERAGE = 	(METHOD == "BEDDING_AVERAGE");
-	bool FOR_FOLD_SURFACE = 	(METHOD == "FOLDSURFACE");
-
-	if (!FOR_DATA_AVERAGE && !FOR_BEDDING_AVERAGE && !FOR_FOLD_SURFACE) ASSERT_DEAD_END();
-
-	for (size_t SIZE = 1; SIZE < inGDB.size(); SIZE++) {
-
-		bool END_CRITERIA = false;
-
-		bool END_DATABASE = false;
-		if (SIZE == inGDB.size() - 1) END_DATABASE = true;
-
-		string PRW_LOC = inGDB.at(SIZE - 1).LOC;
-		string REC_LOC = inGDB.at(SIZE).LOC;
-
-		string PRW_DATATYPE = inGDB.at(SIZE - 1).DATATYPE;
-		string REC_DATATYPE = inGDB.at(SIZE).DATATYPE;
-
-		if (FOR_DATA_AVERAGE || FOR_FOLD_SURFACE) 	END_CRITERIA = (PRW_LOC != REC_LOC || PRW_DATATYPE != REC_DATATYPE);
-		else 										END_CRITERIA = (PRW_LOC != REC_LOC);
-
-		records_counter++;
-
-		if (END_CRITERIA || END_DATABASE) {
-
-			if (END_CRITERIA && !END_DATABASE) length_container.push_back(records_counter);
-			else if (!END_CRITERIA && END_DATABASE) length_container.push_back(records_counter + 1);
-			else if (END_CRITERIA && END_DATABASE) {
-
-				length_container.push_back(records_counter);
-				length_container.push_back(1);
-			}
-			else ASSERT_DEAD_END();
-
-			records_counter = 0;
-		}
-		else{}// OK
-	}
-	return length_container;
-}
-
-
-VCTR calculate_bedding_average_vector (vector <GDB> to_process) {
-
-	VCTR out;
-
-	for (size_t i = 0; i < to_process.size(); i++) {
-
-		if (to_process.at(i).DATATYPE == "BEDDING") out = to_process.at(i).avD;
-	}
-	return out;
-}
-
-VCTR calculate_data_average_vector (vector <GDB> to_process, string method) {
+VCTR calculate_data_average_vector (const vector <GDB>& to_process) {
 
 	VCTR OUT;
 
-	bool MT2 = is_processable_for_average_MT2 (to_process);
-	bool EQ2 = is_processable_for_average_EQ2 (to_process);
-	bool EQ1 = is_processable_for_average_EQ1 (to_process);
-	bool HMG = is_processable_for_average_HMG (to_process);
+	const bool MT2 = is_processable_for_average_MT2 (to_process);
+	const bool EQ2 = is_processable_for_average_EQ2 (to_process);
+	const bool EQ1 = is_processable_for_average_EQ1 (to_process);
+	const bool HMG = is_processable_for_average_HMG (to_process);
 
 	if (!MT2 && !EQ1 && !EQ2 && !HMG) ASSERT_DEAD_END();
 
-	if 		(MT2) OUT = process_for_average_MT2 (to_process, method);
+	if 		(MT2) OUT = process_for_average_MT2 (to_process);
 	else if (EQ2) OUT = process_for_average_EQ2 (to_process);
 	else if (EQ1) OUT = process_for_average_EQ1 (to_process);
 	else if (HMG) OUT = process_for_average_EQ1 (to_process);
@@ -297,113 +226,160 @@ VCTR calculate_data_average_vector (vector <GDB> to_process, string method) {
 	return OUT;
 }
 
-vector <GDB> apply_data_average_vector (vector <GDB> to_process, VCTR AV_D, string METHOD) {
+vector <GDB> apply_data_average_vector (const vector <GDB>& to_process, const VCTR& AV_D, const string MODE) {
 
-	bool FOR_DATA_AVERAGE = 	(METHOD == "DATA_AVERAGE");
-	bool FOR_BEDDING_AVERAGE =	(METHOD == "BEDDING_AVERAGE");
+	const bool FOLD = MODE == "FOLD";
 
-	if (!FOR_DATA_AVERAGE && !FOR_BEDDING_AVERAGE) ASSERT_DEAD_END();
+	vector <GDB> outGDB = to_process;
 
-	bool IS_OVERTURNED = (AV_D.Z > 0.0);
-	bool IS_BEDDING = (to_process.at(0).DATATYPE == "BEDDING");
+	const bool IS_OVERTURNED = AV_D.Z > 0.0;
+	const bool IS_BEDDING = is_allowed_handle_as_bedding (to_process.at(0).DATATYPE);
 
-	bool OTB = (IS_OVERTURNED && IS_BEDDING);
+	const bool OTB = IS_OVERTURNED && IS_BEDDING;
 
-	for (size_t i = 0; i < to_process.size(); i++) {
+	for (size_t i = 0; i < outGDB.size(); i++) {
 
-		if (FOR_DATA_AVERAGE) {
+		if (FOLD) {
 
-			to_process.at(i).avD = AV_D;
-
-			if (OTB) 	to_process.at(i).avd = dipdir_dip_from_DXDYDZ(flip_vector(AV_D));
-			else 		to_process.at(i).avd = dipdir_dip_from_DXDYDZ(AV_D);
+			outGDB.at(i).fold_great_circle_N = AV_D;
 		}
-		else if (FOR_BEDDING_AVERAGE) {
+		else {
+			outGDB.at(i).avD = AV_D;
 
-			bool BED_OK = is_bedding_present (to_process);
-
-			if (BED_OK) {
-
-				to_process.at(i).avS0D = AV_D;
-
-				to_process.at(i).avS0N = NXNYNZ_from_DXDYDZ(AV_D);
-
-				if (OTB) 	to_process.at(i).avS0d = dipdir_dip_from_DXDYDZ(flip_vector(AV_D));
-				else 		to_process.at(i).avS0d = dipdir_dip_from_DXDYDZ(AV_D);
-
-				if (OTB) to_process.at(i).avS0offset = "OVERTURNED";
-			}
-			else {
-
-				to_process.at(i).avS0d.DIPDIR = 999.99;
-				to_process.at(i).avS0d.DIP = 	999.99;
-			}
+			if (OTB) 	outGDB.at(i).avd = dipdir_dip_from_DXDYDZ (flip_vector(AV_D));
+			else 		outGDB.at(i).avd = dipdir_dip_from_DXDYDZ (AV_D);
 		}
-		else ASSERT_DEAD_END();
-	}
-
-	return to_process;
-}
-
-vector <GDB> DATATYPE_AVERAGE (vector <GDB> inGDB, vector <size_t> length_container, string METHOD) {
-
-	vector <GDB> outGDB;
-
-	bool FOR_DATA_AVERAGE = 	(METHOD == "DATA_AVERAGE");
-	bool FOR_BEDDING_AVERAGE = 	(METHOD == "BEDDING_AVERAGE");
-	bool FOR_FOLD_SURFACE = 	(METHOD == "FOLDSURFACE");
-
-	if (!FOR_DATA_AVERAGE && !FOR_BEDDING_AVERAGE && !FOR_FOLD_SURFACE) ASSERT_DEAD_END();
-
-	size_t RANGE_START = 0;
-	size_t RANGE_END = 0;
-
-	for (size_t i = 0; i < length_container.size(); i++) {
-
-		vector <GDB> to_process;
-
-		RANGE_END = RANGE_END + length_container.at(i);
-
-		for (size_t k = RANGE_START; k < RANGE_END; k++) to_process.push_back(inGDB.at(k));
-
-		RANGE_START = RANGE_START + length_container.at(i);
-
-
-		bool is_DATA_FOLDSURFACE = is_allowed_foldsurface_processing(to_process.at(0).DATATYPE);
-		bool PROCESSABE = (is_datatype_processable_for_average(to_process));
-		bool MT2 = (to_process.size() > 2);
-		bool SNG = MT2 && is_plane_dataset_singular (to_process, "AVERAGE");
-
-		if (FOR_DATA_AVERAGE && PROCESSABE && !SNG) {
-
-			VCTR AV_D = calculate_data_average_vector (to_process, "AVERAGE");
-
-			to_process = apply_data_average_vector (to_process, AV_D, "DATA_AVERAGE");
-		}
-		else if (FOR_BEDDING_AVERAGE && PROCESSABE) {
-
-			VCTR AV_D = calculate_bedding_average_vector (to_process);
-
-			to_process = apply_data_average_vector (to_process, AV_D, "BEDDING_AVERAGE");
-		}
-		else if (is_DATA_FOLDSURFACE && FOR_FOLD_SURFACE && PROCESSABE && !SNG) {
-
-			VCTR GR_CRC = calculate_data_average_vector (to_process, "FOLDSURFACE");
-
-			to_process = apply_data_average_vector (to_process, GR_CRC, "DATA_AVERAGE");
-		}
-		else if (SNG) {
-
-			cout << "  - Singular " << to_process.at(0).DATATYPE << " data set at location " << to_process.at(0).LOC << "." << endl;
-		}
-		else {} //OK
-
-		outGDB = merge_GDB(to_process, outGDB);
 	}
 	return outGDB;
 }
 
-void dbg_averages (vector <GDB> inGDB) {
+vector <GDB> DATATYPE_AVERAGE (const vector <GDB>& inGDB, const string MODE) {
+
+	const bool FOLD = MODE == "FOLD";
+
+	vector <GDB> outGDB = inGDB;
+
+	const bool PROCESSABE = is_datatype_processable_for_average (outGDB.at(0).DATATYPE);
+
+	if (!PROCESSABE) return outGDB;
+
+	const bool SNG = outGDB.size() > 2 && is_plane_dataset_singular (outGDB);
+
+	for (size_t i = 0; i < outGDB.size(); i++) {
+
+		VCTR AV_D;
+
+		if (!SNG) {
+
+			AV_D = calculate_data_average_vector (outGDB);
+		}
+		else  {
+
+			AV_D = outGDB.at(0).D;
+
+			if (!is_mode_DEBUG()) cout << "  - Singular " << outGDB.at(0).DATATYPE << " data set at location " << outGDB.at(0).LOC << "." << endl;
+		}
+
+		outGDB = apply_data_average_vector (outGDB, AV_D, MODE);
+	}
+	return outGDB;
+}
+
+vector < vector <GDB> > calculate_average_for_groups (const vector <vector <GDB> >& inGDB_G) {
+
+	vector <vector <GDB> > outGDB_G = inGDB_G;
+
+	for (size_t i = 0; i < outGDB_G.size(); i++) {
+
+			vector <GDB> ACT = outGDB_G.at(i);
+
+			ACT = init_average (ACT);
+
+			ACT = DATATYPE_AVERAGE (ACT, "");
+
+			outGDB_G.at(i) = ACT;
+	}
+	return outGDB_G;
+}
+
+bool has_group_bedding (const vector <vector <GDB> >& inGDB_G) {
+
+	for (size_t i = 0; i < inGDB_G.size(); i++) {
+		for (size_t j = 0; j < inGDB_G.at(i).size(); j++) {
+
+			//if (inGDB_G.at(i).at(j).DATATYPE == "BEDDING") return true;
+			if (is_allowed_handle_as_bedding(inGDB_G.at(i).at(j).DATATYPE)) return true;
+		}
+	}
+	return false;
+}
+
+VCTR return_group_bedding_vector (const vector <vector <GDB> >& inGDB_G) {
+
+	for (size_t i = 0; i < inGDB_G.size(); i++) {
+		for (size_t j = 0; j < inGDB_G.at(i).size(); j++) {
+
+			//if (inGDB_G.at(i).at(j).DATATYPE == "BEDDING") return inGDB_G.at(i).at(j).avD;
+			if (is_allowed_handle_as_bedding (inGDB_G.at(i).at(j).DATATYPE)) return inGDB_G.at(i).at(j).avD;
+		}
+	}
+	ASSERT_DEAD_END();
+
+	return declare_vector(NaN(), NaN(), NaN());
+}
+
+vector <vector <GDB> > apply_group_bedding_vector (const vector <vector <GDB> >& inGDB_G, const VCTR AV_D) {
+
+	vector <vector <GDB> > outGDB_G = inGDB_G;
+
+	const bool OVERTURNED = (AV_D.Z > 0.0);
+
+	for (size_t i = 0; i < outGDB_G.size(); i++) {
+		for (size_t j = 0; j < outGDB_G.at(i).size(); j++) {
+
+			GDB ACT = outGDB_G.at(i).at(j);
+
+			ACT.avS0D = AV_D;
+			ACT.avS0N = NXNYNZ_from_DXDYDZ(AV_D);
+
+			if (OVERTURNED) {
+
+				ACT.avS0d = dipdir_dip_from_DXDYDZ (flip_vector(AV_D));
+				ACT.avS0offset = "OVERTURNED";
+			}
+			else ACT.avS0d = dipdir_dip_from_DXDYDZ (AV_D);
+
+			outGDB_G.at(i).at(j) = ACT;
+		}
+	}
+	return outGDB_G;
+}
+
+vector < vector < vector <vector <GDB> > > > AVERAGE (const vector < vector < vector <vector <GDB> > > >& inGDB_G) {
+
+	vector < vector < vector <vector <GDB> > > > outGDB_G = inGDB_G;
+
+	for (size_t i = 0; i < outGDB_G.size(); i++) {
+
+		for (size_t j = 0; j < outGDB_G.at(i).size(); j++) {
+
+			vector <vector <GDB> > ACT = outGDB_G.at(i).at(j);
+
+			ACT = calculate_average_for_groups (ACT);
+
+			if (has_group_bedding (ACT)) {
+
+				const VCTR AV_D = return_group_bedding_vector (ACT);
+
+				ACT = apply_group_bedding_vector (ACT, AV_D);
+			}
+			outGDB_G.at(i).at(j) = ACT;
+		}
+	}
+	return outGDB_G;
+}
+
+void dbg_averages (const vector <GDB>& inGDB) {
 
 	cout
 	<< "DATA_ID" << '\t'
@@ -437,21 +413,4 @@ void dbg_averages (vector <GDB> inGDB) {
 		<< R.avS0d.DIP << '\t' << " ---- " << '\t'
 		<< R.avS0offset << endl;
 	}
-}
-
-vector <GDB> cGc_average (vector <GDB> inGDB) {
-
-	vector <GDB> outGDB = init_average (inGDB);
-
-	vector <size_t> length_container;
-
-	length_container = generate_block_length (outGDB, "DATA_AVERAGE");
-	outGDB = DATATYPE_AVERAGE (outGDB, length_container, "DATA_AVERAGE");
-
-	length_container = generate_block_length (outGDB, "BEDDING_AVERAGE");
-	outGDB = DATATYPE_AVERAGE (outGDB, length_container, "BEDDING_AVERAGE");
-
-	cout << "  - Data set averages were computed for " << outGDB.size() << " records." << endl;
-
-	return outGDB;
 }
