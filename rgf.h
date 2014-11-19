@@ -69,11 +69,11 @@ bool bycorrDIPDIRcorrDIPcorrLDIPDIRcorrLDIP(const GDB& x, const GDB& y);
 
 bool byeigenvalue(const sort_jacobi& x, const sort_jacobi& y);
 
-vector < vector <GDB> > sort_by_iID (const vector < vector <GDB> >& inGDB_G);
+//vector < vector <GDB> > sort_by_iID (const vector < vector <GDB> >& inGDB_G);
 vector <GDB> sort_by_iID (const vector <GDB>& inGDB); //ok
 
-bool stopcriteria (const string pDT, const string DT, const string pL, const string L, const string pGC, const string GC); //ok
-bool stopcriteria (const string pDT, const string DT, const string pL, const string L);
+//bool stopcriteria (const string pDT, const string DT, const string pL, const string L, const string pGC, const string GC); //ok
+//bool stopcriteria (const string pDT, const string DT, const string pL, const string L);
 
 
 

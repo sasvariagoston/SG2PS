@@ -15,7 +15,6 @@ using namespace std;
 
 void print_banner () ;
 
-
 string capslock (string input);
 
 string to_uppercase(string s);

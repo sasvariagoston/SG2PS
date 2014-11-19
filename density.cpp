@@ -20,6 +20,7 @@
 #include "standard_output.hpp"
 #include "structs.h"
 
+/*
 XY stereonet_coordinate_from_DIPDIR_DIP (const DIPDIR_DIP& in, const CENTER& center) {
 
 	XY out;
@@ -51,6 +52,7 @@ XY stereonet_coordinate_from_DIPDIR_DIP (const DIPDIR_DIP& in, const CENTER& cen
 
 	return out;
 }
+*/
 
 vector < vector <GRID_CENTER> > generate_rectangular_grid_from_triange_center (const size_t cell_number) {
 
@@ -137,7 +139,7 @@ vector < vector <GRID_CENTER> > calculate_grid_cell_values_from_triangle (vector
 	}
 	return rect_grid;
 }
-
+/*
 bool by_GRID_COUNT (const GRID_CENTER& x, const GRID_CENTER& y) {
 
 	return x.COUNT < y.COUNT;
@@ -161,7 +163,7 @@ vector <size_t> sort_by_VALUE (vector <size_t> IN) {
 
 	return IN;
 }
-
+*/
 size_t return_RECT_GRID_max_count (const vector < vector <GRID_CENTER> >& RECT_GRID) {
 
 	double MAX = 0.0;
@@ -855,6 +857,7 @@ bool is_point_in_circle (const VCTR& in) {
 	return (sqrt((in.X * in.X) + (in.Y * in.Y)) < 1.0);
 }
 
+/*
 bool is_circle_border (const VCTR& A, const VCTR& B) {
 
 	if (
@@ -863,6 +866,7 @@ bool is_circle_border (const VCTR& A, const VCTR& B) {
 			) return true;
 	else return false;
 }
+*/
 
 VCTR interpolate_between_points (const VCTR& inA, const VCTR& inB) {
 

@@ -64,6 +64,19 @@ vector <vector < vector <string> > > return_default_settings_database () {
 
 	const bool G = is_mode_GENERATE_TEST_FILES();
 
+	//-----------------------WELL----------------------------------
+	//00
+	pushbach_settings_item (defitem, "WELLDATA:", "  - Do you want to apply well data processing?");
+	pushbach_settings_option (defitem,
+			"Y",
+			"  - Process as well data as well.................................",
+			"    - processing as well data set...........................[Y],  ");
+	pushbach_settings_option (defitem,
+			"N",
+			"  - Only process as field/other data.............................",
+			"    - processing as well data set: .........................[n]?  ");
+	DEF.push_back(defitem);
+
 	//-----------------------PLOT----------------------------------
 	//01
 	pushbach_settings_item (defitem, "DATARULE:", "  - Data convention:");
@@ -139,17 +152,17 @@ vector <vector < vector <string> > > return_default_settings_database () {
 
 	//-----------------------AVERAGE AND CORRECTIONS----------------------------------
 	//06
-	pushbach_settings_item (defitem, "AVCALCMETHOD:", "  - Average calculation methodology:");
-	pushbach_settings_option (defitem,
-			"O",
-			"  - Average calculation.........................: outcrop data",
-			"    - outcrop data..........................................[O],  ");
-	pushbach_settings_option (defitem,
-			"A",
-			"  - Average calculation.........................: outcrop and active group data",
-			"    - outcrop and active group data.........................[a],  ");
-	DEF.push_back(defitem);
-
+	//pushbach_settings_item (defitem, "AVCALCMETHOD:", "  - Average calculation methodology:");
+	//pushbach_settings_option (defitem,
+	//		"O",
+	//		"  - Average calculation.........................: outcrop data",
+	//		"    - outcrop data..........................................[O],  ");
+	//pushbach_settings_option (defitem,
+	//		"A",
+	//		"  - Average calculation.........................: outcrop and active group data",
+	//		"    - outcrop and active group data.........................[a],  ");
+	//DEF.push_back(defitem);
+	//
 	//07
 	pushbach_settings_item (defitem, "TILTING:", "  - Bedding and paleo North correction:");
 	pushbach_settings_option (defitem,
@@ -252,9 +265,13 @@ vector <vector < vector <string> > > return_default_settings_database () {
 	//12
 	pushbach_settings_item (defitem, "INPUTGROUP:", "  - How to import input file groups (if more then one available):");
 	pushbach_settings_option (defitem,
+			"N",
+			"  - Don't import any record",
+			"    - don't import any record...............................[N],  ");
+	pushbach_settings_option (defitem,
 			"F",
 			"  - Import first record (used for group codes)",
-			"    - import first record (used for group codes)............[F],  ");
+			"    - import first record (used for group codes)............[f],  ");
 	pushbach_settings_option (defitem,
 			"S",
 			"  - Import second record(used for clustering)",

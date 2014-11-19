@@ -59,7 +59,7 @@ vector <GDB> competeRGFcontect (const string projectname, const string inputxyfi
 			if (is_INPUTGROUP_FIRST()) 			outGDB.at(i).GC = char_to_string(GC.at(0));
 			else if (is_INPUTGROUP_SECOND()) 	outGDB.at(i).GC = char_to_string(GC.at(1));
 			else if (is_INPUTGROUP_THIRD()) 	outGDB.at(i).GC = char_to_string(GC.at(2));
-			else {};
+			else outGDB.at(i).GC = "X";
 		}
 		else ASSERT_DEAD_END();
 
@@ -540,12 +540,6 @@ vector < vector < vector <vector <GDB> > > > clustering_GBD (const vector < vect
 	return outGDB_G;
 }
 
-bool byLocType(const GDB& x, const GDB& y) {
-
-	if (x.LOC != y.LOC) return x.LOC < y.LOC;
-	return x.DATATYPE < y.DATATYPE;
-}
-
 bool byLocTypeGc (const GDB& x, const GDB& y) {
 
 	if (x.LOC != y.LOC) return x.LOC < y.LOC;
@@ -570,21 +564,6 @@ bool byeigenvalue(const sort_jacobi& x, const sort_jacobi& y) {
 	return x.eigenvalue < y.eigenvalue;
 }
 
-vector < vector <GDB> > sort_by_iID (const vector < vector <GDB> >& inGDB_G) {
-
-	vector < vector <GDB> > outGDB_G;
-
-	for (size_t i = 0; i < inGDB_G.size(); i++) {
-
-		vector <GDB> buf = inGDB_G.at(i);
-
-		buf = sort_by_iID (buf);
-
-		outGDB_G.push_back(buf);
-	}
-	return outGDB_G;
-}
-
 vector <GDB> sort_by_iID (const vector <GDB>& inGDB) {
 
 	vector <GDB> outGDB = inGDB;
@@ -592,16 +571,6 @@ vector <GDB> sort_by_iID (const vector <GDB>& inGDB) {
 	sort(outGDB.begin(), outGDB.end(), byiID);
 
 	return outGDB;
-}
-
-bool stopcriteria (const string pDT, const string DT, const string pL, const string L, const string pGC, const string GC) {
-
-	return pDT != DT || pL != L || pGC != GC;
-}
-
-bool stopcriteria (const string pDT, const string DT, const string pL, const string L) {
-
-	return pDT != DT || pL != L;
 }
 
 vector <GDB>  PREPARE_GDB_FOR_PROCESSING (const vector <GDB>& inGDB, const bool TILT) {
@@ -616,7 +585,6 @@ vector <GDB>  PREPARE_GDB_FOR_PROCESSING (const vector <GDB>& inGDB, const bool 
 
 		if (! is_mode_DEBUG()) outGDB = manipulate_N (outGDB);
 
-		//outGDB = manipulate_N (outGDB); //ok
 		outGDB = generate_MISFIT (outGDB);
 
 		outGDB = striae_correction (outGDB);
@@ -790,14 +758,7 @@ void dbg_cout_GDB_vector_vector (const vector < vector < vector < vector <GDB> >
 		for (size_t j = 0; j < inGDB_G.at(i).size(); j++) {
 			for (size_t k = 0; k < inGDB_G.at(i).at(j).size(); k++) {
 
-				vector <GDB> ACT = inGDB_G.at(i).at(j).at(k);
-
-				//cout << "i: " << i << " j: " << j << " k: " << k << endl;
-
-				//cout
-				//<< "LOC: " << ACT.at(0).LOC
-				//<< " GROUP: " << ACT.at(0).GC
-				//<< " DATATYPE: " << ACT.at(0).DATATYPE  << endl;
+				const vector <GDB> ACT = inGDB_G.at(i).at(j).at(k);
 
 				dbg_cout_GDB_vector (ACT);
 			}

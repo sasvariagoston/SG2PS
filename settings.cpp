@@ -34,6 +34,9 @@ using namespace std;
 
 namespace {
 
+bool WELLDATA_USE = false;
+bool WELLDATA_NO = false;
+
 bool DATARULE_GERMAN = false;
 bool DATARULE_RIGHT_HAND_RULE = false;
 
@@ -51,9 +54,6 @@ bool CONTOURING_DIPDIR_BEARING = false;
 bool CONTOURING_STRIKEDIR_BEARING = false;
 bool CONTOURING_PLANE_NORMAL_BEARING = false;
 bool CONTOURING_STRIAE_BEARING_BEARING = false;
-
-bool AVCALC_OUTCROP = false;
-bool AVCALC_OUTCROP_GROUP = false;
 
 bool TILTING_BEDDING_PALEONORTH = false;
 bool TILTING_BEDDING = false;
@@ -78,6 +78,7 @@ double STRESSANGLE = 999.99;
 bool VIRTUAL_NONE = false;
 bool VIRTUAL_USE = false;
 
+bool INPUTGROUP_NONE = false;
 bool INPUTGROUP_FIRST = false;
 bool INPUTGROUP_SECOND = false;
 bool INPUTGROUP_THIRD = false;
@@ -125,6 +126,16 @@ bool COLOURING_RUPANG = false;
 
 bool GRAYSCALE_NONE = false;
 bool GRAYSCALE_USE = false;
+}
+
+bool is_WELLDATA_USE () {
+
+	return WELLDATA_USE;
+}
+
+bool is_WELLDATA_NO () {
+
+	return WELLDATA_NO;
 }
 
 bool is_DATARULE_GERMAN () {
@@ -182,15 +193,6 @@ bool is_CONTOURING_PLANE_NORMAL_BEARING () {
 bool is_CONTOURING_STRIAE_BEARING_BEARING () {
 
 	return CONTOURING_STRIAE_BEARING_BEARING;
-}
-
-bool is_AVCALC_OUTCROP () {
-
-	return AVCALC_OUTCROP;
-}
-bool is_AVCALC_OUTCROP_GROUP () {
-
-	return AVCALC_OUTCROP_GROUP;
 }
 
 bool is_TILTING_BEDDING_PALEONORTH () {
@@ -270,6 +272,10 @@ bool is_VIRTUAL_USE () {
 	return VIRTUAL_USE;
 }
 
+bool is_INPUTGROUP_NONE () {
+
+	return INPUTGROUP_NONE;
+}
 bool is_INPUTGROUP_FIRST () {
 
 	return INPUTGROUP_FIRST;
@@ -430,7 +436,12 @@ void INIT_SETTINGS (const vector <vector <string> >& SET) {
 		const string KEY = SET.at(i).at(0);
 		const string VAL = SET.at(i).at(1);
 
-		if (KEY == "DATARULE:") {
+		if (KEY == "WELLDATA:") {
+			if 		(VAL == "Y") WELLDATA_USE = true;
+			else if (VAL == "N") WELLDATA_NO = true;
+			else ASSERT_DEAD_END();
+		}
+		else if (KEY == "DATARULE:") {
 			if 		(VAL == "G") DATARULE_GERMAN = true;
 			else if (VAL == "R") DATARULE_RIGHT_HAND_RULE = true;
 			else ASSERT_DEAD_END();
@@ -456,11 +467,6 @@ void INIT_SETTINGS (const vector <vector <string> >& SET) {
 			else if (VAL == "S") CONTOURING_STRIKEDIR_BEARING = true;
 			else if (VAL == "O") CONTOURING_PLANE_NORMAL_BEARING = true;
 			else if (VAL == "B") CONTOURING_STRIAE_BEARING_BEARING = true;
-			else ASSERT_DEAD_END();
-		}
-		else if (KEY == "AVCALCMETHOD:") {
-			if 		(VAL == "O") AVCALC_OUTCROP = true;
-			else if (VAL == "A") AVCALC_OUTCROP_GROUP = true;
 			else ASSERT_DEAD_END();
 		}
 		else if (KEY == "TILTING:")	{
@@ -496,7 +502,9 @@ void INIT_SETTINGS (const vector <vector <string> >& SET) {
 			else ASSERT_DEAD_END();
 		}
 		else if (KEY == "INPUTGROUP:") {
-			if 		(VAL == "F") INPUTGROUP_FIRST = true;
+
+			if 		(VAL == "N") INPUTGROUP_NONE = true;
+			else if (VAL == "F") INPUTGROUP_FIRST = true;
 			else if (VAL == "S") INPUTGROUP_SECOND = true;
 			else if (VAL == "T") INPUTGROUP_THIRD = true;
 			else ASSERT_DEAD_END();

@@ -88,7 +88,7 @@ vector <vector <VCTR> > generate_GDB_VECTORS_for_yamaji (const vector <GDB>& inG
 	}
 	return OUT;
 }
-
+/*
 const static double SUBSET_MISFIT (const vector <VCTR>& N_GDB, const vector <VCTR>& S_GDB, const STRESSTENSOR& ST) {
 
 	if (N_GDB.size() != 4) ASSERT_DEAD_END();
@@ -128,7 +128,7 @@ const static double SUBSET_MISFIT (const vector <VCTR>& N_GDB, const vector <VCT
 	}
 	return MISFIT;
 }
-
+*/
 vector <BRUTEFORCE_RESULT> st_YAMAJI (const vector <GDB>& inGDB) {
 
 	vector <BRUTEFORCE_RESULT> OUT;

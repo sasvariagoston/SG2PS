@@ -10,7 +10,7 @@
 
 #include "structs.h"
 
-XY stereonet_coordinate_from_DIPDIR_DIP (const DIPDIR_DIP& in, const CENTER& center);
+//XY stereonet_coordinate_from_DIPDIR_DIP (const DIPDIR_DIP& in, const CENTER& center);
 
 vector < vector <GRID_CENTER> > generate_rectangular_grid_from_triange_center (const size_t cell_number);
 
@@ -52,7 +52,7 @@ vector < vector <VCTR> > generate_bezier_points (const vector <vector <LINE> >& 
 
 bool is_point_in_circle (const VCTR& in);
 
-bool is_circle_border (const VCTR& A, const VCTR& B);
+//bool is_circle_border (const VCTR& A, const VCTR& B);
 
 VCTR interpolate_between_points (const VCTR& A, const VCTR& B);
 

@@ -35,6 +35,8 @@ const string AV_GRY_CLR = "0.20 0.20 0.20";
 const string AV_RGB_CLR = "1.00 0.00 0.00";
 const string AVO_GRY_CLR = "0.40 0.40 0.40";
 const string AVO_RGB_CLR = "0.80 0.00 0.20";
+const string OTB_GRY_CLR = "0.00 0.00 0.00";
+const string OTB_RGB_CLR = "0.00 0.00 0.00";
 const string FLD_GRY_CLR = "0.60 0.60 0.60";
 const string FLD_RGB_CLR = "0.00 0.00 1.00";
 const string C_GRY_CLR = "0.80 0.80 0.80";
@@ -44,6 +46,8 @@ const double AV_GRY_LNW = 2.0;
 const double AV_RGB_LNW = 1.5;
 const double AVO_GRY_LNW = 2.0;
 const double AVO_RGB_LNW = 1.5;
+const double OTB_GRY_LNW = 1.5;
+const double OTB_RGB_LNW = 1.5;
 const double FLD_GRY_LNW = 2.0;
 const double FLD_RGB_LNW = 1.5;
 const double C_GRY_LNW = 2.0;
@@ -53,6 +57,8 @@ const string AV_GRY_DSH = "   ";
 const string AV_RGB_DSH = "   ";
 const string AVO_GRY_DSH = "6 6";
 const string AVO_RGB_DSH = "6 6";
+const string OTB_GRY_DSH = "6 6";
+const string OTB_RGB_DSH = "6 6";
 const string FLD_GRY_DSH = "6 6";
 const string FLD_RGB_DSH = "6 6";
 const string C_GRY_DSH = "6  6";
@@ -921,24 +927,28 @@ void PS_stress_state (ofstream& o, const PAPER P, const CENTER& center, const ST
 
 void PS_folddata (GDB in, ofstream& o, CENTER center) {
 
-	o << "/ArialNarrow-Bold findfont 8 scalefont setfont" << '\n';
+	font_PS(o, "ArialNarrow-Bold", 8);
 
-	o << "0 0 0 setrgbcolor" << '\n';
+	color_PS (o, "0 0 0");
 
-	o
-	<< "  " << fixed << setprecision (3) << center.X + (center.radius / 2.0)
-	<< " "  << fixed << setprecision (3) << center.Y - center.radius << " translate" << '\n';
+	translate_PS (o, center.X + (center.radius / 2.0), center.Y - center.radius, 3);
 
-	o
-	<< "   0 0 moveto "
-	<< "(Fold great circle: "
-	<< setfill ('0') << setw (3) << fixed << setprecision (0) << in.avd.DIPDIR << "/"
-	<< setfill ('0') << setw (2) << fixed << setprecision (0) << in.avd.DIP
-	<< ") show" <<'\n';
+	string T = "Fold great circle: ";
 
-	o
-	<< "  " << fixed << setprecision (3) << - center.X - (center.radius / 2.0)
-	<< " "  << fixed << setprecision (3) << - center.Y + center.radius << " translate" << '\n';
+	string DD;
+
+	if (in.avd.DIPDIR < 10.0) T = T + "00" + double_to_string (in.avd.DIPDIR, 0);
+	else if (in.avd.DIPDIR < 100.0) T = T + "0" + double_to_string (in.avd.DIPDIR, 0);
+	else T = T + double_to_string (in.avd.DIPDIR, 0);
+
+	T = T + "/";
+
+	if (in.avd.DIP < 10.0) T = T + "0" + double_to_string (in.avd.DIP, 0);
+	else T = T + double_to_string (in.avd.DIP, 0);
+
+	text_PS(o, 0.0, 0.0, 3, T);
+
+	translate_PS (o, - center.X - (center.radius / 2.0), - center.Y + center.radius, 3);
 }
 
 void PS_lineation (const GDB& i, ofstream& o, const CENTER& center, const STRESSFIELD& sf, const bool label, const string type) {
@@ -1231,6 +1241,21 @@ void PS_plane (const GDB& i, ofstream& o, const double X, const double Y, const 
 			DSH = AV_RGB_DSH;
 		}
 	}
+	else if (OTB) {
+
+		if (is_GRAYSCALE_USE()) {
+
+			CLR = i.PSCOLOR;
+			LWD = is_LINEWIDTH();
+			DSH = OTB_GRY_DSH;
+		}
+		else{
+
+			CLR = i.PSCOLOR;
+			LWD = is_LINEWIDTH();
+			DSH = OTB_GRY_DSH;
+		}
+	}
 	else if (FOLD) {
 		if (is_GRAYSCALE_USE()) {
 
@@ -1489,63 +1514,6 @@ void PS_striaearrow (const GDB& i, ofstream& o, const CENTER& center) {
 		translate_PS(o, -X, -Y, 3);
 	}
 	return;
-}
-
-void PS_getstereonet (ofstream& o, CENTER center) {
-
-	const bool S = is_NET_SCHMIDT();
-	const bool W = is_NET_WULFF();
-
-	const bool L = is_HEMISPHERE_LOWER();
-	const bool U = is_HEMISPHERE_UPPER();
-
-	newpath_PS(o);
-	arc_PS(o, center.X, center.Y, center.radius, 0, 360, 3);
-	stroke_PS(o);
-
-	newpath_PS(o);
-	moveto_PS(o, center.X + center.radius, center.Y, 3);
-	lineto_PS(o, center.X + center.radius + 10.0, center.Y, 3);
-	stroke_PS(o);
-
-	newpath_PS(o);
-	moveto_PS(o, center.X, center.Y + center.radius, 3);
-	lineto_PS(o, center.X, center.Y + center.radius + 10.0, 3);
-	stroke_PS(o);
-
-	newpath_PS(o);
-	moveto_PS(o, center.X - center.radius, center.Y, 3);
-	lineto_PS(o, center.X - center.radius - 10.0, center.Y, 3);
-	stroke_PS(o);
-
-	newpath_PS(o);
-	moveto_PS(o, center.X, center.Y - center.radius, 3);
-	lineto_PS(o, center.X, center.Y - center.radius - 10.0, 3);
-	stroke_PS(o);
-
-	newpath_PS(o);
-	moveto_PS(o, center.X, center.Y - 10.0, 3);
-	lineto_PS(o, center.X, center.Y + 10.0, 3);
-	stroke_PS(o);
-
-	newpath_PS(o);
-	moveto_PS(o, center.X - 10.0, center.Y, 3);
-	lineto_PS(o, center.X + 10.0, center.Y, 3);
-	stroke_PS(o);
-
-	font_PS(o, "ArialNarrow-Bold", 20);
-	text_PS(o, center.X - 6.0, center.Y + center.radius + 15.0, 3, "N");
-
-	string T;
-
-	if (S) 		T = "Schmidt-net,";
-	else if (W)	T = "Wulff-net,";
-
-	if (L) 		T = T + " lower hemisphere";
-	else if (U) T = T + " upper hemisphere";
-
-	font_PS(o, "ArialNarrow-Italic", 10);
-	text_PS(o, center.X - center.radius, center.Y - center.radius, 3, T);
 }
 
 void PS_datanumber_averagebedding (const GDB& i, ofstream& o, const PAPER& P, const size_t datanumber) {
@@ -2039,12 +2007,14 @@ void PS_SYMBOL_draw_plane (ofstream& o, const double X, const double Y, const PA
 	else if (O) {
 
 		if (is_GRAYSCALE_USE()) {
-			PS_COLOR = "0.20 0.20 0.20";
-			LINEWIDTH = 2.0;
+			PS_COLOR = OTB_GRY_CLR;
+			LINEWIDTH = OTB_GRY_LNW;
+			DASH = OTB_GRY_DSH;
 		}
 		else {
-			PS_COLOR = "1.00 0.00 0.00";
-			LINEWIDTH = 1.5;
+			PS_COLOR = OTB_RGB_CLR;
+			LINEWIDTH = OTB_RGB_LNW;
+			DASH = OTB_RGB_DSH;
 		}
 	}
 	else if (FOLD) {
@@ -2158,6 +2128,7 @@ void PS_SYMBOLS_STRIAE (ofstream& o, const PAPER& P) {
 void PS_SYMBOLS_PLANE (const string& DATATYPE, ofstream& o, const PAPER& P) {
 
 	const bool FOLDSURFACE = is_allowed_foldsurface_processing(DATATYPE);
+	const bool BEDDING = is_allowed_handle_as_bedding(DATATYPE);
 	const bool C = is_allowed_SC_datatype(DATATYPE);
 	const double X = P.S1X + 0.6 * P.A + 5.0 * P.D;
 	const double Y = P.S1Y - 3.355 * P.A;
@@ -2168,7 +2139,14 @@ void PS_SYMBOLS_PLANE (const string& DATATYPE, ofstream& o, const PAPER& P) {
 		text_PS (o, X + 5.0 * P.D, Y + 2.50 * P.A, 3, "Schistosity");
 		text_PS (o, X + 5.0 * P.D, Y + 1.80 * P.A, 3, "Cleavage");
 	}
-	else 	text_PS (o, X + 5.0 * P.D, Y + 2.50 * P.A, 3, DATATYPE);
+	else if (BEDDING) {
+
+		text_PS (o, X + 5.0 * P.D, Y + 2.50 * P.A, 3, "Bedding");
+		text_PS (o, X + 5.0 * P.D, Y + 1.80 * P.A, 3, "Bedding");
+		text_PS (o, X + 5.0 * P.D, Y + 1.62 * P.A, 3, "Overturned");
+	}
+	else text_PS (o, X + 5.0 * P.D, Y + 2.50 * P.A, 3, DATATYPE);
+
 
 	text_PS (o, X + 5.0 * P.D, Y + 1.10 * P.A, 3, "Average bedding");
 	text_PS (o, X + 5.0 * P.D, Y + 0.40 * P.A, 3, "Average bedding");
@@ -2176,6 +2154,7 @@ void PS_SYMBOLS_PLANE (const string& DATATYPE, ofstream& o, const PAPER& P) {
 
 	PS_SYMBOL_draw_plane (o, P.A, 1.00 * P.A, P, "X");
 	if (C) PS_SYMBOL_draw_plane (o, P.A, 1.20 * P.A, P, "SC");
+	if (BEDDING) PS_SYMBOL_draw_plane (o, P.A, 1.20 * P.A, P, "O");
 	PS_SYMBOL_draw_plane (o, P.A, 1.40 * P.A, P, "AV");
 	PS_SYMBOL_draw_plane (o, P.A, 1.60 * P.A, P, "AV_O");
 

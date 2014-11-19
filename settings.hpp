@@ -5,6 +5,9 @@
 #ifndef SETTINGS_HPP_
 #define SETTINGS_HPP_
 
+bool is_WELLDATA_USE ();
+bool is_WELLDATA_NO ();
+
 bool is_DATARULE_GERMAN ();
 bool is_DATARULE_RIGHT_HAND_RULE ();
 
@@ -49,6 +52,7 @@ double is_STRESSANGLE ();
 bool is_VIRTUAL_NONE ();
 bool is_VIRTUAL_USE ();
 
+bool is_INPUTGROUP_NONE ();
 bool is_INPUTGROUP_FIRST ();
 bool is_INPUTGROUP_SECOND ();
 bool is_INPUTGROUP_THIRD ();
