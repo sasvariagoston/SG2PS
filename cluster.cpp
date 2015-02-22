@@ -2,6 +2,7 @@
 // All rights reserved.
 // This code is published under the GNU Lesser General Public License.
 
+#include <fstream>
 #include <iomanip>
 #include <iostream>
 
@@ -275,8 +276,14 @@ vector <GDB> k_means_clustering (const size_t cluster_number, const vector <GDB>
 
 		if (is_CHK_K_MEANS()) {
 
-			dump_DISTANCE_MATRIX_to_file (distance_matrix, "ST_K-MEANS");
-			dump_WHICH_GROUP_to_file (whichgroup, "ST_K-MEANS");
+			ofstream o;
+
+			const string FN = "ST_K-MEANS.txt";
+
+			o.open (FN.c_str());
+
+			dump_DISTANCE_MATRIX_to_file (distance_matrix, o);
+			dump_WHICH_GROUP_to_file (whichgroup, o);
 		}
 
 		/*

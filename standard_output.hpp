@@ -42,13 +42,13 @@ void STANDARD_OUTPUT (const vector <GDB>& nGDB, const vector <GDB>& tGDB);
 
 void dump_RGF_to_file (const vector <GDB>& inGDB, const string FN);
 void dump_SF_to_file (const vector <STRESSFIELD>& SF, ofstream& o);
-void dump_RECT_GRID_to_file (const vector <vector <GRID_CENTER> >& IN, const string FN);
-void dump_TRI_GRID_to_file (const vector <TRIANGLE>& T, const string FN);
+void dump_RECT_GRID_to_file (const vector <vector <GRID_CENTER> >& IN, ofstream& o);
+void dump_TRI_GRID_to_file (const vector <TRIANGLE>& T, ofstream& o);
 
-void dump_DISTANCE_MATRIX_to_file (const vector <vector <double> >& DM, const string FN);
-void dump_WHICH_GROUP_to_file (const vector <size_t>& WG, const string FN);
-void dump_HISTOGRAM_to_file (const vector <HISTOGRAM>& H, const string FN);
-void dump_VALLEY_to_file (const vector <VALLEY>& V, const string FN);
+void dump_DISTANCE_MATRIX_to_file (const vector <vector <double> >& DM, ofstream& o);
+void dump_WHICH_GROUP_to_file (const vector <size_t>& WG, ofstream& o);
+void dump_HISTOGRAM_to_file (const vector <HISTOGRAM>& H, ofstream& o);
+void dump_VALLEY_to_file (const vector <VALLEY>& V, ofstream& o);
 void dump_ROSENUMBER_to_file (const vector <ROSENUMBER>& R, const string FN);
 
 #endif

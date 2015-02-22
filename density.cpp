@@ -1480,8 +1480,14 @@ void CONTOURING (const vector <GDB>& inGDB, ofstream& o, const PAPER& P, const C
 
 	vector <TRIANGLE> TRI_GRID = generate_net_count (inGDB, NET);
 
+	ofstream r;
+
+	const string FN = "ST_CONTOURING.txt";
+
+	r.open (FN.c_str());
+
 	//debug_TRI_GRID (inGDB, TRI_GRID);
-	if (is_CHK_CONTOURING()) dump_TRI_GRID_to_file (TRI_GRID, "ST_CONTOURING");
+	if (is_CHK_CONTOURING()) dump_TRI_GRID_to_file (TRI_GRID, r);
 
 	vector <GRID_CENTER> TRI_CENTER = generate_triangle_center (TRI_GRID);
 
@@ -1494,7 +1500,7 @@ void CONTOURING (const vector <GDB>& inGDB, ofstream& o, const PAPER& P, const C
 	RECT_GRID = calculate_grid_cell_values_from_triangle (RECT_GRID, TRI_CENTER);
 
 	//debug_RECT_GRID (inGDB, RECT_GRID);
-	if (is_CHK_CONTOURING()) dump_RECT_GRID_to_file (RECT_GRID, "ST_CONTOURING");
+	if (is_CHK_CONTOURING()) dump_RECT_GRID_to_file (RECT_GRID, r);
 
 	double C_MN = 0.5;
 	double C_MX = 0.9;

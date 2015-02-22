@@ -665,11 +665,11 @@ void dump_SF_to_file (const vector <STRESSFIELD>& SF, ofstream& o) {
 	}
 }
 
-void dump_RECT_GRID_to_file (const vector <vector <GRID_CENTER> >& IN, const string FN) {
+void dump_RECT_GRID_to_file (const vector <vector <GRID_CENTER> >& IN, ofstream& o) {
 
-	ofstream o;
+	//ofstream o;
 
-	o.open ((FN + ".txt").c_str());
+	//o.open ((FN + ".txt").c_str());
 
 	o
 	<< fixed << setprecision (8)
@@ -689,11 +689,11 @@ void dump_RECT_GRID_to_file (const vector <vector <GRID_CENTER> >& IN, const str
 	}
 }
 
-void dump_TRI_GRID_to_file (const vector <TRIANGLE>& T, const string FN) {
+void dump_TRI_GRID_to_file (const vector <TRIANGLE>& T, ofstream& o) {
 
-	ofstream o;
+	//ofstream o;
 
-	o.open ((FN + ".txt").c_str());
+	//o.open ((FN + ".txt").c_str());
 
 	o
 	<< fixed << setprecision (8)
@@ -717,11 +717,11 @@ void dump_TRI_GRID_to_file (const vector <TRIANGLE>& T, const string FN) {
 	}
 }
 
-void dump_DISTANCE_MATRIX_to_file (const vector <vector <double> >& DM, const string FN) {
+void dump_DISTANCE_MATRIX_to_file (const vector <vector <double> >& DM, ofstream& o) {
 
-	ofstream o;
+	//ofstream o;
 
-	o.open ((FN + ".txt").c_str());
+	//o.open ((FN + ".txt").c_str());
 
 	o << fixed << setprecision (8) << flush;
 
@@ -735,22 +735,22 @@ void dump_DISTANCE_MATRIX_to_file (const vector <vector <double> >& DM, const st
 	return;
 }
 
-void dump_WHICH_GROUP_to_file (const vector <size_t>& WG, const string FN) {
+void dump_WHICH_GROUP_to_file (const vector <size_t>& WG, ofstream& o) {
 
-	ofstream o;
+	//ofstream o;
 
-	o.open ((FN + ".txt").c_str());
+	//o.open ((FN + ".txt").c_str());
 
 	for (size_t i = 0; i < WG.size(); i++) 	o << WG.at(i) << endl;
 
 	return;
 }
 
-void dump_HISTOGRAM_to_file (const vector <HISTOGRAM>& H, const string FN) {
+void dump_HISTOGRAM_to_file (const vector <HISTOGRAM>& H, ofstream& o) {
 
-	ofstream o;
+	//ofstream o;
 
-	o.open ((FN + ".txt").c_str());
+	//o.open ((FN + ".txt").c_str());
 
 	o << fixed << setprecision (8) << flush;
 
@@ -771,11 +771,11 @@ void dump_HISTOGRAM_to_file (const vector <HISTOGRAM>& H, const string FN) {
 	return;
 }
 
-void dump_VALLEY_to_file (const vector <VALLEY>& V, const string FN) {
+void dump_VALLEY_to_file (const vector <VALLEY>& V, ofstream& o) {
 
-	ofstream o;
+	//ofstream o;
 
-	o.open ((FN + ".txt").c_str());
+	//o.open ((FN + ".txt").c_str());
 
 	o << fixed << setprecision (8) << flush;
 

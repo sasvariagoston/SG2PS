@@ -4,6 +4,7 @@
 
 #include <vector>
 
+#include <fstream>
 #include "structs.h"
 #include "rup_clustering.hpp"
 #include "standard_output.hpp"
@@ -139,8 +140,14 @@ vector <VALLEY> return_valleys (const vector <double>& in, const size_t bin_numb
 
 	if (is_CHK_RUP_ANG()) {
 
-		dump_HISTOGRAM_to_file (H, "ST_RUP_ANG");
-		dump_VALLEY_to_file (V, "ST_RUP_ANG");
+		ofstream o;
+
+		string FN = "ST_RUP_ANG.txt";
+
+		o.open (FN.c_str());
+
+		dump_HISTOGRAM_to_file (H, o);
+		dump_VALLEY_to_file (V, o);
 	}
 	return V;
 }
