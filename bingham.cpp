@@ -38,8 +38,6 @@ STRESSTENSOR st_BINGHAM (const vector <GDB>& inGDB) {
 
 		const VCTR PN = inGDB.at(i).N;
 
-		//const bool OTB = (is_overturned (inGDB.at(i)) && (inGDB.at(i).DATATYPE) == "BEDDING");
-
 		const bool OTB = (is_overturned (inGDB.at(i)) && is_allowed_handle_as_bedding (inGDB.at(i).DATATYPE));
 
 		const double norm_sqr = dotproduct(PN, PN);
@@ -59,6 +57,17 @@ STRESSTENSOR st_BINGHAM (const vector <GDB>& inGDB) {
 
 		st = add_stress_tensor (st, T);
 	}
+
+	//cout << fixed << setprecision(6) << endl;
+
+	//cout << st._11 << endl;
+	//cout << st._12 << endl;
+	//cout << st._13 << endl;
+	//cout << st._22 << endl;
+	///cout << st._23 << endl;
+	//cout << st._33 << endl;
+
+
 	return st;
 }
 
@@ -70,9 +79,9 @@ STRESSFIELD sf_BINGHAM (STRESSTENSOR& st) {
 
 	const VCTR eigenvalue = sf.EIGENVALUE;
 
-	sf.EIGENVALUE.X = eigenvalue.Z / total_eigenvalue;
+	sf.EIGENVALUE.X = eigenvalue.X / total_eigenvalue;
 	sf.EIGENVALUE.Y = eigenvalue.Y / total_eigenvalue;
-	sf.EIGENVALUE.Z = eigenvalue.X / total_eigenvalue;
+	sf.EIGENVALUE.Z = eigenvalue.Z / total_eigenvalue;
 
 	const double EV1 = sf.EIGENVALUE.X;
 	const double EV2 = sf.EIGENVALUE.Y;
@@ -119,6 +128,9 @@ STRESSFIELD sf_BINGHAM (STRESSTENSOR& st) {
 		sf.EIGENVECTOR3 = EVC1;
 	}
 	else ASSERT_DEAD_END();
+
+	//for 230:
+	//Original : e1: 239/18 (73.7%), e2: 331/06 (25.7%), e3: 079/71 (00.7%)
 
 	return computestressfield_DXDYDZ (sf);
 }

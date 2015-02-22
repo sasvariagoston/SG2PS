@@ -13,6 +13,7 @@ namespace {
 // TODO If changes -> update the enum of columns appropriately
 const string headers[] = {
 		"DATA_ID",
+		"DEPTH",
 		"GROUP_CODE",
 		"COLOR_CODE",
 		"LOCATION",

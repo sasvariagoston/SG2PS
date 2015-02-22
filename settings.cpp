@@ -35,7 +35,15 @@ using namespace std;
 namespace {
 
 bool WELLDATA_USE = false;
-bool WELLDATA_NO = false;
+//bool WELLDATA_NO = false;
+
+//bool WELL_INTERVAL_METER = false;
+//bool WELL_INTERVAL_DATANUMBER = false;
+
+//double WELL_INTERVAL_LENGTH = 999.99;
+
+//bool WELL_INTERVAL_MIDDLE_MEDIAN = false;
+//bool WELL_INTERVAL_MIDDLE_AVERAGE = false;
 
 bool DATARULE_GERMAN = false;
 bool DATARULE_RIGHT_HAND_RULE = false;
@@ -128,16 +136,40 @@ bool GRAYSCALE_NONE = false;
 bool GRAYSCALE_USE = false;
 }
 
+
 bool is_WELLDATA_USE () {
 
-	return WELLDATA_USE;
+	return false; //WELLDATA_USE;
 }
 
 bool is_WELLDATA_NO () {
 
-	return WELLDATA_NO;
+	return true; //WELLDATA_NO;
+}
+/*
+bool is_WELL_INTERVAL_METER () {
+
+	return WELL_INTERVAL_METER;
+}
+bool is_WELL_INTERVAL_DATANUMBER () {
+
+	return WELL_INTERVAL_DATANUMBER;
 }
 
+double is_WELL_INTERVAL_LENGTH () {
+
+	return WELL_INTERVAL_LENGTH;
+}
+
+bool is_WELL_INTERVAL_MIDDLE_MEDIAN () {
+
+	return WELL_INTERVAL_MIDDLE_MEDIAN;
+}
+bool is_WELL_INTERVAL_MIDDLE_AVERAGE () {
+
+	return WELL_INTERVAL_MIDDLE_AVERAGE;
+}
+*/
 bool is_DATARULE_GERMAN () {
 
 	return DATARULE_GERMAN;
@@ -436,12 +468,29 @@ void INIT_SETTINGS (const vector <vector <string> >& SET) {
 		const string KEY = SET.at(i).at(0);
 		const string VAL = SET.at(i).at(1);
 
-		if (KEY == "WELLDATA:") {
-			if 		(VAL == "Y") WELLDATA_USE = true;
-			else if (VAL == "N") WELLDATA_NO = true;
+		//if (KEY == "WELLDATA:") {
+			//if 		(VAL == "Y") WELLDATA_USE = true;
+			//else if (VAL == "N")
+			//WELLDATA_NO = true;
+			//else ASSERT_DEAD_END();
+		//}
+		/*
+		else if (KEY == "WELLINTERVAL:") {
+			if 		(VAL == "M") WELL_INTERVAL_METER = true;
+			else if (VAL == "D") WELL_INTERVAL_DATANUMBER = true;
 			else ASSERT_DEAD_END();
 		}
-		else if (KEY == "DATARULE:") {
+		else if (KEY == "WELLINTERVAL_LENGTH:") {
+			WELL_INTERVAL_LENGTH = string_to_double (VAL);
+		}
+		else if (KEY == "WELLINTERVAL_MIDDLE:") {
+			if  	(VAL == "M") WELL_INTERVAL_MIDDLE_MEDIAN = true;
+			else if (VAL == "A") WELL_INTERVAL_MIDDLE_AVERAGE = true;
+			else ASSERT_DEAD_END();
+		}
+		*/
+		//else
+		if (KEY == "DATARULE:") {
 			if 		(VAL == "G") DATARULE_GERMAN = true;
 			else if (VAL == "R") DATARULE_RIGHT_HAND_RULE = true;
 			else ASSERT_DEAD_END();
@@ -494,7 +543,7 @@ void INIT_SETTINGS (const vector <vector <string> >& SET) {
 			else ASSERT_DEAD_END();
 		}
 		else if (KEY == "STRESSANGLE:")	{
-			STRESSANGLE = string_to_double( VAL);
+			STRESSANGLE = string_to_double (VAL);
 		}
 		else if (KEY == "VIRTUAL:")	{
 			if 		(VAL == "N") VIRTUAL_NONE = true;
@@ -515,6 +564,7 @@ void INIT_SETTINGS (const vector <vector <string> >& SET) {
 			else ASSERT_DEAD_END();
 		}
 		else if (KEY == "CLUSTERNUMBER:") {
+
 			if 		(VAL == "N") CLUSTERING_NONE = true;
 			else if (VAL == "A") CLUSTERING_AUTOMATIC = true;
 			else if (VAL == "2" || VAL == "3" || VAL == "4" || VAL == "5" || VAL == "6" || VAL == "7" || VAL == "8" || VAL == "9") {

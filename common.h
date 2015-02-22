@@ -30,12 +30,14 @@ double string_to_int( const string& s, bool& failed);
 double string_to_double(const string& s); // throws logic_error
 
 int string_to_int(const string& s); // throws logic_error
+size_t string_to_size_t (const string& s);
 
 double SIN  (const double& in);
 double COS 	(const double& in);
 double ASIN (const double& in);
 double ACOS (const double& in);
 double ACOS_NUM (const double& in);
+double TAN (const double& in);
 double ATAN (const double& in);
 
 double rounding (double in);
@@ -123,6 +125,11 @@ bool existence (const string& expression, const vector<GDB>& inGDB);
 bool existence_of_group (const size_t group, const vector <size_t>& whichgroup);
 
 vector <GDB> merge_GDB (const vector <GDB>& source, const vector <GDB>& target);
+
+double average (const vector <double>& IN);
+double stdev (const vector <double>& IN);
+VCTR VCTR_average (const vector <VCTR>& IN);
+double median (const vector <double>& IN);
 
 vector <double> quadratic_solution (const double A, const double B, const double C);
 vector <double> cubic_solution (const double A, const double B, const double C, const double D);

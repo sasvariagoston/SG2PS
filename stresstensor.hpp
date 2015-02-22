@@ -5,20 +5,11 @@
 #ifndef STRESSTENSOR_HPP_
 #define STRESSTENSOR_HPP_
 
-
 STRESSTENSOR invert_stress_tensor (const STRESSTENSOR& st); //ok
 STRESSTENSOR add_stress_tensor (const STRESSTENSOR& st1, const STRESSTENSOR& st2); //ok
 
-
-
-
-
-
-
+STRESSFIELD computestressfield_NXNYNZ (const STRESSFIELD& in); //ok
 STRESSFIELD computestressfield_DXDYDZ (const STRESSFIELD& in); //ok
-
-
-
 
 VCTR return_stressvector (const STRESSTENSOR& st, const VCTR& N); //ok
 VCTR return_normalstress (const STRESSTENSOR& st, const VCTR& N); //ok

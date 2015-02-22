@@ -24,6 +24,8 @@
 #include "run_mode.h"
 #include "settings.hpp"
 #include "standard_output.hpp"
+//#include "well.hpp"
+//#include "well_ps.hpp"
 
 using namespace std;
 
@@ -275,10 +277,7 @@ vector <GDB> generate_MISFIT (const vector <GDB>& inGDB) {
 			const VCTR N  = outGDB.at(i).N;
 			const VCTR DC = outGDB.at(i).DC;
 
-			double MSFT = ASIN (dotproduct (N, DC, false));
-			if (MSFT < 0.0) MSFT = - MSFT;
-
-			outGDB.at(i).MISFIT = MSFT;
+			outGDB.at(i).MISFIT = fabs (ASIN (dotproduct (N, DC, false)));
 		}
 		else outGDB.at(i).MISFIT =  NaN();
 	}
@@ -573,6 +572,34 @@ vector <GDB> sort_by_iID (const vector <GDB>& inGDB) {
 	return outGDB;
 }
 
+bool by_DEPTH (const GDB& x, const GDB& y) {
+
+	return x.DEPTH < y.DEPTH;
+}
+
+vector <GDB> sort_by_DEPTH (const vector <GDB>& inGDB) {
+
+	vector <GDB> outGDB = inGDB;
+
+	sort (outGDB.begin(), outGDB.end(), by_DEPTH);
+
+	return outGDB;
+}
+
+bool by_rev_DEPTH (const GDB& x, const GDB& y) {
+
+	return x.DEPTH > y.DEPTH;
+}
+
+vector <GDB> sort_by_rev_DEPTH (const vector <GDB>& inGDB) {
+
+	vector <GDB> outGDB = inGDB;
+
+	sort (outGDB.begin(), outGDB.end(), by_rev_DEPTH);
+
+	return outGDB;
+}
+
 vector <GDB>  PREPARE_GDB_FOR_PROCESSING (const vector <GDB>& inGDB, const bool TILT) {
 
 	vector <GDB> outGDB = inGDB;
@@ -648,7 +675,7 @@ void process_rgf (string inputfilename, string XY_filename, bool is_debug) {
 
 	INIT_DEBUG();
 
-	const PFN projectfoldername = create_project_folder_names (inputfilename);//ok
+	const PFN projectfoldername = create_project_folder_names (inputfilename);
 
 	vector <GDB> nGDB, tGDB, ST_nGDB, ST_tGDB;
 
@@ -659,7 +686,7 @@ void process_rgf (string inputfilename, string XY_filename, bool is_debug) {
 
 	if (!is_mode_DEBUG()) CREATE_PROJECT_FOLDER (projectfoldername, inputfilename, nGDB);
 
-	vector < vector < vector < vector <GDB> > > > nGDB_G = SEPARATE_DATASET_TO_GROUPS (nGDB, "GROUPS"); //ok
+	vector < vector < vector < vector <GDB> > > > nGDB_G = SEPARATE_DATASET_TO_GROUPS (nGDB, "GROUPS");
 
 	nGDB_G = PREPARE_GDB_VECTOR_FOR_PROCESSING (nGDB_G, false);
 
@@ -668,6 +695,7 @@ void process_rgf (string inputfilename, string XY_filename, bool is_debug) {
 	nGDB_G = clustering_GBD (nGDB_G);
 
 	nGDB = MERGE_GROUPS_TO_GDB (nGDB_G);
+
 	nGDB_G = SEPARATE_DATASET_TO_GROUPS (nGDB, "CLUSTER");
 
 	vector < vector < vector < vector <GDB> > > > tGDB_G = RETILT (nGDB_G);
@@ -678,6 +706,9 @@ void process_rgf (string inputfilename, string XY_filename, bool is_debug) {
 
 	nGDB_G = PROCESS_GROUPS (nGDB_G, false);
 	tGDB_G = PROCESS_GROUPS (tGDB_G, true);
+
+	//PROCESS_WELL_GROUPS (nGDB_G, false);
+	//PROCESS_WELL_GROUPS (tGDB_G, true);
 
 	if (!is_mode_DEBUG()) cout << "DATA EVALUATION FROM '" << capslock(inputfilename) << ".RGF' DATABASE FILE" << endl;
 
@@ -723,6 +754,10 @@ void process_rgf (string inputfilename, string XY_filename, bool is_debug) {
 	if (!is_mode_DEBUG()) OUTPUT_TO_RGF (tGDB_G, projectfoldername, true);
 
 	OUTPUT_TO_PS (nGDB_G, tGDB_G, projectfoldername);
+
+	//OUTPUT_TO_WELL_PS (nGDB_G, projectfoldername, false);
+	//OUTPUT_TO_WELL_PS (tGDB_G, projectfoldername, true);
+	//careful! PS module has global variables!!!!
 
 	if (!is_mode_DEBUG()) cout << "EXPORT FROM '" << capslock(inputfilename) << ".RGF' DATABASE FILE" << endl;
 
@@ -774,79 +809,79 @@ void dbg_cout_GDB_vector (const vector <GDB>& inGDB) {
 
 	cout
 	<< "ID" << '\t' << "iID" << '\t'
-	<< "N.X" << '\t' << "N.Y" << '\t' << "N.Z" << '\t'
-	<< "D.X" << '\t' << "D.Y" << '\t'<< "D.Z" << '\t'
-	<< "S.X" << '\t' << "S.Y" << '\t'<< "S.Z" << '\t'
-	<< "NC.X" << '\t' << "NC.Y" << '\t'<< "NC.Z" << '\t'
-	<< "DC.X" << '\t' << "DC.Y" << '\t'<< "DC.Z" << '\t'
-	<< "SC.X" << '\t' << "SC.Y" << '\t'<< "SC.Z" << '\t'
-	<< "SV.X" << '\t' << "SV.Y" << '\t'<< "SV.Z" << '\t'
+	//<< "N.X" << '\t' << "N.Y" << '\t' << "N.Z" << '\t'
+	//<< "D.X" << '\t' << "D.Y" << '\t'<< "D.Z" << '\t'
+	//<< "S.X" << '\t' << "S.Y" << '\t'<< "S.Z" << '\t'
+	//<< "NC.X" << '\t' << "NC.Y" << '\t'<< "NC.Z" << '\t'
+	//<< "DC.X" << '\t' << "DC.Y" << '\t'<< "DC.Z" << '\t'
+	//<< "SC.X" << '\t' << "SC.Y" << '\t'<< "SC.Z" << '\t'
+	//<< "SV.X" << '\t' << "SV.Y" << '\t'<< "SV.Z" << '\t'
 
-	<< "LPITCH" << '\t'
-	<< "LPITCHSENSE" << '\t'
-	<< "PITCHANGLE" << '\t'
+	//<< "LPITCH" << '\t'
+	//<< "LPITCHSENSE" << '\t'
+	//<< "PITCHANGLE" << '\t'
 
-	<< "MISFIT" << '\t'
-	<< "LINEATION" << '\t'
-	<< "UPWARD" << '\t'
-	<< "OFFSET" << '\t'
-	<< "UP" << '\t'
-
-	<< "GC" << '\t'
-	<< "COLOR" << '\t'
-	<< "LOC" << '\t'
-	<< "LOCX" << '\t'
-	<< "LOCY" << '\t'
-	<< "FORMATION" << '\t'
-	<< "DATATYPE" << '\t'
-	<< "DIPDIR" << '\t'
-	<< "DIP" << '\t'
-	<< "LDIR" << '\t'
-	<< "LDIP" << '\t'
+	//<< "MISFIT" << '\t'
+	//<< "LINEATION" << '\t'
+	//<< "UPWARD" << '\t'
+	//<< "OFFSET" << '\t'
+	//<< "UP" << '\t'
+	<< "DEPTH" << '\t'
+	//<< "GC" << '\t'
+	//<< "COLOR" << '\t'
+	//<< "LOC" << '\t'
+	//<< "LOCX" << '\t'
+	//<< "LOCY" << '\t'
+	//<< "FORMATION" << '\t'
+	//<< "DATATYPE" << '\t'
+	//<< "DIPDIR" << '\t'
+	//<< "DIP" << '\t'
+	//<< "LDIR" << '\t'
+	//<< "LDIP" << '\t'
 
 	<< "corr.DIPDIR" << '\t'
 	<< "corr.DIP" << '\t'
-	<< "corrL.DIPDIR" << '\t'
-	<< "corrL.DIP" << '\t'
+	//<< "corrL.DIPDIR" << '\t'
+	//<< "corrL.DIP" << '\t'
 
-	<< "PALEON" << '\t'
-	<< "COMMENT" << '\t'
-	<< "DATAGROUP" << '\t'
-	<< "PSCOLOR" << '\t'
-	<< "DASHED" << '\t'
+	//<< "PALEON" << '\t'
+	//<< "COMMENT" << '\t'
+	//<< "DATAGROUP" << '\t'
+	//<< "PSCOLOR" << '\t'
+	//<< "DASHED" << '\t'
 
-	<< "ptnP.X" << '\t' << "ptnP.Y" << '\t'<< "ptnP.Z" << '\t'
-	<< "ptnT.X" << '\t' << "ptnT.Y" << '\t'<< "ptnT.Z" << '\t'
-	<< "ptnN.X" << '\t' << "ptnN.Y" << '\t'<< "ptnN.Z" << '\t'
+	//<< "ptnP.X" << '\t' << "ptnP.Y" << '\t'<< "ptnP.Z" << '\t'
+	//<< "ptnT.X" << '\t' << "ptnT.Y" << '\t'<< "ptnT.Z" << '\t'
+	//<< "ptnN.X" << '\t' << "ptnN.Y" << '\t'<< "ptnN.Z" << '\t'
 
-	<< "ptnPd.DIPDIR" << '\t'
-	<< "ptnPd.DIP" << '\t'
-	<< "ptnTd.DIPDIR" << '\t'
-	<< "ptnTd.DIP" << '\t'
-	<< "ptnNd.DIPDIR" << '\t'
-	<< "ptnNd.DIP" << '\t'
+	//<< "ptnPd.DIPDIR" << '\t'
+	//<< "ptnPd.DIP" << '\t'
+	//<< "ptnTd.DIPDIR" << '\t'
+	//<< "ptnTd.DIP" << '\t'
+	//<< "ptnNd.DIPDIR" << '\t'
+	//<< "ptnNd.DIP" << '\t'
 
-	<< "avD.X" << '\t' << "avD.Y" << '\t'<< "avD.Z" << '\t'
-	<< "avS0D.X" << '\t' << "avS0D.Y" << '\t'<< "avS0D.Z" << '\t'
-	<< "avS0N.X" << '\t' << "avS0N.Y" << '\t'<< "avS0N.Z" << '\t'
+	//<< "avD.X" << '\t' << "avD.Y" << '\t'<< "avD.Z" << '\t'
+	//<< "avS0D.X" << '\t' << "avS0D.Y" << '\t'<< "avS0D.Z" << '\t'
+	//<< "avS0N.X" << '\t' << "avS0N.Y" << '\t'<< "avS0N.Z" << '\t'
 
-	<< "avS0d.DIPDIR" << '\t'
-	<< "avS0d.DIP" << '\t'
+	//<< "avS0d.DIPDIR" << '\t'
+	//<< "avS0d.DIP" << '\t'
 	<< "avd.DIPDIR" << '\t'
 	<< "avd.DIP" << '\t'
-	<< "avS0offset" << '\t'
+	//<< "avS0offset" << '\t'
 
-	<< "fold_great_circle_N.X" << '\t'
-	<< "fold_great_circle_N.Y" << '\t'
-	<< "fold_great_circle_N.Z" << '\t'
+	//<< "fold_great_circle_N.X" << '\t'
+	//<< "fold_great_circle_N.Y" << '\t'
+	//<< "fold_great_circle_N.Z" << '\t'
 
-	<< "SHEAR_S.X" << '\t' << "SHEAR_S.Y" << '\t'<< "SHEAR_S.Z" << '\t'
-	<< "NORMAL_S.X" << '\t' << "NORMAL_S.Y" << '\t'<< "NORMAL_S.Z" << '\t'
-	<< "UPSILON.X" << '\t' << "UPSILON.Y" << '\t'<< "UPSILON.Z" << '\t'
+	//<< "SHEAR_S.X" << '\t' << "SHEAR_S.Y" << '\t'<< "SHEAR_S.Z" << '\t'
+	//<< "NORMAL_S.X" << '\t' << "NORMAL_S.Y" << '\t'<< "NORMAL_S.Z" << '\t'
+	//<< "UPSILON.X" << '\t' << "UPSILON.Y" << '\t'<< "UPSILON.Z" << '\t'
 
-	<< "lambda" << '\t'
-	<< "ANG" << '\t'
-	<< "RUP" << '\t'
+	//<< "lambda" << '\t'
+	//<< "ANG" << '\t'
+	//<< "RUP" << '\t'
 	<< endl;
 
 	for (size_t i = 0; i < inGDB.size(); i++) {
@@ -859,91 +894,92 @@ void dbg_cout_GDB_vector (const vector <GDB>& inGDB) {
 		<< T.ID << '\t' << T.iID << '\t'
 
 		//<< fixed << setprecision(6)
-		<< T.N.X << '\t' << T.N.Y << '\t' << T.N.Z << '\t'
-		<< T.D.X << '\t' << T.D.Y << '\t'<< T.D.Z << '\t'
-		<< T.S.X << '\t' << T.S.Y << '\t'<< T.S.Z << '\t'
-		<< T.NC.X << '\t' << T.NC.Y << '\t'<< T.NC.Z << '\t'
-		<< T.DC.X << '\t' << T.DC.Y << '\t'<< T.DC.Z << '\t'
-		<< T.SC.X << '\t' << T.SC.Y << '\t'<< T.SC.Z << '\t'
-		<< T.SV.X << '\t' << T.SV.Y << '\t'<< T.SV.Z << '\t'
+		//<< T.N.X << '\t' << T.N.Y << '\t' << T.N.Z << '\t'
+		//<< T.D.X << '\t' << T.D.Y << '\t'<< T.D.Z << '\t'
+		//<< T.S.X << '\t' << T.S.Y << '\t'<< T.S.Z << '\t'
+		//<< T.NC.X << '\t' << T.NC.Y << '\t'<< T.NC.Z << '\t'
+		//<< T.DC.X << '\t' << T.DC.Y << '\t'<< T.DC.Z << '\t'
+		//<< T.SC.X << '\t' << T.SC.Y << '\t'<< T.SC.Z << '\t'
+		//<< T.SV.X << '\t' << T.SV.Y << '\t'<< T.SV.Z << '\t'
 
-		<< T.LPITCH << '\t'
-		<< T.LPITCHSENSE << '\t'
-		<< T.PITCHANGLE << '\t'
+		//<< T.LPITCH << '\t'
+		//<< T.LPITCHSENSE << '\t'
+		//<< T.PITCHANGLE << '\t'
 
 		//<< fixed << setprecision(3)
-		<< T.MISFIT << '\t'
-		<< T.LINEATION << '\t'
-		<< T.UPWARD << '\t'
-		<< T.OFFSET << '\t'
-		<< T.UP<< '\t'
+		//<< T.MISFIT << '\t'
+		//<< T.LINEATION << '\t'
+		//<< T.UPWARD << '\t'
+		//<< T.OFFSET << '\t'
+		//<< T.UP<< '\t'
 
 		//<< fixed << setprecision(0)
-		<< T.GC << '\t'
-		<< T.COLOR << '\t'
-		<< T.LOC << '\t'
-		<< T.LOCX << '\t'
-		<< T.LOCY << '\t'
-		<< T.FORMATION << '\t'
-		<< T.DATATYPE << '\t'
+		<< T.DEPTH << '\t'
+		//<< T.GC << '\t'
+		//<< T.COLOR << '\t'
+		//<< T.LOC << '\t'
+		//<< T.LOCX << '\t'
+		//<< T.LOCY << '\t'
+		//<< T.FORMATION << '\t'
+		//<< T.DATATYPE << '\t'
 
 		//<< fixed << setprecision (3)
-		<< T.DIPDIR << '\t'
-		<< T.DIP << '\t'
-		<< T.LDIR << '\t'
-		<< T.LDIP << '\t'
+		//<< T.DIPDIR << '\t'
+		//<< T.DIP << '\t'
+		//<< T.LDIR << '\t'
+		//<< T.LDIP << '\t'
 
 		<< T.corr.DIPDIR << '\t'
 		<< T.corr.DIP << '\t'
-		<< T.corrL.DIPDIR << '\t'
-		<< T.corrL.DIP << '\t'
+		//<< T.corrL.DIPDIR << '\t'
+		//<< T.corrL.DIP << '\t'
 
 		//<< fixed << setprecision(0)
-		<< T.PALEON << '\t'
-		<< T.COMMENT << '\t'
-		<< T.DATAGROUP << '\t'
-		<< T.PSCOLOR << '\t'
-		<< T.DASHED << '\t'
+		//<< T.PALEON << '\t'
+		//<< T.COMMENT << '\t'
+		//<< T.DATAGROUP << '\t'
+		//<< T.PSCOLOR << '\t'
+		//<< T.DASHED << '\t'
 
 		//<< fixed << setprecision(6)
-		<< T.ptnP.X << '\t' << T.ptnP.Y << '\t'<< T.ptnP.Z << '\t'
-		<< T.ptnT.X << '\t' << T.ptnT.Y << '\t'<< T.ptnT.Z << '\t'
-		<< T.ptnN.X << '\t' << T.ptnN.Y << '\t'<< T.ptnN.Z << '\t'
+		//<< T.ptnP.X << '\t' << T.ptnP.Y << '\t'<< T.ptnP.Z << '\t'
+		//<< T.ptnT.X << '\t' << T.ptnT.Y << '\t'<< T.ptnT.Z << '\t'
+		//<< T.ptnN.X << '\t' << T.ptnN.Y << '\t'<< T.ptnN.Z << '\t'
 
 		//<< fixed << setprecision(3)
-		<< T.ptnPd.DIPDIR << '\t'
-		<< T.ptnPd.DIP << '\t'
-		<< T.ptnTd.DIPDIR << '\t'
-		<< T.ptnTd.DIP << '\t'
-		<< T.ptnNd.DIPDIR << '\t'
-		<< T.ptnNd.DIP << '\t'
+		//<< T.ptnPd.DIPDIR << '\t'
+		//<< T.ptnPd.DIP << '\t'
+		//<< T.ptnTd.DIPDIR << '\t'
+		//<< T.ptnTd.DIP << '\t'
+		//<< T.ptnNd.DIPDIR << '\t'
+		//<< T.ptnNd.DIP << '\t'
 
 		//<< fixed << setprecision(6)
-		<< T.avD.X << '\t' << T.avD.Y << '\t'<< T.avD.Z << '\t'
-		<< T.avS0D.X << '\t' << T.avS0D.Y << '\t'<< T.avS0D.Z << '\t'
-		<< T.avS0N.X << '\t' << T.avS0N.Y << '\t'<< T.avS0N.Z << '\t'
+		//<< T.avD.X << '\t' << T.avD.Y << '\t'<< T.avD.Z << '\t'
+		//<< T.avS0D.X << '\t' << T.avS0D.Y << '\t'<< T.avS0D.Z << '\t'
+		//<< T.avS0N.X << '\t' << T.avS0N.Y << '\t'<< T.avS0N.Z << '\t'
 
 		//<< fixed << setprecision(3)
-		<< T.avS0d.DIPDIR << '\t'
-		<< T.avS0d.DIP << '\t'
+		//<< T.avS0d.DIPDIR << '\t'
+		//<< T.avS0d.DIP << '\t'
 		<< T.avd.DIPDIR << '\t'
 		<< T.avd.DIP << '\t'
-		<< T.avS0offset << '\t'
+		//<< T.avS0offset << '\t'
 
 		//<< fixed << setprecision(6)
-		<< T.fold_great_circle_N.X << '\t'
-		<< T.fold_great_circle_N.Y << '\t'
-		<< T.fold_great_circle_N.Z << '\t'
+		//<< T.fold_great_circle_N.X << '\t'
+		//<< T.fold_great_circle_N.Y << '\t'
+		//<< T.fold_great_circle_N.Z << '\t'
 
 		//<< fixed << setprecision(6)
-		<< T.SHEAR_S.X << '\t' << T.SHEAR_S.Y << '\t'<< T.SHEAR_S.Z << '\t'
-		<< T.NORMAL_S.X << '\t' << T.NORMAL_S.Y << '\t'<< T.NORMAL_S.Z << '\t'
-		<< T.UPSILON.X << '\t' << T.UPSILON.Y << '\t'<< T.UPSILON.Z << '\t'
+		//<< T.SHEAR_S.X << '\t' << T.SHEAR_S.Y << '\t'<< T.SHEAR_S.Z << '\t'
+		//<< T.NORMAL_S.X << '\t' << T.NORMAL_S.Y << '\t'<< T.NORMAL_S.Z << '\t'
+		//<< T.UPSILON.X << '\t' << T.UPSILON.Y << '\t'<< T.UPSILON.Z << '\t'
 
-		<< T.lambda << '\t'
+		//<< T.lambda << '\t'
 
-		<< T.ANG << '\t'
-		<< T.RUP << '\t'
+		//<< T.ANG << '\t'
+		//<< T.RUP << '\t'
 
 		<< endl;
 	}

@@ -6,6 +6,7 @@
 
 #include "structs.h"
 #include "rup_clustering.hpp"
+#include "standard_output.hpp"
 #include "valley_method.hpp"
 
 using namespace std;
@@ -134,7 +135,14 @@ vector <VALLEY> return_valleys (const vector <double>& in, const size_t bin_numb
 
 	V = reduce_N_valley_graph (V);
 
-	return create_valley_graph (V);
+	V = create_valley_graph (V);
+
+	if (is_CHK_RUP_ANG()) {
+
+		dump_HISTOGRAM_to_file (H, "ST_RUP_ANG");
+		dump_VALLEY_to_file (V, "ST_RUP_ANG");
+	}
+	return V;
 }
 
 void dbg_cout_H (vector <HISTOGRAM> inH) {

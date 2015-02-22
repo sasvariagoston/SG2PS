@@ -19,6 +19,10 @@ void setup_run_mode (const vector <string>& ARG_V);
 size_t return_min_argument_number ();
 size_t return_max_argument_number ();
 
-void check_arguments_number (const vector <string>& ARG_V);
+void CHECK_ARGUMENTS_NUMBER (const vector <string>& ARG_V);
+
+vector <string> REMOVE_FIRST_ARGUMENT (vector <string> ARG_V);
+
+void MANAGE_RUN_MODE (const vector <string>& ARG_V) ;
 
 #endif

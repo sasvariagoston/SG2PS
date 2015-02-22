@@ -8,8 +8,12 @@
 #include <string>
 #include <vector>
 
+#include "assertions.hpp"
+#include "common.h"
 #include "exceptions.hpp"
 #include "generate_default_settings.hpp"
+#include "iomanip"
+#include "math.h"
 #include "run_mode.h"
 
 using namespace std;
@@ -57,7 +61,7 @@ void pushbach_settings_range (vector <vector <string> >& defitem, const string m
 	defitem.push_back(buf2);
 }
 
-vector <vector < vector <string> > > return_default_settings_database () {
+vector <vector < vector <string> > > RETURN_ALL_SETTINGS () {
 
 	vector <vector < vector <string> > > DEF;
 	vector < vector <string> > defitem;
@@ -66,19 +70,65 @@ vector <vector < vector <string> > > return_default_settings_database () {
 
 	//-----------------------WELL----------------------------------
 	//00
-	pushbach_settings_item (defitem, "WELLDATA:", "  - Do you want to apply well data processing?");
+
+
+	//pushbach_settings_item (defitem, "WELLDATA:", "  - Do you want to apply well data processing?");
+	//pushbach_settings_option (defitem,
+	//		"N",
+	//		"  - Only process as field/other data.............................",
+	//		"    - processing as well data set: .........................[N]?  ");
+	/*
 	pushbach_settings_option (defitem,
 			"Y",
 			"  - Process as well data as well.................................",
-			"    - processing as well data set...........................[Y],  ");
+			"    - processing as well data set...........................[y],  ");
+
+	*/
+	//DEF.push_back(defitem);
+
+
+	//01
+
+	/*
+	pushbach_settings_item (defitem, "WELLINTERVAL:", "  - Interval calculation for well data processing by metre or by data number?");
 	pushbach_settings_option (defitem,
-			"N",
-			"  - Only process as field/other data.............................",
-			"    - processing as well data set: .........................[n]?  ");
+			"M",
+			"  - Well data processing interval by meter.......................",
+			"    - Well data processing interval by meter................[M],  ");
+	pushbach_settings_option (defitem,
+			"D",
+			"  - Well data processing interval by data number.................",
+			"    - well data processing interval by data number..........[d]?  ");
+	DEF.push_back(defitem);
+	//02
+	pushbach_settings_item (defitem, "WELLINTERVAL_LENGTH:", "  - Well data processing interval length: ");
+	if (!G) pushbach_settings_range (defitem,
+			"1", "5000",
+			"  - Length of a processed interval....: ",
+			" meters / data number",
+			"    - 1 to 50000 meter / data number.................................[1..5000]?  ",
+			"");
+	else pushbach_settings_option (defitem,"100","","");
 	DEF.push_back(defitem);
 
+	*/
+	//03
+
+	/*
+	pushbach_settings_item (defitem, "WELLINTERVAL_MIDDLE:", "  - Interval mid point calculation?");
+	pushbach_settings_option (defitem,
+			"M",
+			"  - Well interval mid point: median..............................",
+			"    - well interval mid point: median.......................[M],  ");
+	pushbach_settings_option (defitem,
+			"A",
+			"  - Well interval mid point: interval mid point..................",
+			"    - well interval mid point: interval mid point...........[a]?  ");
+	DEF.push_back(defitem);
+
+	*/
 	//-----------------------PLOT----------------------------------
-	//01
+	//04
 	pushbach_settings_item (defitem, "DATARULE:", "  - Data convention:");
 	pushbach_settings_option (defitem,
 			"G",
@@ -90,7 +140,7 @@ vector <vector < vector <string> > > return_default_settings_database () {
 			"    - or right-hand rule with strike........................[r]?  ");
 	DEF.push_back(defitem);
 
-	//02
+	//05
 	pushbach_settings_item (defitem, "PLOT:", "  - Plot type:");
 	pushbach_settings_option (defitem,
 			"A",
@@ -102,7 +152,7 @@ vector <vector < vector <string> > > return_default_settings_database () {
 			"    - or Hoeppener plot with poles..........................[h]?  ");
 	DEF.push_back(defitem);
 
-	//03
+	//06
 	pushbach_settings_item (defitem, "PLOTTYPE:", "  - Projection:");
 	pushbach_settings_option (defitem,
 			"S",
@@ -114,7 +164,7 @@ vector <vector < vector <string> > > return_default_settings_database () {
 			"    - or equal angle Wulff-net..............................[w]?  ");
 	DEF.push_back(defitem);
 
-	//04
+	//07
 	pushbach_settings_item (defitem,"HEMISPHERE:", "  - Hemisphere:");
 	pushbach_settings_option (defitem,
 			"L",
@@ -126,7 +176,7 @@ vector <vector < vector <string> > > return_default_settings_database () {
 			"    - or upper hemisphere...................................[u]?  ");
 	DEF.push_back(defitem);
 
-	//05
+	//08
 	pushbach_settings_item (defitem, "CONTOURING:", "  - Data density contouring on stereonet:");
 	pushbach_settings_option (defitem,
 			"N",
@@ -151,7 +201,7 @@ vector <vector < vector <string> > > return_default_settings_database () {
 	DEF.push_back(defitem);
 
 	//-----------------------AVERAGE AND CORRECTIONS----------------------------------
-	//06
+	//xx
 	//pushbach_settings_item (defitem, "AVCALCMETHOD:", "  - Average calculation methodology:");
 	//pushbach_settings_option (defitem,
 	//		"O",
@@ -163,7 +213,7 @@ vector <vector < vector <string> > > return_default_settings_database () {
 	//		"    - outcrop and active group data.........................[a],  ");
 	//DEF.push_back(defitem);
 	//
-	//07
+	//09
 	pushbach_settings_item (defitem, "TILTING:", "  - Bedding and paleo North correction:");
 	pushbach_settings_option (defitem,
 			"A",
@@ -180,7 +230,7 @@ vector <vector < vector <string> > > return_default_settings_database () {
 	DEF.push_back(defitem);
 
 	//-----------------------INVERSION----------------------------------
-	//08
+	//10
 	pushbach_settings_item (defitem, "INVERSION:", "  - Inversion of slickenside data:");
 	pushbach_settings_option (defitem,
 			"D",
@@ -214,10 +264,10 @@ vector <vector < vector <string> > > return_default_settings_database () {
 			"  - Inversion...................................: using brute force iteration",
 			"    - inversion using brute force iteration.................[b],  ");
 	/*
-		pushbach_settings_option (defitem,
-				"Y",
-				"  - Inversion...................................: using Yamaji's (2000) iteration",
-				"    - inversion using Yamaji's (2005) method................[y],  ");
+	pushbach_settings_option (defitem,
+			"Y",
+			"  - Inversion...................................: using Yamaji's (2000) iteration",
+			"    - inversion using Yamaji's (2005) method................[y],  ");
 	 */
 	pushbach_settings_option (defitem,
 			"N",
@@ -225,7 +275,7 @@ vector <vector < vector <string> > > return_default_settings_database () {
 			"    - or none...............................................[n]?  ");
 	DEF.push_back(defitem);
 
-	//09
+	//11
 	pushbach_settings_item (defitem, "BINGHAM:", "  - Virtual symmetric striae set:");
 	pushbach_settings_option (defitem,
 			"B",
@@ -237,7 +287,7 @@ vector <vector < vector <string> > > return_default_settings_database () {
 			"    - or none...............................................[n]?  ");
 	DEF.push_back(defitem);
 
-	//10
+	//12
 	pushbach_settings_item (defitem, "STRESSANGLE:", "  - Angle between s1 and fault plane for regression: ");
 	if (!G) pushbach_settings_range (defitem,
 			"10", "80",
@@ -245,11 +295,9 @@ vector <vector < vector <string> > > return_default_settings_database () {
 			" degree(s)",
 			"    - 10 to 80 degrees.................................[10..80]?  ",
 			"");
-
 	else pushbach_settings_option (defitem,"30","","");
 	DEF.push_back(defitem);
-
-	//11
+	//13
 	pushbach_settings_item (defitem, "VIRTUAL:", "  - Virtual symmetric striae set:");
 	pushbach_settings_option (defitem,
 			"N",
@@ -260,9 +308,8 @@ vector <vector < vector <string> > > return_default_settings_database () {
 			"  - Virtual symmetrical striae set..............: use",
 			"    - or use virtual symmetric striae set...................[y]?  ");
 	DEF.push_back(defitem);
-
 	//-----------------------DATA GROUP MANAGEMENT----------------------------------
-	//12
+	//14
 	pushbach_settings_item (defitem, "INPUTGROUP:", "  - How to import input file groups (if more then one available):");
 	pushbach_settings_option (defitem,
 			"N",
@@ -282,7 +329,7 @@ vector <vector < vector <string> > > return_default_settings_database () {
 			"    - import third record (used for RUP/ABG clustering).....[t]?  ");
 	DEF.push_back(defitem);
 
-	//13
+	//15
 	pushbach_settings_item (defitem, "GROUP:", "  - Groups from input file:");
 	pushbach_settings_option (defitem,
 			"Y",
@@ -294,13 +341,13 @@ vector <vector < vector <string> > > return_default_settings_database () {
 			"    - do not use initial groups of the input file...........[n]?  ");
 	DEF.push_back(defitem);
 
-	//14
+	//16
 	pushbach_settings_item (defitem, "CLUSTERNUMBER:", "  - Groups from k-means clustering:");
-	if (!G) pushbach_settings_option (defitem,
+	pushbach_settings_option (defitem,
 			"N",
 			"  - Clustering..................................: do not use",
 			"    - no clustering.........................................[N],  ");
-	if (!G) pushbach_settings_option (defitem,
+	pushbach_settings_option (defitem,
 			"A",
 			"  - Clustering..................................: iteration for ideal cluster number",
 			"    - automatic cluster number..............................[a],  ");
@@ -322,7 +369,7 @@ vector <vector < vector <string> > > return_default_settings_database () {
 
 	DEF.push_back(defitem);
 
-	//15
+	//17
 	pushbach_settings_item (defitem, "RUP_CLUSTERING:", "  - Clustering using stress estimators:");
 	pushbach_settings_option (defitem,
 			"N",
@@ -338,7 +385,7 @@ vector <vector < vector <string> > > return_default_settings_database () {
 			"    - or relative upsilon (RUP) for clustering..............[r]?  ");
 	DEF.push_back(defitem);
 
-	//16
+	//18
 	pushbach_settings_item (defitem, "GROUPSEPARATION:", "  - How to separate?:");
 	pushbach_settings_option (defitem,
 			"I",
@@ -358,7 +405,7 @@ vector <vector < vector <string> > > return_default_settings_database () {
 			"    - Use RUP/ANG group to separate.........................[r]?  ");
 	DEF.push_back(defitem);
 	//-----------------------ROSE DIAGRAMS----------------------------------
-	//17
+	//19
 	pushbach_settings_item (defitem, "ROSETYPE:", "  - Rose diagram type:");
 	pushbach_settings_option (defitem,
 			"S",
@@ -370,7 +417,7 @@ vector <vector < vector <string> > > return_default_settings_database () {
 			"    - or asymmetrical.......................................[a]?  ");
 	DEF.push_back(defitem);
 
-	//18
+	//20
 	pushbach_settings_item (defitem, "ROSEDIRECTION:", "  - Rose diagram for:");
 	pushbach_settings_option (defitem,
 			"S",
@@ -382,7 +429,7 @@ vector <vector < vector <string> > > return_default_settings_database () {
 			"    - dip directions........................................[d],  ");
 	DEF.push_back(defitem);
 
-	//19
+	//21
 	pushbach_settings_item (defitem, "ROSEBINNING:", "  - Bin size on rose plot:");
 	pushbach_settings_option (defitem,
 			"C",
@@ -403,7 +450,7 @@ vector <vector < vector <string> > > return_default_settings_database () {
 	DEF.push_back(defitem);
 
 	//-----------------------ROSE DIAGRAMS----------------------------------
-	//20
+	//22
 	pushbach_settings_item (defitem, "IDEALMOVEMENT:", "  - Ideal movement display for slickensides:");
 	pushbach_settings_option (defitem,
 			"N",
@@ -415,7 +462,7 @@ vector <vector < vector <string> > > return_default_settings_database () {
 			"    - or display............................................[y]?  ");
 	DEF.push_back(defitem);
 
-	//21
+	//23
 	pushbach_settings_item (defitem, "LABELING:", "  - Labelling on stereonet:");
 	pushbach_settings_option (defitem,
 			"N",
@@ -427,7 +474,7 @@ vector <vector < vector <string> > > return_default_settings_database () {
 			"    - or labelling of measured data using data DATA_ID......[y]?  ");
 	DEF.push_back(defitem);
 
-	//22
+	//24
 	pushbach_settings_item (defitem, "LINEWIDTH:", "  - Linewidth in points (1/72 inch):");
 	if (!G) pushbach_settings_range (defitem,
 			"0", "10",
@@ -438,7 +485,7 @@ vector <vector < vector <string> > > return_default_settings_database () {
 	if (G) pushbach_settings_option (defitem,"6","","");  //temp
 	DEF.push_back(defitem);
 
-	//23
+	//25
 	pushbach_settings_item (defitem, "COLORING:", "  - How to colour?:");
 	pushbach_settings_option (defitem,
 			"I",
@@ -461,7 +508,7 @@ vector <vector < vector <string> > > return_default_settings_database () {
 			"  - Use RUP/ANG group to colour",
 			"    - Use RUP/ANG group to colour...........................[r]?  ");
 	DEF.push_back(defitem);
-	//24
+	//26
 	pushbach_settings_item (defitem, "GRAYSCALE:", "  - Color mode of the grapical output:");
 	pushbach_settings_option (defitem,
 			"N", // 0 1 0
@@ -489,358 +536,87 @@ void dbg_default_settings_database (const vector <vector < vector <string> > >& 
 	}
 }
 
+void dump_keys_values_into_settings_file (const vector <string>& KEY, const vector <string>& VAL, const string FN) {
+
+	if (KEY.size() != VAL.size()) ASSERT_DEAD_END();
+
+	ofstream o;
+
+	o.open ((FN + ".set").c_str());
+
+	for (size_t i = 0; i < KEY.size(); i++) o << KEY.at(i) << '\t' << VAL.at(i) << endl;
+
+	return;
+}
+
 void dbg_generate_settings_file_list () {
 
 	if (!is_mode_GENERATE_TEST_FILES()) return;
 
-	vector <vector <vector <string> > > DEF = return_default_settings_database();
+	vector <vector <vector <string> > > DEF = RETURN_ALL_SETTINGS ();
 
-	cout << DEF.size() << endl;
+	const size_t D = DEF.size();
+	const size_t STP = 5;
 
-	for (size_t i00 = 1; i00 < DEF.at(0).size(); i00++) {
-		for (size_t i01 = 1; i01 < DEF.at(1).size(); i01++) {
-			for (size_t i02 = 1; i02 < DEF.at(2).size(); i02++) {
-				for (size_t i03 = 1; i03 < DEF.at(3).size(); i03++) {
-					for (size_t i04 = 1; i04 < DEF.at(4).size(); i04++) {
+	for (size_t i = 0; i < D - STP + 1; i++) {
 
-						ofstream o;
+		for (size_t c1 = 1; c1 < DEF.at(i+0).size(); c1++) {
+			for (size_t c2 = 1; c2 < DEF.at(i+1).size(); c2++) {
+				for (size_t c3 = 1; c3 < DEF.at(i+2).size(); c3++) {
+					for (size_t c4 = 1; c4 < DEF.at(i+3).size(); c4++) {
+						for (size_t c5 = 1; c5 < DEF.at(i+4).size(); c5++) {
 
-						string filename =
+							vector <string> KEY, VAL;
 
-								DEF.at(0).at(i00).at(0) +
-								DEF.at(1).at(i01).at(0) +
-								DEF.at(2).at(i02).at(0) +
-								DEF.at(3).at(i03).at(0) +
-								DEF.at(4).at(i04).at(0) +
-								DEF.at(5).at(1).at(0) +
-								DEF.at(6).at(1).at(0) +
-								DEF.at(7).at(1).at(0) +
-								DEF.at(8).at(1).at(0) +
-								DEF.at(9).at(1).at(0) +
-								DEF.at(10).at(1).at(0) +
-								DEF.at(11).at(1).at(0) +
-								DEF.at(12).at(1).at(0) +
-								DEF.at(13).at(1).at(0) +
-								DEF.at(14).at(1).at(0) +
-								DEF.at(15).at(1).at(0) +
-								DEF.at(16).at(1).at(0) +
-								DEF.at(17).at(1).at(0) +
-								DEF.at(18).at(1).at(0) +
-								DEF.at(19).at(1).at(0) +
-								DEF.at(20).at(1).at(0) +
-								DEF.at(21).at(1).at(0) +
-								DEF.at(22).at(1).at(0) +
-								DEF.at(23).at(1).at(0);
+							string FN, val;
 
-						o.open ((filename + ".set").c_str());
+							for (size_t u = 0; u < i; u++) {
+								val = DEF.at(u).at(1).at(0);
+								KEY.push_back (DEF.at(u).at(0).at(0));
+								VAL.push_back (val);
+								FN = FN + val;
+							}
 
-						o << DEF.at(0).at(0).at(0) << '\t' << DEF.at(0).at(i00).at(0) << endl;
-						o << DEF.at(1).at(0).at(0) << '\t' << DEF.at(1).at(i01).at(0) << endl;
-						o << DEF.at(2).at(0).at(0) << '\t' << DEF.at(2).at(i02).at(0) << endl;
-						o << DEF.at(3).at(0).at(0) << '\t' << DEF.at(3).at(i03).at(0) << endl;
-						o << DEF.at(4).at(0).at(0) << '\t' << DEF.at(4).at(i04).at(0) << endl;
-						o << DEF.at(5).at(0).at(0) << '\t' << DEF.at(5).at(1).at(0) << endl;
-						o << DEF.at(6).at(0).at(0) << '\t' << DEF.at(6).at(1).at(0) << endl;
-						o << DEF.at(7).at(0).at(0) << '\t' << DEF.at(7).at(1).at(0) << endl;
-						o << DEF.at(8).at(0).at(0) << '\t' << DEF.at(8).at(1).at(0) << endl;
-						o << DEF.at(9).at(0).at(0) << '\t' << DEF.at(9).at(1).at(0) << endl;
-						o << DEF.at(10).at(0).at(0) << '\t' << DEF.at(10).at(1).at(0) << endl;
-						o << DEF.at(11).at(0).at(0) << '\t' << DEF.at(11).at(1).at(0) << endl;
-						o << DEF.at(12).at(0).at(0) << '\t' << DEF.at(12).at(1).at(0) << endl;
-						o << DEF.at(13).at(0).at(0) << '\t' << DEF.at(13).at(1).at(0) << endl;
-						o << DEF.at(14).at(0).at(0) << '\t' << DEF.at(14).at(1).at(0) << endl;
-						o << DEF.at(15).at(0).at(0) << '\t' << DEF.at(15).at(1).at(0) << endl;
-						o << DEF.at(16).at(0).at(0) << '\t' << DEF.at(16).at(1).at(0) << endl;
-						o << DEF.at(17).at(0).at(0) << '\t' << DEF.at(17).at(1).at(0) << endl;
-						o << DEF.at(18).at(0).at(0) << '\t' << DEF.at(18).at(1).at(0) << endl;
-						o << DEF.at(19).at(0).at(0) << '\t' << DEF.at(19).at(1).at(0) << endl;
-						o << DEF.at(20).at(0).at(0) << '\t' << DEF.at(20).at(1).at(0) << endl;
-						o << DEF.at(21).at(0).at(0) << '\t' << DEF.at(21).at(1).at(0) << endl;
-						o << DEF.at(22).at(0).at(0) << '\t' << DEF.at(22).at(1).at(0) << endl;
-						o << DEF.at(23).at(0).at(0) << '\t' << DEF.at(23).at(1).at(0) << endl;
+							val = DEF.at(i+0).at(c1).at(0);
+							KEY.push_back(DEF.at(i+0).at(0).at(0));
+							VAL.push_back (val);
+							FN = FN + val;
 
-						o.close();
+							val = DEF.at(i+1).at(c2).at(0);
+							KEY.push_back(DEF.at(i+1).at(0).at(0));
+							VAL.push_back (val);
+							FN = FN + val;
+
+							val = DEF.at(i+2).at(c3).at(0);
+							KEY.push_back(DEF.at(i+2).at(0).at(0));
+							VAL.push_back (val);
+							FN = FN + val;
+
+							val = DEF.at(i+3).at(c4).at(0);
+							KEY.push_back(DEF.at(i+3).at(0).at(0));
+							VAL.push_back (val);
+							FN = FN + val;
+
+							val = DEF.at(i+4).at(c5).at(0);
+							KEY.push_back(DEF.at(i+4).at(0).at(0));
+							VAL.push_back (val);
+							FN = FN + val;
+
+							for (size_t v = i+5; v < DEF.size(); v++) {
+								val = DEF.at(v).at(1).at(0);
+								KEY.push_back (DEF.at(v).at(0).at(0));
+								VAL.push_back (val);
+								FN = FN + val;
+							}
+
+							cout << FN << ".SET file has been generated. " << endl;
+
+							dump_keys_values_into_settings_file (KEY, VAL, FN);
+						}
 					}
 				}
 			}
 		}
 	}
-
-	for (size_t i05 = 1; i05 < DEF.at(5).size(); i05++) {
-		for (size_t i06 = 1; i06 < DEF.at(6).size(); i06++) {
-			for (size_t i07 = 1; i07 < DEF.at(7).size(); i07++) {
-				for (size_t i08 = 1; i08 < DEF.at(8).size(); i08++) {
-					for (size_t i09 = 1; i09 < DEF.at(9).size(); i09++) {
-
-						ofstream o;
-
-						string filename =
-
-								DEF.at(0).at(1).at(0) +
-								DEF.at(1).at(1).at(0) +
-								DEF.at(2).at(1).at(0) +
-								DEF.at(3).at(1).at(0) +
-								DEF.at(4).at(1).at(0) +
-								DEF.at(5).at(i05).at(0) +
-								DEF.at(6).at(i06).at(0) +
-								DEF.at(7).at(i07).at(0) +
-								DEF.at(8).at(i08).at(0) +
-								DEF.at(9).at(i09).at(0) +
-								DEF.at(10).at(1).at(0) +
-								DEF.at(11).at(1).at(0) +
-								DEF.at(12).at(1).at(0) +
-								DEF.at(13).at(1).at(0) +
-								DEF.at(14).at(1).at(0) +
-								DEF.at(15).at(1).at(0) +
-								DEF.at(16).at(1).at(0) +
-								DEF.at(17).at(1).at(0) +
-								DEF.at(18).at(1).at(0) +
-								DEF.at(19).at(1).at(0) +
-								DEF.at(20).at(1).at(0) +
-								DEF.at(21).at(1).at(0) +
-								DEF.at(22).at(1).at(0) +
-								DEF.at(23).at(1).at(0);
-
-						o.open ((filename + ".set").c_str());
-
-						o << DEF.at(0).at(0).at(0) << '\t' << DEF.at(0).at(1).at(0) << endl;
-						o << DEF.at(1).at(0).at(0) << '\t' << DEF.at(1).at(1).at(0) << endl;
-						o << DEF.at(2).at(0).at(0) << '\t' << DEF.at(2).at(1).at(0) << endl;
-						o << DEF.at(3).at(0).at(0) << '\t' << DEF.at(3).at(1).at(0) << endl;
-						o << DEF.at(4).at(0).at(0) << '\t' << DEF.at(4).at(1).at(0) << endl;
-						o << DEF.at(5).at(0).at(0) << '\t' << DEF.at(5).at(i05).at(0) << endl;
-						o << DEF.at(6).at(0).at(0) << '\t' << DEF.at(6).at(i06).at(0) << endl;
-						o << DEF.at(7).at(0).at(0) << '\t' << DEF.at(7).at(i07).at(0) << endl;
-						o << DEF.at(8).at(0).at(0) << '\t' << DEF.at(8).at(i08).at(0) << endl;
-						o << DEF.at(9).at(0).at(0) << '\t' << DEF.at(9).at(i09).at(0) << endl;
-						o << DEF.at(10).at(0).at(0) << '\t' << DEF.at(10).at(1).at(0) << endl;
-						o << DEF.at(11).at(0).at(0) << '\t' << DEF.at(11).at(1).at(0) << endl;
-						o << DEF.at(12).at(0).at(0) << '\t' << DEF.at(12).at(1).at(0) << endl;
-						o << DEF.at(13).at(0).at(0) << '\t' << DEF.at(13).at(1).at(0) << endl;
-						o << DEF.at(14).at(0).at(0) << '\t' << DEF.at(14).at(1).at(0) << endl;
-						o << DEF.at(15).at(0).at(0) << '\t' << DEF.at(15).at(1).at(0) << endl;
-						o << DEF.at(16).at(0).at(0) << '\t' << DEF.at(16).at(1).at(0) << endl;
-						o << DEF.at(17).at(0).at(0) << '\t' << DEF.at(17).at(1).at(0) << endl;
-						o << DEF.at(18).at(0).at(0) << '\t' << DEF.at(18).at(1).at(0) << endl;
-						o << DEF.at(19).at(0).at(0) << '\t' << DEF.at(19).at(1).at(0) << endl;
-						o << DEF.at(20).at(0).at(0) << '\t' << DEF.at(20).at(1).at(0) << endl;
-						o << DEF.at(21).at(0).at(0) << '\t' << DEF.at(21).at(1).at(0) << endl;
-						o << DEF.at(22).at(0).at(0) << '\t' << DEF.at(22).at(1).at(0) << endl;
-						o << DEF.at(23).at(0).at(0) << '\t' << DEF.at(23).at(1).at(0) << endl;
-
-						o.close();
-					}
-				}
-			}
-		}
-	}
-
-	for (size_t i10 = 1; i10 < DEF.at(10).size(); i10++) {
-		for (size_t i11 = 1; i11 < DEF.at(11).size(); i11++) {
-			for (size_t i12 = 1; i12 < DEF.at(12).size(); i12++) {
-				for (size_t i13 = 1; i13 < DEF.at(13).size(); i13++) {
-					for (size_t i14 = 1; i14 < DEF.at(14).size(); i14++) {
-
-						ofstream o;
-
-						string filename =
-
-								DEF.at(0).at(1).at(0) +
-								DEF.at(1).at(1).at(0) +
-								DEF.at(2).at(1).at(0) +
-								DEF.at(3).at(1).at(0) +
-								DEF.at(4).at(1).at(0) +
-								DEF.at(5).at(1).at(0) +
-								DEF.at(6).at(1).at(0) +
-								DEF.at(7).at(1).at(0) +
-								DEF.at(8).at(1).at(0) +
-								DEF.at(9).at(1).at(0) +
-								DEF.at(10).at(i10).at(0) +
-								DEF.at(11).at(i11).at(0) +
-								DEF.at(12).at(i12).at(0) +
-								DEF.at(13).at(i13).at(0) +
-								DEF.at(14).at(i14).at(0) +
-								DEF.at(15).at(1).at(0) +
-								DEF.at(16).at(1).at(0) +
-								DEF.at(17).at(1).at(0) +
-								DEF.at(18).at(1).at(0) +
-								DEF.at(19).at(1).at(0) +
-								DEF.at(20).at(1).at(0) +
-								DEF.at(21).at(1).at(0) +
-								DEF.at(22).at(1).at(0) +
-								DEF.at(23).at(1).at(0);
-
-						o.open ((filename + ".set").c_str());
-
-						o << DEF.at(0).at(0).at(0) << '\t' << DEF.at(0).at(1).at(0) << endl;
-						o << DEF.at(1).at(0).at(0) << '\t' << DEF.at(1).at(1).at(0) << endl;
-						o << DEF.at(2).at(0).at(0) << '\t' << DEF.at(2).at(1).at(0) << endl;
-						o << DEF.at(3).at(0).at(0) << '\t' << DEF.at(3).at(1).at(0) << endl;
-						o << DEF.at(4).at(0).at(0) << '\t' << DEF.at(4).at(1).at(0) << endl;
-						o << DEF.at(5).at(0).at(0) << '\t' << DEF.at(5).at(1).at(0) << endl;
-						o << DEF.at(6).at(0).at(0) << '\t' << DEF.at(6).at(1).at(0) << endl;
-						o << DEF.at(7).at(0).at(0) << '\t' << DEF.at(7).at(1).at(0) << endl;
-						o << DEF.at(8).at(0).at(0) << '\t' << DEF.at(8).at(1).at(0) << endl;
-						o << DEF.at(9).at(0).at(0) << '\t' << DEF.at(9).at(1).at(0) << endl;
-						o << DEF.at(10).at(0).at(0) << '\t' << DEF.at(10).at(i10).at(0) << endl;
-						o << DEF.at(11).at(0).at(0) << '\t' << DEF.at(11).at(i11).at(0) << endl;
-						o << DEF.at(12).at(0).at(0) << '\t' << DEF.at(12).at(i12).at(0) << endl;
-						o << DEF.at(13).at(0).at(0) << '\t' << DEF.at(13).at(i13).at(0) << endl;
-						o << DEF.at(14).at(0).at(0) << '\t' << DEF.at(14).at(i14).at(0) << endl;
-						o << DEF.at(15).at(0).at(0) << '\t' << DEF.at(15).at(1).at(0) << endl;
-						o << DEF.at(16).at(0).at(0) << '\t' << DEF.at(16).at(1).at(0) << endl;
-						o << DEF.at(17).at(0).at(0) << '\t' << DEF.at(17).at(1).at(0) << endl;
-						o << DEF.at(18).at(0).at(0) << '\t' << DEF.at(18).at(1).at(0) << endl;
-						o << DEF.at(19).at(0).at(0) << '\t' << DEF.at(19).at(1).at(0) << endl;
-						o << DEF.at(20).at(0).at(0) << '\t' << DEF.at(20).at(1).at(0) << endl;
-						o << DEF.at(21).at(0).at(0) << '\t' << DEF.at(21).at(1).at(0) << endl;
-						o << DEF.at(22).at(0).at(0) << '\t' << DEF.at(22).at(1).at(0) << endl;
-						o << DEF.at(23).at(0).at(0) << '\t' << DEF.at(23).at(1).at(0) << endl;
-
-						o.close();
-					}
-				}
-			}
-		}
-	}
-
-	for (size_t i15 = 1; i15 < DEF.at(15).size(); i15++) {
-		for (size_t i16 = 1; i16 < DEF.at(16).size(); i16++) {
-			for (size_t i17 = 1; i17 < DEF.at(17).size(); i17++) {
-				for (size_t i18 = 1; i18 < DEF.at(18).size(); i18++) {
-					for (size_t i19 = 1; i19 < DEF.at(19).size(); i19++) {
-
-						ofstream o;
-
-						string filename =
-
-								DEF.at(0).at(1).at(0) +
-								DEF.at(1).at(1).at(0) +
-								DEF.at(2).at(1).at(0) +
-								DEF.at(3).at(1).at(0) +
-								DEF.at(4).at(1).at(0) +
-								DEF.at(5).at(1).at(0) +
-								DEF.at(6).at(1).at(0) +
-								DEF.at(7).at(1).at(0) +
-								DEF.at(8).at(1).at(0) +
-								DEF.at(9).at(1).at(0) +
-								DEF.at(10).at(1).at(0) +
-								DEF.at(11).at(1).at(0) +
-								DEF.at(12).at(1).at(0) +
-								DEF.at(13).at(1).at(0) +
-								DEF.at(14).at(1).at(0) +
-								DEF.at(15).at(i15).at(0) +
-								DEF.at(16).at(i16).at(0) +
-								DEF.at(17).at(i17).at(0) +
-								DEF.at(18).at(i18).at(0) +
-								DEF.at(19).at(i19).at(0) +
-								DEF.at(20).at(1).at(0) +
-								DEF.at(21).at(1).at(0) +
-								DEF.at(22).at(1).at(0) +
-								DEF.at(23).at(1).at(0);
-
-						o.open ((filename + ".set").c_str());
-
-						o << DEF.at(0).at(0).at(0) << '\t' << DEF.at(0).at(1).at(0) << endl;
-						o << DEF.at(1).at(0).at(0) << '\t' << DEF.at(1).at(1).at(0) << endl;
-						o << DEF.at(2).at(0).at(0) << '\t' << DEF.at(2).at(1).at(0) << endl;
-						o << DEF.at(3).at(0).at(0) << '\t' << DEF.at(3).at(1).at(0) << endl;
-						o << DEF.at(4).at(0).at(0) << '\t' << DEF.at(4).at(1).at(0) << endl;
-						o << DEF.at(5).at(0).at(0) << '\t' << DEF.at(5).at(1).at(0) << endl;
-						o << DEF.at(6).at(0).at(0) << '\t' << DEF.at(6).at(1).at(0) << endl;
-						o << DEF.at(7).at(0).at(0) << '\t' << DEF.at(7).at(1).at(0) << endl;
-						o << DEF.at(8).at(0).at(0) << '\t' << DEF.at(8).at(1).at(0) << endl;
-						o << DEF.at(9).at(0).at(0) << '\t' << DEF.at(9).at(1).at(0) << endl;
-						o << DEF.at(10).at(0).at(0) << '\t' << DEF.at(10).at(1).at(0) << endl;
-						o << DEF.at(11).at(0).at(0) << '\t' << DEF.at(11).at(1).at(0) << endl;
-						o << DEF.at(12).at(0).at(0) << '\t' << DEF.at(12).at(1).at(0) << endl;
-						o << DEF.at(13).at(0).at(0) << '\t' << DEF.at(13).at(1).at(0) << endl;
-						o << DEF.at(14).at(0).at(0) << '\t' << DEF.at(14).at(1).at(0) << endl;
-						o << DEF.at(15).at(0).at(0) << '\t' << DEF.at(15).at(i15).at(0) << endl;
-						o << DEF.at(16).at(0).at(0) << '\t' << DEF.at(16).at(i16).at(0) << endl;
-						o << DEF.at(17).at(0).at(0) << '\t' << DEF.at(17).at(i17).at(0) << endl;
-						o << DEF.at(18).at(0).at(0) << '\t' << DEF.at(18).at(i18).at(0) << endl;
-						o << DEF.at(19).at(0).at(0) << '\t' << DEF.at(19).at(i19).at(0) << endl;
-						o << DEF.at(20).at(0).at(0) << '\t' << DEF.at(20).at(1).at(0) << endl;
-						o << DEF.at(21).at(0).at(0) << '\t' << DEF.at(21).at(1).at(0) << endl;
-						o << DEF.at(22).at(0).at(0) << '\t' << DEF.at(22).at(1).at(0) << endl;
-						o << DEF.at(23).at(0).at(0) << '\t' << DEF.at(23).at(1).at(0) << endl;
-
-						o.close();
-					}
-				}
-			}
-		}
-	}
-
-	for (size_t i20 = 1; i20 < DEF.at(20).size(); i20++) {
-		for (size_t i21 = 1; i21 < DEF.at(21).size(); i21++) {
-			for (size_t i22 = 1; i22 < DEF.at(22).size(); i22++) {
-				for (size_t i23 = 1; i23 < DEF.at(23).size(); i23++) {
-
-					ofstream o;
-
-					string filename =
-
-							DEF.at(0).at(1).at(0) +
-							DEF.at(1).at(1).at(0) +
-							DEF.at(2).at(1).at(0) +
-							DEF.at(3).at(1).at(0) +
-							DEF.at(4).at(1).at(0) +
-							DEF.at(5).at(1).at(0) +
-							DEF.at(6).at(1).at(0) +
-							DEF.at(7).at(1).at(0) +
-							DEF.at(8).at(1).at(0) +
-							DEF.at(9).at(1).at(0) +
-							DEF.at(10).at(1).at(0) +
-							DEF.at(11).at(1).at(0) +
-							DEF.at(12).at(1).at(0) +
-							DEF.at(13).at(1).at(0) +
-							DEF.at(14).at(1).at(0) +
-							DEF.at(15).at(1).at(0) +
-							DEF.at(16).at(1).at(0) +
-							DEF.at(17).at(1).at(0) +
-							DEF.at(18).at(1).at(0) +
-							DEF.at(19).at(1).at(0) +
-							DEF.at(20).at(i20).at(0) +
-							DEF.at(21).at(i21).at(0) +
-							DEF.at(22).at(i22).at(0) +
-							DEF.at(23).at(i23).at(0);
-
-					o.open ((filename + ".set").c_str());
-
-					o << DEF.at(0).at(0).at(0) << '\t' << DEF.at(0).at(1).at(0) << endl;
-					o << DEF.at(1).at(0).at(0) << '\t' << DEF.at(1).at(1).at(0) << endl;
-					o << DEF.at(2).at(0).at(0) << '\t' << DEF.at(2).at(1).at(0) << endl;
-					o << DEF.at(3).at(0).at(0) << '\t' << DEF.at(3).at(1).at(0) << endl;
-					o << DEF.at(4).at(0).at(0) << '\t' << DEF.at(4).at(1).at(0) << endl;
-					o << DEF.at(5).at(0).at(0) << '\t' << DEF.at(5).at(1).at(0) << endl;
-					o << DEF.at(6).at(0).at(0) << '\t' << DEF.at(6).at(1).at(0) << endl;
-					o << DEF.at(7).at(0).at(0) << '\t' << DEF.at(7).at(1).at(0) << endl;
-					o << DEF.at(8).at(0).at(0) << '\t' << DEF.at(8).at(1).at(0) << endl;
-					o << DEF.at(9).at(0).at(0) << '\t' << DEF.at(9).at(1).at(0) << endl;
-					o << DEF.at(10).at(0).at(0) << '\t' << DEF.at(10).at(1).at(0) << endl;
-					o << DEF.at(11).at(0).at(0) << '\t' << DEF.at(11).at(1).at(0) << endl;
-					o << DEF.at(12).at(0).at(0) << '\t' << DEF.at(12).at(1).at(0) << endl;
-					o << DEF.at(13).at(0).at(0) << '\t' << DEF.at(13).at(1).at(0) << endl;
-					o << DEF.at(14).at(0).at(0) << '\t' << DEF.at(14).at(1).at(0) << endl;
-					o << DEF.at(15).at(0).at(0) << '\t' << DEF.at(15).at(1).at(0) << endl;
-					o << DEF.at(16).at(0).at(0) << '\t' << DEF.at(16).at(1).at(0) << endl;
-					o << DEF.at(17).at(0).at(0) << '\t' << DEF.at(17).at(1).at(0) << endl;
-					o << DEF.at(18).at(0).at(0) << '\t' << DEF.at(18).at(1).at(0) << endl;
-					o << DEF.at(19).at(0).at(0) << '\t' << DEF.at(19).at(1).at(0) << endl;
-					o << DEF.at(20).at(0).at(0) << '\t' << DEF.at(20).at(i20).at(0) << endl;
-					o << DEF.at(21).at(0).at(0) << '\t' << DEF.at(21).at(i21).at(0) << endl;
-					o << DEF.at(22).at(0).at(0) << '\t' << DEF.at(22).at(i22).at(0) << endl;
-					o << DEF.at(23).at(0).at(0) << '\t' << DEF.at(23).at(i23).at(0) << endl;
-
-					o.close();
-
-				}
-			}
-		}
-	}
-	cout << "end dbg_generate_settings_file_list" << endl;
-
 	throw exit_requested ();
 }

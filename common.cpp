@@ -73,8 +73,6 @@ void print_banner () {
 
 }
 
-
-
 string capslock (string input) {
 
 	for(unsigned int i = 0; i < input.length(); i++)	input.at(i) = (char) toupper(input.at(i));
@@ -159,6 +157,11 @@ int string_to_int(const string& s) {
 
 	return to_type<int>(s);
 }
+
+size_t string_to_size_t (const string& s) {
+
+	return to_type <size_t> (s);
+}
 /*
 double SIGNUM (double in) {
 
@@ -232,6 +235,18 @@ double ACOS_NUM (const double& in) {
 	return (out * 180.0) / 3.1415926535;
 }
 
+double TAN (const double& in) {
+
+	double out = in;
+
+	out = (out * 3.1415926535) / 180.0;
+
+	out = tan (out);
+
+	ASSERT(!isnan(out));
+
+	return out;
+}
 double ATAN (const double& in) {
 
 	double out = in;
@@ -1221,7 +1236,6 @@ bool existence_of_group (const size_t group, const vector <size_t>& whichgroup) 
 	return false;
 }
 
-
 vector <GDB> merge_GDB (const vector <GDB>& source, const vector <GDB>& target) {
 
 	vector <GDB> OUT = target;
@@ -1229,6 +1243,89 @@ vector <GDB> merge_GDB (const vector <GDB>& source, const vector <GDB>& target) 
 	for (size_t i = 0; i < source.size(); i++) OUT.push_back(source.at(i));
 
 	return OUT;
+}
+
+double average (const vector <double>& IN) {
+
+	if (IN.size() == 1) return IN.at(0);
+
+	double OUT = 0.0;
+
+	const size_t S = IN.size();
+
+	if (S < 1) ASSERT_DEAD_END();
+
+	double CNT = 0.0;
+
+	for (size_t i = 0; i < S; i++) {
+
+		CNT++;
+
+		OUT = OUT + IN.at(i);
+	}
+	return (OUT  / CNT);
+}
+
+double stdev (const vector <double>& IN) {
+
+	double OUT = 0.0;
+
+	const double AV = average (IN);
+
+	double CNT = 0.0;
+
+	for (size_t i = 0; i < IN.size(); i++) {
+
+		CNT++;
+
+		double SD = (IN.at(i) - AV) * (IN.at(i) - AV);
+
+		if (SD < 0.0) ASSERT_DEAD_END();
+
+		OUT = OUT + SD;
+	}
+	return sqrt(OUT / CNT);
+}
+
+VCTR VCTR_average (const vector <VCTR>& IN) {
+
+	vector <double> X, Y, Z;
+
+	const size_t S = IN.size();
+
+	if (S < 1) ASSERT_DEAD_END();
+
+	for (size_t i = 0; i < S; i++) {
+
+		X.push_back (IN.at(i).X);
+		Y.push_back (IN.at(i).Y);
+		Z.push_back (IN.at(i).Z);
+	}
+	return declare_vector (average(X), average(Y), average(Z));
+}
+
+double median (const vector <double>& IN) {
+
+	if (IN.size() == 1) return IN.at(0);
+
+	vector <double> temp = IN;
+
+	sort (temp.begin(), temp.end());
+
+	const size_t S = temp.size();
+
+	const bool EVEN = S%2 == 0;
+
+	vector <double> to_process;
+
+	for (size_t i = 0; i < S; i++) {
+
+		to_process.push_back (temp.at(i));
+		to_process.push_back (temp.at(i));
+	}
+	if (EVEN) return to_process.at (S);
+
+	return (to_process.at (S) + to_process.at (S+1)) / 2.0;
 }
 
 vector <double> quadratic_solution (const double A, const double B, const double C) {
@@ -1477,42 +1574,25 @@ STRESSTENSOR fix_stress_tensor_singularity(STRESSTENSOR& st) {
 
 STRESSFIELD eigenvalue_eigenvector (STRESSTENSOR st) {
 
-	//st._11 = -0.222668;
-	//	st._12 = -0.128558;
-	//	st._13 =  0.906418;
-	//	st._22 = -0.127125;
-	//	st._23 =  0.222668;
-	//	st._33 =  0.128558;
+	st =  fix_stress_tensor_singularity (st);
 
-	st =  fix_stress_tensor_singularity(st);
-
-	check_stress_tensor_singularity( st );
+	check_stress_tensor_singularity (st);
 
 	STRESSFIELD sf;
 
-
-	double A, B, C, D;
 	double a1, a2, b1, b2, c1, c2;
 
 	vector < double > X;
 
-	A =   1.0;
+	const double A =   1.0;
 
-	B = - (st._11 + st._22 + st._33);
+	const double B = - (st._11 + st._22 + st._33);
 
-	C =   (st._11 * st._22) + (st._22 * st._33) + (st._11 * st._33) - (st._12 * st._12) - (st._23 * st._23) - (st._13 * st._13);
+	const double C =   (st._11 * st._22) + (st._22 * st._33) + (st._11 * st._33) - (st._12 * st._12) - (st._23 * st._23) - (st._13 * st._13);
 
-	D = - ((st._11 * st._22 * st._33) + (2.0 * st._12 * st._23 * st._13) - (st._12 * st._12 * st._33) - (st._23 * st._23 * st._11) - (st._13 * st._13 * st._22));
+	const double D = - ((st._11 * st._22 * st._33) + (2.0 * st._12 * st._23 * st._13) - (st._12 * st._12 * st._33) - (st._23 * st._23 * st._11) - (st._13 * st._13 * st._22));
 
 	X = cubic_solution (A, B, C, D);
-
-//	cout << fixed << setprecision(6) << endl;
-
-	//cout << "ROOTS" << endl;
-	//cout << X.at(0) << endl;
-	//cout << X.at(1) << endl;
-	//cout << X.at(2) << endl;
-	//cout << X.at(3) << endl;
 
 	sort(X.begin(), X.begin()+3);
 
@@ -1645,17 +1725,6 @@ STRESSTENSOR convert_matrix_to_stresstensor (const vector <vector <double> >& IN
 
 	return OUT;
 }
-
-
-
-
-
-
-
-
-
-
-
 
 STRESSFIELD stress_regime (const STRESSFIELD& in) {
 

@@ -160,9 +160,11 @@ string generate_DASH (const string CODE) {
 			if (COLORNUM_STR_V.at(i) == CODE) return DSH_V.at(i+1);
 			if (COLORSTR_STR_V.at(i) == CODE) return DSH_V.at(i+1);
 		}
+		return DSH_V.at(0);
+
 		ASSERT_DEAD_END();
 	}
-	else if (GROUPS && KMEANS && RUP) {
+	else if (GROUPS || KMEANS || RUP) {
 
 		for (size_t i = 0; i < GROUPCODE_STR_V.size(); i++) {
 

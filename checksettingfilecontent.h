@@ -9,30 +9,28 @@
 
 using namespace std;
 
-bool has_settings_file_data (string settingfilename);
+string input_setting_decision_cmd ();
+void list_settings_option_cmd (const vector <vector <vector <string> > >& DEF, const size_t k);
+vector <vector <string> > GET_SETTINGS_CMD (const string projectname);
 
-vector < vector <string> > read_settingsfile_to_vector (string settingfilename);
+vector <vector <string> > is_SETTING_AVAILABE_or_USE_DEFAULT (const string projectname);
 
-bool is_whitecharacter (string in);
-bool fit_of_records (const vector<string>& SETrecord, const vector<vector<vector<string> > >& DEFconst, size_t j, size_t k);
-bool is_setting_record_correct (vector <string> SET);
-bool is_settings_file_correct (string settingfilename);
+vector <vector <string> > READ_SETTINGS_FILE (string settingfilename);
+vector <vector <string> > RETURN_HARDCODED_SETTINGS ();
+vector <vector <string> > COMPLETE_SET_WITH_DEFAULT (const vector <vector <string> >& SET);
 
-vector <vector <string> > input_hardcoded ();
-vector <vector <string> > apply_default (vector <vector <string> > SET);
+bool is_WHITE_CHARACTER (const string in);
+bool is_RECORD_CORRECT (const vector<string>& SETrecord, const vector<vector<vector<string> > >& DEFconst, size_t j, size_t k);
+bool is_SETTINGS_RECORD_CORRECT (const vector <string>& SET);
+bool is_SETTINGS_FILE_CORRECT (const string settingfilename);
 
-string input_setting_decision ();
-vector <vector <string> > decide_setting_status (string projectname);
+void load_settings_batch (const string projectname);
+void load_settings_cmd (const string projectname);
 
-void list_settings_options (vector <vector <vector <string> > > DEF, size_t k);
-vector <vector <string> > inputsettings_manually (string projectname);
+void WRITE_SET_FILE (const vector <vector <string> >& SET, const string projectname);
 
-void manage_settings_batch (string projectname);
-void manage_settings_nobatch (string projectname);
+void dump_settings (const vector <vector <string> >& SET);
 
-void outputsettingfile (vector <vector <string> > SET, string projectname);
-void dump_actual_settings (vector <vector <string> >SET);
-
-void dbg_cout_settings_vector (vector < vector <string> > IN);
+void dbg_cout_settings_vector (const vector < vector <string> >& IN);
 
 #endif

@@ -67,6 +67,11 @@ PFN create_project_folder_names (const string projectname) {
 	output.rgfsep			= output.projectfolder +  bs + "4_rgf_separated";
 	output.pssep			= output.projectfolder +  bs + "5_ps_separated";
 
+	if (is_WELLDATA_USE()) {
+
+		output.well_ps = output.projectfolder +  bs + "6_ps_welldata";
+	}
+
 	return output;
 }
 
@@ -93,10 +98,11 @@ void make_dir (const string& dir_name) {
 	}
 }
 
-void create_folders(const PFN& output, const string& dir) {
+void create_folders (const PFN& output, const string& dir) {
 
 	make_dir(output.rgfsep + path_separator + dir);
 	make_dir(output.pssep  + path_separator + dir);
+	if (is_WELLDATA_USE()) make_dir(output.well_ps  + path_separator + dir);
 }
 
 void createprojectfolders (const PFN& output, const vector <GDB>& inGDB) {
@@ -107,6 +113,7 @@ void createprojectfolders (const PFN& output, const vector <GDB>& inGDB) {
 	make_dir( output.average);
 	make_dir( output.rgfsep);
 	make_dir( output.pssep);
+	if (is_WELLDATA_USE()) make_dir( output.well_ps);
 
 	vector <string> possible_folders = possible_folders_name ();
 
@@ -611,8 +618,6 @@ CENTER return_center (const PAPER P, const bool MOHR, const bool TILT) {
 
 vector <vector <vector <vector <GDB> > > > PROCESS_GROUPS (const vector <vector <vector <vector <GDB> > > >& inGDB_G, const bool TILT) {
 
-	if (!is_mode_DEBUG())  cout << "DATA EVALUATION AND EXPORT FROM THE DATABASE FILE" << endl;
-
 	vector <vector <vector <vector <GDB> > > > outGDB_G = inGDB_G;
 
 	outGDB_G = associate_empty_clustercode (outGDB_G, 2);
@@ -716,9 +721,9 @@ void OUTPUT_TO_PS (const vector <vector <vector <vector <GDB> > > > n_GDB_G, con
 
 			string PS_NAME = P.pssep + BS + DT + BS + LOC + US + DT;
 
-			if (by_GROUPCODE) 	PS_NAME = PS_NAME + US + n_prGDB_G.at(i).at(0).GC;
-			else if (by_KMEANS) PS_NAME = PS_NAME + US + n_prGDB_G.at(i).at(1).GC;
-			else if (by_RUPANG) PS_NAME = PS_NAME + US + n_prGDB_G.at(i).at(2).GC;
+			if (by_GROUPCODE) 	PS_NAME = PS_NAME + US + n_prGDB_G.at(i).at(0).GC.at(0);
+			else if (by_KMEANS) PS_NAME = PS_NAME + US + n_prGDB_G.at(i).at(0).GC.at(1);
+			else if (by_RUPANG) PS_NAME = PS_NAME + US + n_prGDB_G.at(i).at(0).GC.at(2);
 			else {}
 
 			PS_NAME = PS_NAME + ".eps";
@@ -727,7 +732,7 @@ void OUTPUT_TO_PS (const vector <vector <vector <vector <GDB> > > > n_GDB_G, con
 
 			PS_stereonet_header (DT, LOC, OPS);
 
-			const PAPER PPR = PS_dimensions ();
+			const PAPER PPR = PS_dimensions (false);
 
 			PS_STEREONET_SYMBOLS (n_prGDB_G.at(i), OPS, PPR);
 

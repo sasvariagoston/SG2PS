@@ -8,6 +8,14 @@
 bool is_WELLDATA_USE ();
 bool is_WELLDATA_NO ();
 
+//bool is_WELL_INTERVAL_METER ();
+//bool is_WELL_INTERVAL_DATANUMBER ();
+
+//double is_WELL_INTERVAL_LENGTH ();
+
+//bool is_WELL_INTERVAL_MIDDLE_MEDIAN ();
+//bool is_WELL_INTERVAL_MIDDLE_AVERAGE ();
+
 bool is_DATARULE_GERMAN ();
 bool is_DATARULE_RIGHT_HAND_RULE ();
 

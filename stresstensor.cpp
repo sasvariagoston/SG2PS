@@ -57,7 +57,21 @@ STRESSTENSOR add_stress_tensor (const STRESSTENSOR& st1, const STRESSTENSOR& st2
 
 
 
+STRESSFIELD computestressfield_NXNYNZ (const STRESSFIELD& in) {
 
+	STRESSFIELD sf = in;
+
+	sf.EIGENVECTOR1 = flip_N_vector (in.EIGENVECTOR1);
+	sf.S_1 = dipdir_dip_from_NXNYNZ (sf.EIGENVECTOR1);
+
+	sf.EIGENVECTOR2 = flip_N_vector (in.EIGENVECTOR2);
+	sf.S_2 = dipdir_dip_from_NXNYNZ (sf.EIGENVECTOR2);
+
+	sf.EIGENVECTOR3 = flip_N_vector (in.EIGENVECTOR3);
+	sf.S_3 = dipdir_dip_from_NXNYNZ (sf.EIGENVECTOR3);
+
+	return sf;
+}
 
 
 

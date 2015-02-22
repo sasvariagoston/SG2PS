@@ -50,6 +50,8 @@ bool is_plane_dataset_singular (const vector <GDB>& inGDB) {
 
 	const vector <GDB> T = generate_Bingham_dataset (inGDB);
 
+	//cout << "AFTER plane dataset singularity check" << endl;
+
 	const STRESSTENSOR st = st_BINGHAM (T);
 
 	const double det = stresstensor_determinant (st);
@@ -116,21 +118,34 @@ VCTR process_for_average_MT2 (const vector <GDB>& inGDB) {
 
 	const bool FOR_FOLDSURFACE = is_allowed_foldsurface_processing(inGDB.at(0).DATATYPE);
 
+	//cout << "AFTER average" << endl;
+
 	STRESSTENSOR st = st_BINGHAM (temp_for_Bingham);
 
 	STRESSFIELD sf = sf_BINGHAM (st);
 
 	bool OVERTURNED = (fabs(sf.EIGENVALUE.Z) > fabs(sf.EIGENVALUE.X));
 
+	//Before the change in the Bingham statistics, it was:
+	//bool OVERTURNED = (fabs(sf.EIGENVALUE.Z) > fabs(sf.EIGENVALUE.X));
+
 	if (FOR_FOLDSURFACE) {
 
-		if (!OVERTURNED) return (sf.EIGENVECTOR1);
-		else return flip_vector(sf.EIGENVECTOR1);
+		if (!OVERTURNED) return (sf.EIGENVECTOR3);
+		else return flip_vector (sf.EIGENVECTOR3);
+
+		//Before the change in the Bingham statistics, it was:
+		//if (!OVERTURNED) return (sf.EIGENVECTOR1);
+		//else return flip_vector(sf.EIGENVECTOR1);
 	}
 	else {
 
-		if (OVERTURNED) return (sf.EIGENVECTOR3);
-		else return flip_vector(sf.EIGENVECTOR3);
+		if (!OVERTURNED)  return flip_N_vector (sf.EIGENVECTOR1);
+		else return flip_vector (flip_N_vector (sf.EIGENVECTOR1));
+
+		//Before the change in the Bingham statistics, it was:
+		//if (!OVERTURNED) return flip_D_vector (sf.EIGENVECTOR1);
+		//else return flip_vector (flip_D_vector(sf.EIGENVECTOR1));
 	}
 }
 
@@ -255,7 +270,9 @@ vector <GDB> apply_data_average_vector (const vector <GDB>& to_process, const VC
 
 vector <GDB> DATATYPE_AVERAGE (const vector <GDB>& inGDB, const string MODE) {
 
-	const bool FOLD = MODE == "FOLD";
+	//const bool FOLD = MODE == "FOLD";
+
+	//cout << "AFTER DATATYPE_AVERAGE" << endl;
 
 	vector <GDB> outGDB = inGDB;
 
@@ -265,6 +282,22 @@ vector <GDB> DATATYPE_AVERAGE (const vector <GDB>& inGDB, const string MODE) {
 
 	const bool SNG = outGDB.size() > 2 && is_plane_dataset_singular (outGDB);
 
+	//from here new:
+
+	VCTR AV_D;
+
+	if (!SNG) AV_D = calculate_data_average_vector (outGDB);
+
+	else  {
+
+		AV_D = outGDB.at(0).D;
+
+		if (!is_mode_DEBUG()) cout << "  - Singular " << outGDB.at(0).DATATYPE << " data set at location " << outGDB.at(0).LOC << "." << endl;
+	}
+
+	outGDB = apply_data_average_vector (outGDB, AV_D, MODE);
+
+	/*
 	for (size_t i = 0; i < outGDB.size(); i++) {
 
 		VCTR AV_D;
@@ -282,6 +315,7 @@ vector <GDB> DATATYPE_AVERAGE (const vector <GDB>& inGDB, const string MODE) {
 
 		outGDB = apply_data_average_vector (outGDB, AV_D, MODE);
 	}
+	*/
 	return outGDB;
 }
 
@@ -295,7 +329,11 @@ vector < vector <GDB> > calculate_average_for_groups (const vector <vector <GDB>
 
 			ACT = init_average (ACT);
 
+			//cout << "CALCULATE_AVERAGE calls" << endl;
+
 			ACT = DATATYPE_AVERAGE (ACT, "");
+
+			//dbg_cout_GDB_vector (ACT);
 
 			outGDB_G.at(i) = ACT;
 	}

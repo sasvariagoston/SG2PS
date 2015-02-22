@@ -250,10 +250,10 @@ vector <vector <double> > clustering_cycle (const size_t cluster_number, const v
 			if (is_CLUSTERING_AUTOMATIC())	cout << "  - Automatic k-means clustering of '" << flush;
 			else 							cout << "  - User defined k-means clustering of '" << flush;
 
-
 			cout
 			<< inGDB.at(0).LOC << "' location, '"
-			<< inGDB.at(0).DATATYPE << "' data set into "
+			<< inGDB.at(0).DATATYPE << "' data set, '"
+			<< inGDB.at(0).GC << "' group into "
 			<< group_counter << " clusters with "
 			<< fixed << setprecision (2) << cml_dst << "% error." << endl;
 		}
@@ -273,6 +273,13 @@ vector <GDB> k_means_clustering (const size_t cluster_number, const vector <GDB>
 
 		whichgroup = compute_whichgroup_from_distances (distance_matrix);
 
+		if (is_CHK_K_MEANS()) {
+
+			dump_DISTANCE_MATRIX_to_file (distance_matrix, "ST_K-MEANS");
+			dump_WHICH_GROUP_to_file (whichgroup, "ST_K-MEANS");
+		}
+
+		/*
 		if (is_CHK_K_MEANS() && inGDB.at(0).ID == "BZ0066") {
 
 			vector <vector <double> > standard_distance_matrix = return_standard_distance_matrix ();
@@ -281,6 +288,7 @@ vector <GDB> k_means_clustering (const size_t cluster_number, const vector <GDB>
 			vector <size_t> standard_whichgroup = return_standard_whichgroup ();
 			check_standard_whichgroup (whichgroup, standard_whichgroup);
 		}
+		*/
 	}
 	outGDB = attach_k_means_group_codes (whichgroup, outGDB); //ok
 

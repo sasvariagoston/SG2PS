@@ -18,11 +18,11 @@ vector <GDB> CALCULATE_FOLDSURFACE_NORMAL (const vector <GDB>& inGDB) {
 
 	const vector <GDB> OUT = DATATYPE_AVERAGE (inGDB, "FOLD");
 
-	if (is_CHK_FOLDSURFACE()) {
+	//if (is_CHK_FOLDSURFACE()) {
 
-		check_standard_FOLDSURFACE (sort_by_iID(OUT));
-		exit (99);
-	}
+	//	check_standard_FOLDSURFACE (sort_by_iID(OUT));
+	//	exit (99);
+	//}
 
 	return OUT;
 }

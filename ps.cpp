@@ -65,13 +65,21 @@ const string C_GRY_DSH = "6  6";
 const string C_RGB_DSH = "6  6";
 }
 
-PAPER PS_dimensions () {
+PAPER PS_dimensions (const bool WELL) {
 
 	PAPER P;
 
-	P.X = mm_to_point (420);
+	if (WELL) {
 
-	P.Y = P.X * 0.707143;
+		P.Y = mm_to_point (420);
+		P.X = P.Y * 0.707143;
+	}
+	else {
+
+		P.X = mm_to_point (420);
+		P.Y = P.X * 0.707143;
+	}
+
 	P.A = P.X * 0.033670;
 	P.B = P.A / 2.0;
 	P.C = P.B / 2.0;
@@ -451,24 +459,26 @@ void PS_border (const vector <GDB>& inGDB, ofstream& o, const PAPER& P) {
 
 	if (asked_RUPANG && STRIAE) T = T + " - RUP/ANG CLUSTERING USED";
 
+	if (by_GROUPCODE) 	T = T + ", GROUP '" + GC.at(0) + "' USING ORIGINAL GROUPCODE" ;
+	else if (by_KMEANS) T = T + ", GROUP '" + GC.at(1) + "' USING CLUSTERING RESULT" ;
+	else if (by_RUPANG) {
 
-	if (by_GROUPCODE) 	T =  T + ", GROUP '" + GC.at(0) + "' USING ORIGINAL GROUPCODE" ;
-	else if (by_KMEANS) T =  T + ", GROUP '" + GC.at(1) + "' USING CLUSTERING RESULT" ;
-	else if (by_RUPANG && STRIAE) {
+		if (STRIAE) {
 
-		const vector <GDB> hasoffset_GDB = return_striae_with_offset (inGDB);
+			const vector <GDB> hasoffset_GDB = return_striae_with_offset (inGDB);
 
-		const bool ENOUGH_STRIAE = hasoffset_GDB.size() >= minimum_independent_dataset (inGDB);
+			const bool ENOUGH_STRIAE = hasoffset_GDB.size() >= minimum_independent_dataset (inGDB);
 
-		if (is_RUP_CLUSTERING_ANG()) {
+			if (is_RUP_CLUSTERING_ANG()) {
 
-			if (ENOUGH_STRIAE) T =  T + ", GROUP '" + GC.at(2) + "' USING ANG CLUSTERING RESULT" ;
+				if (ENOUGH_STRIAE) T = T + ", GROUP '" + GC.at(2) + "' USING ANG CLUSTERING RESULT" ;
+			}
+			else if (is_RUP_CLUSTERING_ANG()) {
+
+				if (ENOUGH_STRIAE) T = T + ", GROUP '" + GC.at(2) + "' USING RUP CLUSTERING RESULT" ;
+			}
+			else ASSERT_DEAD_END();
 		}
-		else if (is_RUP_CLUSTERING_ANG()) {
-
-			if (ENOUGH_STRIAE) T =  T + ", GROUP '" + GC.at(2) + "' USING RUP CLUSTERING RESULT" ;
-		}
-		else ASSERT_DEAD_END();
 	}
 	else if (is_GROUPSEPARATION_IGNORE()) {}
 	else ASSERT_DEAD_END();
@@ -1974,8 +1984,8 @@ void PS_SYMBOL_draw_plane (ofstream& o, const double X, const double Y, const PA
 
 	if (GROUP) {
 
-		PS_COLOR = generate_PSCOLOR_from_GC (TYPE);
-		if (is_GRAYSCALE_USE()) DASH = generate_DASH (TYPE);
+		PS_COLOR = generate_PSCOLOR_from_GC (TYPE); //itt x is lehet
+		if (is_GRAYSCALE_USE()) DASH = generate_DASH (TYPE); //itt x is lehet
 		LINEWIDTH = 1.0;
 	}
 	else if (AV) {
@@ -2146,7 +2156,6 @@ void PS_SYMBOLS_PLANE (const string& DATATYPE, ofstream& o, const PAPER& P) {
 		text_PS (o, X + 5.0 * P.D, Y + 1.62 * P.A, 3, "Overturned");
 	}
 	else text_PS (o, X + 5.0 * P.D, Y + 2.50 * P.A, 3, DATATYPE);
-
 
 	text_PS (o, X + 5.0 * P.D, Y + 1.10 * P.A, 3, "Average bedding");
 	text_PS (o, X + 5.0 * P.D, Y + 0.40 * P.A, 3, "Average bedding");

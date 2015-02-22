@@ -20,40 +20,6 @@
 #include "standard_output.hpp"
 #include "structs.h"
 
-/*
-XY stereonet_coordinate_from_DIPDIR_DIP (const DIPDIR_DIP& in, const CENTER& center) {
-
-	XY out;
-
-	VCTR D = DXDYDZ_from_dipdir_dip(in);
-
-	if (D.Z > 0.0) D.Z = - D.Z;
-
-	if (is_NET_SCHMIDT()) {
-
-		out.X = (D.X / sqrt (1.00 - D.Z)) * center.radius;
-		out.Y = (D.Y / sqrt (1.00 - D.Z)) * center.radius;
-	}
-	else {
-
-		out.X = (D.X / (1.00 - D.Z)) * center.radius;
-		out.Y = (D.Y / (1.00 - D.Z)) * center.radius;
-	}
-
-	if (is_HEMISPHERE_UPPER()) {
-
-		out.X = - out.X;
-		out.Y = - out.Y;
-	}
-	else {} //OK
-
-	out.X = out.X + center.X;
-	out.Y = out.Y + center.Y;
-
-	return out;
-}
-*/
-
 vector < vector <GRID_CENTER> > generate_rectangular_grid_from_triange_center (const size_t cell_number) {
 
 	vector < vector <GRID_CENTER> > out;
@@ -1514,7 +1480,8 @@ void CONTOURING (const vector <GDB>& inGDB, ofstream& o, const PAPER& P, const C
 
 	vector <TRIANGLE> TRI_GRID = generate_net_count (inGDB, NET);
 
-	debug_TRI_GRID (inGDB, TRI_GRID);
+	//debug_TRI_GRID (inGDB, TRI_GRID);
+	if (is_CHK_CONTOURING()) dump_TRI_GRID_to_file (TRI_GRID, "ST_CONTOURING");
 
 	vector <GRID_CENTER> TRI_CENTER = generate_triangle_center (TRI_GRID);
 
@@ -1526,7 +1493,8 @@ void CONTOURING (const vector <GDB>& inGDB, ofstream& o, const PAPER& P, const C
 
 	RECT_GRID = calculate_grid_cell_values_from_triangle (RECT_GRID, TRI_CENTER);
 
-	debug_RECT_GRID (inGDB, RECT_GRID);
+	//debug_RECT_GRID (inGDB, RECT_GRID);
+	if (is_CHK_CONTOURING()) dump_RECT_GRID_to_file (RECT_GRID, "ST_CONTOURING");
 
 	double C_MN = 0.5;
 	double C_MX = 0.9;

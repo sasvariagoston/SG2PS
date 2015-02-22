@@ -14,10 +14,12 @@
 #include "array_to_vector.hpp"
 #include "assertions.hpp"
 #include "checkrgffilecontent.h"
+#include "checksettingfilecontent.h"
 #include "exceptions.hpp"
 #include "read_csv.hpp"
 #include "ReservedColumnNames.hpp"
 #include "run_mode.h"
+#include "settings.hpp"
 
 template <typename T>
 bool contains(const vector<T>& vec, const T& elem) {
@@ -33,6 +35,7 @@ vector <vector <string> > rgf_to_check;
 
 enum record_name {
 	DATA_ID,
+	DEPTH,
 	GROUP,
 	COLOR,
 	LOCATION,
@@ -187,24 +190,48 @@ bool IDcheck () {
 
 	if (bad_records.size() == 0) {
 
-		if (!is_mode_DEBUG()) cout << "    - Existing DATA_ID's in all records." << endl;
+		//if (!is_mode_DEBUG())
+
+			cout << "    - Existing DATA_ID's in all records." << endl;
 
 		return true;
 	}
 
 	else {
 
-		if (!is_mode_DEBUG()) cout <<"    - ERROR: empty DATA_ID(s) in the following record(s):  " << flush;
+		//if (!is_mode_DEBUG())
+
+			cout <<"    - ERROR: empty DATA_ID(s) in the following record(s):  " << flush;
 
 		for (size_t j = 0; j < bad_records.size() - 1; j++) {
 
 			cout << bad_records.at(j) << ", " << flush;
 		}
-
 		cout << bad_records.at(bad_records.size()-1) << "." << endl;
 
 		return false;
 	}
+}
+
+bool DEPTHcheck () {
+
+	if (is_WELLDATA_NO()) return true;
+
+	vector <string> bad_records;
+
+	for (size_t i = 0; i < rgf_to_check.size(); i++) {
+
+		const string DPT = rgf_to_check.at(i).at(DEPTH);
+
+		bool failed = false;
+
+		const double DEPTH = string_to_double (DPT, failed);
+
+		const double POS = DEPTH >= 0.0;
+
+		if (failed || !POS) bad_records.push_back(rgf_to_check.at(i).at(DATA_ID));
+	}
+	return error_cout (bad_records, "depth code");
 }
 
 bool GCcheck () {
@@ -359,72 +386,106 @@ bool PALEONcheck () {
 
 }
 
-vector <string> check_rgf_inputs (vector <string> inputfilename_vector) {
+vector <string> RETURN_CORRECT_RGF_CMD (vector <string> inputfilename_vector) {
 
-	vector <string> out_inputfilename_vector;
+	while (!(is_RGF_CORRECT (inputfilename_vector.at(0)))) {
 
-	if (is_mode_COMMANDLINE()) {
+		cout << "    - Input " << capslock(inputfilename_vector.at(0)) << ".RGF file structure is incorrect; please enter file name again, or press 'X' to exit." << endl;
 
-		while (!(rgffile_correct (inputfilename_vector.at(0)))) {
-
-			cout << "    - Input " << capslock(inputfilename_vector.at(0)) << ".RGF file structure is incorrect; please enter file name again, or press 'X' to exit." << endl;
-
-			inputfilename_vector.at(0) = inputfilename();
-		}
-
-		return inputfilename_vector;
+		inputfilename_vector.at(0) = inputfilename();
 	}
-
-	else if (is_mode_GUI() || is_mode_DEBUG()) {
-
-		if (rgffile_correct(inputfilename_vector.at(0))) {
-
-			cout << "    - Input " << capslock(inputfilename_vector.at(0)) << ".RGF file structure is correct." << endl;
-
-			return inputfilename_vector;
-		}
-
-		else throw runtime_error ("No file to process.");
-	}
-
-	else {  //is_BATCH
-
-		for (size_t j = 0; j < inputfilename_vector.size(); j++) {
-
-			if (rgffile_correct(inputfilename_vector.at(j))) {
-
-				cout << "    - Input " << capslock(inputfilename_vector.at(j)) << ".RGF file structure is correct." << endl;
-
-				out_inputfilename_vector.push_back(inputfilename_vector.at(j));
-			}
-
-			else {
-
-				cout << "  - Input " << capslock(inputfilename_vector.at(j)) << ".RGF file structure is incorrect, file will be not evaluated." << endl;
-
-				}
-			}
-
-		if (out_inputfilename_vector.size() == 0) {
-
-			cout << "    - No input file to process, exiting." << endl;
-
-			throw exit_requested();
-		}
-
-		return out_inputfilename_vector;
-	}
+	return inputfilename_vector;
 }
 
-bool rgffile_correct (const string projectname) {
+vector <string> check_rgf_set_inputs (const vector <string>& inputfilename_vector) {
+
+	vector <string> corr_IF_V;
+
+	if (!is_mode_GUI() && !is_mode_BATCH() && !is_mode_DEBUG()) ASSERT_DEAD_END();
+
+	for (size_t i = 0; i < inputfilename_vector.size(); i++) {
+
+		const string IF = inputfilename_vector.at(i);
+
+		const double CORR_SET = is_SETTINGS_FILE_CORRECT (IF + ".set");
+
+		vector <vector <string> > SET;
+
+		if (CORR_SET) {
+
+			SET = READ_SETTINGS_FILE (IF + ".set");
+
+			SET = COMPLETE_SET_WITH_DEFAULT (SET);
+		}
+		else SET = RETURN_HARDCODED_SETTINGS ();
+
+		INIT_SETTINGS (SET);
+
+		const double CORR_RGF = is_RGF_CORRECT (IF);
+
+		string MSG;
+
+		if (CORR_RGF && CORR_SET) {
+
+			corr_IF_V.push_back (IF);
+
+			MSG = "    - Input " + capslock (IF) + ".RGF file structure is correct.";
+		}
+
+		if (!CORR_RGF) {
+
+			MSG = "    - RGF_ERROR: the input " + capslock (IF) + ".RGF file structure is incorrect, the file will not be processed.";
+		}
+
+		if (!CORR_SET) {
+
+			MSG = "    - SET_ERROR: the input " + capslock (IF) + ".SET file structure is incorrect, the file will not be processed.";
+		}
+
+		cout << MSG << endl;
+
+		if (!CORR_RGF && is_mode_GUI()) throw rgf_error();
+		if (!CORR_SET && is_mode_GUI()) throw set_error();
+	}
+	if (corr_IF_V.size() < 1) {
+
+		cout << "    - No input file to process, exiting." << endl;
+		runtime_error ("No file to process.");
+	}
+	return corr_IF_V;
+}
+
+bool is_RGF_CORRECT (const string projectname) {
 
 	if (!(input_rgf (projectname))) return false;
 
 	complete_rgf_to_check ();
 
+	bool SUCCESS = true;
+
+	if (!IDcheck ()) 			SUCCESS = false;
+	if (!IDcheck_duplicate ()) 	SUCCESS = false;
+	if (!DEPTHcheck ()) 		SUCCESS = false;
+	if (!GCcheck ()) 			SUCCESS = false;
+	if (!COLORcheck ()) 		SUCCESS = false;
+	if (!LOCcheck ()) 			SUCCESS = false;
+	if (!XY_inrgf_check ()) 	SUCCESS = false;
+	if (!DATATYPEcheck ()) 		SUCCESS = false;
+	if (!DIPDIRcheck ()) 		SUCCESS = false;
+	if (!DIPcheck ()) 			SUCCESS = false;
+	if (!STRIAE_SC_check ()) 	SUCCESS = false;
+	if (!PALEONcheck ()) 		SUCCESS = false;
+
+	return SUCCESS;
+}
+
+
+
+/*
 	if  (!(
 			IDcheck () &&
 			IDcheck_duplicate () &&
+			DEPTHcheck () &&
 			GCcheck () &&
 			COLORcheck () &&
 			LOCcheck () &&
@@ -433,17 +494,11 @@ bool rgffile_correct (const string projectname) {
 			DIPDIRcheck () &&
 			DIPcheck () &&
 			STRIAE_SC_check	() &&
-			PALEONcheck ()		)) {
-
-		if (is_mode_GUI()) {
-
-			throw rgf_error();
-		}
-		else return false;
-	}
+			PALEONcheck ()		)) return false;
 
 	return true;
 }
+*/
 
 bool is_OTHERcorrect (const vector <string>& in) {
 
@@ -502,8 +557,7 @@ bool is_PITCHcorrect (const vector <string>& in) {
 			is_allowed_dip (in.at(DIP)) &&
 			is_allowed_dip (in.at(LDIR)) &&
 			is_allowed_geodetic (in.at(LDIP)) &&
-			is_allowed_striae_sense (in.at(SENSE))
-	);
+			is_allowed_striae_sense (in.at(SENSE)));
 }
 
 bool error_cout (const vector <string>& bad_records, const string recordtype) {
@@ -539,7 +593,7 @@ vector <GDB> create_GDB_from_rgf (const string& file_name) {
 
 	vector <GDB> outGDB;
 
-	read_in_rgf(file_name); // TODO Can throw rgf_error in console, batch and debug mode
+	read_in_rgf (file_name); // TODO Can throw rgf_error in console, batch and debug mode
 
 	complete_rgf_to_check ();
 
@@ -556,6 +610,7 @@ vector <GDB> create_GDB_from_rgf (const string& file_name) {
 		buffer.corr.DIP = NaN();
 		buffer.corrL.DIPDIR = NaN();
 		buffer.corrL.DIP = NaN();
+		buffer.DEPTH = NaN();
 
 		buffer.LPITCH = NaN();
 
@@ -655,6 +710,8 @@ vector <GDB> create_GDB_from_rgf (const string& file_name) {
 		else buffer.PALEON = to_double(row, PALEONORTH);
 
 		buffer.COMMENT = row.at(COMMENT);
+
+		if (is_WELLDATA_USE()) buffer.DEPTH = string_to_double (row.at(DEPTH));
 
 		outGDB.push_back(buffer);
 	}

@@ -26,6 +26,7 @@ vector <GDB> ASSOCIATE_STV_SFV (const vector <GDB>& inGDB, const vector <STRESST
 
 vector <GDB> apply_inversion_result (const vector <GDB>& inGDB, const STRESSTENSOR st);
 
+void cout_dbg_stressfield (const STRESSFIELD& sf);
 void cout_dbg_stressfield (const vector <STRESSFIELD>& sf);
 void cout_dbg_STV (const vector <STRESSTENSOR>& STV);
 

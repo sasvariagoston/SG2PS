@@ -10,6 +10,7 @@ using namespace std;
 #include "allowed_keys.hpp"
 #include "assertions.hpp"
 #include "exceptions.hpp"
+#include "generate_default_settings.hpp"
 
 namespace {
 
@@ -92,12 +93,10 @@ void setup_run_mode (const vector <string>& ARG_V) {
 
 			M_VID = true;
 			MODE = "VERSION ID";
-			cout << version_id() << endl;
 		}
 		else if (is_allowed_version_mode(ARG)) {
 			M_VER = true;
 			MODE = "VERSION";
-			cout << version() << endl;
 		}
 		else if (is_allowed_test_data_generation_mode(ARG)) {
 			M_TST = true;
@@ -108,6 +107,9 @@ void setup_run_mode (const vector <string>& ARG_V) {
 			MODE = "BATCH";
 		}
 	}
+
+	cout << "Running 'SG2PS' in '" << MODE << "' mode." << endl;
+
 	if (!M_GUI && !M_BTC && !M_CMD && !M_DBG && !M_VER && !M_VID && !M_TST) ASSERT_DEAD_END();
 
 	return;
@@ -143,7 +145,7 @@ size_t return_max_argument_number () {
 	}
 }
 
-void check_arguments_number (const vector <string>& ARG_V) {
+void CHECK_ARGUMENTS_NUMBER (const vector <string>& ARG_V) {
 
 	const size_t ARG_NUM = ARG_V.size();
 
@@ -151,5 +153,36 @@ void check_arguments_number (const vector <string>& ARG_V) {
 	const size_t ARG_MAX = return_max_argument_number();
 
 	if (!(ARG_MIN <= ARG_NUM && ARG_MAX >= ARG_NUM)) throw arg_error ();
+	return;
+}
+
+vector <string> REMOVE_FIRST_ARGUMENT (vector <string> ARG_V) {
+
+	if (is_mode_GUI() || is_mode_DEBUG()) ARG_V.erase(ARG_V.begin());
+
+	return ARG_V;
+}
+
+void MANAGE_RUN_MODE (const vector <string>& ARG_V) {
+
+	setup_run_mode (ARG_V);
+
+	if (is_mode_GENERATE_TEST_FILES()) {
+
+		dbg_generate_settings_file_list ();
+		throw exit_requested ();
+	}
+
+	if (is_mode_VERSION()) {
+
+		cout << version() << endl;
+		throw exit_requested ();
+	}
+
+	if (is_mode_VERSION_ID()) {
+
+		cout << version_id() << endl;
+		throw exit_requested ();
+	}
 	return;
 }

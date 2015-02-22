@@ -45,7 +45,7 @@ struct STRESSTENSOR {
 
 struct GDB  {
 
-	GDB() { LOCX=LOCY=DIPDIR=DIP=LDIR=LDIP=PALEON=LPITCH=PITCHANGLE=MISFIT=lambda=ANG=RUP=AV_MISF=NaN();
+	GDB() { LOCX=LOCY=DIPDIR=DIP=LDIR=LDIP=PALEON=LPITCH=DEPTH=PITCHANGLE=MISFIT=lambda=ANG=RUP=AV_MISF=NaN();
 			iID=numeric_limits<int>::min();
 			UPWARD=false, UP=false;
 		   }
@@ -68,6 +68,7 @@ struct GDB  {
 	string DATAGROUP;
 	string PSCOLOR;
 	string DASHED;
+	double DEPTH;
 
 
 	DIPDIR_DIP corr, corrL;
@@ -129,7 +130,8 @@ struct PFN {
 	average,
 	rgfsep,
 	pssep,
-	tiltrgfsep;};
+	tiltrgfsep,
+	well_ps;};
 
 struct PAPER {
 
@@ -275,5 +277,52 @@ struct BEZIER {
 	VCTR B;
 	VCTR C;
 	VCTR D;
+};
+/*
+struct WELL_AVERAGE {
+
+	double DEPTH;
+	VCTR D;
+	DIPDIR_DIP DD;
+	double MISFIT;
+};
+*/
+
+/*
+struct WELL_DERIVATE {
+
+	double DEPTH;
+	double DERIV;
+};
+*/
+
+struct WELL_FREQUENCY {
+
+	double DEPTH;
+	double FREQ;
+
+	double DERIV_DEPTH;
+	double DERIV;
+};
+
+struct WELL_INTERVAL {
+
+	double MIN;
+	double MAX;
+
+	size_t SIZE;
+
+	double DEPTH;
+
+	VCTR INT_AV_D;
+	DIPDIR_DIP INT_AV_DD;
+
+	double INT_AV_DD_STDEV;
+	double INT_AV_D_STDEV;
+
+	double D_DERIV;
+	double DD_DERIV;
+
+	double FREQ;
 };
 #endif
