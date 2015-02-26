@@ -11,6 +11,10 @@
 *.la
 *.a
 
+# Python bytecode
+*.pyc
+
+
 .cproject 
 .project
 .settings/
