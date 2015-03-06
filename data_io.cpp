@@ -1,3 +1,4 @@
+
 // Copyright (C) 2012 - 2014 Ágoston Sasvári
 // All rights reserved.
 // This code is published under the GNU Lesser General Public License.
@@ -215,7 +216,7 @@ void create_pointer_to_project_folder(const PFN& names) {
 	}
 }
 
-void CREATE_PROJECT_FOLDER (const PFN& projectfoldername, const string inputfilename, const vector <GDB> inGDB) {
+void CREATE_PROJECT_FOLDER (const PFN& projectfoldername, const vector <GDB> inGDB) {
 
 	createprojectfolders (projectfoldername, inGDB); // TODO Failures in creating project folders silently ignored
 
@@ -643,7 +644,7 @@ vector <vector <vector <vector <GDB> > > > PROCESS_GROUPS (const vector <vector 
 
 					if (IS_STRIAE) hasoffset_GDB = return_striae_with_offset (process_GDB);//was testGDB
 
-					const bool ENOUGH_STRIAE = hasoffset_GDB.size() >= minimum_independent_dataset (process_GDB);
+					const bool ENOUGH_STRIAE = hasoffset_GDB.size() >= minimum_independent_dataset ();
 
 					if (ENOUGH_HOMOGENEOUS && ENOUGH_STRIAE) {
 

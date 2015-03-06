@@ -1,3 +1,4 @@
+
 // Copyright (C) 2012 - 2014 Ágoston Sasvári
 // All rights reserved.
 // This code is published under the GNU Lesser General Public License.
@@ -64,7 +65,7 @@ struct GDB  {
 	double LDIP;
 	double PALEON;
 	string COMMENT;
-	int iID;
+	size_t iID;
 	string DATAGROUP;
 	string PSCOLOR;
 	string DASHED;

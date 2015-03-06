@@ -1,3 +1,4 @@
+
 // Copyright (C) 2012 - 20143 Ágoston Sasvári
 // All rights reserved.
 // This code is published under the GNU Lesser General Public License.

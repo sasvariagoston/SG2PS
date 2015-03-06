@@ -1,3 +1,4 @@
+
 // Copyright (C) 2012 - 2014 Ágoston Sasvári
 // All rights reserved.
 // This code is published under the GNU Lesser General Public License.
@@ -109,7 +110,7 @@ const string size_t_to_string (const size_t i) {
 	return os.str();
 }
 
-const string double_to_string(const double in, const size_t precision) {
+const string double_to_string(const double in, const int precision) {
 
 	ostringstream os;
 	os << fixed << setprecision (precision) << in << flush;
@@ -1866,7 +1867,7 @@ const string month_names[] = {
 
 const vector<string> months = from_array(month_names);
 
-int month_zero_based() {
+size_t month_zero_based() {
 	// TODO Find index to utility class
 	string Mmm = DATE.substr(date::MON1, 3);
 

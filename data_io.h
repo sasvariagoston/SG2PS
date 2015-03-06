@@ -1,3 +1,4 @@
+
 // Copyright (C) 2012 - 2014  Ágoston Sasvári
 // All rights reserved.
 // This code is published under the GNU Lesser General Public License.
@@ -20,7 +21,7 @@ void copyoriginalfiles (const PFN& output);
 void copy_log(const PFN& names);
 void create_pointer_to_project_folder(const PFN& names);
 
-void CREATE_PROJECT_FOLDER (const PFN& projectfoldername, const string inputfilename, const vector <GDB> inGDB);
+void CREATE_PROJECT_FOLDER (const PFN& projectfoldername, const vector <GDB> inGDB);
 
 vector < vector < vector <vector <GDB> > > > SEPARATE_DATASET_TO_GROUPS (const vector <GDB>& inGDB, const string METHOD);
 

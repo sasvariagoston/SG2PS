@@ -1,3 +1,4 @@
+
 // Copyright (C) 2012 - 2014 Ágoston Sasvári
 // All rights reserved.
 // This code is published under the GNU Lesser General Public License.
@@ -61,7 +62,7 @@ void real_main(int argument_number, char *argv[]) {
 
 		if (using_xy_files) xy_filename = check_xy_inputs (IF);
 
-		process_rgf (IF, xy_filename, is_mode_DEBUG()); // TODO Reads in the rgf file again, was first checked in check_rgf_inputs
+		process_rgf (IF, xy_filename); // TODO Reads in the rgf file again, was first checked in check_rgf_inputs
 
 		if (!is_mode_DEBUG()) cout << "EVALUATION OF " << capslock(IF) << ".RGF FILE COMPLETED." << endl;
 	}

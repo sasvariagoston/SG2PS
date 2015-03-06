@@ -1,3 +1,4 @@
+
 // Copyright (C) 2012 - 2014 Ágoston Sasvári
 // All rights reserved.
 // This code is published under the GNU Lesser General Public License.
@@ -5,7 +6,7 @@
 #ifndef HOMOGENITY_CHECK_HPP_
 #define HOMOGENITY_CHECK_HPP_
 
-size_t minimum_independent_dataset (const vector <GDB>& inGDB);
+size_t minimum_independent_dataset ();
 
 bool check_dataset_geometry_homogenity (const vector <GDB>& inGDB);
 

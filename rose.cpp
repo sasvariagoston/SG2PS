@@ -1,3 +1,4 @@
+
 // Copyright (C) 2012 - 2014 Ágoston Sasvári
 // All rights reserved.
 // This code is published under the GNU Lesser General Public License.
@@ -219,7 +220,7 @@ void PS_draw_rose_DIPDIR_DIP (vector <GDB> inGDB, ofstream& o, CENTER center, co
 	const bool DD = MODE == "DIPDIR";
 	const bool D = MODE == "DIP";
 
-	size_t MAX_ANG = NaN();
+	size_t MAX_ANG = 0;
 	if (is_ROSETYPE_ASYMMETRICAL()) {
 
 		if (D) 			MAX_ANG = 900;

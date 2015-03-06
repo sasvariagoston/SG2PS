@@ -1,3 +1,4 @@
+
 // Copyright (C) 2012 - 2014 Ágoston Sasvári
 // All rights reserved.
 // This code is published under the GNU Lesser General Public License.
@@ -22,7 +23,7 @@ vector<string> vec_to_uppercase(const vector<string>& v);
 
 const string int_to_string(const int i);
 const string size_t_to_string (const size_t i);
-const string double_to_string(const double in, const size_t precision);
+const string double_to_string(const double in, const int precision);
 const string char_to_string (const char i);
 double string_to_double(const string& s, bool& failed);
 double string_to_int( const string& s, bool& failed);

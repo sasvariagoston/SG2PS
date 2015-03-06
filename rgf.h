@@ -1,3 +1,4 @@
+
 // Copyright (C) 2012 - 2014 Ágoston Sasvári
 // All rights reserved.
 // This code is published under the GNU Lesser General Public License.
@@ -58,7 +59,7 @@ void fold_from_planes (vector <GDB> inGDB, ofstream& o, CENTER center);
 vector <GDB>  PREPARE_GDB_FOR_PROCESSING (const vector <GDB>& inGDB, const bool TILT);
 vector < vector < vector < vector <GDB> > > >  PREPARE_GDB_VECTOR_FOR_PROCESSING (const vector < vector < vector < vector <GDB> > > >& inGDB_G, const bool TILT);
 
-void process_rgf (string inputfilename, string XY_filename, bool is_debug);
+void process_rgf (string inputfilename, string XY_filename);
 
 void dbg_cout_GDB_v_v_v_v_structure (const vector < vector < vector < vector <GDB> > > >& inGDB_G);
 void dbg_cout_GDB_vector_vector (const vector < vector < vector < vector <GDB> > > >& inGDB_G);

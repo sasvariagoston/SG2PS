@@ -1,3 +1,4 @@
+
 // Copyright (C) 2012 - 2014 Ágoston Sasvári
 // All rights reserved.
 // This code is published under the GNU Lesser General Public License.
@@ -1314,7 +1315,7 @@ vector <VCTR> close_contourline (const vector <VCTR>& I, const double START_ANGL
 	return OUT;
 }
 
-void contourline_to_ps (ofstream& o, const PAPER& P, const CENTER& center, const vector <VCTR>& BZ, const double& FRST_ANGLE, const double& LAST_ANGLE, const double& CONTOUR, const double& C_MN, const double& C_MX, const double& MAX) {
+void contourline_to_ps (ofstream& o, const CENTER& center, const vector <VCTR>& BZ, const double& FRST_ANGLE, const double& LAST_ANGLE, const double& CONTOUR, const double& C_MN, const double& C_MX) {
 
 	o << "%% contourline_to_ps" << endl;
 
@@ -1447,18 +1448,18 @@ void output_contourline (ofstream& o, const PAPER& P, const CENTER& center, vect
 
 			if (DRAW_IT) {
 
-				if (A1_HAS_PEAK && !A2_HAS_PEAK) 		contourline_to_ps (o, P, center, A, FRST_ANGLE, LAST_ANGLE, CONTOUR, C_MN, C_MX, MAX);
-				else if (!A1_HAS_PEAK && A2_HAS_PEAK) 	contourline_to_ps (o, P, center, A, LAST_ANGLE, FRST_ANGLE, CONTOUR, C_MN, C_MX, MAX);
+				if (A1_HAS_PEAK && !A2_HAS_PEAK) 		contourline_to_ps (o, center, A, FRST_ANGLE, LAST_ANGLE, CONTOUR, C_MN, C_MX);
+				else if (!A1_HAS_PEAK && A2_HAS_PEAK) 	contourline_to_ps (o, center, A, LAST_ANGLE, FRST_ANGLE, CONTOUR, C_MN, C_MX);
 				else if (A1_HAS_PEAK && A2_HAS_PEAK) {
 
-					if (A1_AREA < A2_AREA) 	contourline_to_ps (o, P, center, A, FRST_ANGLE, LAST_ANGLE, CONTOUR, C_MN, C_MX, MAX);
-					else 					contourline_to_ps (o, P, center, A, LAST_ANGLE, FRST_ANGLE, CONTOUR, C_MN, C_MX, MAX);
+					if (A1_AREA < A2_AREA) 	contourline_to_ps (o, center, A, FRST_ANGLE, LAST_ANGLE, CONTOUR, C_MN, C_MX);
+					else 					contourline_to_ps (o, center, A, LAST_ANGLE, FRST_ANGLE, CONTOUR, C_MN, C_MX);
 				}
 				else ASSERT_DEAD_END();
 			}
 			else {}
 		}
-		else contourline_to_ps (o, P, center, A, 999.99, 999.99, CONTOUR, C_MN, C_MX, MAX);
+		else contourline_to_ps (o, center, A, 999.99, 999.99, CONTOUR, C_MN, C_MX);
 	}
 }
 

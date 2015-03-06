@@ -1,3 +1,4 @@
+
 // Copyright (C) 2012 - 2014 Ágoston Sasvári
 // All rights reserved.
 // This code is published under the GNU Lesser General Public License.
@@ -136,8 +137,9 @@ void ps_draw_histogram_bars (const vector <GDB>& inGDB, const vector <line_RUP_A
 		double linewidth = L_R_A.at(j).COUNT * 30.0;
 		linewidth = linewidth /count_max;
 
-		if (RUP_display)		X = center.X + P.R + 2.0 * P.B + linewidth / 2.0;
-		else if (ANG_display)	X = center.X + P.R + 4.0 * P.B + linewidth / 2.0;
+		if (RUP_display)	X = center.X + P.R + 2.0 * P.B + linewidth / 2.0;
+		else 				X = center.X + P.R + 4.0 * P.B + linewidth / 2.0;
+
 
 		Y1 = center.Y - P.R + 2.0 * P.R * (L_R_A.at(j).L_STR / DATA_max);
 		Y2 = center.Y - P.R + 2.0 * P.R * (L_R_A.at(j).L_END / DATA_max);

@@ -1,3 +1,4 @@
+
 // Copyright (C) 2012 - 2014 Ágoston Sasvári
 // All rights reserved.
 // This code is published under the GNU Lesser General Public License.
@@ -669,7 +670,7 @@ vector < vector < vector < vector <GDB> > > > PREPARE_GDB_VECTOR_FOR_PROCESSING 
 	return outGDB_G;
 }
 
-void process_rgf (string inputfilename, string XY_filename, bool is_debug) {
+void process_rgf (string inputfilename, string XY_filename) {
 
 	set_inputfilename (inputfilename);
 
@@ -684,7 +685,7 @@ void process_rgf (string inputfilename, string XY_filename, bool is_debug) {
 
 	sort(nGDB.begin(), nGDB.end(), byLocGcType);
 
-	if (!is_mode_DEBUG()) CREATE_PROJECT_FOLDER (projectfoldername, inputfilename, nGDB);
+	if (!is_mode_DEBUG()) CREATE_PROJECT_FOLDER (projectfoldername, nGDB);
 
 	vector < vector < vector < vector <GDB> > > > nGDB_G = SEPARATE_DATASET_TO_GROUPS (nGDB, "GROUPS");
 

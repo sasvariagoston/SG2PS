@@ -1,3 +1,4 @@
+
 // Copyright (C) 2012 - 2014 Ágoston Sasvári
 // All rights reserved.
 // This code is published under the GNU Lesser General Public License.
@@ -467,7 +468,7 @@ void PS_border (const vector <GDB>& inGDB, ofstream& o, const PAPER& P) {
 
 			const vector <GDB> hasoffset_GDB = return_striae_with_offset (inGDB);
 
-			const bool ENOUGH_STRIAE = hasoffset_GDB.size() >= minimum_independent_dataset (inGDB);
+			const bool ENOUGH_STRIAE = hasoffset_GDB.size() >= minimum_independent_dataset ();
 
 			if (is_RUP_CLUSTERING_ANG()) {
 
@@ -654,7 +655,7 @@ void PS_net (ofstream& o, const PAPER& P) {
 			font_PS (o, "ArialNarrow-Bold", 12);
 			text_PS (o, V.at(i).X - 3.5 * P.D, V.at(i).Y + P.R + 14.0 * P.D, 3, "N");
 
-			if (i >= 0 && i <= 1) {
+			if (i <= 1) {
 				font_PS (o, "ArialNarrow", 8);
 				text_PS (o, V.at(i).X - P.R - 0.2 * P.B, V.at(i).Y - P.R - 20.0 * P.D, 3, T);
 				text_PS (o, V.at(i).X - P.R - 0.2 * P.B, V.at(i).Y - P.R - 28.0 * P.D, 3, C);
@@ -1078,7 +1079,7 @@ void PS_lineation (const GDB& i, ofstream& o, const CENTER& center, const STRESS
 	}
 }
 
-void PS_plane (const GDB& i, ofstream& o, const double X, const double Y, const double R, const bool LABEL, const string TYPE) {
+void PS_plane (const GDB& i, ofstream& o, const double X, const double Y, const double R, const string TYPE) {
 
 	const bool OT = is_allowed_bedding_overturned_sense (i.avS0offset);
 	const bool OTB = is_allowed_bedding_overturned_sense (i.OFFSET);
@@ -1332,7 +1333,7 @@ void PS_plane (const GDB& i, ofstream& o, const double X, const double Y, const 
 	setdash_PS (o, "   ");
 }
 
-void PS_polepoint (const GDB& i, ofstream& o, const double X, const double Y, const double R, const bool LABEL, const string TYPE) {
+void PS_polepoint (const GDB& i, ofstream& o, const double X, const double Y, const double R, const string TYPE) {
 
 	VCTR O;
 
@@ -1407,7 +1408,7 @@ void PS_polepoint (const GDB& i, ofstream& o, const double X, const double Y, co
 	arc_PS (o, O.X, O.Y, 1.2, 0.0, 360.0, 3);
 	stroke_PS (o);
 
-	if (LABEL) {
+	if (is_LABELLING_USE() && !is_PLOT_HOEPPENER()) {
 
 		font_PS(o, "ArialNarrow-Italic", 6);
 		color_PS (o, "0.5 0.5 0.5");
@@ -1532,8 +1533,8 @@ void PS_datanumber_averagebedding (const GDB& i, ofstream& o, const PAPER& P, co
 
 	if (HAS_BEDDING) {
 
-		if (is_PLOT_HOEPPENER()) 	PS_polepoint (i, o, P.O1X, P.O1Y, P.R, false, "AV");
-		else 						PS_plane     (i, o, P.O1X, P.O1Y, P.R, false, "AV");
+		if (is_PLOT_HOEPPENER()) 	PS_polepoint (i, o, P.O1X, P.O1Y, P.R, "AV");
+		else 						PS_plane     (i, o, P.O1X, P.O1Y, P.R, "AV");
 	}
 
 	font_PS(o, "ArialNarrow-Bold", 8);
@@ -1764,13 +1765,15 @@ void PS_DRAW_plane (const GDB i, ofstream& o, const CENTER& center) {
 
 	if (is_PLOT_HOEPPENER()) {
 
-		if (is_LABELLING_USE())	PS_polepoint (i, o, X, Y, R, true, "");
-		else PS_polepoint (i, o, X, Y, R, false, "");
+		//if (is_LABELLING_USE())	PS_polepoint (i, o, X, Y, R, "");
+		//else
+		PS_polepoint (i, o, X, Y, R, "");
 	}
 	else {
 
-		if (is_LABELLING_USE()) PS_plane (i, o, X, Y, R, true, "");
-		else PS_plane (i, o, X, Y, R, false, "");
+		//if (is_LABELLING_USE()) PS_plane (i, o, X, Y, R, "");
+		//else
+		PS_plane (i, o, X, Y, R, "");
 	}
 }
 
@@ -1786,9 +1789,9 @@ void PS_DRAW_lineation (const GDB& i, ofstream& o, const CENTER& center) {
 
 void PS_DRAW_striae (const GDB& i, ofstream& o, const CENTER& center) {
 
-	const bool LABEL = is_LABELLING_USE();
+	//const bool LABEL = is_LABELLING_USE();
 
-	if (is_PLOT_ANGELIER()) PS_plane (i, o, center.X, center.Y, center.radius, LABEL, "");
+	if (is_PLOT_ANGELIER()) PS_plane (i, o, center.X, center.Y, center.radius, "");
 
 	PS_striaearrow (i, o, center);
 
@@ -1801,18 +1804,18 @@ void PS_DRAW_sc (const GDB& i, ofstream& o, const CENTER& center) {
 	const double Y = center.Y;
 	const double R = center.radius;
 
-	const bool L = is_LABELLING_USE();
+	//const bool L = is_LABELLING_USE();
 	const bool H = is_PLOT_HOEPPENER();
 
 	if (H) {
 
-		PS_polepoint (i, o, X, Y, R, L, "C");
-		PS_polepoint (i, o, X, Y, R, false, "");
+		PS_polepoint (i, o, X, Y, R, "C");
+		PS_polepoint (i, o, X, Y, R, "");
 	}
 	else {
 
-		PS_plane (i, o, X, Y, R, L, "C");
-		PS_plane (i, o, X, Y, R, false, "");
+		PS_plane (i, o, X, Y, R, "C");
+		PS_plane (i, o, X, Y, R, "");
 	}
 	return;
 }
@@ -1826,7 +1829,7 @@ void PS_idealmovement (const vector <GDB>& inGDB, ofstream& o, const CENTER& cen
 
 		if (vectorlength (inGDB.at(i).SHEAR_S) > 10e-5) {
 
-			PS_polepoint (inGDB.at(i), o, center.X, center.Y, center.radius, false, "IDEAL");
+			PS_polepoint (inGDB.at(i), o, center.X, center.Y, center.radius, "IDEAL");
 		}
 	}
 }
@@ -1839,9 +1842,9 @@ void PS_FOLD_GREAT_CIRCLE (const vector <GDB>& inGDB, ofstream& o, const CENTER&
 
 	PS_folddata (inGDB.at(0), o, center);
 
-	const bool LABEL = is_LABELLING_USE();
+	//const bool LABEL = is_LABELLING_USE();
 
-	PS_plane (inGDB.at(0), o, center.X, center.Y, center.radius, LABEL, "FOLD");
+	PS_plane (inGDB.at(0), o, center.X, center.Y, center.radius, "FOLD");
 }
 
 

@@ -1,3 +1,4 @@
+
 // Copyright (C) 2012 - 2014 Ágoston Sasvári
 // All rights reserved.
 // This code is published under the GNU Lesser General Public License.
@@ -40,8 +41,8 @@ void PS_DRAW_striae (const GDB& i, ofstream& o, const CENTER& center);
 void PS_DRAW_sc (const GDB& i, ofstream& o, const CENTER& center);
 
 void PS_lineation (const GDB& i, ofstream& o, const CENTER& center, const STRESSFIELD& sf, const bool label, const string type);
-void PS_plane (const GDB& i, ofstream& o, const double X, const double Y, const double R, const bool LABEL, const string TYPE);
-void PS_polepoint (const GDB& i, ofstream& o, const double X, const double Y, const double R, const bool LABEL, const string TYPE);
+void PS_plane (const GDB& i, ofstream& o, const double X, const double Y, const double R, const string TYPE);
+void PS_polepoint (const GDB& i, ofstream& o, const double X, const double Y, const double R, const string TYPE);
 void PS_striaearrow (const GDB& i, ofstream& o, const CENTER& center);
 void PS_stress_state (ofstream& o, const PAPER P, const CENTER& center, const STRESSFIELD& sf);
 

@@ -1,3 +1,4 @@
+
 // Copyright (C) 2012 - 2014 Ágoston Sasvári
 // All rights reserved.
 // This code is published under the GNU Lesser General Public License.
@@ -32,7 +33,7 @@
 
 using namespace std;
 
-size_t minimum_independent_dataset (const vector <GDB>& inGDB) {
+size_t minimum_independent_dataset () {
 
 	if 		(is_INVERSION_SPRANG()) 	return 1;
 	else if (is_INVERSION_TURNER()) 	return 1;
@@ -134,6 +135,6 @@ bool has_inhomogeneous_enough (const vector <GDB>& inGDB) {
 
 	const vector <GDB> test = return_GDB_with_no_homogeneous_data (inGDB);
 
-	if (test.size() >= minimum_independent_dataset (inGDB)) return true;
+	if (test.size() >= minimum_independent_dataset ()) return true;
 	return false;
 }

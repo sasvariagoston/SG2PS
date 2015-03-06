@@ -1,3 +1,4 @@
+
 // Copyright (C) 2012 - 2014 Ágoston Sasvári
 // All rights reserved.
 // This code is published under the GNU Lesser General Public License.
@@ -34,7 +35,7 @@ using namespace std;
 
 namespace {
 
-bool WELLDATA_USE = false;
+//bool WELLDATA_USE = false;
 //bool WELLDATA_NO = false;
 
 //bool WELL_INTERVAL_METER = false;

@@ -21,7 +21,7 @@ bool M_DBG = false;
 bool M_VER = false;
 bool M_VID = false;
 bool M_TST = false;
-};
+}
 
 bool is_mode_GUI () {
 
@@ -108,7 +108,7 @@ void setup_run_mode (const vector <string>& ARG_V) {
 		}
 	}
 
-	cout << "Running 'SG2PS' in '" << MODE << "' mode." << endl;
+	if (!M_VER && !M_VID) cout << "Running 'SG2PS' in '" << MODE << "' mode." << endl;
 
 	if (!M_GUI && !M_BTC && !M_CMD && !M_DBG && !M_VER && !M_VID && !M_TST) ASSERT_DEAD_END();
 

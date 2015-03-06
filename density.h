@@ -1,3 +1,4 @@
+
 // Copyright (C) 2012 - 2014 Ágoston Sasvári
 // All rights reserved.
 // This code is published under the GNU Lesser General Public License.
@@ -88,7 +89,7 @@ bool is_line_close_unitcircle (const vector <VCTR>& I, const double CELL);
 
 vector <VCTR> close_contourline (const vector <VCTR>& I, const double START_ANGLE, const double END_ANGLE, const double CELL, const bool CHECK_DISTANCE);
 
-void contourline_to_ps (ofstream& o, const PAPER& P, const CENTER& center, const vector <VCTR>& BZ, const double& FRST_ANGLE, const double& LAST_ANGLE, const double& CONTOUR, const double& C_MN, const double& C_MX, const double& MAX);
+void contourline_to_ps (ofstream& o, const CENTER& center, const vector <VCTR>& BZ, const double& FRST_ANGLE, const double& LAST_ANGLE, const double& CONTOUR, const double& C_MN, const double& C_MX);
 
 void output_contourline (ofstream& o, const PAPER& P, const CENTER& center, vector <vector <VCTR> >& BZ,  vector < vector <GRID_CENTER> >& RECT_GRID, const double& CONTOUR, const double C_MN, const double C_MX, const double& MAX, const bool is_debug);
 
