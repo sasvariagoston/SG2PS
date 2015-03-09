@@ -277,26 +277,9 @@ vector <GDB> k_means_clustering (const size_t cluster_number, const vector <GDB>
 
 		if (is_CHK_K_MEANS()) {
 
-			ofstream o;
-
-			const string FN = "ST_K-MEANS.txt";
-
-			o.open (FN.c_str());
-
-			dump_DISTANCE_MATRIX_to_file (distance_matrix, o);
-			dump_WHICH_GROUP_to_file (whichgroup, o);
+			dump_DISTANCE_MATRIX_to_file (distance_matrix, "ST_K-MEANS");
+			dump_WHICH_GROUP_to_file (whichgroup, "ST_K-MEANS");
 		}
-
-		/*
-		if (is_CHK_K_MEANS() && inGDB.at(0).ID == "BZ0066") {
-
-			vector <vector <double> > standard_distance_matrix = return_standard_distance_matrix ();
-			check_standard_distance_matrix(distance_matrix, standard_distance_matrix);
-
-			vector <size_t> standard_whichgroup = return_standard_whichgroup ();
-			check_standard_whichgroup (whichgroup, standard_whichgroup);
-		}
-		*/
 	}
 	outGDB = attach_k_means_group_codes (whichgroup, outGDB); //ok
 

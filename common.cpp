@@ -117,6 +117,15 @@ const string double_to_string(const double in, const int precision) {
 	return os.str();
 }
 
+const string dmp_dbl (const double in, const int precision) {
+
+	if (isnan(in)) return "NAN";
+
+	ostringstream os;
+	os << fixed << setprecision (precision) << in << flush;
+	return os.str();
+}
+
 const string char_to_string (const char i) {
 
 	ostringstream os;
@@ -1709,7 +1718,6 @@ STRESSTENSOR stresstensor_from_eigenvalue_eigenvector (STRESSFIELD sf) {
 	return out;
 }
 
-
 STRESSTENSOR convert_matrix_to_stresstensor (const vector <vector <double> >& IN) {
 
 	ASSERT2(IN.size() == 3, "3x3 matrix expected for stress tensor conversion");
@@ -2008,33 +2016,3 @@ double points_distance (const VCTR& a, const VCTR&  b) {
 			(b.Z - a.Z) * (b.Z - a.Z)
 			);
 }
-
-
-/*vector <VCTR> convert_vectors_to_S_or_W (vector <VCTR> in) {
-
-	if (!is_NET_SCHMIDT() && !is_NET_WULFF()) ASSERT_DEAD_END();
-
-	for (size_t i = 0; i < in.size(); i++) {
-
-		double X = 0.0;
-		double Y = 0.0;
-
-		if (is_NET_SCHMIDT ()) {
-
-			X = in.at(i).X / sqrt (1.00 + in.at(i).Z);
-			Y = in.at(i).Y / sqrt (1.00 + in.at(i).Z);
-		}
-
-		else {
-
-			X = in.at(i).X / (1.00 + in.at(i).Z);
-			Y = in.at(i).Y / (1.00 + in.at(i).Z);
-		}
-
-		in.at(i).X = X;
-		in.at(i).Y = Y;
-		in.at(i).Z = NaN();
-	}
-	return in;
-}
-*/

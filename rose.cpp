@@ -266,20 +266,6 @@ void PS_draw_rose_DIPDIR_DIP (vector <GDB> inGDB, ofstream& o, CENTER center, co
 
 	if (is_mode_DEBUG() && is_CHK_ROSE()) dump_ROSENUMBER_to_file (N, "ST_ROSE");
 
-	//{
-
-	//	dump_ROSENUMBER_to_file (N)
-
-	//	const vector <GDB> sGDB = sort_by_iID (inGDB);
-
-	//	if (sGDB.at(0).ID == "ANG___001")	check_standard_ROSE (N, generate_standard_ROSE ());
-	//	else {
-
-	//		cout << "Test record 'ANG___001' not found - incorrect test file." << endl;
-	//		ASSERT_DEAD_END();
-	//	}
-	//}
-
 	for (size_t i = 0; i < N.size(); i++) {
 
 		N.at(i).LIN_NUM = N.at(i).LIN_NUM / MX.LIN_NUM;

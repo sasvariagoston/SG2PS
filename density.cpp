@@ -1496,13 +1496,9 @@ void CONTOURING (const vector <GDB>& inGDB, ofstream& o, const PAPER& P, const C
 
 	if (is_CHK_CONTOURING()) {
 
-		const string FN = "ST_CONTOURING.txt";
+		dump_TRI_GRID_to_file (TRI_GRID, "ST_CONTOURING");
 
-		r.open (FN.c_str());
-
-		dump_TRI_GRID_to_file (TRI_GRID, r);
-
-		dump_RECT_GRID_to_file (RECT_GRID, r);
+		dump_RECT_GRID_to_file (RECT_GRID, "ST_CONTOURING");
 	}
 
 	double C_MN = 0.5;
