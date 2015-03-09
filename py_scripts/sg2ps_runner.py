@@ -6,7 +6,7 @@
 from __future__ import print_function
 from subprocess import call
 import sys
-from os import access, listdir, makedirs, remove, X_OK
+from os import access, listdir, makedirs, X_OK
 from os.path import dirname, isdir, isfile, join, normcase, normpath
 from shutil import rmtree, copy
 
@@ -33,6 +33,7 @@ def main():
     
     # Delete the TOCOMP_DIR as it may contain files from a previous run
     if isdir(TOCOMP_DIR):
+        print('Deleting "{}"'.format(TOCOMP_DIR))
         rmtree(TOCOMP_DIR)
     print('Creating the test folder "{}"'.format(TOCOMP_DIR))
     makedirs(TOCOMP_DIR)
@@ -51,7 +52,9 @@ def main():
         print('Something is wrong, no projects found...')
         return
     
-    # Run the sg2ps executable on the projects in TOCOMP_DIR 
+    # Run the sg2ps executable on the projects in TOCOMP_DIR
+    # and check if each project generates at least one CSV file
+    previous_csv_files = set()
     for f in projects:
         cmd = [SG2PS_EXE, FLAG, f]
         print('Executing command: {} {} {}'.format(*cmd))
@@ -62,31 +65,18 @@ def main():
             if ret:
                 print('Fatal error when calling {}, exiting'.format(SG2PS_EXE))
                 return
+        new_csv_files = get_new_csv_files(TOCOMP_DIR, previous_csv_files)
+        if not new_csv_files:
+            print('Error: no new CSV file generated, exiting...')
+            return
+        print('New CSV files:', new_csv_files)
+        previous_csv_files.update(new_csv_files)
     print('Test file generation finished')
     
-    # Keep only the result and the log files
-    allcontent = [ join(TOCOMP_DIR, f) for f in listdir(TOCOMP_DIR) ]
-    files = [ f for f in allcontent if isfile(f) ]
-    keep_csv = [ f for f in files if f.endswith(EXTENSION) ]
-    keep = { f for f in files if f.endswith(LOG_EXT) } # keep the logs too
-    keep.update(keep_csv)
-    for f in allcontent:
-        if f in keep:
-            continue
-        elif isfile(f):
-            remove(f)
-        else:
-            rmtree(f)
-    
-    # Each project should generate exactly one CSV file
-    if len(keep_csv) != len(projects):
-        print('Something is strange:',len(projects),'projects but ',end='')
-        print(len(keep_csv),'CSV files, exiting...')
-        return
-
     if RUN_CSVTEST:
         print('Invoking CSV test now\n')
-        csvtest_main('RGF files are in: "{}"'.format(RGF_FOLDER))
+        extra_msg_in_header = 'RGF files are in: "{}"'.format(RGF_FOLDER) 
+        csvtest_main(extra_msg_in_header)
     else:
         print('Not running tests as requested; we are done!')
 
@@ -105,6 +95,11 @@ def collect_project_names(to_cp):
     #
     projects.difference_update(IGNORE)
     return sorted(projects)
+
+
+def get_new_csv_files(directory, previous_files):
+    return sorted( f for f in listdir(directory) if f not in previous_files 
+                     and isfile(join(directory, f)) and f.endswith(EXTENSION) )
 
 
 def is_there_path_error():

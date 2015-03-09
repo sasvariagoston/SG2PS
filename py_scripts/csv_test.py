@@ -115,7 +115,6 @@ def get_content(directory, filename, kind):
     return header, table
 
 def read_csv(filename):
-    print()
     print('Trying to read file "{}"'.format(filename))
     with open(filename, 'r') as f:
         header = extract_first_line(f)

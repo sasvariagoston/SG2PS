@@ -258,8 +258,7 @@ void dump_RGF_SF_to_file (const vector <GDB>& inGDB, const string FN) {
 
 void dump_RGF_to_file (const vector <GDB>& inGDB, const string FN) {
 
-	ofstream o;
-	o.open ((FN + "_GDB.csv").c_str());
+	ofstream o((FN + "_GDB.csv").c_str());
 
 	o
 	<< "NAME_ID s" << '\t'
@@ -337,7 +336,7 @@ void dump_RGF_to_file (const vector <GDB>& inGDB, const string FN) {
 
 	<< "lambda d" << '\t'
 	<< "ANG d" << '\t'
-	<< "RUP d" << '\t' << endl;
+	<< "RUP d" << endl;
 
 	for (size_t i = 0; i < inGDB.size(); i++) {
 
@@ -419,16 +418,14 @@ void dump_RGF_to_file (const vector <GDB>& inGDB, const string FN) {
 
 		<< dmp_dbl(T.lambda, 8) << '\t'
 		<< dmp_dbl(T.ANG, 8) << '\t'
-		<< dmp_dbl(T.RUP, 8) << '\t' << endl;
+		<< dmp_dbl(T.RUP, 8) << endl;
 	}
 	return;
 }
 
 void dump_SF_to_file (const vector <STRESSFIELD>& SF, const string FN) {
 
-	ofstream o;
-
-	o.open ((FN + "_SF.csv").c_str());
+	ofstream o((FN + "_SF.csv").c_str());
 
 	o
 	<< "EIGENVECTOR1.X d" << '\t' << "EIGENVECTOR1.Y d" << '\t' << "EIGENVECTOR1.Z d" << '\t'
@@ -446,7 +443,7 @@ void dump_SF_to_file (const vector <STRESSFIELD>& SF, const string FN) {
 	<< "regime s" << '\t'
 	<< "delvaux_rgm s" << '\t'
 	<< "shmax d" << '\t'
-	<< "shmin d" << '\t' << endl;
+	<< "shmin d" << endl;
 
 	for (size_t i = 0; i < SF.size(); i++) {
 
@@ -468,15 +465,13 @@ void dump_SF_to_file (const vector <STRESSFIELD>& SF, const string FN) {
 		<< S.regime << '\t'
 		<< S.delvaux_rgm << '\t'
 		<< dmp_dbl(S.shmax, 8) << '\t'
-		<< dmp_dbl(S.shmin, 8) << '\t' << endl;
+		<< dmp_dbl(S.shmin, 8) << endl;
 	}
 }
 
 void dump_RECT_GRID_to_file (const vector <vector <GRID_CENTER> >& IN, const string FN) {
 
-	ofstream o;
-
-	o.open ((FN + "_RECT_GRID.csv").c_str());
+	ofstream o((FN + "_RECT_GRID.csv").c_str());
 
 	o
 	<< "CENTER.X d" << '\t' << "CENTER.Y d" << '\t' << "CENTER.Z d" << '\t'
@@ -496,9 +491,7 @@ void dump_RECT_GRID_to_file (const vector <vector <GRID_CENTER> >& IN, const str
 
 void dump_TRI_GRID_to_file (const vector <TRIANGLE>& T, const string FN) {
 
-	ofstream o;
-
-	o.open ((FN + "_TRI_GRID.csv").c_str());
+	ofstream o((FN + "_TRI_GRID.csv").c_str());
 
 	o
 	<< "GROUP i" << '\t'
@@ -522,20 +515,20 @@ void dump_TRI_GRID_to_file (const vector <TRIANGLE>& T, const string FN) {
 
 void dump_DISTANCE_MATRIX_to_file (const vector <vector <double> >& DM, const string FN) {
 
-	ofstream o;
-
-	o.open ((FN + "_DIST_MX.csv").c_str());
+	ofstream o((FN + "_DIST_MX.csv").c_str());
 
 	for (size_t i = 0; i < DM.at(0).size(); i++) {
-
-		o << "COL_" << i << " d"<< '\t' << flush;
+		if (i!=0)
+			o << '\t';
+		o << "COL_" << i << " d";
 	}
 	o << endl;
 
 	for (size_t i = 0; i < DM.size(); i++) {
 		for (size_t j = 0; j < DM.at(i).size(); j++) {
-
-			o << DM.at(i).at(j) << '\t' << flush;
+			if (j!=0)
+				o << '\t';
+			o << DM.at(i).at(j);
 		}
 		o << endl;
 	}
@@ -544,9 +537,7 @@ void dump_DISTANCE_MATRIX_to_file (const vector <vector <double> >& DM, const st
 
 void dump_WHICH_GROUP_to_file (const vector <size_t>& WG, const string FN) {
 
-	ofstream o;
-
-	o.open ((FN + "_WCH_GRP.csv").c_str());
+	ofstream o((FN + "_WCH_GRP.csv").c_str());
 
 	o << "GROUP i" << endl;
 
@@ -557,9 +548,7 @@ void dump_WHICH_GROUP_to_file (const vector <size_t>& WG, const string FN) {
 
 void dump_HISTOGRAM_to_file (const vector <HISTOGRAM>& H, const string FN) {
 
-	ofstream o;
-
-	o.open ((FN + "_HIST.csv").c_str());
+	ofstream o((FN + "_HIST.csv").c_str());
 
 	o << "BIN_MIN d" << '\t' << "COUNT i" << '\t' << "GC s" << endl;
 
