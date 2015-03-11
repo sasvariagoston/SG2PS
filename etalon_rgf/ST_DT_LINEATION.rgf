@@ -1,0 +1,25 @@
+DATA_ID	GROUP_CODE	COLOR_CODE	LOCATION	LOC_X	LOC_Y	FORMATION	DATATYPE	DIP_DIR	DIP	L_DIP_DIR	L_DIP	SENSE	PALEONORTH	COMMENT
+BZ0083			230			LOWERFARS	lineation	78	78					all_lineation_orientation
+BZ0084			230			LOWERFARS	lineation	72	78					all_lineation_orientation
+BZ0085			230			LOWERFARS	lineation	70	78					all_lineation_orientation
+BZ0086			230			LOWERFARS	lineation	62	78					all_lineation_orientation
+BZ0087			230			LOWERFARS	lineation	57	78					all_lineation_orientation
+BZ0088			230			LOWERFARS	lineation	54	78					all_lineation_orientation
+BZ0089			230			LOWERFARS	lineation	44	78					all_lineation_orientation
+BZ0090			230			LOWERFARS	lineation	31	78					all_lineation_orientation
+BZ0091			230			LOWERFARS	lineation	144	78					all_lineation_orientation
+BZ0092			230			LOWERFARS	lineation	138	78					all_lineation_orientation
+BZ0093			230			LOWERFARS	lineation	138	78					all_lineation_orientation
+BZ0094			230			LOWERFARS	lineation	138	78					all_lineation_orientation
+BZ0095			230			LOWERFARS	lineation	133	78					all_lineation_orientation
+BZ0119			230			LOWERFARS	lineation	132	73					all_lineation_orientation
+BZ0120			230			LOWERFARS	lineation	80	72					all_lineation_orientation
+BZ0121			230			LOWERFARS	lineation	74	72					all_lineation_orientation
+BZ0122			230			LOWERFARS	lineation	70	72					all_lineation_orientation
+BZ0123			230			LOWERFARS	lineation	62	72					all_lineation_orientation
+BZ0124			230			LOWERFARS	lineation	58	72					all_lineation_orientation
+BZ0125			230			LOWERFARS	lineation	58	72					all_lineation_orientation
+BZ0126			230			LOWERFARS	lineation	55	72					all_lineation_orientation
+BZ0154			230			LOWERFARS	lineation	42	64					all_lineation_orientation
+BZ600x			230	488902	3953801	LOWERFARS	bedding	20	60					bedding
+BZ6005			230	488902	3953801	LOWERFARS	bedding	40	60					bedding

@@ -1,0 +1,70 @@
+DATA_ID	GROUP_CODE	COLOR_CODE	LOCATION	LOC_X	LOC_Y	FORMATION	DATATYPE	DIP_DIR	DIP	L_DIP_DIR	L_DIP	SENSE	PALEONORTH	COMMENT
+GRP_001	b	a	ANG001			GULNERI	bedding	329	71					
+GRP_002	c	a					bedding	315	65					
+GRP_003	a	a					fracture	312	70					
+GRP_004	b	a					fracture	317	63					
+GRP_005	c	a					fracture	134	65					
+GRP_006	a	b					s1	162	65					
+GRP_007	a	b					s1	153	70					
+GRP_008	b	b					s1	316	61					
+GRP_009	b	b					s1	340	73					
+GRP_010	b	c					s2	342	72					
+GRP_011	b	c					s2	323	86					
+GRP_012	c	c					s2	330	74					
+GRP_013	c	c					s2	317	77					
+GRP_014	d	c					s3	325	65					
+GRP_015	d	d					s3	165	52					
+GRP_016	e	d					s3	309	85					
+GRP_017	e	d					s3	312	71					
+GRP_018	b	d	ANG002				bedding	329	63					
+GRP_019	c	d					bedding	319	58					
+GRP_020	a	e					fracture	317	57					
+GRP_021	b	e					fracture	174	56					
+GRP_022	c	e					fracture	319	40					
+GRP_023	a	e					s1	159	51					
+GRP_024	a	e					s1	167	32					
+GRP_025	b	f					s1	322	54					
+GRP_026	b	f					s1	149	67					
+GRP_027	b	f					s2	317	65					
+GRP_028	b	f					s2	151	86					
+GRP_029	c	f					s2	317	74					
+GRP_030	c	g					s2	301	69					
+GRP_031	d	g					s3	132	65					
+GRP_032	d	g					s3	146	56					
+GRP_033	e	g					s3	340	80					
+GRP_034	a		ANG002				striae	151	6	80	E	N	30	
+GRP_035	a							152	59	80	S	N	30	
+GRP_036	a							153	7	58	W	N	30	
+GRP_037	a							154	68	78	W	N	30	
+GRP_038	a							180	63	78	W	N	30	
+GRP_039	a							181	8	59	W	N	30	
+GRP_040	a							182	78	65	W	N	30	
+GRP_041	a							183	9	80	W	N	30	
+GRP_042	a							184	61	86	E	N	30	
+GRP_043	a							151	56	88	E	N	30	
+GRP_044	a							152	8	69	W	N	30	
+GRP_045	a							153	50	86	N	N	30	
+GRP_046	a							154	7	79	W	N	30	
+GRP_047	a							180	62	77	W	N	30	
+GRP_048	a							181	6	84	W	N	30	
+GRP_049	a							182	61	75	S	N	30	
+GRP_050	a							183	5	76	S	N	30	
+GRP_051	a							184	63	85	S	N	30	
+GRP_052	b							151	56	88	E	N	30	
+GRP_053	b							152	8	69	W	N	30	
+GRP_054	b							153	50	86	N	N	30	
+GRP_055	b							154	7	79	W	N	30	
+GRP_056	b							180	62	77	W	N	30	
+GRP_057	b							181	6	84	W	N	30	
+GRP_058	b							182	61	75	S	N	30	
+GRP_059	b							183	5	76	S	N	30	
+GRP_060	b							184	63	85	S	N	30	
+GRP_061	b							151	6	80	E	N	30	
+GRP_062	b							152	59	80	S	N	30	
+GRP_063	b							153	7	58	W	N	30	
+GRP_064	b							154	68	78	W	N	30	
+GRP_065	b							180	63	78	W	N	30	
+GRP_066	b							181	8	59	W	N	30	
+GRP_067	b							182	78	65	W	N	30	
+GRP_068	b							183	9	80	W	N	30	
+GRP_069	b							184	61	86	E	N	30	

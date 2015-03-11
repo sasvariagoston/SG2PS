@@ -1,0 +1,20 @@
+DATA_ID	GROUP_CODE	COLOR_CODE	LOCATION	LOC_X	LOC_Y	FORMATION	DATATYPE	DIP_DIR	DIP	L_DIP_DIR	L_DIP	SENSE	PALEONORTH	COMMENT
+F_SURF_01			foldsurf				foldsurface	189	15					
+F_SURF_02								160	82					
+F_SURF_03								282	53					
+F_SURF_04								297	45					
+F_SURF_05								291	67					
+F_SURF_06								301	73					
+F_SURF_07								306	64					
+F_SURF_08								303	56					
+F_SURF_09								296	72					
+F_SURF_10								304	66					
+F_SURF_11								291	34					
+F_SURF_12								278	24					
+F_SURF_13								255	12					
+F_SURF_14								254	18					
+F_SURF_15								286	47					
+F_SURF_16								297	32
+F_SURF_17								222	21
+F_SURF_18								165	26
+F_SURF_19								292	69
