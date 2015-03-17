@@ -46,6 +46,8 @@ STRESSTENSOR st_NDA (const vector <GDB>& inGDB) {
 
 		if (HAS_SENSE)  {
 
+			////
+			/*
 			t = declare_vector(
 					q * processGDB.at(i).N.X + r * processGDB.at(i).SV.X,
 					q * processGDB.at(i).N.Y + r * processGDB.at(i).SV.Y,
@@ -55,6 +57,7 @@ STRESSTENSOR st_NDA (const vector <GDB>& inGDB) {
 					q * processGDB.at(i).SV.X - r * processGDB.at(i).N.X,
 					q * processGDB.at(i).SV.Y - r * processGDB.at(i).N.Y,
 					q * processGDB.at(i).SV.Z - r * processGDB.at(i).N.Z);
+					*/
 		}
 
 		st._11 = st._11 +

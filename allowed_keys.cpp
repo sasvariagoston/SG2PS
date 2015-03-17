@@ -7,6 +7,7 @@
 
 #include "allowed_keys.hpp"
 #include "array_to_vector.hpp"
+#include <iostream>
 
 template <typename T>
 bool contains(const vector<T>& vec, const T& elem) {
@@ -101,7 +102,7 @@ const string foldsurface_processing_allowed [] = {
 const vector<string> allowed_foldsurface_processing(from_array(foldsurface_processing_allowed));
 
 const string striae_inverse_sense_allowed [] = {
-		"+", "THRUST", "UP", "INVERSE", "U", "I"
+		"+", "THRUST", "UP", "INVERSE", "U", "I", "REVERSE", "R"
 };
 const vector<string> allowed_striae_inverse_senses(from_array(striae_inverse_sense_allowed));
 

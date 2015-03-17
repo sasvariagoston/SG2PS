@@ -1316,7 +1316,7 @@ void PS_well_intervals (const vector <WELL_INTERVAL>& INTERVAL, ofstream& o, con
 
 		string CLR = double_to_string (RES.X, 2) + " " + double_to_string (RES.Y, 2) + " " + double_to_string (RES.Z, 2);
 
-		if (is_WELL_INTERVAL_DATANUMBER ()) CLR = "0.83 0.83 0.83";
+		////if (is_WELL_INTERVAL_DATANUMBER ()) CLR = "0.83 0.83 0.83";
 
 		color_PS (o, CLR);
 
@@ -1338,13 +1338,13 @@ void OUTPUT_TO_WELL_PS (const vector <vector <vector <vector <GDB> > > > GDB_G, 
 
 	const vector < vector <GDB> > prGDB_G = MERGE_GROUPS_TO_GDB_G (GDB_G);
 
-	vector <vector <vector <vector <WELL_INTERVAL> > > > I = RETURN_INTERVAL ();
+	////vector <vector <vector <vector <WELL_INTERVAL> > > > I = RETURN_INTERVAL ();
 
-	const vector <vector <WELL_INTERVAL> > INTERVAL = MERGE_INTERVAL (I);
+	////const vector <vector <WELL_INTERVAL> > INTERVAL = MERGE_INTERVAL (I);
 
-	vector <vector <vector <vector <WELL_FREQUENCY> > > > F = RETURN_FREQUENCY ();
+	////vector <vector <vector <vector <WELL_FREQUENCY> > > > F = RETURN_FREQUENCY ();
 
-	const vector <vector <WELL_FREQUENCY> > FREQUENCY = MERGE_FREQUENCY (F);
+	////const vector <vector <WELL_FREQUENCY> > FREQUENCY = MERGE_FREQUENCY (F);
 
 	const bool IGNORE = is_GROUPSEPARATION_IGNORE ();
 	const bool by_GROUPCODE = is_GROUPSEPARATION_GROUPCODE ();
@@ -1401,18 +1401,18 @@ void OUTPUT_TO_WELL_PS (const vector <vector <vector <vector <GDB> > > > GDB_G, 
 
 			//cout << "1A" << endl;
 			double X = P.O1X + PL_LF * P.A;
-			PS_well_coordinate_grid_INTERVAL (OPS, P, X, LENGTH, MIN_VAL, MAX_VAL, STEP);
-			PS_well_intervals (INTERVAL.at(i), OPS, P, X, LENGTH, MIN_VAL, MAX_VAL);
-			PS_well_coordinate_axes_INTERVAL (OPS, P, X, LENGTH);
+			//PS_well_coordinate_grid_INTERVAL (OPS, P, X, LENGTH, MIN_VAL, MAX_VAL, STEP);
+		////	PS_well_intervals (INTERVAL.at(i), OPS, P, X, LENGTH, MIN_VAL, MAX_VAL);
+			//PS_well_coordinate_axes_INTERVAL (OPS, P, X, LENGTH);
 
 
 			//cout << "2A" << endl;
 			X = X + (PL_WDT + PL_GP) * P.A;
 			PS_well_coordinate_grid_DIPDIR (OPS, P, X, LENGTH, MIN_VAL, MAX_VAL, STEP);
-			PS_well_intervals_error (INTERVAL.at(i), OPS, P, X, LENGTH, MIN_VAL, MAX_VAL, true);
-			plot_well_curve (INTERVAL.at(i), OPS, P, X, LENGTH, MIN_VAL, MAX_VAL, true, "LOWER_STDEV");
-			plot_well_curve (INTERVAL.at(i), OPS, P, X, LENGTH, MIN_VAL, MAX_VAL, true, "UPPER_STDEV");
-			plot_well_curve (INTERVAL.at(i), OPS, P, X, LENGTH, MIN_VAL, MAX_VAL, true, "AVERAGE");
+			//PS_well_intervals_error (INTERVAL.at(i), OPS, P, X, LENGTH, MIN_VAL, MAX_VAL, true);
+			//plot_well_curve (INTERVAL.at(i), OPS, P, X, LENGTH, MIN_VAL, MAX_VAL, true, "LOWER_STDEV");
+			//plot_well_curve (INTERVAL.at(i), OPS, P, X, LENGTH, MIN_VAL, MAX_VAL, true, "UPPER_STDEV");
+			//plot_well_curve (INTERVAL.at(i), OPS, P, X, LENGTH, MIN_VAL, MAX_VAL, true, "AVERAGE");
 			plot_well_measurements (temp, OPS, P, X, LENGTH, MIN_VAL, MAX_VAL, true);
 			PS_well_coordinate_axes_DIPDIR (OPS, P, X, LENGTH);
 
@@ -1420,34 +1420,34 @@ void OUTPUT_TO_WELL_PS (const vector <vector <vector <vector <GDB> > > > GDB_G, 
 			//cout << "2B" << endl;
 			X = X + (PL_WDT + PL_AX_GP) * P.A;
 			PS_derivate_DIPDIR_DIP (OPS, P, X);
-			plot_well_curve (INTERVAL.at(i), OPS, P, X, LENGTH, MIN_VAL, MAX_VAL, true, "DERIVATE");
+			//plot_well_curve (INTERVAL.at(i), OPS, P, X, LENGTH, MIN_VAL, MAX_VAL, true, "DERIVATE");
 
 
 			//3A
 			X = X + (PL_WDT * 0.5 + PL_GP) * P.A;
 			PS_well_coordinate_grid_DIP (OPS, P, X, LENGTH, MIN_VAL, MAX_VAL, STEP);
-			PS_well_intervals_error (INTERVAL.at(i), OPS, P, X, LENGTH, MIN_VAL, MAX_VAL, false);
-			plot_well_curve (INTERVAL.at(i), OPS, P, X, LENGTH, MIN_VAL, MAX_VAL, false, "LOWER_STDEV");
-			plot_well_curve (INTERVAL.at(i), OPS, P, X, LENGTH, MIN_VAL, MAX_VAL, false, "UPPER_STDEV");
-			plot_well_curve (INTERVAL.at(i), OPS, P, X, LENGTH, MIN_VAL, MAX_VAL, false, "AVERAGE");
-			plot_well_measurements (temp, OPS, P, X, LENGTH, MIN_VAL, MAX_VAL, false);
+			//PS_well_intervals_error (INTERVAL.at(i), OPS, P, X, LENGTH, MIN_VAL, MAX_VAL, false);
+			//plot_well_curve (INTERVAL.at(i), OPS, P, X, LENGTH, MIN_VAL, MAX_VAL, false, "LOWER_STDEV");
+			//plot_well_curve (INTERVAL.at(i), OPS, P, X, LENGTH, MIN_VAL, MAX_VAL, false, "UPPER_STDEV");
+			//plot_well_curve (INTERVAL.at(i), OPS, P, X, LENGTH, MIN_VAL, MAX_VAL, false, "AVERAGE");
+			//plot_well_measurements (temp, OPS, P, X, LENGTH, MIN_VAL, MAX_VAL, false);
 			PS_well_coordinate_axes_DIP (OPS, P, X, LENGTH);
 
 			//3B
 			X = X + (PL_WDT + PL_AX_GP) * P.A;
 			PS_derivate_DIPDIR_DIP (OPS, P, X);
-			plot_well_curve (INTERVAL.at(i), OPS, P, X, LENGTH, MIN_VAL, MAX_VAL, false, "DERIVATE");
+			//plot_well_curve (INTERVAL.at(i), OPS, P, X, LENGTH, MIN_VAL, MAX_VAL, false, "DERIVATE");
 
 			//4A
 			X = X + (PL_WDT * 0.5 + PL_GP) * P.A;
 			PS_well_coordinate_axes_FREQUENCY (OPS, P, X, LENGTH, MIN_VAL, MAX_VAL, STEP);
-			plot_well_frequency (FREQUENCY.at(i), OPS, P, X, LENGTH, MIN_VAL, MAX_VAL);
+		////	plot_well_frequency (FREQUENCY.at(i), OPS, P, X, LENGTH, MIN_VAL, MAX_VAL);
 
 
 			//4B
 			X = X + (PL_WDT + PL_AX_GP) * P.A;
 			PS_derivate_DIPDIR_DIP(OPS, P, X);
-			plot_well_frequency_derivate (FREQUENCY.at(i), OPS, P, X, LENGTH, MIN_VAL, MAX_VAL);
+			////plot_well_frequency_derivate (FREQUENCY.at(i), OPS, P, X, LENGTH, MIN_VAL, MAX_VAL);
 
 			//PS_well_coordinate_axes (prGDB_G.at(i), OPS, PPR);
 		}

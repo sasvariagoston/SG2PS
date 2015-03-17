@@ -138,6 +138,13 @@ void complete_rgf_to_check () {
 
 	for (size_t i = 1; i < rgf_to_check.size(); i++) {
 
+		rgf_to_check.at(i).at(SENSE) = capslock(rgf_to_check.at(i).at(SENSE));
+		rgf_to_check.at(i).at(DATATYPE) = capslock(rgf_to_check.at(i).at(DATATYPE));
+		rgf_to_check.at(i).at(GROUP) = capslock(rgf_to_check.at(i).at(GROUP));
+		rgf_to_check.at(i).at(COLOR) = capslock(rgf_to_check.at(i).at(COLOR));
+		rgf_to_check.at(i).at(LOCATION) = capslock(rgf_to_check.at(i).at(LOCATION));
+		rgf_to_check.at(i).at(FORMATION) = capslock(rgf_to_check.at(i).at(FORMATION));
+
 		if (rgf_to_check.at(i).at(LOCATION) == "") 	rgf_to_check.at(i).at(LOCATION) = 	rgf_to_check.at(i-1).at(LOCATION);
 		if (rgf_to_check.at(i).at(LOCX) == "") 		rgf_to_check.at(i).at(LOCX) = 		rgf_to_check.at(i-1).at(LOCX);
 		if (rgf_to_check.at(i).at(LOCY) == "") 		rgf_to_check.at(i).at(LOCY) = 		rgf_to_check.at(i-1).at(LOCY);

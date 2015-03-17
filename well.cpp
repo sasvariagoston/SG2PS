@@ -18,6 +18,7 @@
 #include "structs.h"
 #include "well.hpp"
 
+/*
 namespace {
 
 vector <vector <vector <vector <WELL_INTERVAL> > > > W_INTERVAL;
@@ -286,12 +287,12 @@ vector <GDB> return_GDB_for_data_interval (const vector <GDB>& inGDB, const doub
 
 double stdev_for_interval (const vector <GDB>& inGDB, const bool DIPDIR) {
 
-	if (is_WELL_INTERVAL_DATANUMBER()) {
+	//if (is_WELL_INTERVAL_DATANUMBER()) {
 
-		size_t L = double_to_size_t(is_WELL_INTERVAL_LENGTH());
+	//	size_t L = double_to_size_t(is_WELL_INTERVAL_LENGTH());
 
-		if (inGDB.size() < L) ASSERT_DEAD_END();
-	}
+	//	if (inGDB.size() < L) ASSERT_DEAD_END();
+	//}
 
 	const DIPDIR_DIP avDD = inGDB.at(0).avd;
 
@@ -522,3 +523,5 @@ void dbg_cout_AVERAGE (vector <vector <vector <vector <WELL_AVERAGE> > > > IN) {
 	return;
 }
 */
+
+

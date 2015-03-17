@@ -1105,7 +1105,7 @@ void PS_plane (const GDB& i, ofstream& o, const double X, const double Y, const 
 	else if (AV || AVO) {
 
 		DD = i.avS0d;
-		D =  flip_D_vector(i.avS0D);
+		////!D =  flip_D_vector(i.avS0D);
 		N =  (NXNYNZ_from_DXDYDZ (D));
 	}
 	else if (FOLD) {
@@ -1348,7 +1348,7 @@ void PS_polepoint (const GDB& i, ofstream& o, const double X, const double Y, co
 	if (FL) 			O = i.fold_great_circle_N;
 	else if (AV || AVO) O = NXNYNZ_from_DXDYDZ (i.avS0D);
 	else if (C) 		O = i.NC;
-	else if (ID) 		O = flip_N_vector (unitvector (i.SHEAR_S));
+	////else if (ID) 		O = flip_N_vector (unitvector (i.SHEAR_S));
 	else 				O = i.N;
 
 	O = declare_vector( -O.X, -O.Y, O.Z);
@@ -1473,7 +1473,7 @@ void PS_striaearrow (const GDB& i, ofstream& o, const CENTER& center) {
 	if (is_PLOT_HOEPPENER() && !NONE) {
 
 		ANGLE = - i.corrL.DIPDIR;
-		if (i.UP) ANGLE = ANGLE + 180.0;
+		////if (i.UP) ANGLE = ANGLE + 180.0;
 		TEXT = " newpath normalarrow";
 	}
 	else {

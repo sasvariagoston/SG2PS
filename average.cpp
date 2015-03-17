@@ -101,13 +101,13 @@ vector <GDB> generate_Bingham_dataset (const vector <GDB>& inGDB) {
 
 		if (FOR_FOLDSURFACE) {
 
-			if (OTB) 	T.at(i).N = flip_vector (inGDB.at(i).N);
-			else		T.at(i).N =              inGDB.at(i).N;
+			////!if (OTB) 	T.at(i).N = flip_vector (inGDB.at(i).N);
+			////else		T.at(i).N =              inGDB.at(i).N;
 		}
 		else {
 
-			if (OTB) 	T.at(i).N = flip_vector (inGDB.at(i).D);
-			else 		T.at(i).N =              inGDB.at(i).D;
+			////!if (OTB) 	T.at(i).N = flip_vector (inGDB.at(i).D);
+			////else 		T.at(i).N =              inGDB.at(i).D;
 		}
 	}
 	return T;
@@ -132,8 +132,8 @@ VCTR process_for_average_MT2 (const vector <GDB>& inGDB) {
 
 	if (FOR_FOLDSURFACE) {
 
-		if (!OVERTURNED) return (sf.EIGENVECTOR3);
-		else return flip_vector (sf.EIGENVECTOR3);
+		///if (!OVERTURNED) return (sf.EIGENVECTOR3);
+		////!else return flip_vector (sf.EIGENVECTOR3);
 
 		//Before the change in the Bingham statistics, it was:
 		//if (!OVERTURNED) return (sf.EIGENVECTOR1);
@@ -141,8 +141,8 @@ VCTR process_for_average_MT2 (const vector <GDB>& inGDB) {
 	}
 	else {
 
-		if (!OVERTURNED)  return flip_N_vector (sf.EIGENVECTOR1);
-		else return flip_vector (flip_N_vector (sf.EIGENVECTOR1));
+		////!if (!OVERTURNED)  return flip_N_vector (sf.EIGENVECTOR1);
+		////!else return flip_vector (flip_N_vector (sf.EIGENVECTOR1));
 
 		//Before the change in the Bingham statistics, it was:
 		//if (!OVERTURNED) return flip_D_vector (sf.EIGENVECTOR1);
@@ -171,8 +171,8 @@ VCTR process_for_average_EQ2 (const vector <GDB>& inGDB) {
 	const bool OTB_2 = is_overturned (inGDB.at(1)) && is_allowed_handle_as_bedding (inGDB.at(1).DATATYPE);
 
 
-	if (OTB_1) N1 = flip_vector(N1);
-	if (OTB_2) N2 = flip_vector(N2);
+	////!if (OTB_1) N1 = flip_vector(N1);
+	////!if (OTB_2) N2 = flip_vector(N2);
 
 	const bool is_SYMMETRICAL =
 			is_in_range(N1.X, N1.X, -N2.X) &&
@@ -198,11 +198,13 @@ VCTR process_for_average_EQ1 (const vector <GDB>& inGDB) {
 
 	GDB I = inGDB.at(0);
 
-	//if (is_overturned (I) && (I.DATATYPE) == "BEDDING") return (flip_vector(I.D));
+	////if (is_overturned (I) && (I.DATATYPE) == "BEDDING") return (flip_vector(I.D));
 
-	if (is_overturned (I) && is_allowed_handle_as_bedding(I.DATATYPE)) return (flip_vector(I.D));
+	////!if (is_overturned (I) && is_allowed_handle_as_bedding(I.DATATYPE)) return (flip_vector(I.D));
 
-	else return I.D;
+	////else
+
+	return I.D;
 }
 
 vector <GDB> init_average (const vector <GDB>& inGDB) {
@@ -262,8 +264,8 @@ vector <GDB> apply_data_average_vector (const vector <GDB>& to_process, const VC
 		else {
 			outGDB.at(i).avD = AV_D;
 
-			if (OTB) 	outGDB.at(i).avd = dipdir_dip_from_DXDYDZ (flip_vector(AV_D));
-			else 		outGDB.at(i).avd = dipdir_dip_from_DXDYDZ (AV_D);
+			////!if (OTB) 	outGDB.at(i).avd = dipdir_dip_from_DXDYDZ (flip_vector(AV_D));
+			////else 		outGDB.at(i).avd = dipdir_dip_from_DXDYDZ (AV_D);
 		}
 	}
 	return outGDB;
@@ -383,7 +385,7 @@ vector <vector <GDB> > apply_group_bedding_vector (const vector <vector <GDB> >&
 
 			if (OVERTURNED) {
 
-				ACT.avS0d = dipdir_dip_from_DXDYDZ (flip_vector(AV_D));
+				////!ACT.avS0d = dipdir_dip_from_DXDYDZ (flip_vector(AV_D));
 				ACT.avS0offset = "OVERTURNED";
 			}
 			else ACT.avS0d = dipdir_dip_from_DXDYDZ (AV_D);

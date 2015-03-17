@@ -17,6 +17,7 @@ vector <GDB> competeRGFcontect (const string projectname, const string inputxyfi
 double right_hand_rule_to_german (const double corrDIPDIR);
 double german_to_right_hand_rule (const double corrDIPDIR);
 
+vector <GDB> fix_360_0 (const vector <GDB>& inGDB);
 vector <GDB> generate_NDS_vectors (const vector <GDB>& inGDB);
 vector <GDB> generate_NCDCSC_vectors (const vector <GDB>& inGDB);
 GDB generate_NCDCSC_LINEATION_SC (const GDB& inGDB);
@@ -28,8 +29,10 @@ vector <GDB> striae_correction (const vector <GDB>& inGDB);
 VCTR striae_DIP_correction (const GDB& in);
 VCTR striae_DIPDIR_correction (const GDB& in);
 
+bool is_DC_up (const VCTR& DC);
 vector <GDB> generate_UP (const vector <GDB>& inGDB);
 vector <GDB> generate_PITCHANGLE (const vector <GDB>& inGDB);
+string return_new_offset (const double DIP, const double PTC, const bool UP);
 vector <GDB> generate_OFFSET (const vector <GDB>& inGDB);
 vector <GDB> generate_LAMBDA_STRESSVECTOR_ESTIMATORS (const vector <GDB>& inGDB);
 vector <GDB> generate_tilted_UP (const vector <GDB>& inGDB);

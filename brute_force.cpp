@@ -322,7 +322,7 @@ vector <BRUTEFORCE_RESULT> BRUTEFORCE_ENGINE (const vector <GDB>& inGDB, const v
 	for (size_t q = 0; q < DATANUMBER; q++) {
 
 		N.push_back(inGDB.at(q).N);
-		SV.push_back(inGDB.at(q).SV);
+		////SV.push_back(inGDB.at(q).SV);
 	}
 
 	vector <BRUTEFORCE_RESULT> OUT;

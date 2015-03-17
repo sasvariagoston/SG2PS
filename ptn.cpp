@@ -34,6 +34,8 @@ vector <GDB> ptn (const vector <GDB>& inGDB) {
 		const bool STRIAE = is_allowed_striae_datatype(DT);
 		const bool HAS_OFFSET = !is_allowed_striae_none_sense(O);
 
+		////
+/*
 		if ((SC || STRIAE) && HAS_OFFSET) {
 
 			VCTR temp1 = declare_vector(
@@ -41,7 +43,7 @@ vector <GDB> ptn (const vector <GDB>& inGDB) {
 					q * inGDB.at(i).N.Y + r * inGDB.at(i).SV.Y,
 					q * inGDB.at(i).N.Z + r * inGDB.at(i).SV.Z);
 			temp1 = unitvector (temp1);
-			temp1 = flip_D_vector (temp1);
+			!temp1 = flip_D_vector (temp1);
 			DIPDIR_DIP dd = dipdir_dip_from_DXDYDZ (temp1);
 			outGDB.at(i).ptnT = temp1;
 			outGDB.at(i).ptnTd = dd;
@@ -51,18 +53,19 @@ vector <GDB> ptn (const vector <GDB>& inGDB) {
 					q * inGDB.at(i).SV.Y - r * inGDB.at(i).N.Y,
 					q * inGDB.at(i).SV.Z - r * inGDB.at(i).N.Z);
 			temp2 = unitvector (temp2);
-			temp2 = flip_D_vector (temp2);
+			!temp2 = flip_D_vector (temp2);
 			dd = dipdir_dip_from_DXDYDZ (temp2);
 			outGDB.at(i).ptnP = temp2;
 			outGDB.at(i).ptnPd = dd;
 
 			VCTR temp3 = crossproduct (temp2, temp1);
 			temp3 = unitvector (temp3); // FIXME What if temp3 has approximately 0 length?
-			temp3 = flip_D_vector (temp3);
+			!temp3 = flip_D_vector (temp3);
 			dd = dipdir_dip_from_DXDYDZ (temp3);
 			outGDB.at(i).ptnN = temp3;
 			outGDB.at(i).ptnNd = dd;
 		}
+		*/
 	}
 	return outGDB;
 }

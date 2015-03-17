@@ -1,5 +1,5 @@
 
-// Copyright (C) 2012 - 2014 Ágoston Sasvári
+// Copyright (C) 2012 - 2015 Ágoston Sasvári
 // All rights reserved.
 // This code is published under the GNU Lesser General Public License.
 
@@ -58,7 +58,7 @@ void print_banner () {
 	cout << "|                                                                  |" << endl;
 	cout << "|                       Data processing software                   |" << endl;
 	cout << "|                                                                  |" << endl;
-	cout << "|            Copyright (C) 2012 - 2014 Agoston Sasvari.            |" << endl;
+	cout << "|            Copyright (C) 2012 - 2015 Agoston Sasvari.            |" << endl;
 	cout << "|                        All rights reserved.                      |" << endl;
 	cout << "|             This a free software, license: GNU LGPL.             |" << endl;
 	cout << "|                                                                  |" << endl;
@@ -984,6 +984,24 @@ string generate_stress_colors (const double V) {
 	}
 }
 
+double vector_angle (const VCTR& A, const VCTR& B) {
+
+	const double ANG = ACOS (dotproduct (A, B, false));
+
+	//cout << "ANG: " << ANG << endl;
+
+	return ANG;
+
+	//if 		(is_in_range(-180.0, -90.0, ANG)) return (-180.0 - ANG);
+	//else if (is_in_range( -90.0,   0.0, ANG)) return (ANG);
+	//else if (is_in_range(   0.0,  90.0, ANG)) return (ANG);
+	//else if (is_in_range(  90.0, 180.0, ANG)) return ( 180.0 - ANG);
+	//else {
+	//	ASSERT_DEAD_END();
+	//	return NaN();
+	//}
+}
+
 double vectorlength (const VCTR& in) {
 
 	return sqrt(in.X * in.X + in.Y * in.Y + in.Z * in.Z);
@@ -1073,18 +1091,19 @@ VCTR flip_vector (const VCTR& in) {
 
 	return declare_vector(-in.X, -in.Y, -in.Z);
 }
-
+/*
 VCTR flip_D_vector (const VCTR& in) {
 
-	if (in.Z > 0.0) return flip_vector(in);
+	!if (in.Z > 0.0) return flip_vector(in);
 	return in;
 }
 
 VCTR flip_N_vector (const VCTR& in) {
 
-	if (in.Z < 0.0) return flip_vector(in);
+	!if (in.Z < 0.0) return flip_vector(in);
 	return in;
 }
+*/
 
 VCTR compute_d_for_SC (const GDB& i) {
 
@@ -1093,14 +1112,14 @@ VCTR compute_d_for_SC (const GDB& i) {
 
 	VCTR n = crossproduct (temp1, temp2);
 	n = unitvector (n);
-	n = flip_D_vector (n);
+	////////!n = flip_D_vector (n);
 
 	temp1 = n;
 	temp2 = i.NC;
 
 	VCTR d = crossproduct (temp1, temp2);
 	d = unitvector (d);
-	d = flip_D_vector (d);
+	////d = flip_D_vector (d);
 
 	return d;
 }
@@ -1140,11 +1159,11 @@ STRESSFIELD stressvector_to_DXDYDZ (STRESSFIELD in) {
 
 	STRESSFIELD out = in;
 
-	if (in.EIGENVECTOR1.Z > 0.0) out.EIGENVECTOR1 = flip_D_vector (out.EIGENVECTOR1);
+	////!if (in.EIGENVECTOR1.Z > 0.0) out.EIGENVECTOR1 = flip_D_vector (out.EIGENVECTOR1);
 
-	if (in.EIGENVECTOR2.Z > 0.0) out.EIGENVECTOR2 = flip_D_vector (out.EIGENVECTOR2);
+	////!if (in.EIGENVECTOR2.Z > 0.0) out.EIGENVECTOR2 = flip_D_vector (out.EIGENVECTOR2);
 
-	if (in.EIGENVECTOR3.Z > 0.0) out.EIGENVECTOR3 = flip_D_vector (out.EIGENVECTOR3);
+	////!if (in.EIGENVECTOR3.Z > 0.0) out.EIGENVECTOR3 = flip_D_vector (out.EIGENVECTOR3);
 
 	return out;
 }

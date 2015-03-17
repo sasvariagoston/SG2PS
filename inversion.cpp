@@ -66,7 +66,7 @@ vector <GDB> generate_virtual_striae (const vector <GDB>& inGDB) {
 		buf.D =  declare_vector (- buf.D.X, - buf.D.Y, buf.D.Z);
 		buf.S =  declare_vector (- buf.S.X, - buf.S.Y, buf.S.Z);
 
-		buf.SV = declare_vector (- buf.SV.X, - buf.SV.Y, buf.SV.Z);
+		////buf.SV = declare_vector (- buf.SV.X, - buf.SV.Y, buf.SV.Z);
 
 		buf.NC = declare_vector (- buf.NC.X, - buf.NC.Y, buf.NC.Z);
 		buf.DC = declare_vector (- buf.DC.X, - buf.DC.Y, buf.DC.Z);

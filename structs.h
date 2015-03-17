@@ -48,7 +48,7 @@ struct GDB  {
 
 	GDB() { LOCX=LOCY=DIPDIR=DIP=LDIR=LDIP=PALEON=LPITCH=DEPTH=PITCHANGLE=MISFIT=lambda=ANG=RUP=AV_MISF=NaN();
 			iID=numeric_limits<int>::min();
-			UPWARD=false, UP=false;
+			//UPWARD=false UP=false;
 		   }
 
 	string ID;
@@ -82,7 +82,7 @@ struct GDB  {
 	string LPITCHSENSE;
 	double PITCHANGLE;
 
-	VCTR N, NC, D, DC, S, SC, SV;
+	VCTR N, NC, D, DC, S, SC; //SV;
 	VCTR ptnP, ptnT, ptnN;
 	VCTR avD, avS0D, avS0N;
 	//, rotavD;
@@ -90,12 +90,12 @@ struct GDB  {
 	double MISFIT;
 
 	string LINEATION;
-	bool UPWARD;
+	//bool UPWARD;
 
 	string OFFSET;
 	//string corrOFFSET;
 
-	bool UP;
+	//bool UP;
 
 	double lambda;
 

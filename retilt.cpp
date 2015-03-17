@@ -73,13 +73,13 @@ GDB TILT_DATA (const GDB& in, const bool TILT_BY_PALEONORTH) {
 
 	if (IS_LINEATION) {
 
-		OUT.D = unitvector (flip_D_vector (ROTATE (AXIS, in.D, ANGLE)));
-		OUT.N = unitvector (flip_N_vector (NXNYNZ_from_DXDYDZ (OUT.D)));
+		////!OUT.D = unitvector (flip_D_vector (ROTATE (AXIS, in.D, ANGLE)));
+		////!OUT.N = unitvector (flip_N_vector (NXNYNZ_from_DXDYDZ (OUT.D)));
 	}
 	else  {
 
-		OUT.N = unitvector (flip_N_vector (ROTATE (AXIS, in.N, ANGLE)));
-		OUT.D = unitvector (flip_D_vector (DXDYDZ_from_NXNYNZ (OUT.N)));
+		////!OUT.N = unitvector (flip_N_vector (ROTATE (AXIS, in.N, ANGLE)));
+		////!OUT.D = unitvector (flip_D_vector (DXDYDZ_from_NXNYNZ (OUT.N)));
 	}
 	OUT.S = crossproduct(OUT.N, OUT.D);
 	OUT.corr = dipdir_dip_from_DXDYDZ (OUT.D);
@@ -88,20 +88,20 @@ GDB TILT_DATA (const GDB& in, const bool TILT_BY_PALEONORTH) {
 
 		if (IS_STRIAE) {
 
-			OUT.DC = unitvector (flip_D_vector (ROTATE (AXIS, in.DC, ANGLE)));
-			OUT.NC = unitvector (flip_N_vector (NXNYNZ_from_DXDYDZ (OUT.DC)));
+			////!OUT.DC = unitvector (flip_D_vector (ROTATE (AXIS, in.DC, ANGLE)));
+			////!OUT.NC = unitvector (flip_N_vector (NXNYNZ_from_DXDYDZ (OUT.DC)));
 
 			const bool NO_DIRECTION = is_allowed_striae_none_sense (in.OFFSET);
 
-			if (NO_DIRECTION) 	OUT.SV = declare_vector (NaN(), NaN(), NaN());
-			else 				OUT.SV = unitvector (ROTATE (AXIS, in.SV, ANGLE));
+			////if (NO_DIRECTION) 	OUT.SV = declare_vector (NaN(), NaN(), NaN());
+			////else 				OUT.SV = unitvector (ROTATE (AXIS, in.SV, ANGLE));
 
-			if (SV_has_to_invert (in.N, AXIS, ANGLE)) OUT.SV = invert_VCTR(OUT.SV);
+			////if (SV_has_to_invert (in.N, AXIS, ANGLE)) OUT.SV = invert_VCTR(OUT.SV);
 		}
 		else {
 
-			OUT.NC = unitvector (flip_N_vector (ROTATE (AXIS, in.NC, ANGLE)));
-			OUT.DC = unitvector (flip_D_vector (DXDYDZ_from_NXNYNZ (OUT.NC)));
+			////!OUT.NC = unitvector (flip_N_vector (ROTATE (AXIS, in.NC, ANGLE)));
+			////!OUT.DC = unitvector (flip_D_vector (DXDYDZ_from_NXNYNZ (OUT.NC)));
 		}
 		OUT.SC = crossproduct(OUT.NC, OUT.DC);
 		OUT.corrL = dipdir_dip_from_DXDYDZ (OUT.DC);

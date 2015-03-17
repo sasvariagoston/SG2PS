@@ -29,7 +29,7 @@ ANG_PRM angelier_parameters (const vector <GDB>& inGDB) {
 	for (size_t i = 0; i < inGDB.size(); i++) {
 
 		const VCTR N = inGDB.at(i).N;
-		const VCTR S = flip_vector (inGDB.at(i).SV);
+		const VCTR S;//// = flip_vector (inGDB.at(i).SV);
 		const double lambda = inGDB.at(i).lambda;
 
 		rs.a = rs.a + (N.X * N.X) + (N.Y * N.Y) - 4.0 * (N.X * N.X) * (N.Y * N.Y);

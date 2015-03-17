@@ -50,9 +50,9 @@ vector <vector < double> > stressvector_parameters (const vector <GDB>& inGDB) {
 
 	for (size_t i = 0; i < inGDB.size(); i++) {
 
-		o.at( (i * 3) + 0 ).at(0) =  inGDB.at(i).SV.X;
-		o.at( (i * 3) + 1 ).at(0) =  inGDB.at(i).SV.Y;
-		o.at( (i * 3) + 2 ).at(0) =  inGDB.at(i).SV.Z;
+		////o.at( (i * 3) + 0 ).at(0) =  inGDB.at(i).SV.X;
+		////o.at( (i * 3) + 1 ).at(0) =  inGDB.at(i).SV.Y;
+		////o.at( (i * 3) + 2 ).at(0) =  inGDB.at(i).SV.Z;
 	}
 	return o;
 }

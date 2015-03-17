@@ -62,14 +62,14 @@ STRESSFIELD computestressfield_NXNYNZ (const STRESSFIELD& in) {
 
 	STRESSFIELD sf = in;
 
-	sf.EIGENVECTOR1 = flip_N_vector (in.EIGENVECTOR1);
-	sf.S_1 = dipdir_dip_from_NXNYNZ (sf.EIGENVECTOR1);
+	////!sf.EIGENVECTOR1 = flip_N_vector (in.EIGENVECTOR1);
+	////sf.S_1 = dipdir_dip_from_NXNYNZ (sf.EIGENVECTOR1);
 
-	sf.EIGENVECTOR2 = flip_N_vector (in.EIGENVECTOR2);
-	sf.S_2 = dipdir_dip_from_NXNYNZ (sf.EIGENVECTOR2);
+	////!sf.EIGENVECTOR2 = flip_N_vector (in.EIGENVECTOR2);
+	////sf.S_2 = dipdir_dip_from_NXNYNZ (sf.EIGENVECTOR2);
 
-	sf.EIGENVECTOR3 = flip_N_vector (in.EIGENVECTOR3);
-	sf.S_3 = dipdir_dip_from_NXNYNZ (sf.EIGENVECTOR3);
+	////!sf.EIGENVECTOR3 = flip_N_vector (in.EIGENVECTOR3);
+	////sf.S_3 = dipdir_dip_from_NXNYNZ (sf.EIGENVECTOR3);
 
 	return sf;
 }
@@ -84,14 +84,14 @@ STRESSFIELD computestressfield_DXDYDZ (const STRESSFIELD& in) {
 
 	STRESSFIELD sf = in;
 
-	sf.EIGENVECTOR1 = flip_D_vector (in.EIGENVECTOR1);
-	sf.S_1 = dipdir_dip_from_DXDYDZ (sf.EIGENVECTOR1);
+	////!sf.EIGENVECTOR1 = flip_D_vector (in.EIGENVECTOR1);
+	////sf.S_1 = dipdir_dip_from_DXDYDZ (sf.EIGENVECTOR1);
 
-	sf.EIGENVECTOR2 = flip_D_vector (in.EIGENVECTOR2);
-	sf.S_2 = dipdir_dip_from_DXDYDZ (sf.EIGENVECTOR2);
+	////!sf.EIGENVECTOR2 = flip_D_vector (in.EIGENVECTOR2);
+	////sf.S_2 = dipdir_dip_from_DXDYDZ (sf.EIGENVECTOR2);
 
-	sf.EIGENVECTOR3 = flip_D_vector (in.EIGENVECTOR3);
-	sf.S_3 = dipdir_dip_from_DXDYDZ (sf.EIGENVECTOR3);
+	////!sf.EIGENVECTOR3 = flip_D_vector (in.EIGENVECTOR3);
+	////sf.S_3 = dipdir_dip_from_DXDYDZ (sf.EIGENVECTOR3);
 
 	return sf;
 }
@@ -181,8 +181,8 @@ double return_average_misfit (const STRESSTENSOR& st, const vector <GDB>& inGDB)
 
 	for (size_t i = 0; i < inGDB.size(); i++) {
 
-		double ang = return_ANG (st, inGDB.at(i).N, inGDB.at(i).SV);
-		misfit = misfit + ang;
+		////double ang = return_ANG (st, inGDB.at(i).N, inGDB.at(i).SV);
+		////misfit = misfit + ang;
 	}
 	return misfit / inGDB.size();
 }
@@ -194,7 +194,7 @@ vector <GDB> return_stressvector_estimators (const STRESSTENSOR& st, const vecto
 	for (size_t i = 0; i < inGDB.size(); i++) {
 
 		VCTR N = 	inGDB.at(i).N;
-		VCTR SV = 	inGDB.at(i).SV;
+		VCTR SV;//// = 	inGDB.at(i).SV;
 		VCTR UPSILON = 	inGDB.at(i).UPSILON;
 		double lambda = inGDB.at(i).lambda;
 

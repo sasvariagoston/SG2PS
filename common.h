@@ -95,6 +95,7 @@ bool check_correct_stressfield (const STRESSFIELD& sf);
 
 string generate_stress_colors (const double V);
 
+double vector_angle (const VCTR& A, const VCTR& B);
 double vectorlength (const VCTR& in);
 VCTR unitvector (const VCTR& in);
 VCTR invert_VCTR (VCTR in);
@@ -105,8 +106,8 @@ VCTR declare_vector (const double a, const double b, const double c);
 CENTR_VECT declare_vector (const double a, const double b, const double c, const double d, const double e, const double f);
 
 VCTR flip_vector (const VCTR& in);
-VCTR flip_D_vector (const VCTR& in);
-VCTR flip_N_vector (const VCTR& in);
+//VCTR flip_D_vector (const VCTR& in);
+//VCTR flip_N_vector (const VCTR& in);
 
 VCTR compute_d_for_SC (const GDB& i);
 
