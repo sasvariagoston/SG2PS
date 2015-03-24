@@ -59,6 +59,9 @@ bool is_allowed_bedding_none_sense(const string& sense);
 bool is_allowed_bedding_sense(const string& sense);
 
 bool is_allowed_geodetic (const string& geodetic);
+vector <string> allowed_geodetic_vector () ;
+
+vector <double> geodetic_angle_vector ();
 
 bool is_allowed_inversion_method (const string& method);
 

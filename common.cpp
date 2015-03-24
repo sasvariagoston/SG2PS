@@ -986,20 +986,7 @@ string generate_stress_colors (const double V) {
 
 double vector_angle (const VCTR& A, const VCTR& B) {
 
-	const double ANG = ACOS (dotproduct (A, B, false));
-
-	//cout << "ANG: " << ANG << endl;
-
-	return ANG;
-
-	//if 		(is_in_range(-180.0, -90.0, ANG)) return (-180.0 - ANG);
-	//else if (is_in_range( -90.0,   0.0, ANG)) return (ANG);
-	//else if (is_in_range(   0.0,  90.0, ANG)) return (ANG);
-	//else if (is_in_range(  90.0, 180.0, ANG)) return ( 180.0 - ANG);
-	//else {
-	//	ASSERT_DEAD_END();
-	//	return NaN();
-	//}
+	return ACOS (dotproduct (A, B, false));
 }
 
 double vectorlength (const VCTR& in) {
@@ -1794,6 +1781,11 @@ STRESSFIELD stress_regime (const STRESSFIELD& in) {
 	else 															out.delvaux_rgm = "RADIAL COMPRESSIVE";
 
 	return out;
+}
+
+bool byOFFSET(const GDB& x, const GDB& y) {
+
+	return x.OFFSET < y.OFFSET;
 }
 
 bool bycorrDIPDIRcorrDIP(const GDB& x, const GDB& y) {

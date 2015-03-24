@@ -204,7 +204,8 @@ void INVERSION (const vector <GDB>& inGDB) {
 		SFV.push_back (sf_ANGELIER (STV.at(0)));
 	}
 	else if (is_BINGHAM_USE() && !IS_STRIAE) {
-		STV.push_back (st_BINGHAM (inGDB));
+		const vector <VCTR> BNG = generate_Bingham_dataset(inGDB);
+		STV.push_back (st_BINGHAM (BNG));
 		SFV.push_back (sf_BINGHAM (STV.at(0)));
 	}
 	else if (is_INVERSION_BRUTEFORCE() && IS_STRIAE) {

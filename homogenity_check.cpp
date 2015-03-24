@@ -14,7 +14,7 @@
 #include "allowed_keys.hpp"
 #include "brute_force.hpp"
 #include "bingham.h"
-//#include "common.h"
+#include "common.h"
 //#include "data_io.h"
 #include "fry.h"
 //#include "inversion.h"
@@ -49,37 +49,44 @@ size_t minimum_independent_dataset () {
 
 bool check_dataset_offset_homogenity (const vector <GDB>& inGDB) {
 
-	const string ofs1 = inGDB.at(0).OFFSET;
-	const string ofs2 = inGDB.at(inGDB.size() - 1).OFFSET;
+	vector <GDB> TEST = inGDB;
+	const size_t SIZE = TEST.size() - 1;
+
+	sort (TEST.begin(), TEST.end(), byOFFSET);
+
+	const string ofs1 = TEST.at(0).OFFSET;
+	const string ofs2 = inGDB.at(SIZE).OFFSET;
+
 	return (ofs1 != ofs2);
 }
 
 bool check_dataset_geometry_homogenity (const vector <GDB>& inGDB) {
 
-	const bool STRIAE = 	is_allowed_striae_datatype(inGDB.at(0).DATATYPE);
-	const bool SC = 		is_allowed_SC_datatype(inGDB.at(0).DATATYPE);
-	//const bool BEDDING = 	((inGDB.at(0).DATATYPE) == "BEDDING");
-	const bool BEDDING = 	is_allowed_handle_as_bedding (inGDB.at(0).DATATYPE);
+	vector <GDB> TEST = inGDB;
+	const size_t SIZE = TEST.size() - 1;
 
+	sort (TEST.begin(), TEST.end(), bycorrDIPDIRcorrDIPcorrLDIPDIRcorrLDIP);
 
-	const double minDD = inGDB.at(0).corr.DIPDIR;
-	const double maxDD = inGDB.at(inGDB.size() - 1).corr.DIPDIR;
+	const bool STRIAE = 	is_allowed_striae_datatype(TEST.at(0).DATATYPE);
+	const bool SC = 		is_allowed_SC_datatype(TEST.at(0).DATATYPE);
+
+	const double minDD = TEST.at(0).corr.DIPDIR;
+	const double maxDD = TEST.at(SIZE).corr.DIPDIR;
 	const double var1 = fabs(maxDD - minDD);
 
-	const double minD = inGDB.at(0).corr.DIP;
-	const double maxD = inGDB.at(inGDB.size() - 1).corr.DIP;
+	const double minD = TEST.at(0).corr.DIP;
+	const double maxD = TEST.at(SIZE).corr.DIP;
 	const double var2 = fabs(maxD - minD);
 
-	const double minLDD = inGDB.at(0).corrL.DIPDIR;
-	const double maxLDD = inGDB.at(inGDB.size() - 1).corrL.DIPDIR;
+	const double minLDD = TEST.at(0).corrL.DIPDIR;
+	const double maxLDD = TEST.at(SIZE).corrL.DIPDIR;
 	const double var3 = fabs(maxLDD - minLDD);
 
-	const double minLD = inGDB.at(0).corrL.DIP;
-	const double maxLD = inGDB.at(inGDB.size() - 1).corrL.DIP;
+	const double minLD = TEST.at(0).corrL.DIP;
+	const double maxLD = TEST.at(SIZE).corrL.DIP;
 	const double var4 = fabs(maxLD - minLD);
 
 	if (SC || STRIAE) return (var1 > 0.1 || var2 > 0.1 || var3 > 0.1 || var4 > 0.1);
-	else if (BEDDING) return (var1 > 0.1 || var2 > 0.1);
 	else return (var1 > 0.1 || var2 > 0.1);
 }
 
@@ -87,11 +94,10 @@ bool check_dataset_homogenity (const vector <GDB>& inGDB) {
 
 	const bool STRIAE = 	(is_allowed_striae_datatype(inGDB.at(0).DATATYPE));
 	const bool SC = 		(is_allowed_SC_datatype(inGDB.at(0).DATATYPE));
-	//const bool BEDDING = 	((inGDB.at(0).DATATYPE) == "BEDDING");
 	const bool BEDDING = 	is_allowed_handle_as_bedding (inGDB.at(0).DATATYPE);
 
-	const bool OFFSET = 	check_dataset_offset_homogenity (inGDB);
-	const bool GEOMETRY = 	check_dataset_geometry_homogenity (inGDB);
+	const bool OFFSET = 	check_dataset_offset_homogenity (inGDB);//ok
+	const bool GEOMETRY = 	check_dataset_geometry_homogenity (inGDB);//ok
 
 	if (SC || STRIAE ) return (GEOMETRY || OFFSET);
 	else if (BEDDING) return (GEOMETRY || !OFFSET);

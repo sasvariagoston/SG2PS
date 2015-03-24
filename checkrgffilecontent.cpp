@@ -449,7 +449,6 @@ vector <string> check_rgf_set_inputs (const vector <string>& inputfilename_vecto
 
 			MSG = "    - SET_ERROR: the input " + capslock (IF) + ".SET file structure is incorrect, the file will not be processed.";
 		}
-
 		cout << MSG << endl;
 
 		if (!CORR_RGF && is_mode_GUI()) throw rgf_error();
@@ -694,7 +693,7 @@ vector <GDB> create_GDB_from_rgf (const string& file_name) {
 		//if ((row.at(DATATYPE)) == "BEDDING") {
 		if (is_allowed_handle_as_bedding (row.at(DATATYPE))) {
 
-
+			//cout << "is_allowed_bedding_overturned_sense(row.at(SENSE): " << is_allowed_bedding_overturned_sense(row.at(SENSE)) << endl;
 			if (is_allowed_bedding_overturned_sense(row.at(SENSE))) 	buffer.OFFSET = "OVERTURNED";
 			if (is_allowed_bedding_normal_sense(row.at(SENSE))) 		buffer.OFFSET = "NORMAL";
 		}
@@ -720,6 +719,8 @@ vector <GDB> create_GDB_from_rgf (const string& file_name) {
 		buffer.COMMENT = row.at(COMMENT);
 
 		if (is_WELLDATA_USE()) buffer.DEPTH = string_to_double (row.at(DEPTH));
+
+		//cout << buffer.OFFSET << endl;
 
 		outGDB.push_back(buffer);
 	}

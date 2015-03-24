@@ -148,7 +148,16 @@ const string geodetic_allowed [] = {
 		"S", "SSW", "SW", "WSW",
 		"W", "WNW", "NW", "NNW"
 };
-const vector<string> allowed_geodetics(from_array(geodetic_allowed));
+const vector<string> allowed_geodetic(from_array(geodetic_allowed));
+
+const double geodetic_angle [] = {
+
+		000.0, 022.5, 045.0, 067.5,
+		090.0, 112.5, 135.0, 157.5,
+		180.0, 202.5, 225.0, 247.5,
+		270.0, 292.5, 315.0, 337.5
+};
+const vector<double> allowed_geodetic_angle (from_array(geodetic_angle));
 
 const string inversion_method_allowed [] = {
 		"ANGELIER",
@@ -495,7 +504,17 @@ bool is_allowed_bedding_sense(const string& sense) {
 
 bool is_allowed_geodetic (const string& geodetic) {
 
-	return contains(allowed_geodetics, geodetic);
+	return contains(allowed_geodetic, geodetic);
+}
+
+vector <string> allowed_geodetic_vector () {
+
+	return allowed_geodetic;
+}
+
+vector <double> geodetic_angle_vector () {
+
+	return allowed_geodetic_angle;
 }
 
 bool is_allowed_inversion_method (const string& method) {

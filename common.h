@@ -145,6 +145,7 @@ STRESSTENSOR stresstensor_from_eigenvalue_eigenvector (STRESSFIELD sf);
 STRESSFIELD stress_regime (const STRESSFIELD& in);
 STRESSTENSOR convert_matrix_to_stresstensor (const vector <vector <double> >& IN);
 
+bool byOFFSET(const GDB& x, const GDB& y);
 bool bycorrDIPDIRcorrDIP(const GDB& x, const GDB& y);
 bool bycorrDIPDIRcorrDIPcorrLDIPDIRcorrLDIP(const GDB& x, const GDB& y);
 

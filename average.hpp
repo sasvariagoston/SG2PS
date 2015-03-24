@@ -16,19 +16,19 @@ VCTR N_to_D (const VCTR& in);
 bool is_overturned (const GDB& in);
 bool is_bedding_present (const vector <GDB>& to_process);
 bool is_plane_dataset_singular (const vector <GDB>& inGDB);
-bool is_datatype_processable_for_average (const string DT);
+bool is_datatype_processable_for_average (const string DT);//ok
 bool is_processable_for_average_MT2 (const vector <GDB>& inGDB);
 bool is_processable_for_average_EQ2 (const vector <GDB>& inGDB);
 bool is_processable_for_average_EQ1 (const vector <GDB>& inGDB);
 bool is_processable_for_average_HMG (const vector <GDB>& inGDB);
 
-vector <GDB> generate_Bingham_dataset (const vector <GDB>& inGDB);
+//vector <VCTR> generate_Bingham_dataset (const vector <GDB>& inGDB);
 
 VCTR process_for_average_MT2 (const vector <GDB>& inGDB);
 VCTR process_for_average_EQ2 (const vector <GDB>& inGDB);
 VCTR process_for_average_EQ1 (const vector <GDB>& inGDB);
 
-vector <GDB> init_average (const vector <GDB>& inGDB);
+//vector <GDB> init_average (const vector <GDB>& inGDB);
 
 VCTR calculate_data_average_vector (const vector <GDB>& to_process);
 vector <GDB> apply_data_average_vector (const vector <GDB>& to_process, const VCTR& AV_D, const string MODE);

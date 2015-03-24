@@ -10,7 +10,9 @@
 
 using namespace std;
 
-STRESSTENSOR st_BINGHAM (const vector <GDB>& inGDB);
+vector <VCTR> generate_Bingham_dataset (const vector <GDB>& inGDB);
+
+STRESSTENSOR st_BINGHAM (const vector <VCTR>& N);
 
 STRESSFIELD sf_BINGHAM (STRESSTENSOR& st);
 

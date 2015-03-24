@@ -35,7 +35,7 @@ vector <GDB> generate_PITCHANGLE (const vector <GDB>& inGDB);
 string return_new_offset (const double DIP, const double PTC, const bool UP);
 vector <GDB> generate_OFFSET (const vector <GDB>& inGDB);
 vector <GDB> generate_LAMBDA_STRESSVECTOR_ESTIMATORS (const vector <GDB>& inGDB);
-vector <GDB> generate_tilted_UP (const vector <GDB>& inGDB);
+//vector <GDB> generate_tilted_UP (const vector <GDB>& inGDB);
 
 vector < vector < vector <vector <GDB> > > > clustering_GBD (const vector < vector < vector <vector <GDB> > > >& inGDB_G);
 
@@ -44,8 +44,8 @@ bool byLocTypeGc(const GDB& x, const GDB& y);
 bool byLocGcType (const GDB& x, const GDB& y);
 bool byiID(const GDB& x, const GDB& y);
 
-bool bycorrDIPDIRcorrDIP(const GDB& x, const GDB& y);
-bool bycorrDIPDIRcorrDIPcorrLDIPDIRcorrLDIP(const GDB& x, const GDB& y);
+//bool bycorrDIPDIRcorrDIP(const GDB& x, const GDB& y);
+//bool bycorrDIPDIRcorrDIPcorrLDIPDIRcorrLDIP(const GDB& x, const GDB& y);
 
 bool byeigenvalue(const sort_jacobi& x, const sort_jacobi& y);
 
