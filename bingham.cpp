@@ -28,8 +28,8 @@ vector <VCTR> generate_Bingham_dataset (const vector <GDB>& inGDB) {
 
 	for (size_t i = 0; i < inGDB.size(); i++) {
 
-		if (FOR_FOLDSURFACE) 	T.push_back(inGDB.at(i).D);
-		else 					T.push_back(inGDB.at(i).D);//sure!
+		if (FOR_FOLDSURFACE) 	T.push_back(inGDB.at(i).N);
+		else 					T.push_back(inGDB.at(i).N);//sure!
 	}
 	return T;
 }
@@ -53,7 +53,13 @@ STRESSTENSOR st_BINGHAM (const vector <VCTR>& N_VCTR) {
 
 		STRESSTENSOR T;
 
-		const VCTR PN = N_VCTR.at(i);
+		VCTR PN = N_VCTR.at(i);
+
+		//remove!
+		PN = flip_vector(PN);
+
+		//cout << fixed << setprecision(6) << endl;
+		//cout << PN.Z << endl;
 
 		//const bool OTB = (is_overturned (inGDB.at(i)) && is_allowed_handle_as_bedding (inGDB.at(i).DATATYPE));
 
@@ -147,9 +153,7 @@ STRESSFIELD sf_BINGHAM (STRESSTENSOR& st) {
 	}
 	else ASSERT_DEAD_END();
 
-	sf = computestressfield_DXDYDZ(sf);
-
-	cout_dbg_stressfield(sf);
+	sf = computestressfield_NXNYNZ(sf);
 
 	return sf;
 }

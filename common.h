@@ -105,16 +105,17 @@ vector <double> unitvector (vector <double>& in);
 VCTR declare_vector (const double a, const double b, const double c);
 CENTR_VECT declare_vector (const double a, const double b, const double c, const double d, const double e, const double f);
 
+//VCTR average_vector (const vector <VCTR> in);
+
 VCTR flip_vector (const VCTR& in);
 //VCTR flip_D_vector (const VCTR& in);
 //VCTR flip_N_vector (const VCTR& in);
-
-VCTR compute_d_for_SC (const GDB& i);
+//VCTR compute_d_for_SC (const GDB& i);
 
 VCTR DXDYDZ_from_dipdir_dip (const DIPDIR_DIP& i);
 VCTR NXNYNZ_from_dipdir_dip (const DIPDIR_DIP& i);
 
-STRESSFIELD stressvector_to_DXDYDZ (STRESSFIELD in);
+//STRESSFIELD stressvector_to_DXDYDZ (STRESSFIELD in);
 
 VCTR DXDYDZ_from_NXNYNZ (const VCTR& i);
 VCTR NXNYNZ_from_DXDYDZ (const VCTR& i);

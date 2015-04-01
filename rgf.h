@@ -29,7 +29,9 @@ vector <GDB> striae_correction (const vector <GDB>& inGDB);
 VCTR striae_DIP_correction (const GDB& in);
 VCTR striae_DIPDIR_correction (const GDB& in);
 
+bool is_D_up (const VCTR& D);
 bool is_DC_up (const VCTR& DC);
+bool is_N_down (const VCTR& N);
 vector <GDB> generate_UP (const vector <GDB>& inGDB);
 vector <GDB> generate_PITCHANGLE (const vector <GDB>& inGDB);
 string return_new_offset (const double DIP, const double PTC, const bool UP);
@@ -66,6 +68,8 @@ void process_rgf (string inputfilename, string XY_filename);
 
 void dbg_cout_GDB_v_v_v_v_structure (const vector < vector < vector < vector <GDB> > > >& inGDB_G);
 void dbg_cout_GDB_vector_vector (const vector < vector < vector < vector <GDB> > > >& inGDB_G);
+void dbg_cout_GDB_v_v (const vector < vector < GDB> >& inGDB_G);
+
 void dbg_cout_GDB_vector (const vector <GDB>& inGDB);
 
 #endif

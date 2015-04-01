@@ -920,18 +920,17 @@ vector < vector < double > > generate_D (const vector < vector < double > >& EVE
 	return D;
 }
 
-
-
 bool check_correct_stressfield (const STRESSFIELD& sf) {
 
-	if ((sf.S_1.DIPDIR 	> 0.0) && (sf.S_1.DIPDIR 	< 360.0) &&
-		(sf.S_1.DIP 	> 0.0) && (sf.S_1.DIP 		< 90.0) &&
-		(sf.S_2.DIPDIR 	> 0.0) && (sf.S_2.DIPDIR 	< 360.0) &&
-		(sf.S_2.DIP 	> 0.0) && (sf.S_2.DIP 		< 90.0) &&
-		(sf.S_3.DIPDIR 	> 0.0) && (sf.S_3.DIPDIR 	< 360.0) &&
-		(sf.S_3.DIP 	> 0.0) && (sf.S_3.DIP 		< 90.0))  return true;
+	const bool S1DD = is_in_range (0.0, 360.0, sf.S_1.DIPDIR);
+	const bool S2DD = is_in_range (0.0, 360.0, sf.S_2.DIPDIR);
+	const bool S3DD = is_in_range (0.0, 360.0, sf.S_3.DIPDIR);
 
-	else return false;
+	const bool S1D = is_in_range (0.0, 90.0, sf.S_1.DIP);
+	const bool S2D = is_in_range (0.0, 90.0, sf.S_2.DIP);
+	const bool S3D = is_in_range (0.0, 90.0, sf.S_3.DIP);
+
+	return S1DD && S1D && S2DD && S2D &&  S3DD && S3D;
 }
 
 string generate_stress_colors (const double V) {
@@ -1074,6 +1073,25 @@ CENTR_VECT declare_vector (const double a, const double b, const double c, const
 	return o;
 }
 
+/*
+VCTR average_vector (const vector <VCTR> in) {
+
+	vector <double> x, y, z;
+
+	for (size_t i = 0; i < in.size(); i++) {
+
+		x.push_back(in.at(i).X);
+		y.push_back(in.at(i).Y);
+		z.push_back(in.at(i).Z);
+	}
+	double X = average(x);
+	double Y = average(y);
+	double Z = average(z);
+
+	return (unitvector (declare_vector(X, Y, Z)));
+}
+*/
+
 VCTR flip_vector (const VCTR& in) {
 
 	return declare_vector(-in.X, -in.Y, -in.Z);
@@ -1092,6 +1110,7 @@ VCTR flip_N_vector (const VCTR& in) {
 }
 */
 
+/*
 VCTR compute_d_for_SC (const GDB& i) {
 
 	VCTR temp1 = i.NC;
@@ -1110,6 +1129,7 @@ VCTR compute_d_for_SC (const GDB& i) {
 
 	return d;
 }
+*/
 
 VCTR DXDYDZ_from_dipdir_dip (const DIPDIR_DIP& i) {
 
@@ -1142,19 +1162,20 @@ VCTR inversion_DXDYDZ_from_DXDYDZ (VCTR i) {
 }
 */
 
+/*
 STRESSFIELD stressvector_to_DXDYDZ (STRESSFIELD in) {
 
 	STRESSFIELD out = in;
 
-	////!if (in.EIGENVECTOR1.Z > 0.0) out.EIGENVECTOR1 = flip_D_vector (out.EIGENVECTOR1);
+	!if (in.EIGENVECTOR1.Z > 0.0) out.EIGENVECTOR1 = flip_D_vector (out.EIGENVECTOR1);
 
-	////!if (in.EIGENVECTOR2.Z > 0.0) out.EIGENVECTOR2 = flip_D_vector (out.EIGENVECTOR2);
+	!if (in.EIGENVECTOR2.Z > 0.0) out.EIGENVECTOR2 = flip_D_vector (out.EIGENVECTOR2);
 
-	////!if (in.EIGENVECTOR3.Z > 0.0) out.EIGENVECTOR3 = flip_D_vector (out.EIGENVECTOR3);
+	!if (in.EIGENVECTOR3.Z > 0.0) out.EIGENVECTOR3 = flip_D_vector (out.EIGENVECTOR3);
 
 	return out;
 }
-
+*/
 VCTR DXDYDZ_from_NXNYNZ (const VCTR& i) {
 
 	return DXDYDZ_from_dipdir_dip (dipdir_dip_from_NXNYNZ (i));

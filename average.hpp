@@ -10,12 +10,12 @@
 
 #include "structs.h"
 
-VCTR N_to_S (const VCTR& in);
-VCTR N_to_D (const VCTR& in);
+//VCTR N_to_S (const VCTR& in);
+//VCTR N_to_D (const VCTR& in);
 
-bool is_overturned (const GDB& in);
-bool is_bedding_present (const vector <GDB>& to_process);
-bool is_plane_dataset_singular (const vector <GDB>& inGDB);
+//bool is_overturned (const GDB& in);
+//bool is_bedding_present (const vector <GDB>& to_process);
+//bool is_plane_dataset_singular (const vector <GDB>& inGDB);
 bool is_datatype_processable_for_average (const string DT);//ok
 bool is_processable_for_average_MT2 (const vector <GDB>& inGDB);
 bool is_processable_for_average_EQ2 (const vector <GDB>& inGDB);

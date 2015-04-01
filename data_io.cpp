@@ -727,22 +727,36 @@ void OUTPUT_TO_PS (const vector <vector <vector <vector <GDB> > > > n_GDB_G, con
 			else if (by_RUPANG) PS_NAME = PS_NAME + US + n_prGDB_G.at(i).at(0).GC.at(2);
 			else {}
 
+			cout << "PS_1" << endl;
+
 			PS_NAME = PS_NAME + ".eps";
 
 			ofstream OPS (PS_NAME.c_str());
 
 			PS_stereonet_header (DT, LOC, OPS);
 
+			cout << "PS_2" << endl;
+
 			const PAPER PPR = PS_dimensions (false);
 
 			PS_STEREONET_SYMBOLS (n_prGDB_G.at(i), OPS, PPR);
 
+			cout << "PS_3" << endl;
+
 			if (is_allowed_striae_datatype(DT) && ! is_INVERSION_NONE()) PS_stress_scale (OPS, PPR);
+
+			cout << "PS_4" << endl;
 
 			PS_border (n_prGDB_G.at(i), OPS, PPR);
 
+			cout << "PS_5" << endl;
+
 			PS_GDB (n_prGDB_G.at(i), OPS, PPR, false);
 			PS_GDB (t_prGDB_G.at(i), OPS, PPR, true);
+
+			cout << "PS_6" << endl;
+
+			//es itt vigan lerohadunk
 
 			PS_datanumber_averagebedding (n_prGDB_G.at(i).at(0), OPS, PPR, n_prGDB_G.at(i).size());
 

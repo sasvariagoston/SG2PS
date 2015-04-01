@@ -420,9 +420,16 @@ void PS_border (const vector <GDB>& inGDB, ofstream& o, const PAPER& P) {
 	const bool color_by_RUPANG = is_COLOURING_RUPANG ();
 	const bool color_IGNORE = is_COLOURING_IGNORE ();
 
+	cout << "PSxxxx000_1" << endl;
+
+	cout << "GC: " << inGDB.at(0).GC << endl;
+
+
 	const bool exists_GROUPCODE = inGDB.at(0).GC.at(0) != 'X';
 	const bool exists_KMEANS = inGDB.at(0).GC.at(1) != 'X';
 	const bool exists_RUPANG = inGDB.at(0).GC.at(2) != 'X';
+
+	cout << "PSxxxx_2" << endl;
 
 	if (!by_GROUPCODE && !by_KMEANS && !by_RUPANG && !IGNORE) ASSERT_DEAD_END();
 	if (!color_by_COLORCODE && !color_by_GROUPCODE && !color_by_KMEANS && !color_by_RUPANG && !color_IGNORE) ASSERT_DEAD_END();
@@ -458,6 +465,8 @@ void PS_border (const vector <GDB>& inGDB, ofstream& o, const PAPER& P) {
 
 	if (asked_KMEANS) T = T + " - K-MEANS CLUSTERING USED";
 
+	cout << "PSxxxx_1" << endl;
+
 	if (asked_RUPANG && STRIAE) T = T + " - RUP/ANG CLUSTERING USED";
 
 	if (by_GROUPCODE) 	T = T + ", GROUP '" + GC.at(0) + "' USING ORIGINAL GROUPCODE" ;
@@ -483,6 +492,8 @@ void PS_border (const vector <GDB>& inGDB, ofstream& o, const PAPER& P) {
 	}
 	else if (is_GROUPSEPARATION_IGNORE()) {}
 	else ASSERT_DEAD_END();
+
+	cout << "PSxxxx_2" << endl;
 
 
 	if (color_by_COLORCODE) {

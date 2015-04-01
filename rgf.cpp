@@ -106,7 +106,7 @@ vector <GDB> generate_NDS_vectors (const vector <GDB>& inGDB) {
 		if (!L) {
 
 			const string OF = outGDB.at(i).OFFSET;
-			const bool O = is_allowed_bedding_overturned_sense(OF);
+			const bool O = is_allowed_bedding_overturned_sense (OF);
 
 			if (O && !B) ASSERT_DEAD_END();
 
@@ -114,8 +114,8 @@ vector <GDB> generate_NDS_vectors (const vector <GDB>& inGDB) {
 
 			VCTR N = NXNYNZ_from_dipdir_dip (DDD);
 
-			//cout << "O && B" << O << B << endl;
 			if (O && B) N = flip_vector(N);
+
 			outGDB.at(i).N = N;
 
 			VCTR D = DXDYDZ_from_dipdir_dip (DDD);
@@ -140,7 +140,7 @@ vector <GDB> generate_NCDCSC_vectors (const vector <GDB>& inGDB) {
 		const bool PITCH = 		outGDB.at(i).LINEATION == "PITCH";
 		const bool LINEATION = 	outGDB.at(i).LINEATION == "LINEATION";
 
-		if (STRIAE) {
+		if (STRIAE || SC) {
 
 			if (SC || LINEATION) outGDB.at(i) = generate_NCDCSC_LINEATION_SC (outGDB.at(i));
 			else if (PITCH) 	 outGDB.at(i) = generate_NCDCSC_PITCH (outGDB.at(i));
@@ -364,9 +364,19 @@ VCTR striae_DIPDIR_correction (const GDB& in) {
 	return flip_vector(STR);
 }
 
+bool is_D_up (const VCTR& D) {
+
+	return (D.Z > 0.0);
+}
+
 bool is_DC_up (const VCTR& DC) {
 
 	return (DC.Z > 0.0);
+}
+
+bool is_N_down (const VCTR& N) {
+
+	return (N.Z < 0.0);
 }
 
 vector <GDB> generate_UP (const vector <GDB>& inGDB) {
@@ -394,7 +404,12 @@ vector <GDB> generate_UP (const vector <GDB>& inGDB) {
 
 			if (NRM || (p && SIN) || (!p && DXT)) UP = false;
 
-			if (UP) ACT.DC = flip_vector (ACT.DC);
+			if (UP) {
+
+				ACT.DC = flip_vector (ACT.DC);
+				ACT.NC = flip_vector (ACT.NC);
+				ACT.SC = crossproduct(ACT.NC, ACT.DC);
+			}
 		}
 		outGDB.at(i) = ACT;
 	}
@@ -490,11 +505,17 @@ vector < vector < vector <vector <GDB> > > > clustering_GBD (const vector < vect
 
 	vector < vector < vector <vector <GDB> > > > outGDB_G = inGDB_G;
 
+	cout << "CLUSTER" << endl;
+
+	cout << is_CLUSTERING_NONE() << is_CLUSTERNUMBER() << endl;
+
+	outGDB_G = associate_empty_clustercode (outGDB_G, 2);
+
 	if (is_CLUSTERING_NONE() || is_CLUSTERNUMBER() == "1") return outGDB_G;
 
 	if (!is_mode_DEBUG()) cout << "K-MEANS CLUSTERING OF INPUT DATABASE FILE" << endl;
 
-	outGDB_G = associate_empty_clustercode (outGDB_G, 2);
+	//outGDB_G = associate_empty_clustercode (outGDB_G, 2);
 
 	for (size_t i = 0; i < outGDB_G.size(); i++) {
 		for (size_t j = 0; j < outGDB_G.at(i).size(); j++) {
@@ -654,7 +675,6 @@ void process_rgf (string inputfilename, string XY_filename) {
 	else nGDB = competeRGFcontect (inputfilename, XY_filename);
 
 	//dbg_cout_GDB_vector(nGDB);
-
 	sort(nGDB.begin(), nGDB.end(), byLocGcType);
 
 	if (!is_mode_DEBUG()) CREATE_PROJECT_FOLDER (projectfoldername, nGDB);
@@ -663,21 +683,17 @@ void process_rgf (string inputfilename, string XY_filename) {
 
 	nGDB_G = PREPARE_GDB_VECTOR_FOR_PROCESSING (nGDB_G, false);
 
-	//cout << "OK1Ax" << endl;
+	dbg_cout_GDB_vector_vector(nGDB_G);
 
-	//dbg_cout_GDB_vector_vector(nGDB_G);
-
-	nGDB_G = AVERAGE (nGDB_G);
-
-	cout << "OK1Bx" << endl;
+	nGDB_G = AVERAGE (nGDB_G);//eddig ok
 
 	nGDB_G = clustering_GBD (nGDB_G);
+
+	dbg_cout_GDB_vector_vector(nGDB_G);
 
 	nGDB = MERGE_GROUPS_TO_GDB (nGDB_G);
 
 	nGDB_G = SEPARATE_DATASET_TO_GROUPS (nGDB, "CLUSTER");
-
-	cout << "OK1A" << endl;
 
 	vector < vector < vector < vector <GDB> > > > tGDB_G = RETILT (nGDB_G);
 
@@ -702,11 +718,17 @@ void process_rgf (string inputfilename, string XY_filename) {
 	nGDB = MERGE_GROUPS_TO_GDB (nGDB_G);
 	tGDB = MERGE_GROUPS_TO_GDB (tGDB_G);
 
+	cout << "OK4" << endl;
+
 	nGDB = GENERATE_PS_CODE (nGDB);
 	tGDB = GENERATE_PS_CODE (tGDB);
 
+	cout << "OK5" << endl;
+
 	nGDB = sort_by_iID (nGDB);
 	tGDB = sort_by_iID (tGDB);
+
+	cout << "OK6" << endl;
 
 	if (is_GROUPSEPARATION_IGNORE()) {
 
@@ -730,6 +752,8 @@ void process_rgf (string inputfilename, string XY_filename) {
 	}
 	else ASSERT_DEAD_END();
 
+	cout << "OK7" << endl;
+
 	//dbg_cout_GDB_vector (nGDB);
 	//dbg_cout_GDB_vector (tGDB);
 	//dbg_cout_GDB_vector_vector(nGDB_G);
@@ -740,11 +764,15 @@ void process_rgf (string inputfilename, string XY_filename) {
 	if (!is_mode_DEBUG()) OUTPUT_TO_RGF (nGDB_G, projectfoldername, false);
 	if (!is_mode_DEBUG()) OUTPUT_TO_RGF (tGDB_G, projectfoldername, true);
 
+	cout << "OK8" << endl;
+
 	OUTPUT_TO_PS (nGDB_G, tGDB_G, projectfoldername);
 
 	//OUTPUT_TO_WELL_PS (nGDB_G, projectfoldername, false);
 	//OUTPUT_TO_WELL_PS (tGDB_G, projectfoldername, true);
 	//careful! PS module has global variables!!!!
+
+	cout << "OK9" << endl;
 
 	if (!is_mode_DEBUG()) cout << "EXPORT FROM '" << capslock(inputfilename) << ".RGF' DATABASE FILE" << endl;
 
@@ -789,6 +817,18 @@ void dbg_cout_GDB_vector_vector (const vector < vector < vector < vector <GDB> >
 	return;
 }
 
+void dbg_cout_GDB_v_v (const vector < vector <GDB> >& inGDB_G) {
+
+	for (size_t i = 0; i < inGDB_G.size(); i++) {
+
+		const vector <GDB> ACT = inGDB_G.at(i);
+
+		dbg_cout_GDB_vector (ACT);
+	}
+	return;
+}
+
+
 void dbg_cout_GDB_vector (const vector <GDB>& inGDB) {
 
 	cout << endl;
@@ -796,8 +836,8 @@ void dbg_cout_GDB_vector (const vector <GDB>& inGDB) {
 
 	cout
 	<< "ID" << '\t' << "iID" << '\t'
-	<< "N.X" << '\t' << "N.Y" << '\t' << "N.Z" << '\t'
-	<< "D.X" << '\t' << "D.Y" << '\t'<< "D.Z" << '\t'
+	//<< "N.X" << '\t' << "N.Y" << '\t' << "N.Z" << '\t'
+	//<< "D.X" << '\t' << "D.Y" << '\t'<< "D.Z" << '\t'
 	//<< "S.X" << '\t' << "S.Y" << '\t'<< "S.Z" << '\t'
 	//<< "NC.X" << '\t' << "NC.Y" << '\t'<< "NC.Z" << '\t'
 	//<< "DC.X" << '\t' << "DC.Y" << '\t'<< "DC.Z" << '\t'
@@ -811,25 +851,25 @@ void dbg_cout_GDB_vector (const vector <GDB>& inGDB) {
 	//<< "MISFIT" << '\t'
 	//<< "LINEATION" << '\t'
 	//<< "UPWARD" << '\t'
-	<< "OFFSET" << '\t'
+	//<< "OFFSET" << '\t'
 	//<< "UP" << '\t'
 	//<< "DEPTH" << '\t'
-	//<< "GC" << '\t'
+	<< "GC" << '\t'
 	//<< "COLOR" << '\t'
 	//<< "LOC" << '\t'
 	//<< "LOCX" << '\t'
 	//<< "LOCY" << '\t'
 	//<< "FORMATION" << '\t'
-	//<< "DATATYPE" << '\t'
-	//<< "DIPDIR" << '\t'
-	//<< "DIP" << '\t'
+	<< "DATATYPE" << '\t'
+	<< "DIPDIR" << '\t'
+	<< "DIP" << '\t'
 	//<< "LDIR" << '\t'
 	//<< "LDIP" << '\t'
 
-	<< "corr.DIPDIR" << '\t'
-	<< "corr.DIP" << '\t'
-	<< "corrL.DIPDIR" << '\t'
-	<< "corrL.DIP" << '\t'
+	//<< "corr.DIPDIR" << '\t'
+	//<< "corr.DIP" << '\t'
+	//<< "corrL.DIPDIR" << '\t'
+	//<< "corrL.DIP" << '\t'
 
 	//<< "PALEON" << '\t'
 	//<< "COMMENT" << '\t'
@@ -881,8 +921,8 @@ void dbg_cout_GDB_vector (const vector <GDB>& inGDB) {
 		<< T.ID << '\t' << T.iID << '\t'
 
 		//<< fixed << setprecision(6)
-		<< T.N.X << '\t' << T.N.Y << '\t' << T.N.Z << '\t'
-		<< T.D.X << '\t' << T.D.Y << '\t'<< T.D.Z << '\t'
+		//<< T.N.X << '\t' << T.N.Y << '\t' << T.N.Z << '\t'
+		//<< T.D.X << '\t' << T.D.Y << '\t'<< T.D.Z << '\t'
 		//<< T.S.X << '\t' << T.S.Y << '\t'<< T.S.Z << '\t'
 		//<< T.NC.X << '\t' << T.NC.Y << '\t'<< T.NC.Z << '\t'
 		//<< T.DC.X << '\t' << T.DC.Y << '\t'<< T.DC.Z << '\t'
@@ -897,29 +937,29 @@ void dbg_cout_GDB_vector (const vector <GDB>& inGDB) {
 		//<< T.MISFIT << '\t'
 		//<< T.LINEATION << '\t'
 		//<< T.UPWARD << '\t'
-		<< T.OFFSET << '\t'
+		//<< T.OFFSET << '\t'
 		//<< T.UP<< '\t'
 
 		//<< fixed << setprecision(0)
 		//<< T.DEPTH << '\t'
-		//<< T.GC << '\t'
+		<< T.GC << '\t'
 		//<< T.COLOR << '\t'
 		//<< T.LOC << '\t'
 		//<< T.LOCX << '\t'
 		//<< T.LOCY << '\t'
 		//<< T.FORMATION << '\t'
-		//<< T.DATATYPE << '\t'
+		<< T.DATATYPE << '\t'
 
-		//<< fixed << setprecision (3)
-		//<< T.DIPDIR << '\t'
-		//<< T.DIP << '\t'
-		//<< T.LDIR << '\t'
-		//<< T.LDIP << '\t'
+		<< fixed << setprecision (0)
+		<< T.DIPDIR << '\t'
+		<< T.DIP << '\t'
+		<< T.LDIR << '\t'
+		<< T.LDIP << '\t'
 
-		<< T.corr.DIPDIR << '\t'
-		<< T.corr.DIP << '\t'
-		<< T.corrL.DIPDIR << '\t'
-		<< T.corrL.DIP << '\t'
+		//<< T.corr.DIPDIR << '\t'
+		//<< T.corr.DIP << '\t'
+		//<< T.corrL.DIPDIR << '\t'
+		//<< T.corrL.DIP << '\t'
 
 		//<< fixed << setprecision(0)
 		//<< T.PALEON << '\t'
@@ -946,7 +986,7 @@ void dbg_cout_GDB_vector (const vector <GDB>& inGDB) {
 		//<< T.avS0D.X << '\t' << T.avS0D.Y << '\t'<< T.avS0D.Z << '\t'
 		//<< T.avS0N.X << '\t' << T.avS0N.Y << '\t'<< T.avS0N.Z << '\t'
 
-		//<< fixed << setprecision(3)
+		//<< fixed << setprecision(1)
 		//<< T.avS0d.DIPDIR << '\t'
 		//<< T.avS0d.DIP << '\t'
 		//<< T.avd.DIPDIR << '\t'
