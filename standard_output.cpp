@@ -269,7 +269,7 @@ void dump_RGF_to_file (const vector <GDB>& inGDB, const string FN) {
 	<< "NC.X d" << '\t' << "NC.Y d" << '\t' << "NC.Z d" << '\t'
 	<< "DC.X d" << '\t' << "DC.Y d" << '\t' << "DC.Z d" << '\t'
 	<< "SC.X d" << '\t' << "SC.Y d" << '\t' << "SC.Z d" << '\t'
-	<< "SV.X d" << '\t' << "SV.Y d" << '\t' << "SV.Z d" << '\t'
+	//<< "SV.X d" << '\t' << "SV.Y d" << '\t' << "SV.Z d" << '\t'
 
 	<< "LPITCH  d" << '\t'
 	<< "LPITCHSENSE s" << '\t'
@@ -277,9 +277,9 @@ void dump_RGF_to_file (const vector <GDB>& inGDB, const string FN) {
 
 	<< "MISFIT d" << '\t'
 	<< "LINEATION s" << '\t'
-	<< "UPWARD i" << '\t'
+	//<< "UPWARD i" << '\t'
 	<< "OFFSET s" << '\t'
-	<< "UP i" << '\t'
+	//<< "UP i" << '\t'
 
 	<< "DEPTH d" << '\t'
 	<< "GC s" << '\t'
@@ -351,7 +351,7 @@ void dump_RGF_to_file (const vector <GDB>& inGDB, const string FN) {
 		<< dmp_dbl(T.NC.X, 8) << '\t' << dmp_dbl(T.NC.Y, 8) << '\t' << dmp_dbl(T.NC.Z, 8) << '\t'
 		<< dmp_dbl(T.DC.X, 8) << '\t' << dmp_dbl(T.DC.Y, 8) << '\t' << dmp_dbl(T.DC.Z, 8) << '\t'
 		<< dmp_dbl(T.SC.X, 8) << '\t' << dmp_dbl(T.SC.Y, 8) << '\t' << dmp_dbl(T.SC.Z, 8) << '\t'
-		////<< dmp_dbl(T.SV.X, 8) << '\t' << dmp_dbl(T.SV.Y, 8) << '\t' << dmp_dbl(T.SV.Z, 8) << '\t'
+		////<< dmp_dbl(T._SV._X, 8) << '\t' << dmp_dbl(T._SV._Y, 8) << '\t' << dmp_dbl(T._SV._Z, 8) << '\t'
 
 		<< dmp_dbl(T.LPITCH, 8) << '\t'
 		<< T.LPITCHSENSE << '\t'

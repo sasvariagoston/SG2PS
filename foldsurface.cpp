@@ -7,6 +7,7 @@
 #include <stdlib.h>
 
 #include "average.hpp"
+#include "bingham.h"
 #include "foldsurface.hpp"
 #include "ps.h"
 #include "rgf.h"
@@ -17,13 +18,15 @@ using namespace std;
 
 vector <GDB> CALCULATE_FOLDSURFACE_NORMAL (const vector <GDB>& inGDB) {
 
-	const vector <GDB> OUT = DATATYPE_AVERAGE (inGDB, "FOLD");
+	vector <GDB> OUT = inGDB;
 
-	//if (is_CHK_FOLDSURFACE()) {
+	const vector <VCTR> BNG = generate_Bingham_dataset(inGDB);
 
-	//	check_standard_FOLDSURFACE (sort_by_iID(OUT));
-	//	exit (99);
-	//}
+	const STRESSTENSOR ST = st_BINGHAM (BNG);
+
+	const STRESSFIELD SF = sf_BINGHAM (ST);
+
+	for (size_t i = 0; i < inGDB.size(); i++) OUT.at(i).fold_great_circle_N = flip_vector(SF.EIGENVECTOR3);
 
 	return OUT;
 }

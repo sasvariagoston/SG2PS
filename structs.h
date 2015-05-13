@@ -82,7 +82,8 @@ struct GDB  {
 	string LPITCHSENSE;
 	double PITCHANGLE;
 
-	VCTR N, NC, D, DC, S, SC; //SV;
+	VCTR N, NC,	D, DC, S, SC; //SV
+
 	VCTR ptnP, ptnT, ptnN;
 	VCTR avD, avS0D, avS0N;
 	//, rotavD;

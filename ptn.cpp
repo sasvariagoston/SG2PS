@@ -3,6 +3,18 @@
 // All rights reserved.
 // This code is published under the GNU Lesser General Public License.
 
+/*
+USING ANG.RGF:
+==============
+
+s1: 250/74
+s2: 058/16
+s3: 149/03
+RADIAL EXTENSIVE
+R: 0.018
+R': 0.018
+*/
+
 #include <cmath>
 #include <iomanip>
 #include <iostream>
@@ -30,42 +42,28 @@ vector <GDB> ptn (const vector <GDB>& inGDB) {
 		const string DT = inGDB.at(i).DATATYPE;
 		const string O = inGDB.at(i).OFFSET;
 
-		const bool SC = is_allowed_SC_datatype(DT);
 		const bool STRIAE = is_allowed_striae_datatype(DT);
 		const bool HAS_OFFSET = !is_allowed_striae_none_sense(O);
 
-		////
-/*
-		if ((SC || STRIAE) && HAS_OFFSET) {
+		if (STRIAE && HAS_OFFSET) {
 
 			VCTR temp1 = declare_vector(
-					q * inGDB.at(i).N.X + r * inGDB.at(i).SV.X,
-					q * inGDB.at(i).N.Y + r * inGDB.at(i).SV.Y,
-					q * inGDB.at(i).N.Z + r * inGDB.at(i).SV.Z);
-			temp1 = unitvector (temp1);
-			!temp1 = flip_D_vector (temp1);
-			DIPDIR_DIP dd = dipdir_dip_from_DXDYDZ (temp1);
-			outGDB.at(i).ptnT = temp1;
-			outGDB.at(i).ptnTd = dd;
+					q * inGDB.at(i).N.X + r * inGDB.at(i).DC.X,
+					q * inGDB.at(i).N.Y + r * inGDB.at(i).DC.Y,
+					q * inGDB.at(i).N.Z + r * inGDB.at(i).DC.Z);
+			outGDB.at(i).ptnT = unitvector (temp1);
+			outGDB.at(i).ptnTd = dipdir_dip_from_DXDYDZ (temp1);
 
 			VCTR temp2 = declare_vector(
-					q * inGDB.at(i).SV.X - r * inGDB.at(i).N.X,
-					q * inGDB.at(i).SV.Y - r * inGDB.at(i).N.Y,
-					q * inGDB.at(i).SV.Z - r * inGDB.at(i).N.Z);
-			temp2 = unitvector (temp2);
-			!temp2 = flip_D_vector (temp2);
-			dd = dipdir_dip_from_DXDYDZ (temp2);
-			outGDB.at(i).ptnP = temp2;
-			outGDB.at(i).ptnPd = dd;
+					q * inGDB.at(i).DC.X - r * inGDB.at(i).N.X,
+					q * inGDB.at(i).DC.Y - r * inGDB.at(i).N.Y,
+					q * inGDB.at(i).DC.Z - r * inGDB.at(i).N.Z);
+			outGDB.at(i).ptnP = unitvector (temp2);
+			outGDB.at(i).ptnPd = dipdir_dip_from_DXDYDZ (temp2);
 
-			VCTR temp3 = crossproduct (temp2, temp1);
-			temp3 = unitvector (temp3); // FIXME What if temp3 has approximately 0 length?
-			!temp3 = flip_D_vector (temp3);
-			dd = dipdir_dip_from_DXDYDZ (temp3);
-			outGDB.at(i).ptnN = temp3;
-			outGDB.at(i).ptnNd = dd;
+			outGDB.at(i).ptnN = unitvector (crossproduct (temp2, temp1));
+			outGDB.at(i).ptnNd = dipdir_dip_from_DXDYDZ (outGDB.at(i).ptnN);
 		}
-		*/
 	}
 	return outGDB;
 }
@@ -113,8 +111,6 @@ STRESSFIELD sf_PTN (const vector <GDB>& inGDB) {
 
 	processGDB = ptn (processGDB);
 
-	//if (inset.virt_striae == "Y" ) 	processGDB = generate_virtual_striae (processGDB);
-
 	sf_ptn = computestressfield_DXDYDZ (eigenvalue_eigenvector (PTN_matrix (processGDB, "P")));
 	sf.EIGENVALUE.X = sf_ptn.EIGENVALUE.X;
 	sf.EIGENVECTOR1 = sf_ptn.EIGENVECTOR1;
@@ -129,6 +125,8 @@ STRESSFIELD sf_PTN (const vector <GDB>& inGDB) {
 	sf.EIGENVALUE.Y = sf_ptn.EIGENVALUE.Y;
 	sf.EIGENVECTOR2 = sf_ptn.EIGENVECTOR1;
 	sf.S_2 = sf_ptn.S_1;
+
+	sf = correct_SF_to_fit_D (sf);
 
 	return stress_regime (sf);
 }

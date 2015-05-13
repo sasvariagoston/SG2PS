@@ -1,8 +1,18 @@
-
-
 // Copyright (C) 2012 - 2014 Ágoston Sasvári
 // All rights reserved.
 // This code is published under the GNU Lesser General Public License.
+
+/*
+USING ANG2.RGF:
+===============
+
+s1: 278/85
+s2: 019/01
+s3: 110/05
+RADIAL EXTENSIVE
+R: 0.130
+R': 0.130
+*/
 
 //#include <algorithm>
 #include <algorithm>
@@ -10,7 +20,6 @@
 #include <iomanip>
 #include <math.h>
 #include <fstream>
-
 
 #include "assertions.hpp"
 #include "brute_force.hpp"
@@ -84,16 +93,16 @@ vector <vector <double> > DIR_MX1_from_n1 (const VCTR& n1, const double& angle) 
 
 vector <vector <double> > st_from_reduced_stresstensor (const vector <vector <double> >& DIR_MX1, const double& fi) {
 
-	vector <vector <double> >  T = declare_3x3_matrix(
+	vector <vector <double> >  T = declare_3x3_matrix (
 			0.0, 0.0, 0.0,
 			0.0, fi , 0.0,
 			0.0, 0.0, 1.0);
 
-	vector <vector <double> >  DIR_MX2 = transpose(DIR_MX1);
+	vector <vector <double> >  DIR_MX2 = transpose (DIR_MX1);
 
 	vector <vector <double> >  OUT = mult_mtrx (DIR_MX2, T);
 
-	return mult_mtrx(OUT, DIR_MX1);
+	return mult_mtrx (OUT, DIR_MX1);
 }
 
 vector <VCTR> generate_centroids_net (const VCTR& ORIGO, const size_t POINTS_DISTANCE) {
@@ -122,7 +131,7 @@ vector <VCTR> generate_centroids_net (const VCTR& ORIGO, const size_t POINTS_DIS
 
 				T = ROTATE(STRIKE, T, ANGLE);
 
-				if (T.Z > 0.0) T = invert_VCTR(T);
+				if (T.Z > 0.0) T = flip_vector (T);
 
 				T = unitvector(T);
 
@@ -159,13 +168,6 @@ static double dotprod(const VCTR& a, const VCTR& b) {
 
     return a.X*b.X + a.Y*b.Y + a.Z*b.Z;
 }
-
-/*
-static double length_sqr(const VCTR& v) {
-
-    return v.X*v.X + v.Y*v.Y + v.Z*v.Z + 1.0e-6;
-}
-*/
 
 static VCTR make_unit(const VCTR& in) {
 
@@ -322,7 +324,9 @@ vector <BRUTEFORCE_RESULT> BRUTEFORCE_ENGINE (const vector <GDB>& inGDB, const v
 	for (size_t q = 0; q < DATANUMBER; q++) {
 
 		N.push_back(inGDB.at(q).N);
-		////SV.push_back(inGDB.at(q).SV);
+
+		SV.push_back(inGDB.at(q).DC);
+		//was:SV.push_back(inGDB.at(q)._SV);
 	}
 
 	vector <BRUTEFORCE_RESULT> OUT;
@@ -415,6 +419,8 @@ STRESSTENSOR st_BRUTEFORCE (const vector <GDB>& inGDB) {
 STRESSFIELD sf_BRUTEFORCE (STRESSTENSOR& st) {
 
 	STRESSFIELD	sf = eigenvalue_eigenvector (st);
+
+	sf = correct_SF_to_fit_D (sf);
 
 	sf = computestressfield_DXDYDZ (sf);
 

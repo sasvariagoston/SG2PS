@@ -18,6 +18,9 @@ using namespace std;
 
 VCTR return_tilting_axis (const GDB& in, const bool paleonorth) {
 
+
+	cout << in.avS0d.DIPDIR << "/" << in.avS0d.DIP << endl;
+
 	if (paleonorth) return unitvector (declare_vector (0.0, 0.0, -1.0));
 	else return unitvector (declare_vector (
 			SIN (in.avS0d.DIPDIR + 90.0),
@@ -38,15 +41,6 @@ double return_tilting_angle (const GDB& in, const bool paleonorth) {
 		}
 	}
 }
-
-/*
-bool SV_has_to_invert (const VCTR& N, const VCTR& AXIS, const double ANGLE) {
-
-	VCTR out = ROTATE (AXIS, N, ANGLE);
-
-	return (out.Z < 0.0);
-}
-*/
 
 GDB tilt_lineation (const GDB& in, const VCTR& AXIS, const double ANGLE) {
 
@@ -71,7 +65,7 @@ GDB tilt_plane (const GDB& in, const VCTR& AXIS, const double ANGLE) {
 
 	OUT.N = unitvector (ROTATE (AXIS, in.N, ANGLE));
 
-	const bool O = is_N_down (OUT.N);
+	bool O = is_N_down (OUT.N);
 
 	if (B) {
 
@@ -162,10 +156,10 @@ GDB TILT_DATA (const GDB& in, const bool TILT_BY_PALEONORTH) {
 
 	if (O && !TILT_BY_PALEONORTH) ANGLE = 180.0 + ANGLE;
 
-	if (IS_LN) 		return tilt_lineation (in, AXIS, ANGLE);
-	else if (IS_PL) return tilt_plane (in, AXIS, ANGLE);
-	else if (IS_ST) return tilt_striae (in, AXIS, ANGLE);
-	else if (IS_SC)   return tilt_SC (in, AXIS, ANGLE);
+	if (IS_LN) 			return tilt_lineation (in, AXIS, ANGLE);
+	else if (IS_PL) 	return tilt_plane (in, AXIS, ANGLE);
+	else if (IS_ST) 	return tilt_striae (in, AXIS, ANGLE);
+	else if (IS_SC)   	return tilt_SC (in, AXIS, ANGLE);
 	else ASSERT_DEAD_END();
 
 	return in;
@@ -174,6 +168,10 @@ GDB TILT_DATA (const GDB& in, const bool TILT_BY_PALEONORTH) {
 GDB S0_TILT (const GDB& in) {
 
 	GDB out = in;
+
+	//cout << "is_TILTING_BEDDING_PALEONORTH(): " << is_TILTING_BEDDING_PALEONORTH() << endl;
+	//cout << "is_TILTING_BEDDING()           : " << is_TILTING_BEDDING() << endl;
+	//cout << "is_TILTING_PALEONORTH()        : " << is_TILTING_PALEONORTH() << endl;
 
 	if (is_TILTING_BEDDING_PALEONORTH()) {
 
@@ -195,7 +193,7 @@ vector < vector < vector < vector <GDB> > > > RETILT (const vector < vector < ve
 		for (size_t j = 0; j < outGDB.at(i).size(); j++) {
 			for (size_t k = 0; k < outGDB.at(i).at(j).size(); k++) {
 
-				//dbg_cout_GDB_vector (outGDB.at(i).at(j).at(k));
+				dbg_cout_GDB_vector (outGDB.at(i).at(j).at(k));
 
 				for (size_t l = 0; l < outGDB.at(i).at(j).at(k).size(); l++) {
 
@@ -205,12 +203,10 @@ vector < vector < vector < vector <GDB> > > > RETILT (const vector < vector < ve
 					const bool D = is_allowed_DIP (ACT.avS0d.DIP);
 					const bool L = is_allowed_lithology_datatype (ACT.DATATYPE);
 
-					if (DD && D && !L) {
+					if (DD && D && !L) outGDB.at(i).at(j).at(k).at(l) = S0_TILT (ACT);
 
-						outGDB.at(i).at(j).at(k).at(l) = S0_TILT (ACT);
-					}
 				}
-				//dbg_cout_GDB_vector (outGDB.at(i).at(j).at(k));
+				dbg_cout_GDB_vector (outGDB.at(i).at(j).at(k));
 			}
 		}
 	}

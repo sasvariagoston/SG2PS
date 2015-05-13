@@ -3,6 +3,18 @@
 // All rights reserved.
 // This code is published under the GNU Lesser General Public License.
 
+/*
+	 FOR ANG.RGF:
+	 ============
+
+	 s1: 074/72,
+	 s2: 239/17,
+	 s3: 330/04,
+	 PURE EXTENSIVE,
+	 R: 0.425,
+	 R': 0.425,
+	 */
+
 #include <cmath>
 #include <iomanip>
 #include <iostream>
@@ -29,7 +41,10 @@ ANG_PRM angelier_parameters (const vector <GDB>& inGDB) {
 	for (size_t i = 0; i < inGDB.size(); i++) {
 
 		const VCTR N = inGDB.at(i).N;
-		const VCTR S;//// = flip_vector (inGDB.at(i).SV);
+
+		//was: const VCTR S = flip_vector (inGDB.at(i)._SV); was
+		const VCTR S = flip_vector (inGDB.at(i).DC);
+
 		const double lambda = inGDB.at(i).lambda;
 
 		rs.a = rs.a + (N.X * N.X) + (N.Y * N.Y) - 4.0 * (N.X * N.X) * (N.Y * N.Y);
@@ -170,9 +185,13 @@ STRESSTENSOR st_ANGELIER (const vector <GDB>& inGDB) {
 
 STRESSFIELD sf_ANGELIER (const STRESSTENSOR& st) {
 
-	STRESSFIELD sf =  eigenvalue_eigenvector (st);
+	STRESSFIELD sf = eigenvalue_eigenvector (st);
+
+	sf = correct_SF_to_fit_D (sf);
 
 	sf = computestressfield_DXDYDZ (sf);
+
+	cout_dbg_stressfield(sf);
 
 	return stress_regime (sf);
 }

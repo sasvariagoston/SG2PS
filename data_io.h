@@ -30,6 +30,8 @@ vector <vector <GDB> > MERGE_GROUPS_TO_GDB_G (const vector < vector <vector <vec
 
 vector <GDB> combine_inversion_for_none_offset (const vector <GDB>& process_GDB, const vector <GDB>& hasoffset_GDB);
 
+
+vector <vector <vector <vector <GDB> > > > CALCULATE_FOLDSURFACE (const vector <vector <vector <vector <GDB> > > >& inGDB_G);
 vector <vector <vector <vector <GDB> > > > PROCESS_GROUPS (const vector <vector <vector <vector <GDB> > > >& inGDB_G, const bool TILT);
 
 void output_rgf_header (ofstream& o, const bool AVERAGE);

@@ -3,6 +3,18 @@
 // All rights reserved.
 // This code is published under the GNU Lesser General Public License.
 
+/*
+USING ANG.RGF:
+==============
+
+s1: 070/74
+s2: 238/16
+s3: 329/03
+PURE EXTENSIVE
+R: 0.516
+R': 0.516
+*/
+
 #include <cmath>
 #include <iomanip>
 #include <iostream>
@@ -46,43 +58,30 @@ STRESSTENSOR st_NDA (const vector <GDB>& inGDB) {
 
 		if (HAS_SENSE)  {
 
-			////
-			/*
 			t = declare_vector(
-					q * processGDB.at(i).N.X + r * processGDB.at(i).SV.X,
-					q * processGDB.at(i).N.Y + r * processGDB.at(i).SV.Y,
-					q * processGDB.at(i).N.Z + r * processGDB.at(i).SV.Z);
+					q * processGDB.at(i).N.X + r * processGDB.at(i).DC.X,
+					q * processGDB.at(i).N.Y + r * processGDB.at(i).DC.Y,
+					q * processGDB.at(i).N.Z + r * processGDB.at(i).DC.Z);
 
 			p = declare_vector(
-					q * processGDB.at(i).SV.X - r * processGDB.at(i).N.X,
-					q * processGDB.at(i).SV.Y - r * processGDB.at(i).N.Y,
-					q * processGDB.at(i).SV.Z - r * processGDB.at(i).N.Z);
-					*/
+					q * processGDB.at(i).DC.X - r * processGDB.at(i).N.X,
+					q * processGDB.at(i).DC.Y - r * processGDB.at(i).N.Y,
+					q * processGDB.at(i).DC.Z - r * processGDB.at(i).N.Z);
 		}
 
-		st._11 = st._11 +
-				(dotproduct (p, E, false) * dotproduct (p, E, false)) -
-				(dotproduct (t, E, false) * dotproduct (t, E, false));
+		const double pE = dotproduct (p, E, false);
+		const double tE = dotproduct (t, E, false);
+		const double pN = dotproduct (p, N, false);
+		const double tN = dotproduct (t, N, false);
+		const double pU = dotproduct (p, U, false);
+		const double tU = dotproduct (t, U, false);
 
-		st._12 = st._12 +
-				(dotproduct (p, E, false) * dotproduct (p, N, false)) -
-				(dotproduct (t, E, false) * dotproduct (t, N, false));
-
-		st._13 = st._13 +
-				(dotproduct (p, E, false) * dotproduct (p, U, false)) -
-				(dotproduct (t, E, false) * dotproduct (t, U, false));
-
-		st._22 = st._22 +
-				(dotproduct (p, N, false) * dotproduct (p, N, false)) -
-				(dotproduct (t, N, false) * dotproduct (t, N, false));
-
-		st._23 = st._23 +
-				(dotproduct (p, N, false) * dotproduct (p, U, false)) -
-				(dotproduct (t, N, false) * dotproduct (t, U, false));
-
-		st._33 = st._33 +
-				(dotproduct (p, U, false) * dotproduct (p, U, false)) -
-				(dotproduct (t, U, false) * dotproduct (t, U, false));
+		st._11 = st._11 + pE * pE - tE * tE;
+		st._12 = st._12 + pE * pN - tE * tN;
+		st._13 = st._13 + pE * pU - tE * tU;
+		st._22 = st._22 + pN * pN - tN * tN;
+		st._23 = st._23 + pN * pU - tN * tU;
+		st._33 = st._33 + pU * pU - tU * tU;
 	}
 	return st;
 }
@@ -90,6 +89,8 @@ STRESSTENSOR st_NDA (const vector <GDB>& inGDB) {
 STRESSFIELD sf_NDA (const STRESSTENSOR& st) {
 
 	STRESSFIELD sf = eigenvalue_eigenvector (st);
+
+	sf = correct_SF_to_fit_D (sf);
 
 	sf = computestressfield_DXDYDZ (sf);
 

@@ -90,21 +90,13 @@ using namespace std;
 				 new_centroid.at(i-1).V = new_centroid.at(i-1).V + inGDB.at(j).N.Y;
 				 new_centroid.at(i-1).W = new_centroid.at(i-1).W + inGDB.at(j).N.Z;
 
-				 if (SC) {
+				 if (STRIAE || SC) {
 
 					 new_centroid.at(i-1).X = new_centroid.at(i-1).X + inGDB.at(j).DC.X;
 					 new_centroid.at(i-1).Y = new_centroid.at(i-1).Y + inGDB.at(j).DC.Y;
 					 new_centroid.at(i-1).Z = new_centroid.at(i-1).Z + inGDB.at(j).DC.Z;
 				 }
-				 else if (STRIAE) {
-
-					//// new_centroid.at(i-1).X = new_centroid.at(i-1).X + inGDB.at(j).SV.X;
-					//// new_centroid.at(i-1).Y = new_centroid.at(i-1).Y + inGDB.at(j).SV.Y;
-					//// new_centroid.at(i-1).Z = new_centroid.at(i-1).Z + inGDB.at(j).SV.Z;
-				 }
-				 else {}
 			 }
-			 else {}
 		 }
 		 if (processed_data_number > 0) new_centroid.at(i-1) = unitvector (new_centroid.at(i-1));
 	 }
@@ -118,7 +110,10 @@ using namespace std;
 
 	 const CENTR_VECT C = centroid;
 	 const VCTR N = in.N;
-	 const VCTR SV;//// = in.SV;
+
+	 const VCTR SV = in.DC;
+	 //was: const VCTR SV = in._SV;
+
 	 const VCTR DC = in.DC;
 
 	 double distance = (C.U- N.X) * (C.U- N.X) + (C.V- N.Y) * (C.V- N.Y) + (C.W- N.Z) * (C.W- N.Z);

@@ -3,6 +3,18 @@
 // All rights reserved.
 // This code is published under the GNU Lesser General Public License.
 
+/*
+USING ANG.RGF:
+==============
+
+s1: 074/75
+s2: 241/15
+s3: 332/03
+PURE EXTENSIVE
+R: 0.332
+R': 0.332
+*/
+
 #include <cmath>
 #include <iomanip>
 #include <iostream>
@@ -23,23 +35,23 @@ vector <vector < double> > michael_parameters (const vector <GDB>& inGDB) {
 
 		VCTR N = inGDB.at(i).N;
 
-		out.at( (i * 3) + 0 ).at(0) =     N.X - (N.X * N.X * N.X) + (N.X * N.Z * N.Z);
-		out.at( (i * 3) + 0 ).at(1) =     N.Y -               (2.0 * N.Y * N.X * N.X);
-		out.at( (i * 3) + 0 ).at(2) =     N.Z -               (2.0 * N.Z * N.X * N.X);
-		out.at( (i * 3) + 0 ).at(3) =         - (N.X * N.Y * N.Y) + (N.X * N.Z * N.Z);
-		out.at( (i * 3) + 0 ).at(4) =         -               (2.0 * N.X * N.Y * N.Z);
+		out.at((i * 3) + 0).at(0) =   N.X - (N.X * N.X * N.X) + (N.X * N.Z * N.Z);
+		out.at((i * 3) + 0).at(1) =   N.Y -               (2.0 * N.Y * N.X * N.X);
+		out.at((i * 3) + 0).at(2) =   N.Z -               (2.0 * N.Z * N.X * N.X);
+		out.at((i * 3) + 0).at(3) =       - (N.X * N.Y * N.Y) + (N.X * N.Z * N.Z);
+		out.at((i * 3) + 0).at(4) =       -               (2.0 * N.X * N.Y * N.Z);
 
-		out.at( (i * 3) + 1 ).at(0) =         - (N.Y * N.X * N.X) + (N.Y * N.Z * N.Z);
-		out.at( (i * 3) + 1 ).at(1) =     N.X -               (2.0 * N.X * N.Y * N.Y);
-		out.at( (i * 3) + 1 ).at(2) =         -               (2.0 * N.X * N.Y * N.Z);
-		out.at( (i * 3) + 1 ).at(3) =     N.Y - (N.Y * N.Y * N.Y) + (N.Y * N.Z * N.Z);
-		out.at( (i * 3) + 1 ).at(4) =     N.Z -               (2.0 * N.Z * N.Y * N.Y);
+		out.at((i * 3) + 1).at(0) =       - (N.Y * N.X * N.X) + (N.Y * N.Z * N.Z);
+		out.at((i * 3) + 1).at(1) =   N.X -               (2.0 * N.X * N.Y * N.Y);
+		out.at((i * 3) + 1).at(2) =       -               (2.0 * N.X * N.Y * N.Z);
+		out.at((i * 3) + 1).at(3) =   N.Y - (N.Y * N.Y * N.Y) + (N.Y * N.Z * N.Z);
+		out.at((i * 3) + 1).at(4) =   N.Z -               (2.0 * N.Z * N.Y * N.Y);
 
-		out.at( (i * 3) + 2 ).at(0) =   - N.Z - (N.Z * N.X * N.X) + (N.Z * N.Z * N.Z);
-		out.at( (i * 3) + 2 ).at(1) =         -	              (2.0 * N.X * N.Y * N.Z);
-		out.at( (i * 3) + 2 ).at(2) =     N.X -               (2.0 * N.X * N.Z * N.Z);
-		out.at( (i * 3) + 2 ).at(3) =   - N.Z - (N.Y * N.Y * N.Z) + (N.Z * N.Z * N.Z);
-		out.at( (i * 3) + 2 ).at(4) =     N.Y -               (2.0 * N.Y * N.Z * N.Z);
+		out.at((i * 3) + 2).at(0) = - N.Z - (N.Z * N.X * N.X) + (N.Z * N.Z * N.Z);
+		out.at((i * 3) + 2).at(1) =       -	              (2.0 * N.X * N.Y * N.Z);
+		out.at((i * 3) + 2).at(2) =   N.X -               (2.0 * N.X * N.Z * N.Z);
+		out.at((i * 3) + 2).at(3) = - N.Z - (N.Y * N.Y * N.Z) + (N.Z * N.Z * N.Z);
+		out.at((i * 3) + 2).at(4) =   N.Y -               (2.0 * N.Y * N.Z * N.Z);
 	}
 	return out;
 }
@@ -50,9 +62,13 @@ vector <vector < double> > stressvector_parameters (const vector <GDB>& inGDB) {
 
 	for (size_t i = 0; i < inGDB.size(); i++) {
 
-		////o.at( (i * 3) + 0 ).at(0) =  inGDB.at(i).SV.X;
-		////o.at( (i * 3) + 1 ).at(0) =  inGDB.at(i).SV.Y;
-		////o.at( (i * 3) + 2 ).at(0) =  inGDB.at(i).SV.Z;
+		o.at((i * 3) + 0).at(0) = inGDB.at(i).DC.X;
+		o.at((i * 3) + 1).at(0) = inGDB.at(i).DC.Y;
+		o.at((i * 3) + 2).at(0) = inGDB.at(i).DC.Z;
+
+		//was: o.at( (i * 3) + 0 ).at(0) =  inGDB.at(i)._SV_.X;
+		//was: o.at( (i * 3) + 1 ).at(0) =  inGDB.at(i)._SV_.Y;
+		//was: o.at( (i * 3) + 2 ).at(0) =  inGDB.at(i)._SV_.Z;
 	}
 	return o;
 }
@@ -102,6 +118,8 @@ STRESSTENSOR st_MICHAEL (const vector <GDB>& inGDB) {
 STRESSFIELD sf_MICHAEL (const STRESSTENSOR& st) {
 
 	STRESSFIELD sf = eigenvalue_eigenvector (st);
+
+	sf = correct_SF_to_fit_D (sf);
 
 	sf = computestressfield_DXDYDZ (sf);
 

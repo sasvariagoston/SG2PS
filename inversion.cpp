@@ -66,15 +66,12 @@ vector <GDB> generate_virtual_striae (const vector <GDB>& inGDB) {
 		buf.D =  declare_vector (- buf.D.X, - buf.D.Y, buf.D.Z);
 		buf.S =  declare_vector (- buf.S.X, - buf.S.Y, buf.S.Z);
 
-		////buf.SV = declare_vector (- buf.SV.X, - buf.SV.Y, buf.SV.Z);
-
 		buf.NC = declare_vector (- buf.NC.X, - buf.NC.Y, buf.NC.Z);
 		buf.DC = declare_vector (- buf.DC.X, - buf.DC.Y, buf.DC.Z);
 		buf.SC = declare_vector (- buf.SC.X, - buf.SC.Y, buf.SC.Z);
 
 		outGDB.push_back(buf);
 	}
-
 	outGDB = manipulate_N (outGDB);
 
 	return outGDB;
@@ -175,14 +172,20 @@ vector <GDB> apply_inversion_result (const vector <GDB>& inGDB, const STRESSTENS
 
 	vector <GDB> outGDB = inGDB;
 
+	cout << "apply_inversion_result_1" << endl;
+
 	const double AV_MISF = return_average_misfit (st, inGDB);
 
-	string METHOD ;
+	cout << "apply_inversion_result_2" << endl;
 
+	string METHOD = "ANGELIER";
 	if (is_INVERSION_MOSTAFA()) METHOD = "MOSTAFA";
-	else METHOD = "ANGELIER";
+
+	cout << "apply_inversion_result_3" << endl;
 
 	outGDB = return_stressvector_estimators (st, outGDB, METHOD);
+
+	cout << "apply_inversion_result_4" << endl;
 
 	for (size_t i = 0; i < inGDB.size(); i++) {
 
@@ -199,45 +202,45 @@ void INVERSION (const vector <GDB>& inGDB) {
 
 	const bool IS_STRIAE = is_allowed_striae_datatype(inGDB.at(0).DATATYPE);
 
-	if (is_INVERSION_ANGELIER() && IS_STRIAE) {
+	if (is_INVERSION_ANGELIER() && IS_STRIAE) {//ok
 		STV.push_back (st_ANGELIER (inGDB));
 		SFV.push_back (sf_ANGELIER (STV.at(0)));
 	}
 	else if (is_BINGHAM_USE() && !IS_STRIAE) {
-		const vector <VCTR> BNG = generate_Bingham_dataset(inGDB);
+		const vector <VCTR> BNG = generate_Bingham_dataset(inGDB);//ok
 		STV.push_back (st_BINGHAM (BNG));
 		SFV.push_back (sf_BINGHAM (STV.at(0)));
 	}
-	else if (is_INVERSION_BRUTEFORCE() && IS_STRIAE) {
+	else if (is_INVERSION_BRUTEFORCE() && IS_STRIAE) {//ok
 		STV.push_back (st_BRUTEFORCE (inGDB));
 		SFV.push_back (sf_BRUTEFORCE (STV.at(0)));
 	}
-	else if (is_INVERSION_FRY() && fry_correct (inGDB) && IS_STRIAE) {
+	else if (is_INVERSION_FRY() && fry_correct (inGDB) && IS_STRIAE) {//ok
 		STV.push_back (st_FRY (inGDB));
 		SFV.push_back (sf_FRY (STV.at(0)));
 	}
-	else if (is_INVERSION_MICHAEL() && IS_STRIAE) {
+	else if (is_INVERSION_MICHAEL() && IS_STRIAE) {//ok
 		STV.push_back (st_MICHAEL(inGDB));
 		SFV.push_back (sf_MICHAEL(STV.at(0)));
 	}
-	else if (is_INVERSION_MOSTAFA() && IS_STRIAE) {
+	else if (is_INVERSION_MOSTAFA() && IS_STRIAE) {//ok
 		SFV = sfv_MOSTAFA (inGDB);
 		STV = stv_MOSTAFA ();
 	}
-	else if (is_INVERSION_SPRANG() && IS_STRIAE) {
+	else if (is_INVERSION_SPRANG() && IS_STRIAE) {//ok
 		STV.push_back (st_NDA (inGDB));
 		SFV.push_back (sf_NDA (STV.at(0)));
 	}
-	else if (is_INVERSION_YAMAJI() && IS_STRIAE) {
+	else if (is_INVERSION_YAMAJI() && IS_STRIAE) {//OK
 		//STV.push_back (st_YAMAJI (inGDB));
 		//SFV has to be coded
 		exit (1);
 	}
-	else if (is_INVERSION_TURNER() && IS_STRIAE) {
+	else if (is_INVERSION_TURNER() && IS_STRIAE) {//OK
 		SFV.push_back (sf_PTN (inGDB));
 		STV.push_back (st_PTN (SFV.at(0)));
 	}
-	else if (is_INVERSION_SHAN() && IS_STRIAE) {
+	else if (is_INVERSION_SHAN() && IS_STRIAE) {//OK
 		STV.push_back (st_SHAN(inGDB));
 		SFV.push_back (sf_SHAN(STV.at(0)));
 	}
@@ -245,9 +248,12 @@ void INVERSION (const vector <GDB>& inGDB) {
 
 	const size_t MAX = SFV.size() - 1;
 
-	const bool successfull = check_correct_stressfield (SFV.at(MAX));
+	if (MAX > 0) {
 
-	if (MAX > 0 && !successfull) SFV.clear();
+		const bool successfull = check_correct_stressfield (SFV.at(MAX));
+
+		if (!successfull) SFV.clear();
+	}
 }
 
 void cout_dbg_sf (const vector <GDB>& inGDB) {
@@ -289,6 +295,9 @@ void cout_dbg_sf (const vector <GDB>& inGDB) {
 
 void cout_dbg_stressfield (const STRESSFIELD& sf) {
 
+	cout << "*****************************************" << endl;
+	cout << "****    START DUMPING STRESSFIELD    ****" << endl << endl;
+
 	cout << fixed << setprecision(0) << flush;
 	cout << "S1: " << sf.S_1.DIPDIR << "/" << sf.S_1.DIP << flush;
 	cout << fixed << setprecision(6) << flush;
@@ -302,7 +311,10 @@ void cout_dbg_stressfield (const STRESSFIELD& sf) {
 	cout << fixed << setprecision(6) << flush;
 	cout << " ("   << sf.EIGENVECTOR3.X << ", " << sf.EIGENVECTOR3.Y << ", " << sf.EIGENVECTOR3.Z << ")" << endl;
 
-	cout << "EIGENVALUES: " << sf.EIGENVALUE.X << ", " << sf.EIGENVALUE.Y << ", " << sf.EIGENVALUE.Z << ")" << endl;
+	cout << "EIGENVALUES: " << sf.EIGENVALUE.X << ", " << sf.EIGENVALUE.Y << ", " << sf.EIGENVALUE.Z << endl << endl;
+
+	cout << "****    END DUMPING STRESSFIELD    ****" << endl;
+	cout << "***************************************" << endl;
 }
 
 void cout_dbg_stressfield (const vector <STRESSFIELD>& sf) {

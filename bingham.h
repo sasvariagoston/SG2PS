@@ -14,6 +14,6 @@ vector <VCTR> generate_Bingham_dataset (const vector <GDB>& inGDB);
 
 STRESSTENSOR st_BINGHAM (const vector <VCTR>& N);
 
-STRESSFIELD sf_BINGHAM (STRESSTENSOR& st);
+STRESSFIELD sf_BINGHAM (const STRESSTENSOR& st);
 
 #endif

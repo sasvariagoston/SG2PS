@@ -420,16 +420,9 @@ void PS_border (const vector <GDB>& inGDB, ofstream& o, const PAPER& P) {
 	const bool color_by_RUPANG = is_COLOURING_RUPANG ();
 	const bool color_IGNORE = is_COLOURING_IGNORE ();
 
-	cout << "PSxxxx000_1" << endl;
-
-	cout << "GC: " << inGDB.at(0).GC << endl;
-
-
 	const bool exists_GROUPCODE = inGDB.at(0).GC.at(0) != 'X';
 	const bool exists_KMEANS = inGDB.at(0).GC.at(1) != 'X';
 	const bool exists_RUPANG = inGDB.at(0).GC.at(2) != 'X';
-
-	cout << "PSxxxx_2" << endl;
 
 	if (!by_GROUPCODE && !by_KMEANS && !by_RUPANG && !IGNORE) ASSERT_DEAD_END();
 	if (!color_by_COLORCODE && !color_by_GROUPCODE && !color_by_KMEANS && !color_by_RUPANG && !color_IGNORE) ASSERT_DEAD_END();
@@ -465,8 +458,6 @@ void PS_border (const vector <GDB>& inGDB, ofstream& o, const PAPER& P) {
 
 	if (asked_KMEANS) T = T + " - K-MEANS CLUSTERING USED";
 
-	cout << "PSxxxx_1" << endl;
-
 	if (asked_RUPANG && STRIAE) T = T + " - RUP/ANG CLUSTERING USED";
 
 	if (by_GROUPCODE) 	T = T + ", GROUP '" + GC.at(0) + "' USING ORIGINAL GROUPCODE" ;
@@ -492,9 +483,6 @@ void PS_border (const vector <GDB>& inGDB, ofstream& o, const PAPER& P) {
 	}
 	else if (is_GROUPSEPARATION_IGNORE()) {}
 	else ASSERT_DEAD_END();
-
-	cout << "PSxxxx_2" << endl;
-
 
 	if (color_by_COLORCODE) {
 
@@ -949,6 +937,8 @@ void PS_stress_state (ofstream& o, const PAPER P, const CENTER& center, const ST
 
 void PS_folddata (GDB in, ofstream& o, CENTER center) {
 
+	cout << "PS_folddata" << endl;
+
 	font_PS(o, "ArialNarrow-Bold", 8);
 
 	color_PS (o, "0 0 0");
@@ -957,20 +947,28 @@ void PS_folddata (GDB in, ofstream& o, CENTER center) {
 
 	string T = "Fold great circle: ";
 
-	string DD;
+	cout << in.fold_great_circle_N.X << endl;
 
-	if (in.avd.DIPDIR < 10.0) T = T + "00" + double_to_string (in.avd.DIPDIR, 0);
-	else if (in.avd.DIPDIR < 100.0) T = T + "0" + double_to_string (in.avd.DIPDIR, 0);
-	else T = T + double_to_string (in.avd.DIPDIR, 0);
+	DIPDIR_DIP DD = dipdir_dip_from_NXNYNZ (in.fold_great_circle_N);
+
+	cout << DD.DIPDIR << endl;
+
+	if (DD.DIPDIR < 10.0) T = T + "00" + double_to_string (DD.DIPDIR, 0);
+	else if (DD.DIPDIR < 100.0) T = T + "0" + double_to_string (DD.DIPDIR, 0);
+	else T = T + double_to_string (DD.DIPDIR, 0);
 
 	T = T + "/";
 
-	if (in.avd.DIP < 10.0) T = T + "0" + double_to_string (in.avd.DIP, 0);
-	else T = T + double_to_string (in.avd.DIP, 0);
+	if (DD.DIP < 10.0) T = T + "0" + double_to_string (DD.DIP, 0);
+	else T = T + double_to_string (DD.DIP, 0);
 
 	text_PS(o, 0.0, 0.0, 3, T);
 
 	translate_PS (o, - center.X - (center.radius / 2.0), - center.Y + center.radius, 3);
+
+	cout << "end PS_folddata" << endl;
+
+	return;
 }
 
 void PS_lineation (const GDB& i, ofstream& o, const CENTER& center, const STRESSFIELD& sf, const bool label, const string type) {
@@ -1016,7 +1014,16 @@ void PS_lineation (const GDB& i, ofstream& o, const CENTER& center, const STRESS
 		OTHER = true;
 	}
 
-	if (L.Z > 0.0) L.Z = - L.Z;
+
+	if (is_D_up(L)) {
+
+		cout << fixed << setprecision(6) << endl;
+		cout << L.X << "  -  " << L.Y << "  -  " << L.Z << endl;
+
+		ASSERT_DEAD_END();
+		L = flip_vector(L);
+	}
+	//if (L.Z > 0.0) L.Z = - L.Z;
 
 	double X = 0.0;
 	double Y = 0.0;
@@ -1104,33 +1111,38 @@ void PS_plane (const GDB& i, ofstream& o, const double X, const double Y, const 
 	size_t 					steps = 1;
 	if (is_NET_SCHMIDT()) 	steps = 60;
 
-	VCTR N, D;
+	VCTR N;
+	//VCTR D;
+
 	DIPDIR_DIP DD;
 
 	if (C) {
 
 		DD = i.corrL;
-		D = i.DC;
+		//D = i.DC;
 		N = i.NC;
 	}
 	else if (AV || AVO) {
 
 		DD = i.avS0d;
-		////!D =  flip_D_vector(i.avS0D);
-		N =  (NXNYNZ_from_DXDYDZ (D));
+		VCTR D =  i.avS0D;
+		if (is_D_up(D)) D = flip_vector(D);
+		N = NXNYNZ_from_DXDYDZ (D);
 	}
 	else if (FOLD) {
 
 		DD = dipdir_dip_from_NXNYNZ (i.fold_great_circle_N);
-		D = DXDYDZ_from_NXNYNZ (i.fold_great_circle_N);
+		//D = DXDYDZ_from_NXNYNZ (i.fold_great_circle_N);
 		N = i.fold_great_circle_N;
 	}
 	else {
 
 		DD = i.corr;
-		D = i.D;
+		//D = i.D;
 		N = i.N;
 	}
+
+	if (is_N_down(N)) N = flip_vector(N);
 
 	double DIPDIR = DD.DIPDIR;
 
@@ -1359,8 +1371,11 @@ void PS_polepoint (const GDB& i, ofstream& o, const double X, const double Y, co
 	if (FL) 			O = i.fold_great_circle_N;
 	else if (AV || AVO) O = NXNYNZ_from_DXDYDZ (i.avS0D);
 	else if (C) 		O = i.NC;
+	else if (ID) 		O = unitvector (i.SHEAR_S);
 	////else if (ID) 		O = flip_N_vector (unitvector (i.SHEAR_S));
 	else 				O = i.N;
+
+	if (is_N_down (O)) O = flip_vector(O);
 
 	O = declare_vector( -O.X, -O.Y, O.Z);
 
@@ -1542,11 +1557,20 @@ void PS_datanumber_averagebedding (const GDB& i, ofstream& o, const PAPER& P, co
 
 	const bool HAS_BEDDING = (is_allowed_DIR (i.avS0d.DIPDIR) && is_allowed_DIP (i.avS0d.DIP));
 
+
+	cout << "PS__Y__1" << endl;
+
+	cout << i.avS0d.DIPDIR << " / " << i.avS0d.DIP << endl;
+
+
 	if (HAS_BEDDING) {
 
 		if (is_PLOT_HOEPPENER()) 	PS_polepoint (i, o, P.O1X, P.O1Y, P.R, "AV");
 		else 						PS_plane     (i, o, P.O1X, P.O1Y, P.R, "AV");
 	}
+
+
+	cout << "PS__Y__2" << endl;
 
 	font_PS(o, "ArialNarrow-Bold", 8);
 	color_PS(o, "0.0 0.0 0.0");
@@ -1774,23 +1798,16 @@ void PS_DRAW_plane (const GDB i, ofstream& o, const CENTER& center) {
 	const double Y = center.Y;
 	const double R = center.radius;
 
-	if (is_PLOT_HOEPPENER()) {
+	if (is_PLOT_HOEPPENER()) PS_polepoint (i, o, X, Y, R, "");
+	else 					 PS_plane (i, o, X, Y, R, "");
 
-		//if (is_LABELLING_USE())	PS_polepoint (i, o, X, Y, R, "");
-		//else
-		PS_polepoint (i, o, X, Y, R, "");
-	}
-	else {
-
-		//if (is_LABELLING_USE()) PS_plane (i, o, X, Y, R, "");
-		//else
-		PS_plane (i, o, X, Y, R, "");
-	}
 }
 
 void PS_DRAW_lineation (const GDB& i, ofstream& o, const CENTER& center) {
 
 	STRESSFIELD empty_sf;
+
+	cout << "PS_LINEATION_called for fault data" << endl;
 
 	if (is_LABELLING_USE()) 		PS_lineation 	(i, o, center, empty_sf, true, "");
 	else 							PS_lineation 	(i, o, center, empty_sf, false, "");
@@ -1847,6 +1864,8 @@ void PS_idealmovement (const vector <GDB>& inGDB, ofstream& o, const CENTER& cen
 
 void PS_FOLD_GREAT_CIRCLE (const vector <GDB>& inGDB, ofstream& o, const CENTER& center) {
 
+	cout << "PS_FOLD_GREAT_CIRCLE" << endl;
+
 	const string DT = inGDB.at(0).DATATYPE;
 
 	if (!is_allowed_foldsurface_processing(DT)) return;
@@ -1856,6 +1875,10 @@ void PS_FOLD_GREAT_CIRCLE (const vector <GDB>& inGDB, ofstream& o, const CENTER&
 	//const bool LABEL = is_LABELLING_USE();
 
 	PS_plane (inGDB.at(0), o, center.X, center.Y, center.radius, "FOLD");
+
+	cout << "end PS_FOLD_GREAT_CIRCLE" << endl;
+
+	return;
 }
 
 
@@ -1908,6 +1931,7 @@ void PS_stress_axes (const vector <GDB>& inGDB, ofstream& o, const CENTER& cente
 	if (inGDB.size() < 1) ASSERT_DEAD_END();
 
 	const size_t SFV_size = inGDB.at(0).SFV.size();
+	const bool STRIAE = is_allowed_striae_datatype(inGDB.at(0).DATATYPE);
 
 	if (MOSTAFA) 	SF = inGDB.at(0).SFV;
 	else 			SF.push_back (inGDB.at(0).SFV.at (SFV_size - 1));
@@ -1916,13 +1940,15 @@ void PS_stress_axes (const vector <GDB>& inGDB, ofstream& o, const CENTER& cente
 
 	for (size_t i = 0; i < SF.size(); i++) {
 
-		if (MOSTAFA && i < SF.size()) {
+		if (STRIAE && MOSTAFA && i < SF.size()) {
 
+			cout << "PS_LINEATION_called for strss axis" << endl;
 			PS_lineation (dummy, o, center, SF.at(i), false, "S1_ITER");
 			PS_lineation (dummy, o, center, SF.at(i), false, "S2_ITER");
 			PS_lineation (dummy, o, center, SF.at(i), false, "S3_ITER");
 		}
 		else {
+			cout << "PS_LINEATION_called for strss axis" << endl;
 			PS_lineation (dummy, o, center, SF.at(i), false, "S1");
 			PS_lineation (dummy, o, center, SF.at(i), false, "S2");
 			PS_lineation (dummy, o, center, SF.at(i), false, "S3");

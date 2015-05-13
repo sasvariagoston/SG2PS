@@ -12,8 +12,6 @@
 
 using namespace std;
 
-//void header();
-
 void print_banner () ;
 
 string capslock (string input);
@@ -49,10 +47,6 @@ VCTR  crossproduct (const VCTR& in1, const VCTR& in2);
 double dotproduct (const VCTR& in1, const VCTR& in2, const bool& normalisation=false);
 
 double det_3 (vector <vector <double> > in);
-
-double stresstensor_determinant (const STRESSTENSOR& st);
-
-void check_stress_tensor_singularity(const STRESSTENSOR& st);
 
 vector <vector <double> >  declare_3x3_matrix (const double& a, const double& b, const double& c, const double& d, const double& e, const double& f, const double& g, const double& h, const double& i);
 
@@ -97,25 +91,18 @@ string generate_stress_colors (const double V);
 
 double vector_angle (const VCTR& A, const VCTR& B);
 double vectorlength (const VCTR& in);
+
 VCTR unitvector (const VCTR& in);
-VCTR invert_VCTR (VCTR in);
 CENTR_VECT unitvector (CENTR_VECT in);
 vector <double> unitvector (vector <double>& in);
 
 VCTR declare_vector (const double a, const double b, const double c);
 CENTR_VECT declare_vector (const double a, const double b, const double c, const double d, const double e, const double f);
 
-//VCTR average_vector (const vector <VCTR> in);
-
 VCTR flip_vector (const VCTR& in);
-//VCTR flip_D_vector (const VCTR& in);
-//VCTR flip_N_vector (const VCTR& in);
-//VCTR compute_d_for_SC (const GDB& i);
 
 VCTR DXDYDZ_from_dipdir_dip (const DIPDIR_DIP& i);
 VCTR NXNYNZ_from_dipdir_dip (const DIPDIR_DIP& i);
-
-//STRESSFIELD stressvector_to_DXDYDZ (STRESSFIELD in);
 
 VCTR DXDYDZ_from_NXNYNZ (const VCTR& i);
 VCTR NXNYNZ_from_DXDYDZ (const VCTR& i);
@@ -139,19 +126,9 @@ vector <double> quadratic_solution (const double A, const double B, const double
 vector <double> cubic_solution (const double A, const double B, const double C, const double D);
 vector <double> quartic_solution (double A, double B, double C, double D, double E);
 
-STRESSTENSOR fix_stress_tensor_singularity(STRESSTENSOR& st);
-STRESSFIELD eigenvalue_eigenvector (STRESSTENSOR st);
-STRESSTENSOR stresstensor_from_eigenvalue_eigenvector (STRESSFIELD sf);
-
-STRESSFIELD stress_regime (const STRESSFIELD& in);
-STRESSTENSOR convert_matrix_to_stresstensor (const vector <vector <double> >& IN);
-
 bool byOFFSET(const GDB& x, const GDB& y);
 bool bycorrDIPDIRcorrDIP(const GDB& x, const GDB& y);
 bool bycorrDIPDIRcorrDIPcorrLDIPDIRcorrLDIP(const GDB& x, const GDB& y);
-
-//double right_hand_rule_to_german (const double corrDIPDIR);
-//double german_to_right_hand_rule (const double corrDIPDIR);
 
 void output_elapsed_time (const clock_t& start_t, const clock_t& finish_t);
 string build_date ();
@@ -162,8 +139,6 @@ string version_id();
 bool is_in_range (const double range_min, const double range_max, const double in); //ok
 
 double points_distance (const VCTR& a, const VCTR& b);
-
-//vector <VCTR> convert_vectors_to_S_or_W (vector <VCTR> in);
 
 #if _MSC_VER && !__INTEL_COMPILER
 #include <float.h>

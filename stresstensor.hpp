@@ -6,11 +6,23 @@
 #ifndef STRESSTENSOR_HPP_
 #define STRESSTENSOR_HPP_
 
+double stresstensor_determinant (const STRESSTENSOR& st);
+void check_stress_tensor_singularity(const STRESSTENSOR& st);
+STRESSTENSOR fix_stress_tensor_singularity(STRESSTENSOR& st);
+
+STRESSFIELD eigenvalue_eigenvector (STRESSTENSOR st);
+STRESSTENSOR stresstensor_from_eigenvalue_eigenvector (STRESSFIELD sf);
+
+STRESSFIELD stress_regime (const STRESSFIELD& in);
+STRESSTENSOR convert_matrix_to_stresstensor (const vector <vector <double> >& IN);
+
 STRESSTENSOR invert_stress_tensor (const STRESSTENSOR& st); //ok
 STRESSTENSOR add_stress_tensor (const STRESSTENSOR& st1, const STRESSTENSOR& st2); //ok
 
 STRESSFIELD computestressfield_NXNYNZ (const STRESSFIELD& in); //ok
 STRESSFIELD computestressfield_DXDYDZ (const STRESSFIELD& in); //ok
+
+STRESSFIELD correct_SF_to_fit_D (const STRESSFIELD& in); //ok
 
 VCTR return_stressvector (const STRESSTENSOR& st, const VCTR& N); //ok
 VCTR return_normalstress (const STRESSTENSOR& st, const VCTR& N); //ok

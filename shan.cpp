@@ -3,6 +3,19 @@
 // All rights reserved.
 // This code is published under the GNU Lesser General Public License.
 
+/*
+
+USING ANG.RGF:
+==============
+
+s1: 036/73
+s2: 245/15
+s3: 153/08
+RADIAL EXTENSIVE
+R: 0.195
+R': 0.195
+*/
+
 #include <cmath>
 #include <iomanip>
 #include <iostream>
@@ -38,8 +51,6 @@ vector <vector <double> > SHAN_matrix (const vector <GDB>& inGDB) {
 
 	vector <vector <double> > shan_matrix = init_matrix (5);
 
-	//if (inset.virt_striae == "Y" ) processGDB = generate_virtual_striae (processGDB);
-
 	for (size_t i = 0; i < processGDB.size(); i++) {
 
 		vector <vector <double> > temp = init_matrix (5);
@@ -50,7 +61,6 @@ vector <vector <double> > SHAN_matrix (const vector <GDB>& inGDB) {
 	}
 	return jacobi (shan_matrix);
 }
-
 
 STRESSTENSOR st_SHAN (const vector <GDB>& inGDB) {
 
@@ -83,6 +93,8 @@ STRESSTENSOR st_SHAN (const vector <GDB>& inGDB) {
 STRESSFIELD sf_SHAN (const STRESSTENSOR& st) {
 
 	STRESSFIELD sf = eigenvalue_eigenvector (st);
+
+	sf = correct_SF_to_fit_D (sf);
 
 	sf = computestressfield_DXDYDZ (sf);
 

@@ -3,6 +3,18 @@
 // All rights reserved.
 // This code is published under the GNU Lesser General Public License.
 
+/*
+USING ANG.RGF:
+==============
+
+s1: 055/74
+s2: 244/16
+s3: 153/02
+RADIAL EXTENSIVE
+R: 0.219
+R': 0.219
+*/
+
 #include <cmath>
 #include <iomanip>
 #include <iostream>
@@ -18,8 +30,6 @@
 using namespace std;
 
 namespace {
-
-//STRESSTENSOR MOSTAFA_st;
 
 vector <STRESSTENSOR> MOSTAFA_stv;
 
@@ -52,7 +62,11 @@ vector <STRESSFIELD> sfv_MOSTAFA (const vector <GDB>& inGDB) {
 		process_GDB = return_stressvector_estimators (MOSTAFA_st, process_GDB, METHOD);
 
 		STRESSFIELD sf = eigenvalue_eigenvector (MOSTAFA_st);
+
+		sf = correct_SF_to_fit_D (sf);
+
 		sf = computestressfield_DXDYDZ (sf);
+
 		sf = stress_regime (sf);
 
 		SFV.push_back(sf);

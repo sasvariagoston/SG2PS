@@ -133,7 +133,6 @@ const string char_to_string (const char i) {
 	return os.str();
 }
 
-
 double string_to_double( const string& s, bool& failed) {
 
 	return convert<double>(s, failed);
@@ -172,14 +171,6 @@ size_t string_to_size_t (const string& s) {
 
 	return to_type <size_t> (s);
 }
-/*
-double SIGNUM (double in) {
-
-	if (in < 0.0) return -1.0;
-	else if (in == 0.0) return  0.0;
-	else return  1.0;
-}
-*/
 
 double SIN (const double& in) {
 
@@ -1021,11 +1012,6 @@ VCTR unitvector (const VCTR& in) {
 	return OUT;
 }
 
-VCTR invert_VCTR (VCTR in) {
-
-	return (declare_vector( -in.X, -in.Y, -in.Z));
-}
-
 CENTR_VECT unitvector (CENTR_VECT in) {
 
 	double vectorlength = sqrt
@@ -1073,63 +1059,10 @@ CENTR_VECT declare_vector (const double a, const double b, const double c, const
 	return o;
 }
 
-/*
-VCTR average_vector (const vector <VCTR> in) {
-
-	vector <double> x, y, z;
-
-	for (size_t i = 0; i < in.size(); i++) {
-
-		x.push_back(in.at(i).X);
-		y.push_back(in.at(i).Y);
-		z.push_back(in.at(i).Z);
-	}
-	double X = average(x);
-	double Y = average(y);
-	double Z = average(z);
-
-	return (unitvector (declare_vector(X, Y, Z)));
-}
-*/
-
 VCTR flip_vector (const VCTR& in) {
 
 	return declare_vector(-in.X, -in.Y, -in.Z);
 }
-/*
-VCTR flip_D_vector (const VCTR& in) {
-
-	!if (in.Z > 0.0) return flip_vector(in);
-	return in;
-}
-
-VCTR flip_N_vector (const VCTR& in) {
-
-	!if (in.Z < 0.0) return flip_vector(in);
-	return in;
-}
-*/
-
-/*
-VCTR compute_d_for_SC (const GDB& i) {
-
-	VCTR temp1 = i.NC;
-	VCTR temp2 = i.N;
-
-	VCTR n = crossproduct (temp1, temp2);
-	n = unitvector (n);
-	////////!n = flip_D_vector (n);
-
-	temp1 = n;
-	temp2 = i.NC;
-
-	VCTR d = crossproduct (temp1, temp2);
-	d = unitvector (d);
-	////d = flip_D_vector (d);
-
-	return d;
-}
-*/
 
 VCTR DXDYDZ_from_dipdir_dip (const DIPDIR_DIP& i) {
 
@@ -1149,33 +1082,6 @@ VCTR NXNYNZ_from_dipdir_dip (const DIPDIR_DIP& i) {
 	);
 }
 
-/*
-VCTR inversion_DXDYDZ_from_DXDYDZ (VCTR i) {
-
-	DIPDIR_DIP dd;
-
-	dd = dipdir_dip_from_DXDYDZ (i);
-
-	dd.DIP = dd.DIP - 90.0;
-
-	return DXDYDZ_from_dipdir_dip (dd);
-}
-*/
-
-/*
-STRESSFIELD stressvector_to_DXDYDZ (STRESSFIELD in) {
-
-	STRESSFIELD out = in;
-
-	!if (in.EIGENVECTOR1.Z > 0.0) out.EIGENVECTOR1 = flip_D_vector (out.EIGENVECTOR1);
-
-	!if (in.EIGENVECTOR2.Z > 0.0) out.EIGENVECTOR2 = flip_D_vector (out.EIGENVECTOR2);
-
-	!if (in.EIGENVECTOR3.Z > 0.0) out.EIGENVECTOR3 = flip_D_vector (out.EIGENVECTOR3);
-
-	return out;
-}
-*/
 VCTR DXDYDZ_from_NXNYNZ (const VCTR& i) {
 
 	return DXDYDZ_from_dipdir_dip (dipdir_dip_from_NXNYNZ (i));
@@ -1337,8 +1243,12 @@ VCTR VCTR_average (const vector <VCTR>& IN) {
 		X.push_back (IN.at(i).X);
 		Y.push_back (IN.at(i).Y);
 		Z.push_back (IN.at(i).Z);
+
+		//cout << " X: " << IN.at(i).X << flush;
+		//cout << " Y: " << IN.at(i).Y << flush;
+		//cout << " Z: " << IN.at(i).Z << endl;
 	}
-	return declare_vector (average(X), average(Y), average(Z));
+	return unitvector (declare_vector (average(X), average(Y), average(Z)));
 }
 
 double median (const vector <double>& IN) {
@@ -1566,244 +1476,6 @@ vector <double>  quartic_solution (double A, double B, double C, double D, doubl
 	return result;
 }
 
-double stresstensor_determinant (const STRESSTENSOR& st) {
-
-	return	(st._11 * st._22 * st._33) +
-			(st._12 * st._23 * st._13) +
-			(st._13 * st._12 * st._23) -
-			(st._13 * st._22 * st._13) -
-			(st._12 * st._12 * st._33) -
-			(st._11 * st._23 * st._23);
-}
-
-void check_stress_tensor_singularity(const STRESSTENSOR& st) {
-
-	double det = stresstensor_determinant (st);
-
-	ASSERT2(fabs(det) > 1.0e-25, "Stress tensor nearly singluar, determinant = "<< det);
-}
-
-double determinant_of_stress_tensor(const STRESSTENSOR& st) {
-
-	return	(st._11 * st._22 * st._33) +
-			(st._12 * st._23 * st._13) +
-			(st._13 * st._12 * st._23) -
-			(st._13 * st._22 * st._13) -
-			(st._12 * st._12 * st._33) -
-			(st._11 * st._23 * st._23);
-}
-
-STRESSTENSOR fix_stress_tensor_singularity(STRESSTENSOR& st) {
-
-	const double one_plus_tiny = 1 + 1.0e-4;
-
-	double det = determinant_of_stress_tensor(st);
-
-	if (det < 10e-25) {
-
-		st._11 *= one_plus_tiny;
-		st._22 *= one_plus_tiny;
-		st._33 *= one_plus_tiny;
-	}
-
-	return st;
-}
-
-STRESSFIELD eigenvalue_eigenvector (STRESSTENSOR st) {
-
-	st =  fix_stress_tensor_singularity (st);
-
-	check_stress_tensor_singularity (st);
-
-	STRESSFIELD sf;
-
-	double a1, a2, b1, b2, c1, c2;
-
-	vector < double > X;
-
-	const double A =   1.0;
-
-	const double B = - (st._11 + st._22 + st._33);
-
-	const double C =   (st._11 * st._22) + (st._22 * st._33) + (st._11 * st._33) - (st._12 * st._12) - (st._23 * st._23) - (st._13 * st._13);
-
-	const double D = - ((st._11 * st._22 * st._33) + (2.0 * st._12 * st._23 * st._13) - (st._12 * st._12 * st._33) - (st._23 * st._23 * st._11) - (st._13 * st._13 * st._22));
-
-	X = cubic_solution (A, B, C, D);
-
-	sort(X.begin(), X.begin()+3);
-
-	sf.EIGENVALUE.X = X.at(2);
-	sf.EIGENVALUE.Y = X.at(1);
-	sf.EIGENVALUE.Z = X.at(0);
-
-	a1 = st._11 - sf.EIGENVALUE.X;
-	b1 = st._12;
-	c1=  st._13;
-	a2 = st._12;
-	b2 = st._22 - sf.EIGENVALUE.X;
-	c2 = st._23;
-
-	sf.EIGENVECTOR1.Z = 1.0;
-	sf.EIGENVECTOR1.X = ((b1 * c2) - (b2 * c1)) / ((b2 * a1) - (a2 * b1));
-	sf.EIGENVECTOR1.Y = - ((a1 * sf.EIGENVECTOR1.X) + c1) / b1;
-	sf.EIGENVECTOR1 = unitvector (sf.EIGENVECTOR1);
-
-	if (is_in_range(0.9999, 1.0001, sf.EIGENVECTOR1.X)) sf.EIGENVECTOR1.X = 1.0 - 1E-8;
-	if (is_in_range(0.9999, 1.0001, sf.EIGENVECTOR1.Y)) sf.EIGENVECTOR1.Y = 1.0 - 1E-8;
-	if (is_in_range(0.9999, 1.0001, sf.EIGENVECTOR1.Z)) sf.EIGENVECTOR1.Z = 1.0 - 1E-8;
-	sf.EIGENVECTOR1 = unitvector (sf.EIGENVECTOR1);
-
-
-
-	a1 = st._11 - sf.EIGENVALUE.Y;
-	b2 = st._22 - sf.EIGENVALUE.Y;
-
-	sf.EIGENVECTOR2.Z = 1.0;
-
-	double denom = (b2 * a1) - (a2 * b1);
-
-	if (fabs(denom) < 1.0e-20) {
-		ASSERT2(false, "Computing eigenvector, small denom = "<< denom);
-	}
-
-	sf.EIGENVECTOR2.X = ((b1 * c2) - (b2 * c1)) / denom;
-	sf.EIGENVECTOR2.Y = - ((a1 * sf.EIGENVECTOR2.X) + c1) / b1;
-
-	ASSERT2(fabs(b1)>1.0e-20, "Computing eigenvector, b1 = "<< b1);
-
-	sf.EIGENVECTOR2 = unitvector (sf.EIGENVECTOR2);
-
-	if (is_in_range(0.9999, 1.0001, sf.EIGENVECTOR2.X)) sf.EIGENVECTOR2.X = 1.0 - 1E-8;
-	if (is_in_range(0.9999, 1.0001, sf.EIGENVECTOR2.Y)) sf.EIGENVECTOR2.Y = 1.0 - 1E-8;
-	if (is_in_range(0.9999, 1.0001, sf.EIGENVECTOR2.Z)) sf.EIGENVECTOR2.Z = 1.0 - 1E-8;
-	sf.EIGENVECTOR2 = unitvector (sf.EIGENVECTOR2);
-
-
-
-	a1 = st._11 - sf.EIGENVALUE.Z;
-	b2 = st._22 - sf.EIGENVALUE.Z;
-
-	sf.EIGENVECTOR3.Z = 1.0;
-	sf.EIGENVECTOR3.X = ((b1 * c2) - (b2 * c1)) / ((b2 * a1) - (a2 * b1));
-	sf.EIGENVECTOR3.Y = - ((a1 * sf.EIGENVECTOR3.X) + c1) / b1;
-	sf.EIGENVECTOR3 = unitvector (sf.EIGENVECTOR3);
-
-	if (is_in_range(0.9999, 1.0001, sf.EIGENVECTOR3.X)) sf.EIGENVECTOR3.X = 1.0 - 1E-8;
-	if (is_in_range(0.9999, 1.0001, sf.EIGENVECTOR3.X)) sf.EIGENVECTOR3.Y = 1.0 - 1E-8;
-	if (is_in_range(0.9999, 1.0001, sf.EIGENVECTOR3.X)) sf.EIGENVECTOR3.Z = 1.0 - 1E-8;
-	sf.EIGENVECTOR3 = unitvector (sf.EIGENVECTOR3);
-
-	return sf;
-}
-
-STRESSTENSOR stresstensor_from_eigenvalue_eigenvector (STRESSFIELD sf) {
-
-	vector < vector <double> >  D = init_matrix (3);
-	vector < vector <double> >  T = init_matrix (3);
-
-	STRESSTENSOR out;
-
-	D.at(0).at(0) = sf.EIGENVECTOR1.X;
-	D.at(0).at(1) = sf.EIGENVECTOR1.Y;
-	D.at(0).at(2) = sf.EIGENVECTOR1.Z;
-
-	D.at(1).at(0) = sf.EIGENVECTOR2.X;
-	D.at(1).at(1) = sf.EIGENVECTOR2.Y;
-	D.at(1).at(2) = sf.EIGENVECTOR2.Z;
-
-	D.at(2).at(0) = sf.EIGENVECTOR3.X;
-	D.at(2).at(1) = sf.EIGENVECTOR3.Y;
-	D.at(2).at(2) = sf.EIGENVECTOR3.Z;
-
-
-	T.at(0).at(0) = sf.EIGENVALUE.X;
-	T.at(0).at(1) = 0.0;
-	T.at(0).at(2) = 0.0;
-
-	T.at(1).at(0) = 0.0;
-	T.at(1).at(1) = sf.EIGENVALUE.Y;
-	T.at(1).at(2) = 0.0;
-
-	T.at(2).at(0) = 0.0;
-	T.at(2).at(1) = 0.0;
-	T.at(2).at(2) = sf.EIGENVALUE.Z;
-
-
-	T = mult_mtrx (transpose(D), T);
-
-	T = mult_mtrx (T, D);
-
-
-	out._11 = T.at(0).at(0);
-	out._12 = T.at(0).at(1);
-	out._13 = T.at(0).at(2);
-	out._22 = T.at(1).at(1);
-	out._23 = T.at(1).at(2);
-	out._33 = T.at(2).at(2);
-
-	return out;
-}
-
-STRESSTENSOR convert_matrix_to_stresstensor (const vector <vector <double> >& IN) {
-
-	ASSERT2(IN.size() == 3, "3x3 matrix expected for stress tensor conversion");
-	ASSERT2(IN.at(0).size() == 3, "3x3 matrix expected for stress tensor conversion");
-
-	STRESSTENSOR OUT;
-
-	OUT._11 = IN.at(0).at(0);
-	OUT._12 = IN.at(0).at(1);
-	OUT._13 = IN.at(0).at(2);
-	OUT._22 = IN.at(1).at(1);
-	OUT._23 = IN.at(1).at(2);
-	OUT._33 = IN.at(2).at(2);
-
-	return OUT;
-}
-
-STRESSFIELD stress_regime (const STRESSFIELD& in) {
-
-	STRESSFIELD out = in;
-
-	out.stressratio = (out.EIGENVALUE.Y - out.EIGENVALUE.Z) / (out.EIGENVALUE.X - out.EIGENVALUE.Z);
-
-	out.shmax = 999.99;
-	out.shmin = 999.99;
-
-	if ((out.S_1.DIP <= out.S_3.DIP) && (out.S_2.DIP <= out.S_3.DIP)) {
-
-		out.regime = "COMPRESSIONAL";
-		out.shmax = out.S_1.DIPDIR;
-		out.delvaux_str = 2.0 + out.stressratio;
-	}
-
-	else if ((out.S_1.DIP <= out.S_2.DIP) && (out.S_3.DIP <= out.S_2.DIP)) {
-
-		out.regime = "STRIKE-SLIP";
-		out.shmax = out.S_1.DIPDIR;
-		out.shmin = out.shmax + 90.0;
-		out.delvaux_str = 2.0 - out.stressratio;
-	}
-
-	else {
-
-		out.regime = "EXTENSIONAL";
-		out.shmin = out.S_3.DIPDIR;
-		out.delvaux_str = out.stressratio;
-	}
-
-	if 		((out.delvaux_str >= 0.00) && (out.delvaux_str < 0.25)) out.delvaux_rgm = "RADIAL EXTENSIVE";
-	else if ((out.delvaux_str >= 0.25) && (out.delvaux_str < 0.75)) out.delvaux_rgm = "PURE EXTENSIVE";
-	else if ((out.delvaux_str >= 0.75) && (out.delvaux_str < 1.25)) out.delvaux_rgm = "TRANSTENSIVE";
-	else if ((out.delvaux_str >= 1.25) && (out.delvaux_str < 1.75)) out.delvaux_rgm = "PURE STRIKE SLIP";
-	else if ((out.delvaux_str >= 1.75) && (out.delvaux_str < 2.25)) out.delvaux_rgm = "TRANSPRESSIVE";
-	else if ((out.delvaux_str >= 2.25) && (out.delvaux_str < 2.75)) out.delvaux_rgm = "PURE COMPRESSIVE";
-	else 															out.delvaux_rgm = "RADIAL COMPRESSIVE";
-
-	return out;
-}
-
 bool byOFFSET(const GDB& x, const GDB& y) {
 
 	return x.OFFSET < y.OFFSET;
@@ -1821,18 +1493,6 @@ bool bycorrDIPDIRcorrDIPcorrLDIPDIRcorrLDIP(const GDB& x, const GDB& y) {
 	if (x.corr.DIP 		!= y.corr.DIP) 		return x.corr.DIP < y.corr.DIP;
 	if (x.corrL.DIPDIR 	!= y.corrL.DIPDIR) 	return x.corrL.DIPDIR < y.corrL.DIPDIR;
 	return x.corrL.DIP < y.corrL.DIP;
-}
-
-double right_hand_rule_to_german (const double corrDIPDIR) {
-
-	if ((corrDIPDIR >= 0.0) && (corrDIPDIR < 270.0)) 	return corrDIPDIR + 90.0;
-	else 												return corrDIPDIR - 270.0;
-}
-
-double german_to_right_hand_rule (const double corrDIPDIR) {
-
-	if ((corrDIPDIR > 90.0) && (corrDIPDIR <= 360.0)) 	return corrDIPDIR - 90.0;
-	else 												return corrDIPDIR + 270.0;
 }
 
 void output_elapsed_time (const clock_t& start_t, const clock_t& finish_t) {

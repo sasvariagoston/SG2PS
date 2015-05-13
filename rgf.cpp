@@ -75,6 +75,18 @@ vector <GDB> competeRGFcontect (const string projectname, const string inputxyfi
 	return outGDB;
 }
 
+double right_hand_rule_to_german (const double corrDIPDIR) {
+
+	if ((corrDIPDIR >= 0.0) && (corrDIPDIR < 270.0)) 	return corrDIPDIR + 90.0;
+	else 												return corrDIPDIR - 270.0;
+}
+
+double german_to_right_hand_rule (const double corrDIPDIR) {
+
+	if ((corrDIPDIR > 90.0) && (corrDIPDIR <= 360.0)) 	return corrDIPDIR - 90.0;
+	else 												return corrDIPDIR + 270.0;
+}
+
 vector <GDB> fix_360_0 (const vector <GDB>& inGDB) {
 
 	vector <GDB> outGDB = inGDB;
@@ -507,7 +519,9 @@ vector < vector < vector <vector <GDB> > > > clustering_GBD (const vector < vect
 
 	cout << "CLUSTER" << endl;
 
-	cout << is_CLUSTERING_NONE() << is_CLUSTERNUMBER() << endl;
+	cout << "is_CLUSTERING_NONE():" << is_CLUSTERING_NONE() << endl;
+
+	cout << "is_CLUSTERNUMBER()  :" << is_CLUSTERNUMBER() << endl;
 
 	outGDB_G = associate_empty_clustercode (outGDB_G, 2);
 
@@ -601,19 +615,19 @@ vector <GDB>  PREPARE_GDB_FOR_PROCESSING (const vector <GDB>& inGDB, const bool 
 
 		outGDB = fix_360_0 (outGDB);
 
-		outGDB = generate_NDS_vectors (outGDB);//tested, ok
+		outGDB = generate_NDS_vectors (outGDB);
 
-		outGDB = generate_NCDCSC_vectors (outGDB);//tested, ok
+		outGDB = generate_NCDCSC_vectors (outGDB);
 
 		outGDB = generate_LAMBDA_STRESSVECTOR_ESTIMATORS (outGDB);
 
-		outGDB = generate_MISFIT (outGDB);//tested, ok
+		outGDB = generate_MISFIT (outGDB);
 
-		outGDB = striae_correction (outGDB);//tested, ok
+		outGDB = striae_correction (outGDB);
 
-		outGDB = generate_UP (outGDB);//tested, ok
+		outGDB = generate_UP (outGDB);
 	}
-	outGDB = generate_PITCHANGLE (outGDB);//tested, ok
+	outGDB = generate_PITCHANGLE (outGDB);
 
 	//dbg_cout_GDB_vector(outGDB);
 
@@ -651,7 +665,6 @@ vector < vector < vector < vector <GDB> > > > PREPARE_GDB_VECTOR_FOR_PROCESSING 
 
 				//dbg_cout_GDB_vector(buf);
 
-
 				buf2.push_back (buf);
 			}
 			buf3.push_back (buf2);
@@ -683,17 +696,21 @@ void process_rgf (string inputfilename, string XY_filename) {
 
 	nGDB_G = PREPARE_GDB_VECTOR_FOR_PROCESSING (nGDB_G, false);
 
-	dbg_cout_GDB_vector_vector(nGDB_G);
+	//dbg_cout_GDB_vector_vector(nGDB_G);
 
 	nGDB_G = AVERAGE (nGDB_G);//eddig ok
 
+	//nGDB_G = CALCULATE_FOLDSURFACE (nGDB_G);//new
+
 	nGDB_G = clustering_GBD (nGDB_G);
 
-	dbg_cout_GDB_vector_vector(nGDB_G);
+	//dbg_cout_GDB_vector_vector(nGDB_G);
 
 	nGDB = MERGE_GROUPS_TO_GDB (nGDB_G);
 
 	nGDB_G = SEPARATE_DATASET_TO_GROUPS (nGDB, "CLUSTER");
+
+	cout << "RETILT" << endl;
 
 	vector < vector < vector < vector <GDB> > > > tGDB_G = RETILT (nGDB_G);
 
@@ -854,22 +871,22 @@ void dbg_cout_GDB_vector (const vector <GDB>& inGDB) {
 	//<< "OFFSET" << '\t'
 	//<< "UP" << '\t'
 	//<< "DEPTH" << '\t'
-	<< "GC" << '\t'
+	//<< "GC" << '\t'
 	//<< "COLOR" << '\t'
 	//<< "LOC" << '\t'
 	//<< "LOCX" << '\t'
 	//<< "LOCY" << '\t'
 	//<< "FORMATION" << '\t'
 	<< "DATATYPE" << '\t'
-	<< "DIPDIR" << '\t'
-	<< "DIP" << '\t'
+	//<< "DIPDIR" << '\t'
+	//<< "DIP" << '\t'
 	//<< "LDIR" << '\t'
 	//<< "LDIP" << '\t'
 
-	//<< "corr.DIPDIR" << '\t'
-	//<< "corr.DIP" << '\t'
-	//<< "corrL.DIPDIR" << '\t'
-	//<< "corrL.DIP" << '\t'
+	<< "corr.DIPDIR" << '\t'
+	<< "corr.DIP" << '\t'
+	<< "corrL.DIPDIR" << '\t'
+	<< "corrL.DIP" << '\t'
 
 	//<< "PALEON" << '\t'
 	//<< "COMMENT" << '\t'
@@ -927,7 +944,7 @@ void dbg_cout_GDB_vector (const vector <GDB>& inGDB) {
 		//<< T.NC.X << '\t' << T.NC.Y << '\t'<< T.NC.Z << '\t'
 		//<< T.DC.X << '\t' << T.DC.Y << '\t'<< T.DC.Z << '\t'
 		//<< T.SC.X << '\t' << T.SC.Y << '\t'<< T.SC.Z << '\t'
-		//<< T.SV.X << '\t' << T.SV.Y << '\t'<< T.SV.Z << '\t'
+		//remove//<< T._SV.X << '\t' << T._SV.Y << '\t'<< T._SV.Z << '\t'
 
 		//<< T.LPITCH << '\t'
 		//<< T.LPITCHSENSE << '\t'
@@ -936,13 +953,13 @@ void dbg_cout_GDB_vector (const vector <GDB>& inGDB) {
 		//<< fixed << setprecision(8)
 		//<< T.MISFIT << '\t'
 		//<< T.LINEATION << '\t'
-		//<< T.UPWARD << '\t'
+		//remove//<< T.UPWARD << '\t'
 		//<< T.OFFSET << '\t'
-		//<< T.UP<< '\t'
+		//remove//<< T.UP<< '\t'
 
 		//<< fixed << setprecision(0)
 		//<< T.DEPTH << '\t'
-		<< T.GC << '\t'
+		//<< T.GC << '\t'
 		//<< T.COLOR << '\t'
 		//<< T.LOC << '\t'
 		//<< T.LOCX << '\t'
@@ -950,16 +967,16 @@ void dbg_cout_GDB_vector (const vector <GDB>& inGDB) {
 		//<< T.FORMATION << '\t'
 		<< T.DATATYPE << '\t'
 
-		<< fixed << setprecision (0)
-		<< T.DIPDIR << '\t'
-		<< T.DIP << '\t'
-		<< T.LDIR << '\t'
-		<< T.LDIP << '\t'
+		//<< fixed << setprecision (0)
+		//<< T.DIPDIR << '\t'
+		//<< T.DIP << '\t'
+		//<< T.LDIR << '\t'
+		//<< T.LDIP << '\t'
 
-		//<< T.corr.DIPDIR << '\t'
-		//<< T.corr.DIP << '\t'
-		//<< T.corrL.DIPDIR << '\t'
-		//<< T.corrL.DIP << '\t'
+		<< T.corr.DIPDIR << '\t'
+		<< T.corr.DIP << '\t'
+		<< T.corrL.DIPDIR << '\t'
+		<< T.corrL.DIP << '\t'
 
 		//<< fixed << setprecision(0)
 		//<< T.PALEON << '\t'
@@ -1004,7 +1021,6 @@ void dbg_cout_GDB_vector (const vector <GDB>& inGDB) {
 		//<< T.UPSILON.X << '\t' << T.UPSILON.Y << '\t'<< T.UPSILON.Z << '\t'
 
 		//<< T.lambda << '\t'
-
 		//<< T.ANG << '\t'
 		//<< T.RUP << '\t'
 

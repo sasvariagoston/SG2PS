@@ -3,6 +3,18 @@
 // All rights reserved.
 // This code is published under the GNU Lesser General Public License.
 
+/*
+USING ANG.RGF:
+==============
+
+s1: 039/75
+s2: 245/14
+s3: 153/06
+RADIAL EXTENSIVE
+R: 0.180
+R': 0.180
+*/
+
 #include <algorithm>
 #include <cmath>
 #include <iomanip>
@@ -25,7 +37,6 @@ vector <vector <double> > A = init_matrix (6);
 vector <vector <double> > D = init_matrix (6);
 
 vector <vector <double> > EVEV;
-
 }
 
 bool check_fry_matrix (const size_t first_eigenvalue, const vector <vector <double> >& in_eigenvector) {
@@ -43,12 +54,12 @@ bool check_fry_matrix (const size_t first_eigenvalue, const vector <vector <doub
 	sort(buffer.begin(), buffer.end(), byeigenvalue);
 
 	if (
-		is_in_range( -0.005, 0.005, buffer.at(0).eigenvalue) &&
-		is_in_range( -0.005, 0.005, buffer.at(1).eigenvalue) &&
-		is_in_range( -0.005, 0.005, buffer.at(2).eigenvalue) &&
-		is_in_range( -0.570, 0.580, buffer.at(3).eigenvalue) &&
-		is_in_range( -0.570, 0.580, buffer.at(4).eigenvalue) &&
-		is_in_range( -0.570, 0.580, buffer.at(5).eigenvalue)
+		is_in_range(-0.005, 0.005, buffer.at(0).eigenvalue) &&
+		is_in_range(-0.005, 0.005, buffer.at(1).eigenvalue) &&
+		is_in_range(-0.005, 0.005, buffer.at(2).eigenvalue) &&
+		is_in_range(-0.570, 0.580, buffer.at(3).eigenvalue) &&
+		is_in_range(-0.570, 0.580, buffer.at(4).eigenvalue) &&
+		is_in_range(-0.570, 0.580, buffer.at(5).eigenvalue)
 	) return true;
 	return false;
 }
@@ -73,17 +84,19 @@ vector <double> hyperplane_from_GDB (const GDB& inGDB)  {
 	CENTR_VECT o;
 
 	const VCTR n = inGDB.N;
-	////const VCTR b = inGDB.SV;
 
-	VCTR t;//// = unitvector (crossproduct (b, n));
+	const VCTR b = inGDB.DC;
+	//was: const VCTR b = inGDB._SV;
 
-	o.U = - (n.X * t.X);
-	o.V = - (n.Y * t.Y);
-	o.W = - (n.Z * t.Z);
+	VCTR t = unitvector (crossproduct (b, n));
 
-	o.X = - ((t.X * n.Y) + (t.Y * n.X));
-	o.Y = - ((t.Y * n.Z) + (t.Z * n.Y));
-	o.Z = - ((t.Z * n.X) + (t.X * n.Z));
+	o.U = - n.X * t.X;
+	o.V = - n.Y * t.Y;
+	o.W = - n.Z * t.Z;
+
+	o.X = - (t.X * n.Y + t.Y * n.X);
+	o.Y = - (t.Y * n.Z + t.Z * n.Y);
+	o.Z = - (t.Z * n.X + t.X * n.Z);
 
 	o = unitvector (o);
 
@@ -102,8 +115,6 @@ vector <vector <double> > FRY_matrix (const vector <GDB>& inGDB) {
 	vector <GDB> processGDB = inGDB;
 
 	vector <vector <double> > TNSR6 = init_matrix (6);
-
-	//if (inset.virt_striae == "Y" ) processGDB = generate_virtual_striae (processGDB);
 
 	for (size_t i = 0; i < processGDB.size(); i++) {
 
@@ -141,6 +152,8 @@ STRESSTENSOR st_FRY (const vector <GDB>& inGDB) {
 STRESSFIELD sf_FRY (const STRESSTENSOR& st) {
 
 	STRESSFIELD sf = eigenvalue_eigenvector (st);
+
+	sf = correct_SF_to_fit_D (sf);
 
 	sf = computestressfield_DXDYDZ (sf);
 

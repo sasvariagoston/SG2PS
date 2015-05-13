@@ -77,10 +77,10 @@ vector <vector <VCTR> > generate_GDB_VECTORS_for_yamaji (const vector <GDB>& inG
 						tempVCTR.push_back(inGDB.at(l).N);
 					}
 					else {
-						////tempVCTR.push_back(inGDB.at(i).SV);
-						////tempVCTR.push_back(inGDB.at(j).SV);
-						////tempVCTR.push_back(inGDB.at(k).SV);
-						////tempVCTR.push_back(inGDB.at(l).SV);
+						tempVCTR.push_back(inGDB.at(i).DC);
+						tempVCTR.push_back(inGDB.at(j).DC);
+						tempVCTR.push_back(inGDB.at(k).DC);
+						tempVCTR.push_back(inGDB.at(l).DC);
 					}
 					OUT.push_back(tempVCTR);
 				}

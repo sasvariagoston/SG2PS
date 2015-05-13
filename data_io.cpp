@@ -617,6 +617,28 @@ CENTER return_center (const PAPER P, const bool MOHR, const bool TILT) {
 	return center;
 }
 
+vector <vector <vector <vector <GDB> > > > CALCULATE_FOLDSURFACE (const vector <vector <vector <vector <GDB> > > >& inGDB_G) {
+
+	vector <vector <vector <vector <GDB> > > > outGDB_G = inGDB_G;
+
+	for (size_t i = 0; i < outGDB_G.size(); i++) {
+		for (size_t j = 0; j < outGDB_G.at(i).size(); j++) {
+			for (size_t k = 0; k < outGDB_G.at(i).at(j).size(); k++) {
+
+				vector <GDB> process_GDB = outGDB_G.at(i).at(j).at(k);
+
+				const string DT = process_GDB.at(0).DATATYPE;
+				const bool FOLD_TO_PROCESS = is_allowed_foldsurface_processing(DT);
+
+				if (FOLD_TO_PROCESS) process_GDB = CALCULATE_FOLDSURFACE_NORMAL (process_GDB);
+
+				outGDB_G.at(i).at(j).at(k) = process_GDB;
+			}
+		}
+	}
+	return outGDB_G;
+}
+
 vector <vector <vector <vector <GDB> > > > PROCESS_GROUPS (const vector <vector <vector <vector <GDB> > > >& inGDB_G, const bool TILT) {
 
 	vector <vector <vector <vector <GDB> > > > outGDB_G = inGDB_G;
@@ -656,6 +678,8 @@ vector <vector <vector <vector <GDB> > > > PROCESS_GROUPS (const vector <vector 
 
 						INVERSION (hasoffset_GDB);
 
+						cout << "PR_GR_5" << endl;
+
 						const vector <STRESSTENSOR> STV = return_STV ();
 						const vector <STRESSFIELD> SFV = return_SFV ();
 
@@ -663,25 +687,35 @@ vector <vector <vector <vector <GDB> > > > PROCESS_GROUPS (const vector <vector 
 
 						hasoffset_GDB = ASSOCIATE_STV_SFV (hasoffset_GDB, STV, SFV);
 
+						cout << "PR_GR_6" << endl;
+
 						const bool SUCCESSFULL = (STV.size() > 0 && SFV.size() > 0);
+
+						cout << "PR_GR_7" << endl;
 
 						if (SUCCESSFULL && STRIAE_TO_PROCESS) {
 
 							const size_t MX = STV.size() - 1;
 
+							cout << "PR_GR_7a" << endl;
+
 							hasoffset_GDB = apply_inversion_result (hasoffset_GDB, STV.at(MX));
 
+							cout << "PR_GR_7b" << endl;
+
 							hasoffset_GDB = apply_RUP_ANG_CLUSTERING_result (hasoffset_GDB);
+
+							cout << "PR_GR_8" << endl;
 						}
+						cout << "PR_GR_9" << endl;
 
 						process_GDB = combine_inversion_for_none_offset (process_GDB, hasoffset_GDB);
 
+						cout << "PR_GR_10" << endl;
+
 						cout_inversion_results (process_GDB, SFV);
 					}
-					else {
-
-						cout_less_than_required_text (TILT);
-					}
+					else cout_less_than_required_text (TILT);
 				}
 				else if (FOLD_TO_PROCESS) {
 
@@ -727,42 +761,53 @@ void OUTPUT_TO_PS (const vector <vector <vector <vector <GDB> > > > n_GDB_G, con
 			else if (by_RUPANG) PS_NAME = PS_NAME + US + n_prGDB_G.at(i).at(0).GC.at(2);
 			else {}
 
-			cout << "PS_1" << endl;
+			cout << "PS_net 1" << endl;
 
 			PS_NAME = PS_NAME + ".eps";
 
 			ofstream OPS (PS_NAME.c_str());
 
+			cout << "PS_net 2" << endl;
+
 			PS_stereonet_header (DT, LOC, OPS);
 
-			cout << "PS_2" << endl;
+			cout << "PS_net 3" << endl;
 
 			const PAPER PPR = PS_dimensions (false);
 
+			cout << "PS_net 4" << endl;
+
 			PS_STEREONET_SYMBOLS (n_prGDB_G.at(i), OPS, PPR);
 
-			cout << "PS_3" << endl;
+			cout << "PS_net 5" << endl;
 
 			if (is_allowed_striae_datatype(DT) && ! is_INVERSION_NONE()) PS_stress_scale (OPS, PPR);
 
-			cout << "PS_4" << endl;
+			cout << "PS_net 6" << endl;
 
 			PS_border (n_prGDB_G.at(i), OPS, PPR);
 
-			cout << "PS_5" << endl;
+			cout << "PS_net 7" << endl;
 
 			PS_GDB (n_prGDB_G.at(i), OPS, PPR, false);
+
+			cout << "PS_net 8" << endl;
+
 			PS_GDB (t_prGDB_G.at(i), OPS, PPR, true);
 
-			cout << "PS_6" << endl;
-
-			//es itt vigan lerohadunk
+			cout << "PS_net 9" << endl;
 
 			PS_datanumber_averagebedding (n_prGDB_G.at(i).at(0), OPS, PPR, n_prGDB_G.at(i).size());
 
+			cout << "PS_net coming" << endl;
+
 			PS_net (OPS, PPR);
+
+			cout << "PS_net done" << endl;
 		}
 	}
+
+	cout << "OUTPUT_TO_PS done" << endl;
 	return;
 }
 

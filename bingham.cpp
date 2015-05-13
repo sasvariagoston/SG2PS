@@ -22,15 +22,8 @@ vector <VCTR> generate_Bingham_dataset (const vector <GDB>& inGDB) {
 
 	vector <VCTR> T;
 
-	const string DT = inGDB.at(0).DATATYPE;
+	for (size_t i = 0; i < inGDB.size(); i++) T.push_back(inGDB.at(i).N);
 
-	const bool FOR_FOLDSURFACE = is_allowed_foldsurface_processing (DT);
-
-	for (size_t i = 0; i < inGDB.size(); i++) {
-
-		if (FOR_FOLDSURFACE) 	T.push_back(inGDB.at(i).N);
-		else 					T.push_back(inGDB.at(i).N);//sure!
-	}
 	return T;
 }
 
@@ -45,23 +38,11 @@ STRESSTENSOR st_BINGHAM (const vector <VCTR>& N_VCTR) {
 	st._23 = 0.0;
 	st._33 = 0.0;
 
-	const VCTR N = declare_vector (0.0, 1.0, 0.0);
-	const VCTR E = declare_vector (1.0, 0.0, 0.0);
-	const VCTR U = declare_vector (0.0, 0.0, 1.0);
-
 	for (size_t i = 0; i < N_VCTR.size(); i++) {
 
 		STRESSTENSOR T;
 
 		VCTR PN = N_VCTR.at(i);
-
-		//remove!
-		PN = flip_vector(PN);
-
-		//cout << fixed << setprecision(6) << endl;
-		//cout << PN.Z << endl;
-
-		//const bool OTB = (is_overturned (inGDB.at(i)) && is_allowed_handle_as_bedding (inGDB.at(i).DATATYPE));
 
 		const double norm_sqr = dotproduct(PN, PN);
 
@@ -69,33 +50,19 @@ STRESSTENSOR st_BINGHAM (const vector <VCTR>& N_VCTR) {
 			ASSERT2(false, "Should be unitvector [X, Y, Z] = [ " << PN.X << ", " <<PN.Y << ", " << PN.Z << "]");
 		}
 
-		T._11 = (dotproduct (PN, E, false) * dotproduct (PN, E, false));
-		T._12 = (dotproduct (PN, E, false) * dotproduct (PN, N, false));
-		T._13 = (dotproduct (PN, E, false) * dotproduct (PN, U, false));
-		T._22 = (dotproduct (PN, N, false) * dotproduct (PN, N, false));
-		T._23 = (dotproduct (PN, N, false) * dotproduct (PN, U, false));
-		T._33 = (dotproduct (PN, U, false) * dotproduct (PN, U, false));
-
-		//if (OTB) T = invert_stress_tensor(T);
+		T._11 = PN.X * PN.X;
+		T._12 = PN.X * PN.Y;
+		T._13 = PN.X * PN.Z;
+		T._22 = PN.Y * PN.Y;
+		T._23 = PN.Y * PN.Z;
+		T._33 = PN.Z * PN.Z;
 
 		st = add_stress_tensor (st, T);
 	}
-
-	//cout << fixed << setprecision(6) << endl;
-
-	//cout << st._11 << endl;
-	//cout << st._12 << endl;
-	//cout << st._13 << endl;
-	//cout << st._22 << endl;
-	//cout << st._23 << endl;
-	//cout << st._33 << endl;
-
 	return st;
 }
 
-STRESSFIELD sf_BINGHAM (STRESSTENSOR& st) {
-
-	//cout << "sf_BINGHAM" << endl;
+STRESSFIELD sf_BINGHAM (const STRESSTENSOR& st) {
 
 	STRESSFIELD sf = eigenvalue_eigenvector (st);
 
@@ -153,7 +120,20 @@ STRESSFIELD sf_BINGHAM (STRESSTENSOR& st) {
 	}
 	else ASSERT_DEAD_END();
 
-	sf = computestressfield_NXNYNZ(sf);
+	sf = correct_SF_to_fit_D (sf);
+
+	sf = computestressfield_DXDYDZ(sf);
+
+	/*
+	==========================
+	         For 230
+    ==========================
+	Eigenval.   	Eigenvect.
+	==========================
+	Max:  0.74    	239 / 18
+	Int:  0.26    	331 / 06
+	Min:  0.01    	079 / 71
+	*/
 
 	return sf;
 }
