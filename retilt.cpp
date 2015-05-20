@@ -1,5 +1,5 @@
 
-// Copyright (C) 2012 - 2014 Ã�goston SasvÃ¡ri
+// Copyright (C) 2012 - 2015 Ã�goston SasvÃ¡ri
 // All rights reserved.
 // This code is published under the GNU Lesser General Public License.
 
@@ -19,7 +19,7 @@ using namespace std;
 VCTR return_tilting_axis (const GDB& in, const bool paleonorth) {
 
 
-	cout << in.avS0d.DIPDIR << "/" << in.avS0d.DIP << endl;
+	//cout << in.avS0d.DIPDIR << "/" << in.avS0d.DIP << endl;
 
 	if (paleonorth) return unitvector (declare_vector (0.0, 0.0, -1.0));
 	else return unitvector (declare_vector (
@@ -89,13 +89,20 @@ GDB tilt_striae (const GDB& in, const VCTR& AXIS, const double ANGLE) {
 
 	GDB OUT = in;
 
-	OUT = tilt_plane (OUT, AXIS, ANGLE);
+	OUT.N = unitvector (ROTATE (AXIS, in.N, ANGLE));
 
-	const bool O = is_D_up(OUT.D);
+	const bool O = is_N_down(OUT.N);
+
+	if (O) OUT.N = flip_vector(OUT.N);
+
+	OUT.D = unitvector (DXDYDZ_from_NXNYNZ (OUT.N));
+	OUT.S = crossproduct(OUT.N, OUT.D);
+	OUT.corr = dipdir_dip_from_DXDYDZ (OUT.D);
+
 
 	OUT.DC = unitvector (ROTATE (AXIS, in.DC, ANGLE));
 
-	if (O) flip_vector(OUT.DC);
+	if (O) OUT.DC  = flip_vector(OUT.DC);
 
 	const bool UP = is_DC_up(OUT.DC);
 
@@ -154,6 +161,9 @@ GDB TILT_DATA (const GDB& in, const bool TILT_BY_PALEONORTH) {
 	double ANGLE = return_tilting_angle (in, TILT_BY_PALEONORTH);
 	const VCTR AXIS = return_tilting_axis (in, TILT_BY_PALEONORTH);
 
+	//cout << "ANGLE : " << ANGLE << endl;
+	//cout << "AXIS  : " << AXIS.X << " - " << AXIS.Y << " - " << AXIS.Z << " - " << endl;
+
 	if (O && !TILT_BY_PALEONORTH) ANGLE = 180.0 + ANGLE;
 
 	if (IS_LN) 			return tilt_lineation (in, AXIS, ANGLE);
@@ -193,7 +203,7 @@ vector < vector < vector < vector <GDB> > > > RETILT (const vector < vector < ve
 		for (size_t j = 0; j < outGDB.at(i).size(); j++) {
 			for (size_t k = 0; k < outGDB.at(i).at(j).size(); k++) {
 
-				dbg_cout_GDB_vector (outGDB.at(i).at(j).at(k));
+				//dbg_cout_GDB_vector (outGDB.at(i).at(j).at(k));
 
 				for (size_t l = 0; l < outGDB.at(i).at(j).at(k).size(); l++) {
 
@@ -206,7 +216,7 @@ vector < vector < vector < vector <GDB> > > > RETILT (const vector < vector < ve
 					if (DD && D && !L) outGDB.at(i).at(j).at(k).at(l) = S0_TILT (ACT);
 
 				}
-				dbg_cout_GDB_vector (outGDB.at(i).at(j).at(k));
+				//dbg_cout_GDB_vector (outGDB.at(i).at(j).at(k));
 			}
 		}
 	}

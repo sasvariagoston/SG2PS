@@ -303,6 +303,17 @@ STRESSFIELD correct_SF_to_fit_D (const STRESSFIELD& in) {
 	return out;
 }
 
+STRESSFIELD correct_SF_to_fit_N (const STRESSFIELD& in) {
+
+	STRESSFIELD out = in;
+
+	if (is_N_down (in.EIGENVECTOR1)) out.EIGENVECTOR1 = flip_vector (in.EIGENVECTOR1);
+	if (is_N_down (in.EIGENVECTOR2)) out.EIGENVECTOR2 = flip_vector (in.EIGENVECTOR2);
+	if (is_N_down (in.EIGENVECTOR3)) out.EIGENVECTOR3 = flip_vector (in.EIGENVECTOR3);
+
+	return out;
+}
+
 VCTR return_stressvector (const STRESSTENSOR& st, const VCTR& N) {
 
 	const VCTR out = declare_vector (

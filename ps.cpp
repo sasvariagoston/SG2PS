@@ -1,5 +1,5 @@
 
-// Copyright (C) 2012 - 2014 Ágoston Sasvári
+// Copyright (C) 2012 - 2015 Ágoston Sasvári
 // All rights reserved.
 // This code is published under the GNU Lesser General Public License.
 
@@ -937,7 +937,7 @@ void PS_stress_state (ofstream& o, const PAPER P, const CENTER& center, const ST
 
 void PS_folddata (GDB in, ofstream& o, CENTER center) {
 
-	cout << "PS_folddata" << endl;
+	//cout << "PS_folddata" << endl;
 
 	font_PS(o, "ArialNarrow-Bold", 8);
 
@@ -947,11 +947,11 @@ void PS_folddata (GDB in, ofstream& o, CENTER center) {
 
 	string T = "Fold great circle: ";
 
-	cout << in.fold_great_circle_N.X << endl;
+	//cout << in.fold_great_circle_N.X << endl;
 
 	DIPDIR_DIP DD = dipdir_dip_from_NXNYNZ (in.fold_great_circle_N);
 
-	cout << DD.DIPDIR << endl;
+	//cout << DD.DIPDIR << endl;
 
 	if (DD.DIPDIR < 10.0) T = T + "00" + double_to_string (DD.DIPDIR, 0);
 	else if (DD.DIPDIR < 100.0) T = T + "0" + double_to_string (DD.DIPDIR, 0);
@@ -966,7 +966,7 @@ void PS_folddata (GDB in, ofstream& o, CENTER center) {
 
 	translate_PS (o, - center.X - (center.radius / 2.0), - center.Y + center.radius, 3);
 
-	cout << "end PS_folddata" << endl;
+	//cout << "end PS_folddata" << endl;
 
 	return;
 }
@@ -1015,7 +1015,7 @@ void PS_lineation (const GDB& i, ofstream& o, const CENTER& center, const STRESS
 	}
 
 
-	if (is_D_up(L)) {
+	if (is_D_up (L)) {
 
 		cout << fixed << setprecision(6) << endl;
 		cout << L.X << "  -  " << L.Y << "  -  " << L.Z << endl;
@@ -1119,8 +1119,9 @@ void PS_plane (const GDB& i, ofstream& o, const double X, const double Y, const 
 	if (C) {
 
 		DD = i.corrL;
-		//D = i.DC;
-		N = i.NC;
+		VCTR D = i.DC;
+		if (is_DC_up(D)) D = flip_vector(D);
+		N = NXNYNZ_from_DXDYDZ (D);
 	}
 	else if (AV || AVO) {
 
@@ -1449,8 +1450,19 @@ void PS_striaearrow (const GDB& i, ofstream& o, const CENTER& center) {
 	double ANGLE = NaN();
 	string TEXT = "";
 
-	VCTR DATA = i.DC;
-	if (is_PLOT_HOEPPENER()) DATA = declare_vector (-i.N.X, -i.N.Y, -i.N.Z);
+	VCTR DATA;// = i.DC;
+	//if (is_DC_up(DATA)) DATA = flip_vector(DATA);
+
+	if (is_PLOT_HOEPPENER()) {
+
+		//DATA = declare_vector (-i.N.X, -i.N.Y, -i.N.Z);
+		DATA = declare_vector (-i.N.X, -i.N.Y, -i.N.Z);
+	}
+	else{
+
+		DATA = i.DC;
+		if (is_DC_up(DATA)) DATA = flip_vector(DATA);
+	}
 
 	double X = (DATA.X / (1.00 - DATA.Z)) * center.radius;
 	double Y = (DATA.Y / (1.00 - DATA.Z)) * center.radius;
@@ -1558,9 +1570,9 @@ void PS_datanumber_averagebedding (const GDB& i, ofstream& o, const PAPER& P, co
 	const bool HAS_BEDDING = (is_allowed_DIR (i.avS0d.DIPDIR) && is_allowed_DIP (i.avS0d.DIP));
 
 
-	cout << "PS__Y__1" << endl;
+	//cout << "PS__Y__1" << endl;
 
-	cout << i.avS0d.DIPDIR << " / " << i.avS0d.DIP << endl;
+	//cout << i.avS0d.DIPDIR << " / " << i.avS0d.DIP << endl;
 
 
 	if (HAS_BEDDING) {
@@ -1570,7 +1582,7 @@ void PS_datanumber_averagebedding (const GDB& i, ofstream& o, const PAPER& P, co
 	}
 
 
-	cout << "PS__Y__2" << endl;
+	//cout << "PS__Y__2" << endl;
 
 	font_PS(o, "ArialNarrow-Bold", 8);
 	color_PS(o, "0.0 0.0 0.0");
@@ -1807,7 +1819,7 @@ void PS_DRAW_lineation (const GDB& i, ofstream& o, const CENTER& center) {
 
 	STRESSFIELD empty_sf;
 
-	cout << "PS_LINEATION_called for fault data" << endl;
+	//cout << "PS_LINEATION_called for fault data" << endl;
 
 	if (is_LABELLING_USE()) 		PS_lineation 	(i, o, center, empty_sf, true, "");
 	else 							PS_lineation 	(i, o, center, empty_sf, false, "");
@@ -1816,8 +1828,6 @@ void PS_DRAW_lineation (const GDB& i, ofstream& o, const CENTER& center) {
 }
 
 void PS_DRAW_striae (const GDB& i, ofstream& o, const CENTER& center) {
-
-	//const bool LABEL = is_LABELLING_USE();
 
 	if (is_PLOT_ANGELIER()) PS_plane (i, o, center.X, center.Y, center.radius, "");
 
@@ -1864,7 +1874,7 @@ void PS_idealmovement (const vector <GDB>& inGDB, ofstream& o, const CENTER& cen
 
 void PS_FOLD_GREAT_CIRCLE (const vector <GDB>& inGDB, ofstream& o, const CENTER& center) {
 
-	cout << "PS_FOLD_GREAT_CIRCLE" << endl;
+	//cout << "PS_FOLD_GREAT_CIRCLE" << endl;
 
 	const string DT = inGDB.at(0).DATATYPE;
 
@@ -1876,7 +1886,7 @@ void PS_FOLD_GREAT_CIRCLE (const vector <GDB>& inGDB, ofstream& o, const CENTER&
 
 	PS_plane (inGDB.at(0), o, center.X, center.Y, center.radius, "FOLD");
 
-	cout << "end PS_FOLD_GREAT_CIRCLE" << endl;
+	//cout << "end PS_FOLD_GREAT_CIRCLE" << endl;
 
 	return;
 }
@@ -1919,7 +1929,6 @@ void PS_INVERSION_RESULTS (const vector <GDB>& inGDB, ofstream& o, const CENTER&
 		PS_stress_axes (inGDB, o, center);
 	}
 	else ASSERT_DEAD_END();
-
 }
 
 void PS_stress_axes (const vector <GDB>& inGDB, ofstream& o, const CENTER& center) {
@@ -1942,13 +1951,13 @@ void PS_stress_axes (const vector <GDB>& inGDB, ofstream& o, const CENTER& cente
 
 		if (STRIAE && MOSTAFA && i < SF.size()) {
 
-			cout << "PS_LINEATION_called for strss axis" << endl;
+			//cout << "PS_LINEATION_called for strss axis" << endl;
 			PS_lineation (dummy, o, center, SF.at(i), false, "S1_ITER");
 			PS_lineation (dummy, o, center, SF.at(i), false, "S2_ITER");
 			PS_lineation (dummy, o, center, SF.at(i), false, "S3_ITER");
 		}
 		else {
-			cout << "PS_LINEATION_called for strss axis" << endl;
+			//cout << "PS_LINEATION_called for strss axis" << endl;
 			PS_lineation (dummy, o, center, SF.at(i), false, "S1");
 			PS_lineation (dummy, o, center, SF.at(i), false, "S2");
 			PS_lineation (dummy, o, center, SF.at(i), false, "S3");

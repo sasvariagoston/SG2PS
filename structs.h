@@ -1,5 +1,5 @@
 
-// Copyright (C) 2012 - 2014 Ágoston Sasvári
+// Copyright (C) 2012 - 2015 Ágoston Sasvári
 // All rights reserved.
 // This code is published under the GNU Lesser General Public License.
 
@@ -71,9 +71,7 @@ struct GDB  {
 	string DASHED;
 	double DEPTH;
 
-
 	DIPDIR_DIP corr, corrL;
-	DIPDIR_DIP ptnPd, ptnTd, ptnNd;
 	DIPDIR_DIP avS0d, avd;
 
 	string avS0offset;
@@ -82,21 +80,16 @@ struct GDB  {
 	string LPITCHSENSE;
 	double PITCHANGLE;
 
-	VCTR N, NC,	D, DC, S, SC; //SV
+	VCTR N, NC,	D, DC, S, SC;
 
 	VCTR ptnP, ptnT, ptnN;
 	VCTR avD, avS0D, avS0N;
-	//, rotavD;
 
 	double MISFIT;
 
 	string LINEATION;
-	//bool UPWARD;
 
 	string OFFSET;
-	//string corrOFFSET;
-
-	//bool UP;
 
 	double lambda;
 
@@ -109,8 +102,6 @@ struct GDB  {
 
 	vector <STRESSFIELD> SFV;
 	vector <STRESSTENSOR> STV;
-
-	//int RUP_clusternumber;
 };
 
 struct CORRECTSTRIAE {

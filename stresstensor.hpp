@@ -1,5 +1,5 @@
 
-// Copyright (C) 2012 - 2014 Ágoston Sasvári
+// Copyright (C) 2012 - 2015 Ágoston Sasvári
 // All rights reserved.
 // This code is published under the GNU Lesser General Public License.
 
@@ -23,6 +23,7 @@ STRESSFIELD computestressfield_NXNYNZ (const STRESSFIELD& in); //ok
 STRESSFIELD computestressfield_DXDYDZ (const STRESSFIELD& in); //ok
 
 STRESSFIELD correct_SF_to_fit_D (const STRESSFIELD& in); //ok
+STRESSFIELD correct_SF_to_fit_N (const STRESSFIELD& in); //ok
 
 VCTR return_stressvector (const STRESSTENSOR& st, const VCTR& N); //ok
 VCTR return_normalstress (const STRESSTENSOR& st, const VCTR& N); //ok

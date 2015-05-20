@@ -1,5 +1,5 @@
 
-// Copyright (C) 2012- 2014 Ágoston Sasvári
+// Copyright (C) 2012- 2015 Ágoston Sasvári
 // All rights reserved.
 // This code is published under the GNU Lesser General Public License.
 
@@ -118,10 +118,28 @@ vector <GDB> DATATYPE_AVERAGE (const vector <GDB>& inGDB) {
 
 	const VCTR AV_N = unitvector (calculate_data_average_vector (outGDB));
 
+	//cout << fixed << setprecision(6) << endl;
+	//cout << "******** AV_N : " << AV_N.X << "  -  " << AV_N.Y << "  -  " << AV_N.Z << "  -  " << endl;
+
+
+
+	//DIPDIR_DIP DD = dipdir_dip_from_NXNYNZ(flip_vector(AV_N));
+	//cout << DD.DIPDIR << "/" << DD.DIP << endl;
+	//cout << inGDB.at(0).DATATYPE << endl;
+
 	const bool O = is_N_down (AV_N);
 
 	VCTR AV_D = unitvector(DXDYDZ_from_NXNYNZ (AV_N));
 	if (O) AV_D = flip_vector(AV_D);
+
+	//cout << "******** AV_D : " << AV_D.X << "  -  " << AV_D.Y << "  -  " << AV_D.Z << "  -  " << endl;
+
+	//DIPDIR_DIP DD = dipdir_dip_from_DXDYDZ(AV_D);
+
+	//cout << DD.DIPDIR << "/" << DD.DIP << endl;
+
+	//cout << inGDB.at(0).DATATYPE << endl;
+
 
 	const bool B = is_allowed_handle_as_bedding (outGDB.at(0).DATATYPE);
 

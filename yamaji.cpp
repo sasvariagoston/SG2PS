@@ -1,5 +1,5 @@
 
-// Copyright (C) 2012 - 2014 Ágoston Sasvári
+// Copyright (C) 2012 - 2015 Ágoston Sasvári
 // All rights reserved.
 // This code is published under the GNU Lesser General Public License.
 
@@ -139,14 +139,14 @@ vector <BRUTEFORCE_RESULT> st_YAMAJI (const vector <GDB>& inGDB) {
 	vector <vector <VCTR> > N_GDB = generate_GDB_VECTORS_for_yamaji (inGDB, "N");
 	vector <vector <VCTR> > S_GDB = generate_GDB_VECTORS_for_yamaji (inGDB, "S");
 
-	cout << "YAMAJI INVERSION" << endl;
+	//cout << "YAMAJI INVERSION" << endl;
 
 	for (size_t str = 0; str < TNSR.size(); str++) {
 		for (size_t rec_cnt = 0; rec_cnt < N_GDB.size(); rec_cnt++) {
 
 			//double MISFIT = SUBSET_MISFIT (N_GDB.at(rec_cnt), S_GDB.at(rec_cnt), TNSR.at(str));
 		}
-		cout << str << endl;
+		//cout << str << endl;
 	}
 	return OUT;
 }

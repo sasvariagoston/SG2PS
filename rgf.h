@@ -1,5 +1,5 @@
 
-// Copyright (C) 2012 - 2014 Ágoston Sasvári
+// Copyright (C) 2012 - 2015 Ágoston Sasvári
 // All rights reserved.
 // This code is published under the GNU Lesser General Public License.
 #ifndef RGF_HPP_
@@ -35,6 +35,7 @@ bool is_N_down (const VCTR& N);
 vector <GDB> generate_UP (const vector <GDB>& inGDB);
 vector <GDB> generate_PITCHANGLE (const vector <GDB>& inGDB);
 string return_new_offset (const double DIP, const double PTC, const bool UP);
+void ASSERT_OFFSET (const string OR_OFS, const string NW_OFS);
 vector <GDB> generate_OFFSET (const vector <GDB>& inGDB);
 vector <GDB> generate_LAMBDA_STRESSVECTOR_ESTIMATORS (const vector <GDB>& inGDB);
 

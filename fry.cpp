@@ -1,18 +1,18 @@
 
-// Copyright (C) 2012 - 20143 Ágoston Sasvári
+// Copyright (C) 2012 - 20153 Ágoston Sasvári
 // All rights reserved.
 // This code is published under the GNU Lesser General Public License.
 
 /*
-USING ANG.RGF:
-==============
+S1: 192/83 (-0.025145, -0.120809, -0.992357)
+S2: 043/06 ( 0.682221,  0.723514, -0.105367)
+S3: 313/04 (-0.730713,  0.679657, -0.064226)
+EIGENVALUES: 0.823293, -0.337894, -0.485399
 
-s1: 039/75
-s2: 245/14
-s3: 153/06
-RADIAL EXTENSIVE
-R: 0.180
-R': 0.180
+S1: 019/14 ( 0.310737,  0.917651, -0.247706)
+S2: 179/75 ( 0.003282, -0.261642, -0.965159)
+S3: 287/05 (-0.950490,  0.299097, -0.084314)
+EIGENVALUES: 0.916728, -0.402233, -0.514495
 */
 
 #include <algorithm>

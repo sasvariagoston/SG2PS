@@ -1,5 +1,5 @@
 
-// Copyright (C) 2012 - 2014 Ágoston Sasvári
+// Copyright (C) 2012 - 2015 Ágoston Sasvári
 // All rights reserved.
 // This code is published under the GNU Lesser General Public License.
 
@@ -172,20 +172,20 @@ vector <GDB> apply_inversion_result (const vector <GDB>& inGDB, const STRESSTENS
 
 	vector <GDB> outGDB = inGDB;
 
-	cout << "apply_inversion_result_1" << endl;
+	//cout << "apply_inversion_result_1" << endl;
 
 	const double AV_MISF = return_average_misfit (st, inGDB);
 
-	cout << "apply_inversion_result_2" << endl;
+	//cout << "apply_inversion_result_2" << endl;
 
 	string METHOD = "ANGELIER";
 	if (is_INVERSION_MOSTAFA()) METHOD = "MOSTAFA";
 
-	cout << "apply_inversion_result_3" << endl;
+	//cout << "apply_inversion_result_3" << endl;
 
 	outGDB = return_stressvector_estimators (st, outGDB, METHOD);
 
-	cout << "apply_inversion_result_4" << endl;
+	//cout << "apply_inversion_result_4" << endl;
 
 	for (size_t i = 0; i < inGDB.size(); i++) {
 
@@ -254,6 +254,7 @@ void INVERSION (const vector <GDB>& inGDB) {
 
 		if (!successfull) SFV.clear();
 	}
+	//cout_dbg_stressfield (SFV.at(MAX));
 }
 
 void cout_dbg_sf (const vector <GDB>& inGDB) {
@@ -295,6 +296,7 @@ void cout_dbg_sf (const vector <GDB>& inGDB) {
 
 void cout_dbg_stressfield (const STRESSFIELD& sf) {
 
+	cout << endl;
 	cout << "*****************************************" << endl;
 	cout << "****    START DUMPING STRESSFIELD    ****" << endl << endl;
 
@@ -336,6 +338,17 @@ void cout_dbg_stressfield (const vector <STRESSFIELD>& sf) {
 
 		cout << "EIGENVALUES: " << sf.at(i).EIGENVALUE.X << ", " << sf.at(i).EIGENVALUE.Y << ", " << sf.at(i).EIGENVALUE.Z << ")" << endl;
 	}
+}
+
+void cout_dbg_stresstensor (const STRESSTENSOR& in) {
+
+	cout << fixed << setprecision (6) << endl;
+
+	cout << in._11 << "    " << in._12  << "    " << in._13 << endl;
+	cout << in._12 << "    " << in._22  << "    " << in._23 << endl;
+	cout << in._13 << "    " << in._23  << "    " << in._33 << endl;
+
+	return;
 }
 
 void cout_dbg_STV (const vector <STRESSTENSOR>& STV) {

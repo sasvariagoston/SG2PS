@@ -1,18 +1,18 @@
 
-// Copyright (C) 2012 - 2014 Ágoston Sasvári
+// Copyright (C) 2012 - 2015 Ágoston Sasvári
 // All rights reserved.
 // This code is published under the GNU Lesser General Public License.
 
 /*
-USING ANG.RGF:
-==============
+S1: 228/87 (-0.042638, -0.038321, -0.998355)
+S2: 042/03 ( 0.670402,  0.739803, -0.057028)
+S3: 132/00 ( 0.740772, -0.671731, -0.005854)
+EIGENVALUES: 1.515783, -0.641149, -0.874634
 
-s1: 074/75
-s2: 241/15
-s3: 332/03
-PURE EXTENSIVE
-R: 0.332
-R': 0.332
+S1: 021/13 ( 0.343129,  0.910750, -0.229775)
+S2: 168/74 ( 0.055530, -0.263868, -0.962959)
+S3: 289/08 (-0.937645,  0.317660, -0.141115)
+EIGENVALUES: 1.515783, -0.641149, -0.874634
 */
 
 #include <cmath>
@@ -123,5 +123,9 @@ STRESSFIELD sf_MICHAEL (const STRESSTENSOR& st) {
 
 	sf = computestressfield_DXDYDZ (sf);
 
-	return stress_regime (sf);
+	sf = stress_regime (sf);
+
+	//cout_dbg_stressfield(sf);
+
+	return sf;
 }

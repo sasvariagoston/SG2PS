@@ -1,5 +1,5 @@
 
-// Copyright (C) 2012 - 2014 Ágoston Sasvári
+// Copyright (C) 2012 - 2015 Ágoston Sasvári
 // All rights reserved.
 // This code is published under the GNU Lesser General Public License.
 
@@ -678,7 +678,7 @@ vector <vector <vector <vector <GDB> > > > PROCESS_GROUPS (const vector <vector 
 
 						INVERSION (hasoffset_GDB);
 
-						cout << "PR_GR_5" << endl;
+						//cout << "PR_GR_5" << endl;
 
 						const vector <STRESSTENSOR> STV = return_STV ();
 						const vector <STRESSFIELD> SFV = return_SFV ();
@@ -687,31 +687,31 @@ vector <vector <vector <vector <GDB> > > > PROCESS_GROUPS (const vector <vector 
 
 						hasoffset_GDB = ASSOCIATE_STV_SFV (hasoffset_GDB, STV, SFV);
 
-						cout << "PR_GR_6" << endl;
+						//cout << "PR_GR_6" << endl;
 
 						const bool SUCCESSFULL = (STV.size() > 0 && SFV.size() > 0);
 
-						cout << "PR_GR_7" << endl;
+						//cout << "PR_GR_7" << endl;
 
 						if (SUCCESSFULL && STRIAE_TO_PROCESS) {
 
 							const size_t MX = STV.size() - 1;
 
-							cout << "PR_GR_7a" << endl;
+							//cout << "PR_GR_7a" << endl;
 
 							hasoffset_GDB = apply_inversion_result (hasoffset_GDB, STV.at(MX));
 
-							cout << "PR_GR_7b" << endl;
+							//cout << "PR_GR_7b" << endl;
 
 							hasoffset_GDB = apply_RUP_ANG_CLUSTERING_result (hasoffset_GDB);
 
-							cout << "PR_GR_8" << endl;
+							//cout << "PR_GR_8" << endl;
 						}
-						cout << "PR_GR_9" << endl;
+						//cout << "PR_GR_9" << endl;
 
 						process_GDB = combine_inversion_for_none_offset (process_GDB, hasoffset_GDB);
 
-						cout << "PR_GR_10" << endl;
+						//cout << "PR_GR_10" << endl;
 
 						cout_inversion_results (process_GDB, SFV);
 					}
@@ -761,53 +761,53 @@ void OUTPUT_TO_PS (const vector <vector <vector <vector <GDB> > > > n_GDB_G, con
 			else if (by_RUPANG) PS_NAME = PS_NAME + US + n_prGDB_G.at(i).at(0).GC.at(2);
 			else {}
 
-			cout << "PS_net 1" << endl;
+			//cout << "PS_net 1" << endl;
 
 			PS_NAME = PS_NAME + ".eps";
 
 			ofstream OPS (PS_NAME.c_str());
 
-			cout << "PS_net 2" << endl;
+			//cout << "PS_net 2" << endl;
 
 			PS_stereonet_header (DT, LOC, OPS);
 
-			cout << "PS_net 3" << endl;
+			//cout << "PS_net 3" << endl;
 
 			const PAPER PPR = PS_dimensions (false);
 
-			cout << "PS_net 4" << endl;
+			//cout << "PS_net 4" << endl;
 
 			PS_STEREONET_SYMBOLS (n_prGDB_G.at(i), OPS, PPR);
 
-			cout << "PS_net 5" << endl;
+			//cout << "PS_net 5" << endl;
 
 			if (is_allowed_striae_datatype(DT) && ! is_INVERSION_NONE()) PS_stress_scale (OPS, PPR);
 
-			cout << "PS_net 6" << endl;
+			//cout << "PS_net 6" << endl;
 
 			PS_border (n_prGDB_G.at(i), OPS, PPR);
 
-			cout << "PS_net 7" << endl;
+			//cout << "PS_net 7" << endl;
 
 			PS_GDB (n_prGDB_G.at(i), OPS, PPR, false);
 
-			cout << "PS_net 8" << endl;
+			//cout << "PS_net 8" << endl;
 
 			PS_GDB (t_prGDB_G.at(i), OPS, PPR, true);
 
-			cout << "PS_net 9" << endl;
+			//cout << "PS_net 9" << endl;
 
 			PS_datanumber_averagebedding (n_prGDB_G.at(i).at(0), OPS, PPR, n_prGDB_G.at(i).size());
 
-			cout << "PS_net coming" << endl;
+			//cout << "PS_net coming" << endl;
 
 			PS_net (OPS, PPR);
 
-			cout << "PS_net done" << endl;
+			//cout << "PS_net done" << endl;
 		}
 	}
 
-	cout << "OUTPUT_TO_PS done" << endl;
+	//cout << "OUTPUT_TO_PS done" << endl;
 	return;
 }
 

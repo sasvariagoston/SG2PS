@@ -1,5 +1,5 @@
 
-// Copyright (C) 2012 - 2014 Ágoston Sasvári
+// Copyright (C) 2012 - 2015 Ágoston Sasvári
 // All rights reserved.
 // This code is published under the GNU Lesser General Public License.
 
@@ -459,17 +459,33 @@ string return_new_offset (const double DIP, const double PTC, const bool UP) {
 	if (UP) OFFSET = "REVERSE";
 
 	if (STEEP_DIP && is_in_range (0.0, 45.0, PTC)) {
+	//if (STEEP_DIP && is_in_range (135.0, 180.0, PTC)) {
+
 
 		if (UP) OFFSET = "DEXTRAL";
 		else OFFSET = "SINISTRAL";
 	}
 
+	//if (STEEP_DIP && is_in_range (0.0, 45.0, PTC)) {
 	if (STEEP_DIP && is_in_range (135.0, 180.0, PTC)) {
 
 		if (UP) OFFSET = "SINISTRAL";
 		else OFFSET = "DEXTRAL";
 	}
 	return OFFSET;
+}
+
+void ASSERT_OFFSET (const string OR_OFS, const string NW_OFS) {
+
+	const bool OS = is_allowed_striae_sinistral_sense(OR_OFS);
+	const bool NS = is_allowed_striae_sinistral_sense(NW_OFS);
+
+	const bool OD = is_allowed_striae_dextral_sense(OR_OFS);
+	const bool ND = is_allowed_striae_dextral_sense(NW_OFS);
+
+	if ((OS && ND) || (OD && NS)) ASSERT_DEAD_END();
+
+	return;
 }
 
 vector <GDB> generate_OFFSET (const vector <GDB>& inGDB) {
@@ -495,6 +511,8 @@ vector <GDB> generate_OFFSET (const vector <GDB>& inGDB) {
 			const string NEW_OFFSET = return_new_offset (DIP, PTC, UP);
 
 			if (NEW_OFFSET != ORIG_OFFSET) outGDB.at(i).OFFSET = NEW_OFFSET;
+
+			ASSERT_OFFSET (ORIG_OFFSET, NEW_OFFSET);
 		}
 	}
 	return outGDB;
@@ -517,11 +535,11 @@ vector < vector < vector <vector <GDB> > > > clustering_GBD (const vector < vect
 
 	vector < vector < vector <vector <GDB> > > > outGDB_G = inGDB_G;
 
-	cout << "CLUSTER" << endl;
+	//cout << "CLUSTER" << endl;
 
-	cout << "is_CLUSTERING_NONE():" << is_CLUSTERING_NONE() << endl;
+	//cout << "is_CLUSTERING_NONE():" << is_CLUSTERING_NONE() << endl;
 
-	cout << "is_CLUSTERNUMBER()  :" << is_CLUSTERNUMBER() << endl;
+	//cout << "is_CLUSTERNUMBER()  :" << is_CLUSTERNUMBER() << endl;
 
 	outGDB_G = associate_empty_clustercode (outGDB_G, 2);
 
@@ -710,19 +728,29 @@ void process_rgf (string inputfilename, string XY_filename) {
 
 	nGDB_G = SEPARATE_DATASET_TO_GROUPS (nGDB, "CLUSTER");
 
-	cout << "RETILT" << endl;
+	//cout << " ************************************************** " << endl;
+	//cout << "RETILT" << endl;
+	//cout << " ************************************************** " << endl;
 
 	vector < vector < vector < vector <GDB> > > > tGDB_G = RETILT (nGDB_G);
 
-	cout << "OK1B" << endl;
+	//cout << "OK1B" << endl;
 
 	tGDB_G = PREPARE_GDB_VECTOR_FOR_PROCESSING (tGDB_G, true);
 
-	cout << "OK2" << endl;
+	//cout << "OK2" << endl;
 
 	tGDB_G = AVERAGE (tGDB_G);
 
-	cout << "OK3" << endl;
+	//cout << " ******** NORMAL ******** " << endl;
+
+	//dbg_cout_GDB_vector_vector(nGDB_G);
+
+	//cout << " ******** TILTED ******** " << endl;
+
+	//dbg_cout_GDB_vector_vector(tGDB_G);
+
+	//cout << "OK3" << endl;
 
 	nGDB_G = PROCESS_GROUPS (nGDB_G, false);
 	tGDB_G = PROCESS_GROUPS (tGDB_G, true);
@@ -735,17 +763,17 @@ void process_rgf (string inputfilename, string XY_filename) {
 	nGDB = MERGE_GROUPS_TO_GDB (nGDB_G);
 	tGDB = MERGE_GROUPS_TO_GDB (tGDB_G);
 
-	cout << "OK4" << endl;
+	//cout << "OK4" << endl;
 
 	nGDB = GENERATE_PS_CODE (nGDB);
 	tGDB = GENERATE_PS_CODE (tGDB);
 
-	cout << "OK5" << endl;
+	//cout << "OK5" << endl;
 
 	nGDB = sort_by_iID (nGDB);
 	tGDB = sort_by_iID (tGDB);
 
-	cout << "OK6" << endl;
+	//cout << "OK6" << endl;
 
 	if (is_GROUPSEPARATION_IGNORE()) {
 
@@ -769,7 +797,7 @@ void process_rgf (string inputfilename, string XY_filename) {
 	}
 	else ASSERT_DEAD_END();
 
-	cout << "OK7" << endl;
+	//cout << "OK7" << endl;
 
 	//dbg_cout_GDB_vector (nGDB);
 	//dbg_cout_GDB_vector (tGDB);
@@ -781,7 +809,7 @@ void process_rgf (string inputfilename, string XY_filename) {
 	if (!is_mode_DEBUG()) OUTPUT_TO_RGF (nGDB_G, projectfoldername, false);
 	if (!is_mode_DEBUG()) OUTPUT_TO_RGF (tGDB_G, projectfoldername, true);
 
-	cout << "OK8" << endl;
+	//cout << "OK8" << endl;
 
 	OUTPUT_TO_PS (nGDB_G, tGDB_G, projectfoldername);
 
@@ -789,7 +817,7 @@ void process_rgf (string inputfilename, string XY_filename) {
 	//OUTPUT_TO_WELL_PS (tGDB_G, projectfoldername, true);
 	//careful! PS module has global variables!!!!
 
-	cout << "OK9" << endl;
+	//cout << "OK9" << endl;
 
 	if (!is_mode_DEBUG()) cout << "EXPORT FROM '" << capslock(inputfilename) << ".RGF' DATABASE FILE" << endl;
 
@@ -854,12 +882,11 @@ void dbg_cout_GDB_vector (const vector <GDB>& inGDB) {
 	cout
 	<< "ID" << '\t' << "iID" << '\t'
 	//<< "N.X" << '\t' << "N.Y" << '\t' << "N.Z" << '\t'
-	//<< "D.X" << '\t' << "D.Y" << '\t'<< "D.Z" << '\t'
+	<< "D.X" << '\t' << "D.Y" << '\t'<< "D.Z" << '\t'
 	//<< "S.X" << '\t' << "S.Y" << '\t'<< "S.Z" << '\t'
 	//<< "NC.X" << '\t' << "NC.Y" << '\t'<< "NC.Z" << '\t'
-	//<< "DC.X" << '\t' << "DC.Y" << '\t'<< "DC.Z" << '\t'
+	<< "DC.X" << '\t' << "DC.Y" << '\t'<< "DC.Z" << '\t'
 	//<< "SC.X" << '\t' << "SC.Y" << '\t'<< "SC.Z" << '\t'
-	//<< "SV.X" << '\t' << "SV.Y" << '\t'<< "SV.Z" << '\t'
 
 	//<< "LPITCH" << '\t'
 	//<< "LPITCHSENSE" << '\t'
@@ -867,9 +894,7 @@ void dbg_cout_GDB_vector (const vector <GDB>& inGDB) {
 
 	//<< "MISFIT" << '\t'
 	//<< "LINEATION" << '\t'
-	//<< "UPWARD" << '\t'
-	//<< "OFFSET" << '\t'
-	//<< "UP" << '\t'
+	<< "OFFSET" << '\t'
 	//<< "DEPTH" << '\t'
 	//<< "GC" << '\t'
 	//<< "COLOR" << '\t'
@@ -877,7 +902,7 @@ void dbg_cout_GDB_vector (const vector <GDB>& inGDB) {
 	//<< "LOCX" << '\t'
 	//<< "LOCY" << '\t'
 	//<< "FORMATION" << '\t'
-	<< "DATATYPE" << '\t'
+	//<< "DATATYPE" << '\t'
 	//<< "DIPDIR" << '\t'
 	//<< "DIP" << '\t'
 	//<< "LDIR" << '\t'
@@ -939,12 +964,11 @@ void dbg_cout_GDB_vector (const vector <GDB>& inGDB) {
 
 		//<< fixed << setprecision(6)
 		//<< T.N.X << '\t' << T.N.Y << '\t' << T.N.Z << '\t'
-		//<< T.D.X << '\t' << T.D.Y << '\t'<< T.D.Z << '\t'
+		<< T.D.X << '\t' << T.D.Y << '\t'<< T.D.Z << '\t'
 		//<< T.S.X << '\t' << T.S.Y << '\t'<< T.S.Z << '\t'
 		//<< T.NC.X << '\t' << T.NC.Y << '\t'<< T.NC.Z << '\t'
-		//<< T.DC.X << '\t' << T.DC.Y << '\t'<< T.DC.Z << '\t'
+		<< T.DC.X << '\t' << T.DC.Y << '\t'<< T.DC.Z << '\t'
 		//<< T.SC.X << '\t' << T.SC.Y << '\t'<< T.SC.Z << '\t'
-		//remove//<< T._SV.X << '\t' << T._SV.Y << '\t'<< T._SV.Z << '\t'
 
 		//<< T.LPITCH << '\t'
 		//<< T.LPITCHSENSE << '\t'
@@ -953,9 +977,7 @@ void dbg_cout_GDB_vector (const vector <GDB>& inGDB) {
 		//<< fixed << setprecision(8)
 		//<< T.MISFIT << '\t'
 		//<< T.LINEATION << '\t'
-		//remove//<< T.UPWARD << '\t'
-		//<< T.OFFSET << '\t'
-		//remove//<< T.UP<< '\t'
+		<< T.OFFSET << '\t'
 
 		//<< fixed << setprecision(0)
 		//<< T.DEPTH << '\t'
@@ -965,9 +987,9 @@ void dbg_cout_GDB_vector (const vector <GDB>& inGDB) {
 		//<< T.LOCX << '\t'
 		//<< T.LOCY << '\t'
 		//<< T.FORMATION << '\t'
-		<< T.DATATYPE << '\t'
+		//<< T.DATATYPE << '\t'
 
-		//<< fixed << setprecision (0)
+		<< fixed << setprecision (0)
 		//<< T.DIPDIR << '\t'
 		//<< T.DIP << '\t'
 		//<< T.LDIR << '\t'
@@ -990,13 +1012,13 @@ void dbg_cout_GDB_vector (const vector <GDB>& inGDB) {
 		//<< T.ptnT.X << '\t' << T.ptnT.Y << '\t'<< T.ptnT.Z << '\t'
 		//<< T.ptnN.X << '\t' << T.ptnN.Y << '\t'<< T.ptnN.Z << '\t'
 
-		//<< fixed << setprecision(3)
-		//<< T.ptnPd.DIPDIR << '\t'
-		//<< T.ptnPd.DIP << '\t'
-		//<< T.ptnTd.DIPDIR << '\t'
-		//<< T.ptnTd.DIP << '\t'
-		//<< T.ptnNd.DIPDIR << '\t'
-		//<< T.ptnNd.DIP << '\t'
+		////<< fixed << setprecision(3)
+		////<< T.ptnPd.DIPDIR << '\t'
+		////<< T.ptnPd.DIP << '\t'
+		////<< T.ptnTd.DIPDIR << '\t'
+		////<< T.ptnTd.DIP << '\t'
+		////<< T.ptnNd.DIPDIR << '\t'
+		////<< T.ptnNd.DIP << '\t'
 
 		//<< fixed << setprecision(6)
 		//<< T.avD.X << '\t' << T.avD.Y << '\t'<< T.avD.Z << '\t'

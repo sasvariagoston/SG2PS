@@ -1,5 +1,5 @@
 
-// Copyright (C) 2012 - 2014 Ágoston Sasvári
+// Copyright (C) 2012 - 2015 Ágoston Sasvári
 // All rights reserved.
 // This code is published under the GNU Lesser General Public License.
 
@@ -29,6 +29,8 @@ vector <GDB> apply_inversion_result (const vector <GDB>& inGDB, const STRESSTENS
 
 void cout_dbg_stressfield (const STRESSFIELD& sf);
 void cout_dbg_stressfield (const vector <STRESSFIELD>& sf);
+
+void cout_dbg_stresstensor (const STRESSTENSOR& in);
 void cout_dbg_STV (const vector <STRESSTENSOR>& STV);
 
 #endif

@@ -1,5 +1,6 @@
 
-// Copyright (C) 2012 - 2014 Ágoston Sasvári
+
+// Copyright (C) 2012 - 2015 Ágoston Sasvári
 // All rights reserved.
 // This code is published under the GNU Lesser General Public License.
 
@@ -233,15 +234,51 @@ void STANDARD_OUTPUT (const vector <GDB>& nGDB, const vector <GDB>& tGDB) {
 	else if (is_CHK_STRIAE_DT ())	dump_RGF_to_file (nGDB, "ST_DT_STRIAE");
 	else if (is_CHK_SC_DT ()) 		dump_RGF_to_file (nGDB, "ST_DT_SC");
 
-	else if (is_CHK_ANGELIER() && is_INVERSION_ANGELIER()) 		dump_RGF_SF_to_file (nGDB, "ST_INV_ANGELIER");
-	else if (is_CHK_BINGHAM() && is_BINGHAM_USE()) 				dump_RGF_SF_to_file (nGDB, "ST_INV_BINGHAM");
-	else if (is_CHK_BRUTEFORCE() && is_INVERSION_BRUTEFORCE()) 	dump_RGF_SF_to_file (nGDB, "ST_INV_BRUTEFORCE");
-	else if (is_CHK_FRY() && is_INVERSION_FRY()) 				dump_RGF_SF_to_file (nGDB, "ST_INV_FRY");
-	else if (is_CHK_MICHAEL() && is_INVERSION_MICHAEL()) 		dump_RGF_SF_to_file (nGDB, "ST_INV_MICHAEL");
-	else if (is_CHK_MOSTAFA() && is_INVERSION_MOSTAFA()) 		dump_RGF_SF_to_file (nGDB, "ST_INV_MOSTAFA");
-	else if (is_CHK_SPRANG() && is_INVERSION_SPRANG()) 			dump_RGF_SF_to_file (nGDB, "ST_INV_SPRANG");
-	else if (is_CHK_SHAN() && is_INVERSION_SHAN()) 				dump_RGF_SF_to_file (nGDB, "ST_INV_SHAN");
-	else if (is_CHK_TURNER() && is_INVERSION_TURNER()) 			dump_RGF_SF_to_file (nGDB, "ST_INV_TURNER");
+	else if (is_CHK_ANGELIER() && is_INVERSION_ANGELIER()) 		{
+
+		dump_RGF_SF_to_file (nGDB, "ST_INV_ANGELIER_N");
+		dump_RGF_SF_to_file (tGDB, "ST_INV_ANGELIER_T");
+	}
+	else if (is_CHK_BINGHAM() && is_BINGHAM_USE()) {
+
+		dump_RGF_SF_to_file (nGDB, "ST_INV_BINGHAM_N");
+		dump_RGF_SF_to_file (tGDB, "ST_INV_BINGHAM_T");
+	}
+	else if (is_CHK_BRUTEFORCE() && is_INVERSION_BRUTEFORCE()) {
+
+		dump_RGF_SF_to_file (nGDB, "ST_INV_BRUTEFORCE_N");
+		dump_RGF_SF_to_file (tGDB, "ST_INV_BRUTEFORCE_T");
+	}
+	else if (is_CHK_FRY() && is_INVERSION_FRY()) {
+
+		dump_RGF_SF_to_file (nGDB, "ST_INV_FRY_N");
+		dump_RGF_SF_to_file (tGDB, "ST_INV_FRY_T");
+	}
+	else if (is_CHK_MICHAEL() && is_INVERSION_MICHAEL()) {
+
+		dump_RGF_SF_to_file (nGDB, "ST_INV_MICHAEL_N");
+		dump_RGF_SF_to_file (tGDB, "ST_INV_MICHAEL_T");
+	}
+	else if (is_CHK_MOSTAFA() && is_INVERSION_MOSTAFA()) {
+
+		dump_RGF_SF_to_file (nGDB, "ST_INV_MOSTAFA_N");
+		dump_RGF_SF_to_file (tGDB, "ST_INV_MOSTAFA_T");
+	}
+	else if (is_CHK_SPRANG() && is_INVERSION_SPRANG()) {
+
+		dump_RGF_SF_to_file (nGDB, "ST_INV_SPRANG_N");
+		dump_RGF_SF_to_file (tGDB, "ST_INV_SPRANG_T");
+	}
+	else if (is_CHK_SHAN() && is_INVERSION_SHAN()) {
+
+		dump_RGF_SF_to_file (nGDB, "ST_INV_SHAN_N");
+		dump_RGF_SF_to_file (tGDB, "ST_INV_SHAN_T");
+	}
+	else if (is_CHK_TURNER() && is_INVERSION_TURNER()) {
+
+		dump_RGF_SF_to_file (nGDB, "ST_INV_TURNER_N");
+		dump_RGF_SF_to_file (tGDB, "ST_INV_TURNER_T");
+	}
 
 	else if (is_CHK_RETILT()) 		dump_RGF_to_file (tGDB, "ST_RETILT");
 	else if (is_CHK_AVERAGE())		dump_RGF_to_file (nGDB, "ST_AVERAGE");
@@ -269,7 +306,6 @@ void dump_RGF_to_file (const vector <GDB>& inGDB, const string FN) {
 	<< "NC.X d" << '\t' << "NC.Y d" << '\t' << "NC.Z d" << '\t'
 	<< "DC.X d" << '\t' << "DC.Y d" << '\t' << "DC.Z d" << '\t'
 	<< "SC.X d" << '\t' << "SC.Y d" << '\t' << "SC.Z d" << '\t'
-	//<< "SV.X d" << '\t' << "SV.Y d" << '\t' << "SV.Z d" << '\t'
 
 	<< "LPITCH  d" << '\t'
 	<< "LPITCHSENSE s" << '\t'
@@ -277,9 +313,7 @@ void dump_RGF_to_file (const vector <GDB>& inGDB, const string FN) {
 
 	<< "MISFIT d" << '\t'
 	<< "LINEATION s" << '\t'
-	//<< "UPWARD i" << '\t'
 	<< "OFFSET s" << '\t'
-	//<< "UP i" << '\t'
 
 	<< "DEPTH d" << '\t'
 	<< "GC s" << '\t'
@@ -308,13 +342,6 @@ void dump_RGF_to_file (const vector <GDB>& inGDB, const string FN) {
 	<< "ptnP.X d" << '\t' << "ptnP.Y d" << '\t'<< "ptnP.Z d" << '\t'
 	<< "ptnT.X d" << '\t' << "ptnT.Y d" << '\t'<< "ptnT.Z d" << '\t'
 	<< "ptnN.X d" << '\t' << "ptnN.Y d" << '\t'<< "ptnN.Z d" << '\t'
-
-	<< "ptnPd.DIPDIR d" << '\t'
-	<< "ptnPd.DIP d" << '\t'
-	<< "ptnTd.DIPDIR d" << '\t'
-	<< "ptnTd.DIP d" << '\t'
-	<< "ptnNd.DIPDIR d" << '\t'
-	<< "ptnNd.DIP d" << '\t'
 
 	<< "avD.X d"   << '\t' << "avD.Y d"   << '\t'<< "avD.Z d" << '\t'
 	<< "avS0D.X d" << '\t' << "avS0D.Y d" << '\t'<< "avS0D.Z d" << '\t'
@@ -351,7 +378,6 @@ void dump_RGF_to_file (const vector <GDB>& inGDB, const string FN) {
 		<< dmp_dbl(T.NC.X, 8) << '\t' << dmp_dbl(T.NC.Y, 8) << '\t' << dmp_dbl(T.NC.Z, 8) << '\t'
 		<< dmp_dbl(T.DC.X, 8) << '\t' << dmp_dbl(T.DC.Y, 8) << '\t' << dmp_dbl(T.DC.Z, 8) << '\t'
 		<< dmp_dbl(T.SC.X, 8) << '\t' << dmp_dbl(T.SC.Y, 8) << '\t' << dmp_dbl(T.SC.Z, 8) << '\t'
-		////<< dmp_dbl(T._SV._X, 8) << '\t' << dmp_dbl(T._SV._Y, 8) << '\t' << dmp_dbl(T._SV._Z, 8) << '\t'
 
 		<< dmp_dbl(T.LPITCH, 8) << '\t'
 		<< T.LPITCHSENSE << '\t'
@@ -359,9 +385,7 @@ void dump_RGF_to_file (const vector <GDB>& inGDB, const string FN) {
 
 		<< dmp_dbl(T.MISFIT, 8) << '\t'
 		<< T.LINEATION << '\t'
-		//<< T.UPWARD << '\t'
 		<< T.OFFSET << '\t'
-		//<< T.UP<< '\t'
 
 		<< dmp_dbl(T.DEPTH, 8) << '\t'
 		<< T.GC << '\t'
@@ -390,13 +414,6 @@ void dump_RGF_to_file (const vector <GDB>& inGDB, const string FN) {
 		<< dmp_dbl(T.ptnP.X, 8) << '\t' << dmp_dbl(T.ptnP.Y, 8) << '\t'<< dmp_dbl(T.ptnP.Z, 8) << '\t'
 		<< dmp_dbl(T.ptnT.X, 8) << '\t' << dmp_dbl(T.ptnT.Y, 8) << '\t'<< dmp_dbl(T.ptnT.Z, 8) << '\t'
 		<< dmp_dbl(T.ptnN.X, 8) << '\t' << dmp_dbl(T.ptnN.Y, 8) << '\t'<< dmp_dbl(T.ptnN.Z, 8) << '\t'
-
-		<< dmp_dbl(T.ptnPd.DIPDIR, 8) << '\t'
-		<< dmp_dbl(T.ptnPd.DIP, 8) << '\t'
-		<< dmp_dbl(T.ptnTd.DIPDIR, 8) << '\t'
-		<< dmp_dbl(T.ptnTd.DIP, 8) << '\t'
-		<< dmp_dbl(T.ptnNd.DIPDIR, 8) << '\t'
-		<< dmp_dbl(T.ptnNd.DIP, 8) << '\t'
 
 		<< dmp_dbl(T.avD.X, 8)   << '\t' << dmp_dbl(T.avD.Y, 8)   << '\t'<< dmp_dbl(T.avD.Z, 8) << '\t'
 		<< dmp_dbl(T.avS0D.X, 8) << '\t' << dmp_dbl(T.avS0D.Y, 8) << '\t'<< dmp_dbl(T.avS0D.Z, 8) << '\t'

@@ -1094,6 +1094,14 @@ VCTR NXNYNZ_from_DXDYDZ (const VCTR& i) {
 
 DIPDIR_DIP dipdir_dip_from_DXDYDZ (const VCTR& i) {
 
+	//if (is_D_up(i)) {
+
+		//cout << fixed << setprecision(6) << endl;
+		//cout << i.X << "  -  " << i.Y << "  -  " << i.Z << "  -  " << endl;
+
+		//ASSERT_DEAD_END();
+	//}
+
 	DIPDIR_DIP actual;
 
 	VCTR out = unitvector (i);

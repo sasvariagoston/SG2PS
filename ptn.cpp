@@ -1,18 +1,18 @@
 
-// Copyright (C) 2012 - 2014 Ágoston Sasvári
+// Copyright (C) 2012 - 2015 Ágoston Sasvári
 // All rights reserved.
 // This code is published under the GNU Lesser General Public License.
 
 /*
-USING ANG.RGF:
-==============
+S1: 252/83 (-0.117481, -0.038418, -0.992332)
+S2: 053/07 ( 0.796970,  0.591015, -0.124660)
+S3: 143/01 ( 0.600084, -0.799859, -0.011146)
+EIGENVALUES: 34.980318, 5.061414, 0.959156
 
-s1: 250/74
-s2: 058/16
-s3: 149/03
-RADIAL EXTENSIVE
-R: 0.018
-R': 0.018
+S1: 018/17 ( 0.293015,  0.912436, -0.285662)
+S2: 210/73 (-0.150925, -0.258344, -0.954191)
+S3: 110/03 ( 0.936697, -0.346976, -0.046974)
+EIGENVALUES: 34.980318, 5.061414, 0.959156
 */
 
 #include <cmath>
@@ -47,24 +47,22 @@ vector <GDB> ptn (const vector <GDB>& inGDB) {
 
 		if (STRIAE && HAS_OFFSET) {
 
-			VCTR temp1 = declare_vector(
+			outGDB.at(i).ptnT = unitvector(declare_vector (
 					q * inGDB.at(i).N.X + r * inGDB.at(i).DC.X,
 					q * inGDB.at(i).N.Y + r * inGDB.at(i).DC.Y,
-					q * inGDB.at(i).N.Z + r * inGDB.at(i).DC.Z);
-			outGDB.at(i).ptnT = unitvector (temp1);
-			outGDB.at(i).ptnTd = dipdir_dip_from_DXDYDZ (temp1);
+					q * inGDB.at(i).N.Z + r * inGDB.at(i).DC.Z));
 
-			VCTR temp2 = declare_vector(
+			outGDB.at(i).ptnP = unitvector (declare_vector (
 					q * inGDB.at(i).DC.X - r * inGDB.at(i).N.X,
 					q * inGDB.at(i).DC.Y - r * inGDB.at(i).N.Y,
-					q * inGDB.at(i).DC.Z - r * inGDB.at(i).N.Z);
-			outGDB.at(i).ptnP = unitvector (temp2);
-			outGDB.at(i).ptnPd = dipdir_dip_from_DXDYDZ (temp2);
+					q * inGDB.at(i).DC.Z - r * inGDB.at(i).N.Z));
 
-			outGDB.at(i).ptnN = unitvector (crossproduct (temp2, temp1));
-			outGDB.at(i).ptnNd = dipdir_dip_from_DXDYDZ (outGDB.at(i).ptnN);
+			outGDB.at(i).ptnN = unitvector (crossproduct (outGDB.at(i).ptnP, outGDB.at(i).ptnT));
 		}
 	}
+
+	//dbg_cout_GDB_vector (outGDB);
+
 	return outGDB;
 }
 
@@ -87,7 +85,6 @@ STRESSTENSOR PTN_matrix (const vector <GDB>& inGDB, const string& axis) {
 
 	for (size_t i = 0; i < inGDB.size(); i++) {
 
-
 		if 		(axis == "P") AX = inGDB.at(i).ptnP;
 		else if (axis == "T") AX = inGDB.at(i).ptnT;
 		else if (axis == "N") AX = inGDB.at(i).ptnN;
@@ -100,6 +97,8 @@ STRESSTENSOR PTN_matrix (const vector <GDB>& inGDB, const string& axis) {
 		st._23 = st._23 + (dotproduct (AX, N, false) * dotproduct (AX, U, false));
 		st._33 = st._33 + (dotproduct (AX, U, false) * dotproduct (AX, U, false));
 	}
+	//cout_dbg_stresstensor(st);
+
 	return st;
 }
 
@@ -111,24 +110,25 @@ STRESSFIELD sf_PTN (const vector <GDB>& inGDB) {
 
 	processGDB = ptn (processGDB);
 
-	sf_ptn = computestressfield_DXDYDZ (eigenvalue_eigenvector (PTN_matrix (processGDB, "P")));
+	sf_ptn = eigenvalue_eigenvector (PTN_matrix (processGDB, "P"));
 	sf.EIGENVALUE.X = sf_ptn.EIGENVALUE.X;
-	sf.EIGENVECTOR1 = sf_ptn.EIGENVECTOR1;
-	sf.S_1 = sf_ptn.S_1;
+	sf.EIGENVECTOR1 = flip_vector (sf_ptn.EIGENVECTOR1);
 
-	sf_ptn = computestressfield_DXDYDZ (eigenvalue_eigenvector (PTN_matrix (processGDB, "T")));
+	sf_ptn = eigenvalue_eigenvector (PTN_matrix (processGDB, "T"));
 	sf.EIGENVALUE.Z = sf_ptn.EIGENVALUE.Z;
-	sf.EIGENVECTOR3 = sf_ptn.EIGENVECTOR1;
-	sf.S_3 = sf_ptn.S_1;
+	sf.EIGENVECTOR3 = flip_vector (sf_ptn.EIGENVECTOR1);
 
-	sf_ptn = computestressfield_DXDYDZ (eigenvalue_eigenvector (PTN_matrix (processGDB, "N")));
+	sf_ptn = eigenvalue_eigenvector (PTN_matrix (processGDB, "N"));
 	sf.EIGENVALUE.Y = sf_ptn.EIGENVALUE.Y;
-	sf.EIGENVECTOR2 = sf_ptn.EIGENVECTOR1;
-	sf.S_2 = sf_ptn.S_1;
+	sf.EIGENVECTOR2 = flip_vector (sf_ptn.EIGENVECTOR1);
 
 	sf = correct_SF_to_fit_D (sf);
 
-	return stress_regime (sf);
+	sf = computestressfield_DXDYDZ(sf);
+
+	sf = stress_regime (sf);
+
+	return sf;
 }
 
 STRESSTENSOR st_PTN (const STRESSFIELD& sf) {

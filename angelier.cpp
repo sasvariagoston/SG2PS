@@ -1,19 +1,20 @@
 
-// Copyright (C) 2012 - 2014 Ágoston Sasvári
+// Copyright (C) 2012 - 2015 Ágoston Sasvári
 // All rights reserved.
 // This code is published under the GNU Lesser General Public License.
 
-/*
-	 FOR ANG.RGF:
-	 ============
 
-	 s1: 074/72,
-	 s2: 239/17,
-	 s3: 330/04,
-	 PURE EXTENSIVE,
-	 R: 0.425,
-	 R': 0.425,
-	 */
+/*
+S1: 226/85 (-0.065704, -0.063404, -0.995823)
+S2: 047/05 ( 0.724023,  0.683706, -0.091302)
+S3: 317/00 (-0.686639,  0.726998, -0.000984)
+EIGENVALUES: 1.010557, -0.270462, -0.740095
+
+S1: 053/10 ( 0.792472,  0.586710, -0.166612)
+S2: 144/03 ( 0.588486, -0.807318, -0.043832)
+S3: 248/80 (-0.160226, -0.063313, -0.985048)
+EIGENVALUES: 1.598986, -0.590352, -1.008634
+*/
 
 #include <cmath>
 #include <iomanip>
@@ -191,7 +192,7 @@ STRESSFIELD sf_ANGELIER (const STRESSTENSOR& st) {
 
 	sf = computestressfield_DXDYDZ (sf);
 
-	cout_dbg_stressfield(sf);
+	//cout_dbg_stressfield(sf);
 
 	return stress_regime (sf);
 }

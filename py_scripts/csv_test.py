@@ -92,7 +92,7 @@ def check(filename):
     return True
 
 def log_error(filename, msg):
-    assert filename not in errors, filename
+    assert filename not in errors, (filename, errors[filename])
     errors[filename] = msg
 
 def get_content(directory, filename, kind):
