@@ -26,15 +26,15 @@ vector <GDB> apply_data_average_vector (const vector <GDB>& to_process, const VC
 
 vector <GDB> DATATYPE_AVERAGE (const vector <GDB>& inGDB);
 
-vector < vector <GDB> > calculate_average_for_groups (const vector <vector <GDB> >& inGDB_G);
+//vector < vector <GDB> > calculate_average_for_groups (const vector <vector <GDB> >& inGDB_G);
 
-bool has_group_bedding (const vector <vector <GDB> >& inGDB_G);
+//bool has_group_bedding (const vector <vector <GDB> >& inGDB_G);
 
-VCTR return_group_bedding_vector (const vector <vector <GDB> >& inGDB_G);
-
-vector <vector <GDB> > apply_group_bedding_vector (const vector <vector <GDB> >& inGDB_G, const VCTR AV_D);
-
-vector < vector < vector < vector <GDB> > > > AVERAGE (const vector < vector < vector < vector <GDB> > > >& inGDB_G);
+VCTR return_group_bedding_vector (const vector <GDB>& inGDB_G);
+vector <GDB> apply_group_bedding_vector (const vector <GDB>& inGDB_G, const VCTR AV_D);
+size_t has_relevant_bedding (const vector <GDB>& inGDB, const vector <vector <GDB> >& inGDB_G);
+vector <vector <GDB> > ASSOCIATE_AVERAGE_BEDDING_GROUPS (const vector <vector <GDB> >& inGDB_G);
+vector < vector <GDB> > AVERAGE (const vector < vector <GDB> >& inGDB_G);
 
 void dbg_averages (const vector <GDB>& inGDB);
 

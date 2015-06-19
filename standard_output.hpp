@@ -39,7 +39,7 @@ bool is_CHK_PLOT_STRIAE ();
 void check_standard_output_SF (const vector <GDB>& inGDB, const STRESSFIELD& standard);
 
 void INIT_DEBUG ();
-void STANDARD_OUTPUT (const vector <GDB>& nGDB, const vector <GDB>& tGDB);
+void STANDARD_OUTPUT (const vector <GDB>& nGDB, const bool TILT);
 
 void dump_RGF_SF_to_file (const vector <GDB>& inGDB, const string FN);
 void dump_RGF_to_file (const vector <GDB>& inGDB, const string FN);

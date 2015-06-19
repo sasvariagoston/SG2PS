@@ -16,6 +16,7 @@
 #include "assertions.hpp"
 #include "color_management.hpp"
 #include "data_io.h"
+#include "data_sort.hpp"
 #include "density.h"
 #include "foldsurface.hpp"
 #include "homogenity_check.hpp"
@@ -114,6 +115,7 @@ void createprojectfolders (const PFN& output, const vector <GDB>& inGDB) {
 	make_dir( output.average);
 	make_dir( output.rgfsep);
 	make_dir( output.pssep);
+
 	if (is_WELLDATA_USE()) make_dir( output.well_ps);
 
 	vector <string> possible_folders = possible_folders_name ();
@@ -325,7 +327,36 @@ void OUTPUT_COMPLETED_TO_RGF (const vector <GDB>& inGDB, const PFN& P, const boo
 	O.close();
 }
 
-void OUTPUT_AVERAGE_TO_RGF (const vector <vector <GDB> >& inGDB_G, const PFN& P, const bool TILT) {
+void OUTPUT_AVERAGE_TO_RGF (const vector <GDB>& inGDB_G, const PFN& P, const bool TILT) {
+
+	const string bs = path_separator;
+	string FN = P.average + bs + capslock(P.projectname);
+
+	if (TILT) FN = FN + "_tilted";
+
+	FN = FN + "_average.rgf";
+
+	ofstream O;
+	O.open (FN.c_str());
+
+	output_rgf_header (O, true);
+
+	vector <GDB> temp;
+
+	temp.push_back (inGDB_G.at(0));
+
+	const bool STRIAE = is_allowed_striae_datatype(temp.at(0).DATATYPE);
+	const bool SC = is_allowed_SC_datatype(temp.at(0).DATATYPE);
+
+	if (!STRIAE && !SC) OUTPUT_GDB_to_RGF (O, temp, true);
+
+	O.close();
+
+	return;
+}
+
+/*
+ * void OUTPUT_AVERAGE_TO_RGF (const vector <vector <GDB> >& inGDB_G, const PFN& P, const bool TILT) {
 
 	const string bs = path_separator;
 	string FN = P.average + bs + capslock(P.projectname);
@@ -354,6 +385,8 @@ void OUTPUT_AVERAGE_TO_RGF (const vector <vector <GDB> >& inGDB_G, const PFN& P,
 
 	return;
 }
+ *
+ */
 
 void OUTPUT_GROUPS_TO_RGF (const vector <vector <GDB> >& inGDB_G, const PFN& P, const bool TILTED) {
 
@@ -396,7 +429,8 @@ void OUTPUT_GROUPS_TO_RGF (const vector <vector <GDB> >& inGDB_G, const PFN& P, 
 
 		output_rgf_header (O, false);
 
-		sort(T.begin(), T.end(), byiID);
+		T = SORT_GDB(T, "IID");
+		//sort(T.begin(), T.end(), byiID);
 
 		OUTPUT_GDB_to_RGF (O, T, false);
 
@@ -414,24 +448,130 @@ void OUTPUT_GDB_to_RGF (ofstream& O, const vector <GDB>& inGDB, const bool AVERA
 	return;
 }
 
-void OUTPUT_TO_RGF (const vector <vector <vector <vector <GDB> > > >& inGDB_G, const PFN& projectfoldername, const bool TILT) {
+void OUTPUT_TO_RGF (const vector <vector <GDB> >& inGDB_G, const PFN& projectfoldername, const bool TILT) {
 
 	vector <GDB> processGDB = MERGE_GROUPS_TO_GDB (inGDB_G);
 
 	OUTPUT_COMPLETED_TO_RGF (processGDB, projectfoldername, TILT);
 
-	vector <vector <GDB> > processGDB_G = MERGE_GROUPS_TO_GDB_G (inGDB_G);
+	vector <GDB> processGDB_G = MERGE_GROUPS_TO_GDB (inGDB_G);
 
 	OUTPUT_AVERAGE_TO_RGF (processGDB_G, projectfoldername, TILT);
 
-	OUTPUT_GROUPS_TO_RGF (processGDB_G, projectfoldername, TILT);
+	OUTPUT_GROUPS_TO_RGF (inGDB_G, projectfoldername, TILT);
 
 	return;
 }
 
+
+GDB return_dummy_GDB () {
+
+	GDB dummy;
+
+	const string DUMMY = "xxx__DUMMY__xxx";
+
+	dummy.GC = DUMMY;
+	dummy.FORMATION = DUMMY;
+	dummy.GC = DUMMY;
+	dummy.DATATYPE = DUMMY;
+	dummy.LOC = DUMMY;
+
+	return dummy;
+}
+
+bool ACT_NXT_EQ (const GDB& ACT, const GDB& NXT, const string METHOD) {
+
+	if (METHOD == "GROUPS") 		return ACT.GC.at(0) == NXT.GC.at(0);
+	else if (METHOD == "FORMATION") return ACT.FORMATION == NXT.FORMATION;
+	else if (METHOD == "CLUSTER") 	return ACT.GC.at(1) == NXT.GC.at(1);
+	else if (METHOD == "RUP_ANG")		return ACT.GC.at(2) == NXT.GC.at(2);
+	else if (METHOD == "DATATYPE") 	return ACT.DATATYPE == NXT.DATATYPE;
+	else if (METHOD == "LOCATION")	return ACT.LOC == NXT.LOC;
+	else {
+
+		ASSERT_DEAD_END();
+		return false;
+	}
+}
+
+vector <vector <GDB> > SEPARATE (const vector <GDB> & inGDB, const string METHOD) {
+
+	vector <vector <GDB> > OUT;
+	vector <GDB> buf;
+
+	vector <GDB> temp = inGDB;
+
+	temp.push_back (return_dummy_GDB());
+
+	for (size_t i = 0; i < temp.size() - 1; i++) {
+
+		const GDB ACT = temp.at(i);
+		const GDB NXT = temp.at(i+1);
+
+		buf.push_back(ACT);
+
+		const bool EQ = ACT_NXT_EQ (ACT, NXT, METHOD);
+
+		if (!EQ) {
+
+			OUT.push_back (buf);
+			buf.clear();
+		}
+	}
+	return OUT;
+}
+
+vector <vector <GDB> > SEPARATE_DATASET (const vector <vector <GDB> >& inGDB_G, const string METHOD, const string SORT) {
+
+	if (inGDB_G.size() == 0) ASSERT_DEAD_END();
+
+	vector <vector <GDB> > OUT;
+
+	for (size_t i = 0; i < inGDB_G.size(); i++) {
+
+		if (inGDB_G.at(i).size() == 0) ASSERT_DEAD_END();
+
+		const vector <GDB> processGDB = SORT_GDB (inGDB_G.at(i), SORT);
+
+		const vector <vector <GDB> > SEP = SEPARATE (processGDB, METHOD);
+
+		for (size_t j = 0; j < SEP.size(); j++) {
+
+			OUT.push_back(SEP.at(j));
+		}
+	}
+	return OUT;
+}
+
+vector < vector <GDB> > SEPARATE_DATASET_GROUPS (const vector <GDB>& inGDB) {
+
+	const bool W = is_WELLDATA_USE();
+	const bool F = is_FORMATION_USE();
+	const bool G = is_GROUPS_USE();
+
+	vector < vector <GDB> > processGDB_G;
+
+	processGDB_G.push_back (inGDB);
+
+	processGDB_G = SEPARATE_DATASET (processGDB_G, "LOCATION", "LOCATION");
+
+	if (W && F) 		processGDB_G = SEPARATE_DATASET (processGDB_G, "FORMATION", "DEPTH");
+	else if (!W && F)	processGDB_G = SEPARATE_DATASET (processGDB_G, "FORMATION", "FORMATION");
+	else {};
+
+	processGDB_G = SEPARATE_DATASET (processGDB_G, "DATATYPE", "DATATYPE");
+
+	if (G) processGDB_G = SEPARATE_DATASET (processGDB_G, "GROUPS", "GROUPCODE");
+
+	return processGDB_G;
+}
+
+/*
 vector < vector < vector <vector <GDB> > > > SEPARATE_DATASET_TO_GROUPS (const vector <GDB>& inGDB, const string METHOD) {
 
+	//const bool WELL = is_WELLDATA_USE();
 	const bool GROUPS = METHOD == "GROUPS";
+	//const bool FORMATION = is_FORMATION_USE();
 	const bool CLUSTER = METHOD == "CLUSTER";
 	const bool RUP = METHOD == "RUP";
 	const bool NONE = METHOD == "NONE";
@@ -445,6 +585,9 @@ vector < vector < vector <vector <GDB> > > > SEPARATE_DATASET_TO_GROUPS (const v
 	vector <GDB> buf1;
 	vector <vector <GDB> > buf2;
 	vector < vector <vector <GDB> > > buf3;
+
+	//if (WELL)	sort (processGDB.begin(), processGDB.end(), byLocFmType);
+	//else 		sort (processGDB.begin(), processGDB.end(), byLocGcType);
 
 	sort (processGDB.begin(), processGDB.end(), byLocTypeGc);
 
@@ -476,6 +619,8 @@ vector < vector < vector <vector <GDB> > > > SEPARATE_DATASET_TO_GROUPS (const v
 			const string a_DT = processGDB.at(i-0).DATATYPE;
 			const string p_LC = processGDB.at(i-1).LOC;
 			const string a_LC = processGDB.at(i-0).LOC;
+			//const string p_FM = processGDB.at(i-1).FORMATION;
+			//const string a_FM = processGDB.at(i-0).FORMATION;
 
 			string p_GC = "";
 			string a_GC = "";
@@ -489,17 +634,17 @@ vector < vector < vector <vector <GDB> > > > SEPARATE_DATASET_TO_GROUPS (const v
 			}
 			else if (CLUSTER && !is_CLUSTERING_NONE()) {
 
-				if (processGDB.at(i-1).GC.size() < 2) ASSERT_DEAD_END();
-				if (processGDB.at(i-0).GC.size() < 2) ASSERT_DEAD_END();
-				p_GC = processGDB.at(i-1).GC.at(1);
-				a_GC = processGDB.at(i-0).GC.at(1);
+				if (processGDB.at(i-1).GC.size() < 2) ASSERT_DEAD_END();//was 2
+				if (processGDB.at(i-0).GC.size() < 2) ASSERT_DEAD_END();//was 2
+				p_GC = processGDB.at(i-1).GC.at(1);//was 1
+				a_GC = processGDB.at(i-0).GC.at(1);//was 1
 			}
 			else if (RUP && !is_RUP_CLUSTERING_NONE()) {
 
-				if (processGDB.at(i-1).GC.size() < 3) ASSERT_DEAD_END();
-				if (processGDB.at(i-0).GC.size() < 3) ASSERT_DEAD_END();
-				p_GC = processGDB.at(i-1).GC.at(2);
-				a_GC = processGDB.at(i-0).GC.at(2);
+				if (processGDB.at(i-1).GC.size() < 3) ASSERT_DEAD_END();//was 3
+				if (processGDB.at(i-0).GC.size() < 3) ASSERT_DEAD_END();//was 3
+				p_GC = processGDB.at(i-1).GC.at(2);//was 2
+				a_GC = processGDB.at(i-0).GC.at(2);//was 2
 			}
 			else {
 
@@ -510,13 +655,18 @@ vector < vector < vector <vector <GDB> > > > SEPARATE_DATASET_TO_GROUPS (const v
 			const bool EQ_DT = a_DT == p_DT;
 			const bool EQ_GC = a_GC == p_GC;
 			const bool EQ_LC = a_LC == p_LC;
+			//const bool EQ_FM = a_FM == p_FM;
 
 			const bool STOP_because_LC = !EQ_LC;
 
 			bool STOP_because_GC;
 
 			if (GROUPS || CLUSTER || RUP) 	STOP_because_GC = STOP_because_LC || !EQ_GC;
-			else 							STOP_because_GC = STOP_because_LC;
+			//else if (FORMATION) {
+
+			//	if (WELL) STOP_because_GC = STOP_because_LC; // || !EQ_FM;
+			//}
+			else STOP_because_GC = STOP_because_LC;
 
 			bool STOP_because_DT = STOP_because_GC || !EQ_DT;
 
@@ -542,7 +692,21 @@ vector < vector < vector <vector <GDB> > > > SEPARATE_DATASET_TO_GROUPS (const v
 	return outGDB_G;
 }
 
-vector <GDB> MERGE_GROUPS_TO_GDB (const vector < vector <vector <vector <GDB> > > >& GDB_G) {
+*/
+
+vector <GDB> MERGE_GROUPS_TO_GDB (const vector <vector <GDB> >& GDB_G) {
+
+	vector <GDB> outGDB;
+
+	for (size_t i = 0; i < GDB_G.size(); i++) outGDB = merge_GDB (GDB_G.at(i), outGDB);
+
+	outGDB = SORT_GDB (outGDB, "IID");
+
+	return outGDB;
+}
+
+/*
+ * vector <GDB> MERGE_GROUPS_TO_GDB (const vector < vector <vector <vector <GDB> > > >& GDB_G) {
 
 	vector <GDB> outGDB;
 
@@ -554,11 +718,15 @@ vector <GDB> MERGE_GROUPS_TO_GDB (const vector < vector <vector <vector <GDB> > 
 			}
 		}
 	}
-	sort (outGDB.begin(), outGDB.end(), byiID);
 
+	outGDB = SORT_GDB (outGDB, "IID");
+	//sort (outGDB.begin(), outGDB.end(), byiID);
 	return outGDB;
 }
+ */
 
+
+/*
 vector <vector <GDB> > MERGE_GROUPS_TO_GDB_G (const vector < vector <vector <vector <GDB> > > >& GDB_G) {
 
 	vector <vector <GDB> > outGDB_G;
@@ -573,6 +741,7 @@ vector <vector <GDB> > MERGE_GROUPS_TO_GDB_G (const vector < vector <vector <vec
 	}
 	return outGDB_G;
 }
+*/
 
 vector <GDB> combine_inversion_for_none_offset (const vector <GDB>& process_GDB, const vector <GDB>& hasoffset_GDB) {
 
@@ -639,7 +808,77 @@ vector <vector <vector <vector <GDB> > > > CALCULATE_FOLDSURFACE (const vector <
 	return outGDB_G;
 }
 
-vector <vector <vector <vector <GDB> > > > PROCESS_GROUPS (const vector <vector <vector <vector <GDB> > > >& inGDB_G, const bool TILT) {
+
+vector <vector <GDB> > PROCESS_GROUPS (const vector <vector <GDB> >& inGDB_G, const bool TILT) {
+
+	vector <vector <GDB> > outGDB_G = inGDB_G;
+
+	outGDB_G = associate_empty_clustercode (outGDB_G, 2);
+
+	for (size_t i = 0; i < outGDB_G.size(); i++) {
+
+		vector <GDB> process_GDB = outGDB_G.at(i);
+
+		const string DT = process_GDB.at(0).DATATYPE;
+		const bool IS_STRIAE = is_allowed_striae_datatype(DT);
+		const bool FOLD_TO_PROCESS = is_allowed_foldsurface_processing(DT);
+
+		const bool FRACTURE_TO_PROCESS = is_BINGHAM_USE() && DT == "FRACTURE";
+		const bool STRIAE_TO_PROCESS = !is_INVERSION_NONE() && IS_STRIAE;
+
+		const bool ENOUGH_HOMOGENEOUS = has_inhomogeneous_enough (process_GDB);
+
+		if (FRACTURE_TO_PROCESS || STRIAE_TO_PROCESS) {
+
+			vector <GDB> hasoffset_GDB = process_GDB;
+
+			if (IS_STRIAE) hasoffset_GDB = return_striae_with_offset (process_GDB);//was testGDB
+
+			const bool ENOUGH_STRIAE = hasoffset_GDB.size() >= minimum_independent_dataset ();
+
+			if (ENOUGH_HOMOGENEOUS && ENOUGH_STRIAE) {
+
+				if (!TILT) cout_method_text (hasoffset_GDB);
+
+				cout_original_tilted_text (TILT);
+
+				if (is_VIRTUAL_USE()) hasoffset_GDB = generate_virtual_striae (hasoffset_GDB);
+
+				INVERSION (hasoffset_GDB);
+
+				const vector <STRESSTENSOR> STV = return_STV ();
+				const vector <STRESSFIELD> SFV = return_SFV ();
+
+				if (SFV.size() != STV.size()) ASSERT_DEAD_END();
+
+				hasoffset_GDB = ASSOCIATE_STV_SFV (hasoffset_GDB, STV, SFV);
+
+				const bool SUCCESSFULL = (STV.size() > 0 && SFV.size() > 0);
+
+				if (SUCCESSFULL && STRIAE_TO_PROCESS) {
+
+					const size_t MX = STV.size() - 1;
+
+					hasoffset_GDB = apply_inversion_result (hasoffset_GDB, STV.at(MX));
+
+					hasoffset_GDB = apply_RUP_ANG_CLUSTERING_result (hasoffset_GDB);
+				}
+				process_GDB = combine_inversion_for_none_offset (process_GDB, hasoffset_GDB);
+
+				cout_inversion_results (process_GDB, SFV);
+			}
+			else cout_less_than_required_text (TILT);
+		}
+		else if (FOLD_TO_PROCESS) process_GDB = CALCULATE_FOLDSURFACE_NORMAL (process_GDB);
+		else {}
+
+		outGDB_G.at(i) = process_GDB;
+	}
+	return outGDB_G;
+}
+
+/*
+ * vector <vector <vector <vector <GDB> > > > PROCESS_GROUPS (const vector <vector <vector <vector <GDB> > > >& inGDB_G, const bool TILT) {
 
 	vector <vector <vector <vector <GDB> > > > outGDB_G = inGDB_G;
 
@@ -729,11 +968,10 @@ vector <vector <vector <vector <GDB> > > > PROCESS_GROUPS (const vector <vector 
 	}
 	return outGDB_G;
 }
+ *
+ */
 
-void OUTPUT_TO_PS (const vector <vector <vector <vector <GDB> > > > n_GDB_G, const vector <vector <vector <vector <GDB> > > > t_GDB_G, const PFN P) {
-
-	const vector < vector <GDB> > n_prGDB_G = MERGE_GROUPS_TO_GDB_G (n_GDB_G);
-	const vector < vector <GDB> > t_prGDB_G = MERGE_GROUPS_TO_GDB_G (t_GDB_G);
+void OUTPUT_TO_PS (const vector <vector <GDB> > in_GDB_G, const PFN P, const bool TILT) {
 
 	const bool IGNORE = is_GROUPSEPARATION_IGNORE ();
 	const bool by_GROUPCODE = is_GROUPSEPARATION_GROUPCODE ();
@@ -745,10 +983,10 @@ void OUTPUT_TO_PS (const vector <vector <vector <vector <GDB> > > > n_GDB_G, con
 	const string BS = path_separator;
 	const string US = "_";
 
-	for (size_t i = 0; i < n_prGDB_G.size(); i++) {
+	for (size_t i = 0; i < in_GDB_G.size(); i++) {
 
-		const string LOC = n_prGDB_G.at(i).at(0).LOC;
-		const string DT = n_prGDB_G.at(i).at(0).DATATYPE;
+		const string LOC = in_GDB_G.at(i).at(0).LOC;
+		const string DT = in_GDB_G.at(i).at(0).DATATYPE;
 
 		const bool LITHOLOGY = is_allowed_lithology_datatype (DT);
 
@@ -756,58 +994,33 @@ void OUTPUT_TO_PS (const vector <vector <vector <vector <GDB> > > > n_GDB_G, con
 
 			string PS_NAME = P.pssep + BS + DT + BS + LOC + US + DT;
 
-			if (by_GROUPCODE) 	PS_NAME = PS_NAME + US + n_prGDB_G.at(i).at(0).GC.at(0);
-			else if (by_KMEANS) PS_NAME = PS_NAME + US + n_prGDB_G.at(i).at(0).GC.at(1);
-			else if (by_RUPANG) PS_NAME = PS_NAME + US + n_prGDB_G.at(i).at(0).GC.at(2);
+			if (by_GROUPCODE) 	PS_NAME = PS_NAME + US + in_GDB_G.at(i).at(0).GC.at(0);
+			else if (by_KMEANS) PS_NAME = PS_NAME + US + in_GDB_G.at(i).at(0).GC.at(1);
+			else if (by_RUPANG) PS_NAME = PS_NAME + US + in_GDB_G.at(i).at(0).GC.at(2);
 			else {}
-
-			//cout << "PS_net 1" << endl;
 
 			PS_NAME = PS_NAME + ".eps";
 
 			ofstream OPS (PS_NAME.c_str());
 
-			//cout << "PS_net 2" << endl;
-
 			PS_stereonet_header (DT, LOC, OPS);
-
-			//cout << "PS_net 3" << endl;
 
 			const PAPER PPR = PS_dimensions (false);
 
-			//cout << "PS_net 4" << endl;
-
-			PS_STEREONET_SYMBOLS (n_prGDB_G.at(i), OPS, PPR);
-
-			//cout << "PS_net 5" << endl;
+			PS_STEREONET_SYMBOLS (in_GDB_G.at(i), OPS, PPR);
 
 			if (is_allowed_striae_datatype(DT) && ! is_INVERSION_NONE()) PS_stress_scale (OPS, PPR);
 
-			//cout << "PS_net 6" << endl;
+			PS_border (in_GDB_G.at(i), OPS, PPR);
 
-			PS_border (n_prGDB_G.at(i), OPS, PPR);
+			PS_GDB (in_GDB_G.at(i), OPS, PPR, TILT);
+			//PS_GDB (t_GDB_G.at(i), OPS, PPR, true);
 
-			//cout << "PS_net 7" << endl;
-
-			PS_GDB (n_prGDB_G.at(i), OPS, PPR, false);
-
-			//cout << "PS_net 8" << endl;
-
-			PS_GDB (t_prGDB_G.at(i), OPS, PPR, true);
-
-			//cout << "PS_net 9" << endl;
-
-			PS_datanumber_averagebedding (n_prGDB_G.at(i).at(0), OPS, PPR, n_prGDB_G.at(i).size());
-
-			//cout << "PS_net coming" << endl;
+			PS_datanumber_averagebedding (in_GDB_G.at(i).at(0), OPS, PPR, in_GDB_G.at(i).size());
 
 			PS_net (OPS, PPR);
-
-			//cout << "PS_net done" << endl;
 		}
 	}
-
-	//cout << "OUTPUT_TO_PS done" << endl;
 	return;
 }
 
@@ -817,15 +1030,18 @@ void cout_method_text (const vector <GDB>& inGDB) {
 
 	const string LOC = inGDB.at(0).LOC;
 	const string GC = inGDB.at(0).GC;
+	const string FM = inGDB.at(0).FORMATION;
 
 	const bool GROUPS = is_GROUPS_USE();
+	const bool FORMATION = is_FORMATION_USE();
 	const bool CLUSTER = !is_CLUSTERING_NONE();
 	const bool RUP = !is_RUP_CLUSTERING_NONE();
 	const bool IS_STRIAE = is_allowed_striae_datatype (inGDB.at(0).DATATYPE);
 
 	string OUT = "  - For '" + LOC + "' location";
 
-	if (GROUPS || CLUSTER || RUP) OUT = OUT + ", " + GC;
+	if (GROUPS || CLUSTER || RUP) OUT = OUT + " group, " + GC;
+	else if (FORMATION) OUT = OUT + " formation, " + FM;
 
 	OUT = OUT + ", ";
 

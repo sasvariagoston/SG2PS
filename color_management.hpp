@@ -12,8 +12,8 @@
 
 vector <GDB> attach_k_means_group_codes (const vector <size_t>& which_group, const vector <GDB>& inGDB);
 
-vector <GDB> associate_empty_clustercode (const vector <GDB>& inGDB, const size_t WHICH);
-vector < vector < vector <vector <GDB> > > > associate_empty_clustercode (const vector < vector < vector <vector <GDB> > > >& inGDB_G, const size_t WHICH);
+//vector <GDB> associate_empty_clustercode (const vector <GDB>& inGDB, const size_t WHICH);
+vector <vector <GDB> > associate_empty_clustercode (const vector <vector <GDB> >& inGDB_G, const size_t WHICH);
 
 string generate_PSCOLOR_from_GC (const string GC);
 string generate_PSCOLOR_from_COLOR (const string CLR);

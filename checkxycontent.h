@@ -9,9 +9,7 @@
 
 using namespace std;
 
-bool needxyfile ();
-
-string inputxyfilename();
+bool is_XY_FILE_CORRECT ();
 
 void read_in_xy (const string& file_name);
 bool input_xy (const string& projectname);
@@ -20,11 +18,7 @@ bool LOCATIONcheck ();
 bool LOCATIONcheck_duplicate ();
 bool XYcheck ();
 
-bool xyfile_correct (string projectname);
-
-//void uppercase_xy_to_check ();
-string check_xy_inputs (string inputfilename);
-
-GDB insertxy (const GDB& inGDB);
+vector <GDB> insert_xy_values (const vector <GDB>& inGDB);
+void CHECK_XY_FILE (const string projectname);
 
 #endif

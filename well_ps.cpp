@@ -8,6 +8,7 @@
 #include <fstream>
 #include <iomanip>
 #include <iostream>
+#include <math.h>
 //#include <sstream>
 #include <stdlib.h>
 #include <vector>
@@ -15,6 +16,7 @@
 #include "allowed_keys.hpp"
 #include "assertions.hpp"
 #include "data_io.h"
+#include "data_sort.hpp"
 #include "run_mode.h"
 #include "platform_dep.hpp"
 #include "ps.h"
@@ -33,25 +35,21 @@ const double PL_AX_GP = 0.2;
 
 const double PL_LF = -2.5;
 
+const string STD_CLR = "0.80 0.80 0.80";
+const string AVR_CLR = "0.00 0.00 0.00";
+const string DRV_CLR = "1.00 0.00 0.00";
+const string FRQ_CLR = "0.00 0.00 1.00";
+
+const VCTR RED = declare_vector (1.00, 0.00, 0.00);
+const VCTR YLW = declare_vector (1.00, 1.00, 0.00);
+const VCTR GRN = declare_vector (0.25, 0.75, 0.25);
+
+const VCTR LRD = declare_vector (1.00, 0.50, 0.50);
+const VCTR LYL = declare_vector (1.00, 1.00, 0.50);
+const VCTR LGN = declare_vector (0.50, 1.00, 0.50);
 }
 
 using namespace std;
-
-/*Average
- *
- * horizontal:
- * average
- * bingham
- *
- *
- *
- * vertical:
- * xx
- *
- * either so many measurements,
- * or interval length
- *
- */
 
 void PS_well_header (const string DATATYPE, const string LOC, ofstream& o) {
 
@@ -92,6 +90,32 @@ void PS_well_header (const string DATATYPE, const string LOC, ofstream& o) {
 	stroke_PS(o);
 
 	text_PS (o, "} def");
+
+
+	text_PS (o, "/overturned_measurement {");
+		newpath_PS (o);
+		moveto_PS (o,  -1.0,  0.0, 3);
+		rlineto_PS (o,  2.0,  0.0, 3);
+		rlineto_PS (o,  0.0,  2.0, 3);
+		rlineto_PS (o, -2.0,  0.0, 3);
+		closepath_PS (o);
+		color_PS (o, "1.00 0.00 0.00");
+		fill_PS (o);
+		stroke_PS(o);
+
+		linewidth_PS(o, 0.5, 1);
+
+		color_PS (o, "1.00 1.00 1.00");
+
+		newpath_PS (o);
+		moveto_PS (o,  -1.0,  0.0, 3);
+		rlineto_PS (o,  2.0,  0.0, 3);
+		rlineto_PS (o,  0.0,  2.0, 3);
+		rlineto_PS (o, -2.0,  0.0, 3);
+		closepath_PS (o);
+		stroke_PS(o);
+
+		text_PS (o, "} def");
 
 	return;
 }
@@ -192,6 +216,162 @@ void PS_well_border (const vector <GDB>& inGDB, ofstream& o, const PAPER& P, con
 	text_PS(o, "%%-----end PSborder");
 }
 
+string generate_colorstep (const VCTR clr1, const VCTR clr2, const VCTR clr3, const size_t percent) {
+
+	double P = percent / 100.0;
+
+	if (P < 0.5) {
+
+		return  double_to_string (clr2.X * 2 * P + clr1.X * (1 - 2 * P), 3) + " " +
+				double_to_string (clr2.Y * 2 * P + clr1.Y * (1 - 2 * P) ,3) + " " +
+				double_to_string (clr2.Z * 2 * P + clr1.Z * (1 - 2 * P) ,3);
+	}
+
+	else {
+
+		P = P - 0.5;
+
+		return  double_to_string (clr3.X * 2 * P + clr2.X * (1 - 2 * P), 3) + " " +
+				double_to_string (clr3.Y * 2 * P + clr2.Y * (1 - 2 * P) ,3) + " " +
+				double_to_string (clr3.Z * 2 * P + clr2.Z * (1 - 2 * P) ,3);
+	}
+}
+
+string generate_error_colors (const size_t percent) {
+
+	return (generate_colorstep(GRN, YLW, RED, percent));
+}
+
+string generate_binsize_colors (const size_t percent) {
+
+	if (is_WELL_INTERVAL_DATANUMBER()) return STD_CLR;
+
+	return (generate_colorstep (LRD, LYL, LGN, percent));
+}
+
+void PS_rectangle (ofstream& o, const PAPER& P, const double X1, const double Y1, const double X2, const double Y2) {
+
+	newpath_PS(o);
+
+	moveto_PS (o, X1 * P.D, Y1 * P.D, 3);
+	lineto_PS (o, X2 * P.D, Y1 * P.D, 3);
+	lineto_PS (o, X2 * P.D, Y2 * P.D, 3);
+	lineto_PS (o, X1 * P.D, Y2 * P.D, 3);
+
+	closepath_PS(o);
+	stroke_PS(o);
+
+	return;
+}
+
+void PS_rainbow (ofstream& o, const PAPER& P, const double X1, const double Y1, const double X2, const double Y2, const string MODE) {
+
+	const bool BSZ = MODE == "BINSIZE";
+	const bool ERR = MODE == "ERROR";
+
+	if (!BSZ && !ERR) ASSERT_DEAD_END();
+
+	linewidth_PS(o, 1, 1);
+
+	newpath_PS(o);
+
+	for (size_t i = 0; i < 100; i++) {
+
+		string CLR;
+
+		if (BSZ) CLR = generate_binsize_colors (i);
+		else CLR = generate_error_colors(i);
+
+		const double actX = X1 + i*((X2 - X1 - 0.5) / 100);
+
+		color_PS(o, CLR);
+
+		moveto_PS(o, actX * P.D, Y1 * P.D, 3);
+		lineto_PS(o, actX * P.D, Y2 * P.D, 3);
+
+		stroke_PS(o);
+	}
+	stroke_PS(o);
+	color_PS(o, "0.0 0.0 0.0");
+
+	PS_rectangle (o, P, X1, Y1, X2, Y2);
+
+	return;
+}
+
+void PS_well_symbols (ofstream& o, const PAPER& P) {
+
+	linewidth_PS (o, 1, 1);
+
+	font_PS(o, "ArialNarrow", 10);
+	color_PS(o, "0.0 0.0 0.0");
+	text_PS(o, 175*P.D, 1565*P.D, 3, "DATA NUMBER IN BINS");
+	font_PS(o, "ArialNarrow", 7);
+	text_PS(o, 110*P.D, 1583*P.D, 3, "MIN");
+	text_PS(o, 145*P.D, 1583*P.D, 3, "MAX");
+	PS_rainbow (o, P, 110, 1580, 160, 1560, "BINSIZE");
+
+	font_PS(o, "ArialNarrow", 10);
+	color_PS(o, "0.0 0.0 0.0");
+	text_PS(o, 175*P.D, 1530*P.D, 3, "RELATIVE ERROR IN BINS");
+	PS_rainbow (o, P, 110, 1545, 160, 1525, "ERROR");
+
+	font_PS(o, "ArialNarrow", 7);
+	text_PS(o, 110*P.D, 1548*P.D, 3, "MIN");
+	text_PS(o, 145*P.D, 1548*P.D, 3, "MAX");
+
+	font_PS(o, "ArialNarrow", 10);
+	color_PS(o, "0.0 0.0 0.0");
+	text_PS(o, 375*P.D, 1565*P.D, 3, "MEASURED DATA");
+	translate_PS (o, 355*P.D, 1570*P.D, 3);
+	text_PS (o, " newpath measurement");
+	translate_PS (o, -355*P.D, - 1570*P.D, 3);
+
+	font_PS(o, "ArialNarrow", 10);
+	color_PS(o, "0.0 0.0 0.0");
+	text_PS(o, 375*P.D, 1530*P.D, 3, "MEASURED DATA, OVERTURNED");
+	translate_PS (o, 355*P.D, 1535*P.D, 3);
+	text_PS (o, " newpath overturned_measurement");
+	translate_PS (o, -355*P.D, - 1535*P.D, 3);
+
+	font_PS(o, "ArialNarrow", 10);
+	color_PS(o, "0.0 0.0 0.0");
+	text_PS(o, 615*P.D, 1565*P.D, 3, "DATA AVERAGE");
+	color_PS(o, AVR_CLR);
+	linewidth_PS(o, 1.5, 1);
+	moveto_PS(o, 575 * P.D, 1570 * P.D, 3);
+	lineto_PS(o, 605 * P.D, 1570 * P.D, 3);
+	stroke_PS(o);
+
+	font_PS(o, "ArialNarrow", 10);
+	color_PS(o, "0.0 0.0 0.0");
+	text_PS(o, 615*P.D, 1530*P.D, 3, "DATA FREQUENCY");
+	color_PS(o, FRQ_CLR);
+	linewidth_PS(o, 1.5, 1);
+	moveto_PS(o, 575 * P.D, 1535 * P.D, 3);
+	lineto_PS(o, 605 * P.D, 1535 * P.D, 3);
+	stroke_PS(o);
+
+	font_PS(o, "ArialNarrow", 10);
+	color_PS(o, "0.0 0.0 0.0");
+	text_PS(o, 815*P.D, 1565*P.D, 3, "BIN HALF STANDARD DEVIATION ");
+	color_PS(o, STD_CLR);
+	linewidth_PS(o, 1.5, 1);
+	moveto_PS(o, 775 * P.D, 1570 * P.D, 3);
+	lineto_PS(o, 805 * P.D, 1570 * P.D, 3);
+	stroke_PS(o);
+
+	font_PS(o, "ArialNarrow", 10);
+	color_PS(o, "0.0 0.0 0.0");
+	text_PS(o, 815*P.D, 1530*P.D, 3, "DATA AVERAGE FIRST DERIVATE");
+	color_PS(o, DRV_CLR);
+	linewidth_PS(o, 1.5, 1);
+	moveto_PS(o, 775 * P.D, 1535 * P.D, 3);
+	lineto_PS(o, 805 * P.D, 1535 * P.D, 3);
+	stroke_PS(o);
+
+}
+
 double well_axes_step (const double MIN, const double MAX) {
 
 	const double DIF = MAX - MIN;
@@ -239,7 +419,8 @@ bool has_GDB_DEPTH_value_in_range (const vector <GDB>& inGDB, const double MIN, 
 
 double return_MIN_value (const vector <GDB>& inGDB, const size_t STEP) {
 
-	const vector <GDB> temp = sort_by_DEPTH (inGDB);
+	const vector <GDB> temp = SORT_GDB (inGDB, "DEPTH");
+	//const vector <GDB> temp = sort_by_DEPTH (inGDB);
 
 	const size_t LIMIT = inGDB.at(inGDB.size() - 1).DEPTH;
 
@@ -252,7 +433,8 @@ double return_MIN_value (const vector <GDB>& inGDB, const size_t STEP) {
 
 double return_MAX_value (const vector <GDB>& inGDB, const size_t STEP) {
 
-	const vector <GDB> temp = sort_by_rev_DEPTH (inGDB);
+	const vector <GDB> temp = SORT_GDB (inGDB, "rDEPTH");
+	//const vector <GDB> temp = sort_by_rev_DEPTH (inGDB);
 
 	for (double i = STEP * 2000.0; i > 0.0; i-=STEP) {
 
@@ -273,50 +455,49 @@ void PS_well_coordinate_axes_INTERVAL (ofstream& o, const PAPER& P, const double
 	lineto_PS (o, X + PL_WDT * P.A, P.O1Y, 3);
 	stroke_PS (o);
 
-	/*
-	font_PS(o, "ArialNarrow-Bold", 24);
-	color_PS (o, "0.9 0.9 0.9");
+	return;
+}
 
-	text_PS (o, X + (PL_WDT - 3.2) * P.A, P.O1Y + 45.0 * P.D, 3, "BIN SIZE");
+void ps_well_formation_tops (const vector <GDB>& inGDB, ofstream& o, const PAPER& P, const double X, const double LENGTH, const double MIN_VAL, const double MAX_VAL, const double STEP) {
 
-	font_PS(o, "ArialNarrow", 12);
-	color_PS (o, "0.0 0.0 0.0");
+	const vector <size_t> FN_VAL = return_records_with_formation_names (inGDB);
 
-	for (double i = MIN_VAL; i < MAX_VAL + 0.5*STEP; i+=STEP) {
+	const vector <GDB> processGDB = SORT_GDB (inGDB, "DEPTH");
+	//const vector <GDB> processGDB = sort_by_DEPTH (inGDB);
 
-		const double INT = (i - MIN_VAL) / (MAX_VAL - MIN_VAL);
+	vector <double> DEPTH;
+	vector <string> FRMTN;
 
-		if (i > MIN_VAL + 0.5*STEP) {
+	for (size_t i = 0; i < FN_VAL.size(); i++) {
+		for (size_t j = 0; j < processGDB.size(); j++) {
 
-			color_PS (o, "0.9 0.9 0.9");
+			if (FN_VAL.at(i) == j) {
 
-			moveto_PS (o, X + PL_WDT * P.A, P.O1Y - (INT * LENGTH), 3);
-			lineto_PS (o, X + 5.0 * P.D, P.O1Y - (INT * LENGTH), 3);
-			stroke_PS(o);
-
-			color_PS (o, "0.0 0.0 0.0");
+				DEPTH.push_back (processGDB.at(j).DEPTH);
+				FRMTN.push_back (processGDB.at(j).FORMATION);
+			}
 		}
-		moveto_PS (o, X, P.O1Y - (INT * LENGTH), 3);
-		lineto_PS (o, X - 5.0 * P.D, P.O1Y - (INT * LENGTH), 3);
+	}
+	font_PS(o, "ArialNarrow", 10);
+	color_PS (o, "0.5 0.5 1.0");
+	linewidth_PS (o, 2, 0);
+
+	for (size_t i = 0; i < DEPTH.size(); i++) {
+
+		const double Y = LENGTH * ((DEPTH.at(i) - MIN_VAL) / (MAX_VAL - MIN_VAL));
+
+		moveto_PS (o, X + 750.0 * P.D, P.O1Y - Y, 3);
+		lineto_PS (o, X + 170.0 * P.D, P.O1Y - Y, 3);
 		stroke_PS(o);
 
-		text_PS (o, X - 40.0 * P.D, P.O1Y - (INT * LENGTH) - 6.0 * P.D, 3, double_to_string (i, 0));
+		const string T = "TOP " + FRMTN.at(i) + " (" + double_to_string (DEPTH.at(i), 0) + ")";
+
+		text_PS (o, X + 5.0 * P.D, P.O1Y -Y - 5 * P.D, 3, T);
 	}
-	*/
 	return;
 }
 
 void PS_well_coordinate_grid_INTERVAL (ofstream& o, const PAPER& P, const double X, const double LENGTH, const double MIN_VAL, const double MAX_VAL, const double STEP) {
-
-	//newpath_PS(o);
-	///color_PS (o, "0.0 0.0 0.0");
-	//linewidth_PS (o, 1, 1);
-
-	//moveto_PS (o, X, P.O1Y, 3);
-	//lineto_PS (o, X, P.O1Y - LENGTH, 3);
-	//moveto_PS (o, X, P.O1Y, 3);
-	//lineto_PS (o, X + PL_WDT * P.A, P.O1Y, 3);
-	//stroke_PS (o);
 
 	font_PS(o, "ArialNarrow-Bold", 24);
 	color_PS (o, "0.9 0.9 0.9");
@@ -468,9 +649,9 @@ void PS_well_coordinate_grid_DIP (ofstream& o, const PAPER& P, const double X, c
 	font_PS(o, "ArialNarrow", 12);
 	color_PS (o, "0.0 0.0 0.0");
 
-	for (size_t i = 0; i < 4; i++) {
+	for (size_t i = 0; i < 7; i++) { //7 was 4
 
-		const double stp = (i * PL_WDT * P.A) / 3.0;
+		const double stp = (i * PL_WDT * P.A) / 6.0; //6.0 was 3.0
 
 		moveto_PS (o, X + stp, P.O1Y, 3);
 		lineto_PS (o, X + stp, P.O1Y + 5.0 * P.D, 3);
@@ -486,10 +667,9 @@ void PS_well_coordinate_grid_DIP (ofstream& o, const PAPER& P, const double X, c
 
 			color_PS (o, "0.0 0.0 0.0");
 		}
-		if (i == 0) text_PS (o, X + stp - 3.0 * P.D, P.O1Y + 8.0 * P.D, 3, double_to_string (0.0, 0));
-		if (i == 1) text_PS (o, X + stp - 7.0 * P.D, P.O1Y + 8.0 * P.D, 3, double_to_string (30.0, 0));
-		if (i == 2) text_PS (o, X + stp - 7.0 * P.D, P.O1Y + 8.0 * P.D, 3, double_to_string (60.0, 0));
-		if (i == 3) text_PS (o, X + stp - 8.0 * P.D, P.O1Y + 8.0 * P.D, 3, double_to_string (90.0, 0));
+		if (i == 0) text_PS (o, X + stp - 11.0 * P.D, P.O1Y + 8.0 * P.D, 3, double_to_string (-90.0, 0));
+		if (i == 3) text_PS (o, X + stp - 4.0 * P.D, P.O1Y + 8.0 * P.D, 3, double_to_string (0.0, 0));
+		if (i == 6) text_PS (o, X + stp - 7.0 * P.D, P.O1Y + 8.0 * P.D, 3, double_to_string (90.0, 0));
 	}
 
 	for (double i = MIN_VAL; i < MAX_VAL + 0.5*STEP; i+=STEP) {
@@ -598,6 +778,8 @@ void PS_derivate_DIPDIR_DIP (ofstream& o, const PAPER& P, const double X) {
 
 void plot_well_frequency_derivate (const vector <WELL_FREQUENCY> IN, ofstream& o, const PAPER& P, const double X, const double LENGTH, const double MIN_VAL, const double MAX_VAL) {
 
+	if (IN.size() < 1) return;
+
 	vector <double> DEPTH;
 	vector <double> VALUE;
 
@@ -635,10 +817,6 @@ vector <XY> cutting_points (const vector <XY>& IN) {
 
 	for (size_t i = 0; i < IN.size() - 1; i++) {
 
-		//cout << i << endl;
-
-		//cout << IN.size() << endl;
-
 		const bool LAST = i == IN.size() - 2;
 
 		XY buf = IN.at(i);
@@ -652,8 +830,6 @@ vector <XY> cutting_points (const vector <XY>& IN) {
 		const bool PLUS = (NXT - ACT) > 180.0; 		// 012 > 355
 		const bool MINUS = (NXT - ACT) < -180.0;	// 355 > 012
 
-		//cout << "g7" << endl;
-
 		OUT.push_back (buf);
 
 		if (PLUS) {
@@ -665,7 +841,6 @@ vector <XY> cutting_points (const vector <XY>& IN) {
 			buf.X = 999.99;
 			buf.Y = (ACT_DPT + 2.0 * NXT_DPT) / 3.0;
 			OUT.push_back (buf);
-
 		}
 		else if (MINUS) {
 
@@ -679,13 +854,7 @@ vector <XY> cutting_points (const vector <XY>& IN) {
 		}
 		else {}
 
-
-		if (LAST) {
-
-			// << "LAST" << endl;
-
-			OUT.push_back (IN.at(i+1));
-		}
+		if (LAST) OUT.push_back (IN.at(i+1));
 	}
 	return OUT;
 }
@@ -694,11 +863,7 @@ vector <XY> generate_xy_vector (const vector <double>& VALUE, const vector <doub
 
 	if (DEPTH.size() != VALUE.size()) ASSERT_DEAD_END();
 
-
-
 	vector <XY> OUT;
-
-	//handle if IN.size() < 2
 
 	for (size_t i = 0; i < VALUE.size(); i++) {
 
@@ -716,13 +881,10 @@ vector <XY> generate_xy_vector (const vector <double>& VALUE, const vector <doub
 		}
 		else {
 
-			if (V < 0.0) 		buf.X = 0.0;
+			if (V < -90.0) 		buf.X = 0.0;
 			else if (V > 90.0) 	buf.X = 90.0;
 			else 				buf.X = V;
 		}
-
-		//cout << buf.Y << "  -  " << buf.X << endl;
-
 		OUT.push_back (buf);
 	}
 	return OUT;
@@ -800,8 +962,7 @@ vector <double> generate_DEPTH_from_XY_vector (const vector <XY>& IN) {
 void plot_curve (const vector <double> DEPTH, const vector <double> VALUE, ofstream& o, const PAPER& P, const double X, const double LENGTH, const double MIN_VAL, const double MAX_VAL, const bool DIPDIR, const string TYPE) {
 
 	if (DEPTH.size() != VALUE.size()) ASSERT_DEAD_END();
-
-	//cout << "plot_curve" << endl;
+	if (DEPTH.size() < 1) return;
 
 	const bool A = TYPE == "AVERAGE";
 	const bool E_MN = TYPE == "LOWER_STDEV";
@@ -814,10 +975,15 @@ void plot_curve (const vector <double> DEPTH, const vector <double> VALUE, ofstr
 	if (D) MX = 2.0;
 	if (F) MX = 1.0;
 
-	string CLR = "0.80 0.80 0.80";
-	if (A) CLR = "0.00 0.00 0.00";
-	if (D) CLR = "1.00 0.00 0.00";
-	if (F) CLR = "0.00 0.00 0.00";
+	double MN = 0.0;
+	if (!DIPDIR) MN = -90.0;
+	if (D) MN = 0.0;
+	if (F) MN = 0.0;
+
+	string CLR = STD_CLR;
+	if (A) CLR = AVR_CLR;
+	if (D) CLR = DRV_CLR;
+	if (F) CLR = FRQ_CLR;
 
 	double LW = 1.0;
 	if (E_MN || E_MX) LW = 2.0;
@@ -833,11 +999,8 @@ void plot_curve (const vector <double> DEPTH, const vector <double> VALUE, ofstr
 		const double NXT_D = DEPTH.at(i + 1);
 		const double NXT_V = VALUE.at(i + 1);
 
-		//if (ACT_DATA < 0.0) ACT_DATA = 0.0;
-		//if (NXT_DATA < 0.0) NXT_DATA = 0.0;
-
-		const double ACT_data_X = X + (PL_WDT * P.A * (ACT_V / MX ));
-		const double NXT_data_X = X + (PL_WDT * P.A * (NXT_V / MX ));
+		const double ACT_data_X = X + (PL_WDT * P.A * ((ACT_V - MN) / (MX - MN)));
+		const double NXT_data_X = X + (PL_WDT * P.A * ((NXT_V - MN) / (MX - MN)));
 
 		const double ACT_data_Y = P.O1Y - (LENGTH * ((ACT_D - MIN_VAL) / (MAX_VAL - MIN_VAL)));
 		const double NXT_data_Y = P.O1Y - (LENGTH * ((NXT_D - MIN_VAL) / (MAX_VAL - MIN_VAL)));
@@ -846,7 +1009,6 @@ void plot_curve (const vector <double> DEPTH, const vector <double> VALUE, ofstr
 		lineto_PS(o, NXT_data_X, NXT_data_Y, 3);
 	}
 	stroke_PS (o);
-
 	return;
 }
 
@@ -857,27 +1019,55 @@ double return_plot_value (const WELL_INTERVAL ACT, const bool DIPDIR, const stri
 	const bool E_MX = TYPE == "UPPER_STDEV";
 	const bool D = TYPE == "DERIVATE";
 
-	if (A && DIPDIR) return ACT.INT_AV_DD.DIPDIR;
+	const double DIPD = ACT.INT_AV_DD.DIPDIR;
+	const double STDEV = ACT.INT_AV_DD_STDEV;
+	const double DD_DRV = ACT.DD_DERIV;
+	const double D_DRV = ACT.D_DERIV;
 
-	else if (A && !DIPDIR)	return ACT.INT_AV_DD.DIP;
+	double DIP = ACT.INT_AV_DD.DIP;
 
-	else if (E_MN && DIPDIR) return ACT.INT_AV_DD.DIPDIR - ACT.INT_AV_DD_STDEV;
+	if (is_D_up(ACT.INT_AV_D)) DIP = - DIP;
 
-	else if (E_MX && DIPDIR) return ACT.INT_AV_DD.DIPDIR + ACT.INT_AV_DD_STDEV;
+	if (A && DIPDIR) return DIPD;
 
-	else if (E_MN && !DIPDIR) return ACT.INT_AV_DD.DIP - ACT.INT_AV_D_STDEV;
+	else if (A && !DIPDIR)	return DIP;
 
-	else if (E_MX && !DIPDIR) return ACT.INT_AV_DD.DIP + ACT.INT_AV_D_STDEV;
+	else if (E_MN && DIPDIR) return DIPD - 0.5 * STDEV;
 
-	else if (D && DIPDIR) return ACT.DD_DERIV;
+	else if (E_MX && DIPDIR) return DIPD + 0.5 * STDEV;
 
-	else if (D && !DIPDIR) return ACT.D_DERIV;
+	else if (E_MN && !DIPDIR) return DIP - 0.5 * STDEV;
+
+	else if (E_MX && !DIPDIR) return DIP + 0.5 * STDEV;
+
+	else if (D && DIPDIR) return DD_DRV;
+
+	else if (D && !DIPDIR) return D_DRV;
 
 	else {
 
 		ASSERT_DEAD_END();
 		return NaN();
 	}
+}
+
+vector <size_t> return_records_with_formation_names (const vector <GDB>& inGDB){
+
+	const vector <GDB> processGDB = SORT_GDB(inGDB, "DEPTH");
+	//const vector <GDB> processGDB = sort_by_DEPTH (inGDB);
+
+	vector <size_t> OUT;
+
+	for (size_t i = 1; i < processGDB.size(); i++) {
+
+		const string ACT_FRM = processGDB.at(i - 1).FORMATION;
+		const string NXT_FRM = processGDB.at(i).FORMATION;
+
+		if (i == 1 && ACT_FRM.size() > 0) OUT.push_back (i - 1);
+
+		if (ACT_FRM != NXT_FRM) OUT.push_back (i);
+	}
+	return OUT;
 }
 
 void plot_well_curve (const vector <WELL_INTERVAL>& IN, ofstream& o, const PAPER& P, const double X, const double LENGTH, const double MIN_VAL, const double MAX_VAL, const bool DIPDIR, const string TYPE) {
@@ -887,20 +1077,12 @@ void plot_well_curve (const vector <WELL_INTERVAL>& IN, ofstream& o, const PAPER
 	vector <double> DEPTH;
 	vector <double> VALUE;
 
-	//cout << "plot_well_curve" << endl;
-
-	//cout << "IN.size(): " << IN.size() << endl;
-
 	for (size_t i = 0; i < IN.size() - 1; i++) {
 
 		const bool LAST = i == IN.size() - 1;
 
 		const WELL_INTERVAL ACT = IN.at(i);
 		const WELL_INTERVAL NXT = IN.at(i + 1);
-
-		//cout << "ACT.SIZE: " << ACT.SIZE << endl;
-		//cout << "NXT.SIZE: " << NXT.SIZE << endl;
-
 
 		if (ACT.SIZE > 0 && NXT.SIZE > 0) {
 
@@ -917,33 +1099,13 @@ void plot_well_curve (const vector <WELL_INTERVAL>& IN, ofstream& o, const PAPER
 			}
 		}
 	}
-
-	//ez itt lentebb indefele modositasokat csinal a frequency-gorben, am
-	//nem piszkalja a dipdir-gorbet, ha szar
-
-	//cout << "A1" << endl;
-
 	vector <XY> PLOT = generate_xy_vector (VALUE, DEPTH, DIPDIR);
-
-	//cout << "VALUE.size(): " << VALUE.size() << endl;
-
-	//cout << "A2" << endl;
-
-	//cout << "PLOT.size(): " << PLOT.size() << endl;
 
 	PLOT = cutting_points (PLOT);
 
-	//cout << "PLOT.size(): " << PLOT.size() << endl;
-
-	//cout << "A3" << endl;
-
 	vector <vector <XY> > PLOT_V = generate_xy_vector_vector (PLOT);
 
-	//cout << "A4" << endl;
-
 	PLOT_V = tidy_xy_vector_vector (PLOT_V);
-
-	//cout << "A5" << endl;
 
 	for (size_t i = 0; i < PLOT_V.size(); i++) {
 
@@ -952,239 +1114,43 @@ void plot_well_curve (const vector <WELL_INTERVAL>& IN, ofstream& o, const PAPER
 
 		plot_curve (DEPTH, VALUE, o, P, X, LENGTH, MIN_VAL, MAX_VAL, DIPDIR, TYPE);
 	}
-
-	//cout << "PLOT.size(): " << PLOT.size() << endl;
-	//	for (size_t i = 0; i < PLOT.size(); i++) {
-
-	//		cout << PLOT.at(i).X << "  -  " << PLOT.at(i).Y << endl;
-	//	}
-
-
-	/*cout << "PLOT.size(): " << PLOT_V.size() << endl;
-	for (size_t i = 0; i < PLOT_V.size(); i++) {
-
-		cout << "  --------  " << endl;
-
-		for (size_t j = 0; j < PLOT_V.at(i).size(); j++) {
-
-			cout << PLOT_V.at(i).at(j).X << "  -  " << PLOT_V.at(i).at(j).Y << endl;
-		}
-	}
-	*/
-
-	//exit (555);
-
-	//plot_curve (DEPTH, VALUE, o, P, X, LENGTH, MIN_VAL, MAX_VAL, DIPDIR, TYPE);
-
-	//if (STDEV) plot_curve_stdev (DEPTH_1, VALUE_1, DEPTH_2, VALUE_2, o, P, X, LENGTH, MIN_VAL, MAX_VAL, DIPDIR);
-
-	//cout << "end plot_well_curve" << endl;
-
 	return;
 }
-
-
-
-
-
-/*
- * void plot_well_curve (const vector <WELL_INTERVAL>& IN, ofstream& o, const PAPER& P, const double X, const double LENGTH, const double MIN_VAL, const double MAX_VAL, const bool DIPDIR, const string TYPE) {
-
-	const bool A = TYPE == "AVERAGE";
-	//const bool E_MN = TYPE == "LOWER_STDEV";
-	//const bool E_MX = TYPE == "UPPER_STDEV";
-	const bool STDEV = TYPE == "STDEV";
-	const bool D = TYPE == "DERIVATE";
-
-	vector <double> DEPTH_1;
-	vector <double> VALUE_1;
-
-	vector <double> DEPTH_2;
-	vector <double> VALUE_2;
-
-	for (size_t i = 0; i < IN.size() - 1; i++) {
-
-		const bool LAST = i == IN.size() - 1;
-
-		const WELL_INTERVAL ACT = IN.at(i);
-		const WELL_INTERVAL NXT = IN.at(i + 1);
-
-		double ACT_DATA_1 = NaN();
-		double NXT_DATA_1 = NaN();
-
-		double ACT_DATA_2 = NaN();
-		double NXT_DATA_2 = NaN();
-
-		if (ACT.SIZE > 0 && NXT.SIZE > 0) {
-
-			if (A && DIPDIR) {
-
-				ACT_DATA_1 = ACT.INT_AV_DD.DIPDIR;
-				NXT_DATA_1 = NXT.INT_AV_DD.DIPDIR;
-			}
-			else if (A && !DIPDIR) {
-
-				ACT_DATA_1 = ACT.INT_AV_DD.DIP;
-				NXT_DATA_1 = NXT.INT_AV_DD.DIP;
-			}
-			//else if (E_MN && DIPDIR) {
-
-			//	ACT_DATA = ACT.INT_AV_DD.DIPDIR - ACT.INT_AV_DD_STDEV;
-			//	NXT_DATA = NXT.INT_AV_DD.DIPDIR - NXT.INT_AV_DD_STDEV;
-
-			//	cout << "ACT_DATA: " << ACT_DATA << endl;
-			//	if (LAST) {
-
-			//		cout << "NXT_DATA: " << NXT_DATA << endl;
-			//	}
-			//}
-			//else if (E_MN && !DIPDIR) {
-
-			//	ACT_DATA = ACT.INT_AV_DD.DIP - ACT.INT_AV_D_STDEV;
-			//	NXT_DATA = NXT.INT_AV_DD.DIP - NXT.INT_AV_D_STDEV;
-			//}
-			//else if (E_MX && DIPDIR) {
-
-			//	ACT_DATA = ACT.INT_AV_DD.DIPDIR + ACT.INT_AV_DD_STDEV;
-			//	NXT_DATA = NXT.INT_AV_DD.DIPDIR + NXT.INT_AV_DD_STDEV;
-			//}
-			//else if (E_MX && !DIPDIR) {
-
-			//	ACT_DATA = ACT.INT_AV_DD.DIP + ACT.INT_AV_D_STDEV;
-			//	NXT_DATA = NXT.INT_AV_DD.DIP + NXT.INT_AV_D_STDEV;
-			//}
-			else if (STDEV && DIPDIR) {
-
-				ACT_DATA_1 = ACT.INT_AV_DD.DIPDIR - ACT.INT_AV_DD_STDEV;
-				NXT_DATA_1 = NXT.INT_AV_DD.DIPDIR - NXT.INT_AV_DD_STDEV;
-
-				ACT_DATA_2 = ACT.INT_AV_DD.DIPDIR + ACT.INT_AV_DD_STDEV;
-				NXT_DATA_2 = NXT.INT_AV_DD.DIPDIR + NXT.INT_AV_DD_STDEV;
-			}
-			else if (STDEV && !DIPDIR) {
-
-				ACT_DATA_1 = ACT.INT_AV_DD.DIP - ACT.INT_AV_D_STDEV;
-				NXT_DATA_1 = NXT.INT_AV_DD.DIP - NXT.INT_AV_D_STDEV;
-
-				ACT_DATA_2 = ACT.INT_AV_DD.DIP + ACT.INT_AV_D_STDEV;
-				NXT_DATA_2 = NXT.INT_AV_DD.DIP + NXT.INT_AV_D_STDEV;
-			}
-			else if (D && DIPDIR) {
-
-				ACT_DATA_1 = ACT.DD_DERIV;
-				NXT_DATA_1 = NXT.DD_DERIV;
-			}
-			else if (D && !DIPDIR) {
-
-				ACT_DATA_1 = ACT.D_DERIV;
-				NXT_DATA_1 = NXT.D_DERIV;
-			}
-			else ASSERT_DEAD_END();
-
-
-			const bool OTHER_SIDE_1 =	(ACT_DATA_1 < 0.0 && NXT_DATA_1 > 0.0) ||
-										(ACT_DATA_1 > 0.0 && NXT_DATA_1 < 0.0) ||
-										(ACT_DATA_1 < 360.0 && NXT_DATA_1 > 360.0) ||
-										(ACT_DATA_1 > 360.0 && NXT_DATA_1 < 360.0);
-
-
-			const bool OTHER_SIDE_2 =	(ACT_DATA_2 < 0.0 && NXT_DATA_2 > 0.0) ||
-										(ACT_DATA_2 > 0.0 && NXT_DATA_2 < 0.0) ||
-										(ACT_DATA_2 < 360.0 && NXT_DATA_2 > 360.0) ||
-										(ACT_DATA_2 > 360.0 && NXT_DATA_2 < 360.0);
-
-
-
-
-			//if (ACT_DATA_1 < 0.0) ACT_DATA_1 = 0.0;
-			//if (NXT_DATA_1 < 0.0) NXT_DATA_1 = 0.0;
-			//if (ACT_DATA_2 < 0.0) ACT_DATA_2 = 0.0;
-			//if (NXT_DATA_2 < 0.0) NXT_DATA_2 = 0.0;
-			//if (ACT_DATA_1 > 360.0) ACT_DATA_1 = 360.0;
-			//if (NXT_DATA_1 > 360.0) NXT_DATA_1 = 360.0;
-			//if (ACT_DATA_2 > 360.0) ACT_DATA_2 = 360.0;
-			//if (NXT_DATA_2 > 360.0) NXT_DATA_2 = 360.0;
-
-			if (ACT_DATA_1 < 0.0) ACT_DATA_1 = 360.0 + ACT_DATA_1;
-			if (NXT_DATA_1 < 0.0) NXT_DATA_1 = 360.0 + NXT_DATA_1;
-			if (ACT_DATA_2 < 0.0) ACT_DATA_2 = 360.0 + ACT_DATA_2;
-			if (NXT_DATA_2 < 0.0) NXT_DATA_2 = 360.0 + NXT_DATA_2;
-
-			if (ACT_DATA_1 > 360.0) ACT_DATA_1 = ACT_DATA_1 - 360.0;
-			if (NXT_DATA_1 > 360.0) NXT_DATA_1 = NXT_DATA_1 - 360.0;
-			if (ACT_DATA_2 > 360.0) ACT_DATA_2 = ACT_DATA_2 - 360.0;
-			if (NXT_DATA_2 > 360.0) NXT_DATA_2 = NXT_DATA_2 - 360.0;
-
-
-
-			VALUE_1.push_back (ACT_DATA_1);
-			DEPTH_1.push_back (ACT.DEPTH);
-
-
-			if (OTHER_SIDE_1) {
-
-				VALUE_1.push_back (999.0);
-				DEPTH_1.push_back ((ACT.DEPTH + NXT.DEPTH) / 2.0);
-			}
-
-
-
-			if (STDEV) {
-				VALUE_2.push_back (ACT_DATA_2);
-				DEPTH_2.push_back (ACT.DEPTH);
-
-				if (OTHER_SIDE_2) {
-
-					VALUE_2.push_back (999.0);
-					DEPTH_2.push_back ((ACT.DEPTH + NXT.DEPTH) / 2.0);
-				}
-			}
-
-
-//nem kezeli, ha az utolso elotti elemnel valt a fuggveny!
-
-
-
-
-			if (LAST) {
-
-				VALUE_1.push_back (ACT_DATA_1);
-				DEPTH_1.push_back (NXT.DEPTH);
-
-				if (STDEV) {
-					VALUE_2.push_back (ACT_DATA_2);
-					DEPTH_2.push_back (ACT.DEPTH);
-				}
-			}
-		}
-	}
-	plot_curve (DEPTH_1, VALUE_1, o, P, X, LENGTH, MIN_VAL, MAX_VAL, DIPDIR, TYPE);
-
-	if (STDEV) plot_curve_stdev (DEPTH_1, VALUE_1, DEPTH_2, VALUE_2, o, P, X, LENGTH, MIN_VAL, MAX_VAL, DIPDIR);
-
-	return;
-}
- */
-
 
 void plot_well_measurements (const vector <GDB>& inGDB, ofstream& o, const PAPER& P, const double X, const double LENGTH, const double MIN_VAL, const double MAX_VAL, const bool DIPDIR) {
 
-	const vector <GDB> temp = sort_by_DEPTH (inGDB);
+	const vector <GDB> temp = SORT_GDB(inGDB, "DEPTH");
+	//const vector <GDB> temp = sort_by_DEPTH (inGDB);
 
 	double MX = 90.0;
 	if (DIPDIR) MX = 360.0;
 
+	double MN = -90.0;
+	if (DIPDIR) MN = 0.0;
+
+	const bool B = is_allowed_handle_as_bedding(inGDB.at(0).DATATYPE);
+
 	for (size_t i = 0; i < inGDB.size(); i++) {
 
-		double 		DATA = inGDB.at(i).corr.DIP;
-		if (DIPDIR) DATA = inGDB.at(i).corr.DIPDIR;
+		const bool O = is_allowed_bedding_overturned_sense(inGDB.at(i).OFFSET);
 
-		const double data_X = PL_WDT * P.A * (DATA / MX );
+		if (O && !B) ASSERT_DEAD_END();
+
+		double DATA = NaN();
+
+		if (DIPDIR) DATA = inGDB.at(i).corr.DIPDIR;
+		else {
+
+			if (O && B) DATA = - inGDB.at(i).corr.DIP;
+			else		DATA =   inGDB.at(i).corr.DIP;
+		}
+		const double data_X = PL_WDT * P.A * ((DATA - MN) / (MX - MN));
 		const double data_Y = LENGTH * ((inGDB.at(i).DEPTH - MIN_VAL) / (MAX_VAL - MIN_VAL));
 
 		translate_PS (o, X + data_X, P.O1Y - data_Y, 3);
 
-		text_PS (o, " newpath measurement");
+		if (O && B) text_PS (o, " newpath overturned_measurement");
+		else text_PS (o, " newpath measurement");
 
 		translate_PS (o, - X - data_X, - P.O1Y + data_Y, 3);
 	}
@@ -1229,25 +1195,11 @@ void PS_well_intervals_error (const vector <WELL_INTERVAL>& INTERVAL, ofstream& 
 		const double Y1 = P.O1Y - LENGTH * ((MAX - MIN_VAL) / (MAX_VAL - MIN_VAL));
 		const double Y2 = P.O1Y - LENGTH * ((MIN - MIN_VAL) / (MAX_VAL - MIN_VAL));
 
-		const VCTR RED = declare_vector (1.00, 0.00, 0.00);
-		const VCTR GRY = declare_vector (1.00, 1.00, 0.00);
+		double CLR_RATIO = 100 * (1.0 * (SD - MIN_ERROR)) / (MAX_ERROR - MIN_ERROR);
 
-		double CLR_RATIO = (1.0 * (SD - MIN_ERROR)) / (MAX_ERROR - MIN_ERROR);
 		if (INTERVAL.at(i).SIZE == 0) CLR_RATIO = 0.0;
 
-		//cout
-		//<< "CLR_RATIO: " << CLR_RATIO << "  "
-		//<< "MIN_ERROR: " << MIN_ERROR << "  "
-		//<< "MAX_ERROR: " << MAX_ERROR << "  "
-		//<< "SD: " << SD
-		//<< endl;
-
-		VCTR RES = declare_vector (
-					RED.X * CLR_RATIO + GRY.X * (1.0 - CLR_RATIO),
-					RED.Y * CLR_RATIO + GRY.Y * (1.0 - CLR_RATIO),
-					RED.Z * CLR_RATIO + GRY.Z * (1.0 - CLR_RATIO));
-
-		string CLR = double_to_string (RES.X, 2) + " " + double_to_string (RES.Y, 2) + " " + double_to_string (RES.Z, 2);
+		string CLR = generate_error_colors (string_to_int (double_to_string (CLR_RATIO, 0)));
 
 		newpath_PS(o);
 		linewidth_PS (o, 0.5, 1);
@@ -1276,14 +1228,9 @@ void PS_well_intervals (const vector <WELL_INTERVAL>& INTERVAL, ofstream& o, con
 
 	for (size_t i = 0; i < INTERVAL.size(); i++) {
 
-		//cout << "INTERVAL.at(i).SIZE: " << INTERVAL.at(i).SIZE << endl;
-
 		if (INTERVAL.at(i).SIZE > MAX_DATA) MAX_DATA = INTERVAL.at(i).SIZE;
 		if (INTERVAL.at(i).SIZE < MIN_DATA) MIN_DATA = INTERVAL.at(i).SIZE;
 	}
-
-	//cout << MIN_DATA << endl;
-	//cout << MAX_DATA << endl;
 
 	for (size_t i = 0; i < INTERVAL.size(); i++) {
 
@@ -1302,21 +1249,11 @@ void PS_well_intervals (const vector <WELL_INTERVAL>& INTERVAL, ofstream& o, con
 		const double Y1 = P.O1Y - LENGTH * ((MAX - MIN_VAL) / (MAX_VAL - MIN_VAL));
 		const double Y2 = P.O1Y - LENGTH * ((MIN - MIN_VAL) / (MAX_VAL - MIN_VAL));
 
-		const VCTR GRN = declare_vector (0.00, 1.00, 0.00);
-		const VCTR GRY = declare_vector (1.00, 1.00, 0.00);
-
-		double CLR_RATIO = (1.0 * (INTERVAL.at(i).SIZE) - MIN_DATA) / (MAX_DATA - MIN_DATA);
+		double CLR_RATIO = 100 * (1.0 * (INTERVAL.at(i).SIZE) - MIN_DATA) / (MAX_DATA - MIN_DATA);
 
 		if (INTERVAL.at(i).SIZE == 0) CLR_RATIO = 0.0;
 
-		VCTR RES = declare_vector (
-					GRN.X * CLR_RATIO + GRY.X * (1.0 - CLR_RATIO),
-					GRN.Y * CLR_RATIO + GRY.Y * (1.0 - CLR_RATIO),
-					GRN.Z * CLR_RATIO + GRY.Z * (1.0 - CLR_RATIO));
-
-		string CLR = double_to_string (RES.X, 2) + " " + double_to_string (RES.Y, 2) + " " + double_to_string (RES.Z, 2);
-
-		////if (is_WELL_INTERVAL_DATANUMBER ()) CLR = "0.83 0.83 0.83";
+		string CLR = generate_binsize_colors (string_to_int (double_to_string (CLR_RATIO, 0)));
 
 		color_PS (o, CLR);
 
@@ -1332,19 +1269,73 @@ void PS_well_intervals (const vector <WELL_INTERVAL>& INTERVAL, ofstream& o, con
 	}
 }
 
-void OUTPUT_TO_WELL_PS (const vector <vector <vector <vector <GDB> > > > GDB_G, const PFN PF, const bool TILT) {
+
+void WELL_PS (const vector <GDB>& inGDB, const vector <WELL_INTERVAL>& INT, const vector <WELL_FREQUENCY>& FREQ, ofstream& OPS, const PAPER& P, const double LENGTH, const double MIN_VAL, const double MAX_VAL, const double STEP) {
+
+	cout << "1A-----------------------------------------" << endl;
+	double X = P.O1X + PL_LF * P.A;
+	PS_well_coordinate_grid_INTERVAL (OPS, P, X, LENGTH, MIN_VAL, MAX_VAL, STEP);
+	PS_well_intervals (INT, OPS, P, X, LENGTH, MIN_VAL, MAX_VAL);
+	PS_well_coordinate_axes_INTERVAL (OPS, P, X, LENGTH);
+	ps_well_formation_tops (inGDB, OPS, P, X, LENGTH, MIN_VAL, MAX_VAL, STEP);
+
+	cout << "2A-----------------------------------------" << endl;
+	X = X + (PL_WDT + PL_GP) * P.A;
+	PS_well_coordinate_grid_DIPDIR (OPS, P, X, LENGTH, MIN_VAL, MAX_VAL, STEP);
+	PS_well_intervals_error (INT, OPS, P, X, LENGTH, MIN_VAL, MAX_VAL, true);
+	plot_well_curve (INT, OPS, P, X, LENGTH, MIN_VAL, MAX_VAL, true, "LOWER_STDEV");
+	plot_well_curve (INT, OPS, P, X, LENGTH, MIN_VAL, MAX_VAL, true, "UPPER_STDEV");
+	plot_well_curve (INT, OPS, P, X, LENGTH, MIN_VAL, MAX_VAL, true, "AVERAGE");
+	plot_well_measurements (inGDB, OPS, P, X, LENGTH, MIN_VAL, MAX_VAL, true);
+	PS_well_coordinate_axes_DIPDIR (OPS, P, X, LENGTH);
+
+	cout << "2B-----------------------------------------" << endl;
+	X = X + (PL_WDT + PL_AX_GP) * P.A;
+	PS_derivate_DIPDIR_DIP (OPS, P, X);
+	plot_well_curve (INT, OPS, P, X, LENGTH, MIN_VAL, MAX_VAL, true, "DERIVATE");
+
+	cout << "3A-----------------------------------------" << endl;
+	X = X + (PL_WDT * 0.5 + PL_GP) * P.A;
+	PS_well_coordinate_grid_DIP (OPS, P, X, LENGTH, MIN_VAL, MAX_VAL, STEP);
+	PS_well_intervals_error (INT, OPS, P, X, LENGTH, MIN_VAL, MAX_VAL, false);
+	plot_well_curve (INT, OPS, P, X, LENGTH, MIN_VAL, MAX_VAL, false, "LOWER_STDEV");
+	plot_well_curve (INT, OPS, P, X, LENGTH, MIN_VAL, MAX_VAL, false, "UPPER_STDEV");
+	plot_well_curve (INT, OPS, P, X, LENGTH, MIN_VAL, MAX_VAL, false, "AVERAGE");
+	plot_well_measurements (inGDB, OPS, P, X, LENGTH, MIN_VAL, MAX_VAL, false);
+	PS_well_coordinate_axes_DIP (OPS, P, X, LENGTH);
+
+	cout << "3B-----------------------------------------" << endl;
+	X = X + (PL_WDT + PL_AX_GP) * P.A;
+	PS_derivate_DIPDIR_DIP (OPS, P, X);
+	plot_well_curve (INT, OPS, P, X, LENGTH, MIN_VAL, MAX_VAL, false, "DERIVATE");
+
+	cout << "4A-----------------------------------------" << endl;
+	X = X + (PL_WDT * 0.5 + PL_GP) * P.A;
+	PS_well_coordinate_axes_FREQUENCY (OPS, P, X, LENGTH, MIN_VAL, MAX_VAL, STEP);
+	plot_well_frequency (FREQ, OPS, P, X, LENGTH, MIN_VAL, MAX_VAL);
+
+	cout << "4B-----------------------------------------" << endl;
+	X = X + (PL_WDT + PL_AX_GP) * P.A;
+	PS_derivate_DIPDIR_DIP(OPS, P, X);
+	plot_well_frequency_derivate (FREQ, OPS, P, X, LENGTH, MIN_VAL, MAX_VAL);
+	//delete PS_well_coordinate_axes (prGDB_G.at(i), OPS, PPR);
+
+	return;
+}
+
+void OUTPUT_TO_WELL_PS (const vector <vector <GDB> > GDB_G, const PFN PF, const bool TILT) {
 
 	if (is_WELLDATA_NO()) return;
 
-	const vector < vector <GDB> > prGDB_G = MERGE_GROUPS_TO_GDB_G (GDB_G);
+	//const vector < vector <GDB> > prGDB_G = MERGE_GROUPS_TO_GDB_G (GDB_G);
 
-	////vector <vector <vector <vector <WELL_INTERVAL> > > > I = RETURN_INTERVAL ();
+	const vector <vector <WELL_INTERVAL> > INTERVAL = RETURN_INTERVAL ();
+	const vector <vector <WELL_FREQUENCY> > FREQUENCY = RETURN_FREQUENCY ();
 
-	////const vector <vector <WELL_INTERVAL> > INTERVAL = MERGE_INTERVAL (I);
-
-	////vector <vector <vector <vector <WELL_FREQUENCY> > > > F = RETURN_FREQUENCY ();
-
-	////const vector <vector <WELL_FREQUENCY> > FREQUENCY = MERGE_FREQUENCY (F);
+	//const vector <vector <vector <vector <WELL_INTERVAL> > > > I = RETURN_INTERVAL ();
+	//const vector <vector <WELL_INTERVAL> > INTERVAL = MERGE_INTERVAL (I);
+	//const vector <vector <vector <vector <WELL_FREQUENCY> > > > F = RETURN_FREQUENCY ();
+	//const vector <vector <WELL_FREQUENCY> > FREQUENCY = MERGE_FREQUENCY (F);
 
 	const bool IGNORE = is_GROUPSEPARATION_IGNORE ();
 	const bool by_GROUPCODE = is_GROUPSEPARATION_GROUPCODE ();
@@ -1356,12 +1347,14 @@ void OUTPUT_TO_WELL_PS (const vector <vector <vector <vector <GDB> > > > GDB_G, 
 	const string BS = path_separator;
 	const string US = "_";
 
-	for (size_t i = 0; i < prGDB_G.size(); i++) {
+	for (size_t i = 0; i < GDB_G.size(); i++) {
 
-		const vector <GDB> temp = sort_by_DEPTH (prGDB_G.at(i));
+		const vector <GDB> temp = SORT_GDB (GDB_G.at(i), "DEPTH");
+		//const vector <GDB> temp = sort_by_DEPTH (prGDB_G.at(i));
 
 		const string LOC = temp.at(0).LOC;
 		const string DT = temp.at(0).DATATYPE;
+		const string FM = temp.at(0).FORMATION;
 
 		const bool PLN = is_allowed_plane_datatype (DT);
 		const bool LIN = is_allowed_lineation_datatype (DT);
@@ -1370,9 +1363,11 @@ void OUTPUT_TO_WELL_PS (const vector <vector <vector <vector <GDB> > > > GDB_G, 
 
 		if (PROCESS_AS_WELL) {
 
-			//cout << "PROCESS: " << temp.size() << endl;
+			string PS_NAME = PF.well_ps + BS + DT + BS + LOC + US + FM + US + DT;
 
-			string PS_NAME = PF.well_ps + BS + DT + BS + LOC + US + DT;
+			if (is_FORMATION_USE()) PS_NAME = PS_NAME + US + FM;
+
+			PS_NAME = PS_NAME + US + DT;
 
 			if (by_GROUPCODE) 	PS_NAME = PS_NAME + US + temp.at(0).GC;
 			else if (by_KMEANS) PS_NAME = PS_NAME + US + temp.at(1).GC;
@@ -1397,61 +1392,87 @@ void OUTPUT_TO_WELL_PS (const vector <vector <vector <vector <GDB> > > > GDB_G, 
 
 			PS_well_border (temp, OPS, P, TILT);
 
+			PS_well_symbols (OPS, P);
+
 			const double LENGTH = P.Y * 0.8;
 
-			//cout << "1A" << endl;
-			double X = P.O1X + PL_LF * P.A;
-			//PS_well_coordinate_grid_INTERVAL (OPS, P, X, LENGTH, MIN_VAL, MAX_VAL, STEP);
-		////	PS_well_intervals (INTERVAL.at(i), OPS, P, X, LENGTH, MIN_VAL, MAX_VAL);
-			//PS_well_coordinate_axes_INTERVAL (OPS, P, X, LENGTH);
-
-
-			//cout << "2A" << endl;
-			X = X + (PL_WDT + PL_GP) * P.A;
-			PS_well_coordinate_grid_DIPDIR (OPS, P, X, LENGTH, MIN_VAL, MAX_VAL, STEP);
-			//PS_well_intervals_error (INTERVAL.at(i), OPS, P, X, LENGTH, MIN_VAL, MAX_VAL, true);
-			//plot_well_curve (INTERVAL.at(i), OPS, P, X, LENGTH, MIN_VAL, MAX_VAL, true, "LOWER_STDEV");
-			//plot_well_curve (INTERVAL.at(i), OPS, P, X, LENGTH, MIN_VAL, MAX_VAL, true, "UPPER_STDEV");
-			//plot_well_curve (INTERVAL.at(i), OPS, P, X, LENGTH, MIN_VAL, MAX_VAL, true, "AVERAGE");
-			plot_well_measurements (temp, OPS, P, X, LENGTH, MIN_VAL, MAX_VAL, true);
-			PS_well_coordinate_axes_DIPDIR (OPS, P, X, LENGTH);
-
-
-			//cout << "2B" << endl;
-			X = X + (PL_WDT + PL_AX_GP) * P.A;
-			PS_derivate_DIPDIR_DIP (OPS, P, X);
-			//plot_well_curve (INTERVAL.at(i), OPS, P, X, LENGTH, MIN_VAL, MAX_VAL, true, "DERIVATE");
-
-
-			//3A
-			X = X + (PL_WDT * 0.5 + PL_GP) * P.A;
-			PS_well_coordinate_grid_DIP (OPS, P, X, LENGTH, MIN_VAL, MAX_VAL, STEP);
-			//PS_well_intervals_error (INTERVAL.at(i), OPS, P, X, LENGTH, MIN_VAL, MAX_VAL, false);
-			//plot_well_curve (INTERVAL.at(i), OPS, P, X, LENGTH, MIN_VAL, MAX_VAL, false, "LOWER_STDEV");
-			//plot_well_curve (INTERVAL.at(i), OPS, P, X, LENGTH, MIN_VAL, MAX_VAL, false, "UPPER_STDEV");
-			//plot_well_curve (INTERVAL.at(i), OPS, P, X, LENGTH, MIN_VAL, MAX_VAL, false, "AVERAGE");
-			//plot_well_measurements (temp, OPS, P, X, LENGTH, MIN_VAL, MAX_VAL, false);
-			PS_well_coordinate_axes_DIP (OPS, P, X, LENGTH);
-
-			//3B
-			X = X + (PL_WDT + PL_AX_GP) * P.A;
-			PS_derivate_DIPDIR_DIP (OPS, P, X);
-			//plot_well_curve (INTERVAL.at(i), OPS, P, X, LENGTH, MIN_VAL, MAX_VAL, false, "DERIVATE");
-
-			//4A
-			X = X + (PL_WDT * 0.5 + PL_GP) * P.A;
-			PS_well_coordinate_axes_FREQUENCY (OPS, P, X, LENGTH, MIN_VAL, MAX_VAL, STEP);
-		////	plot_well_frequency (FREQUENCY.at(i), OPS, P, X, LENGTH, MIN_VAL, MAX_VAL);
-
-
-			//4B
-			X = X + (PL_WDT + PL_AX_GP) * P.A;
-			PS_derivate_DIPDIR_DIP(OPS, P, X);
-			////plot_well_frequency_derivate (FREQUENCY.at(i), OPS, P, X, LENGTH, MIN_VAL, MAX_VAL);
-
-			//PS_well_coordinate_axes (prGDB_G.at(i), OPS, PPR);
+			WELL_PS (temp, INTERVAL.at(i), FREQUENCY.at(i), OPS, P, LENGTH, MIN_VAL, MAX_VAL, STEP);
 		}
 	}
-
 	return;
 }
+
+/*
+ * void OUTPUT_TO_WELL_PS (const vector <vector <vector <vector <GDB> > > > GDB_G, const PFN PF, const bool TILT) {
+
+	if (is_WELLDATA_NO()) return;
+
+	const vector < vector <GDB> > prGDB_G = MERGE_GROUPS_TO_GDB_G (GDB_G);
+
+	const vector <vector <vector <vector <WELL_INTERVAL> > > > I = RETURN_INTERVAL ();
+	const vector <vector <WELL_INTERVAL> > INTERVAL = MERGE_INTERVAL (I);
+	const vector <vector <vector <vector <WELL_FREQUENCY> > > > F = RETURN_FREQUENCY ();
+	const vector <vector <WELL_FREQUENCY> > FREQUENCY = MERGE_FREQUENCY (F);
+
+	const bool IGNORE = is_GROUPSEPARATION_IGNORE ();
+	const bool by_GROUPCODE = is_GROUPSEPARATION_GROUPCODE ();
+	const bool by_KMEANS = is_GROUPSEPARATION_KMEANS ();
+	const bool by_RUPANG = is_GROUPSEPARATION_RUPANG ();
+
+	if (!IGNORE && !by_GROUPCODE && !by_KMEANS && !by_RUPANG) ASSERT_DEAD_END() ;
+
+	const string BS = path_separator;
+	const string US = "_";
+
+	for (size_t i = 0; i < prGDB_G.size(); i++) {
+
+		const vector <GDB> temp = SORT_GDB (prGDB_G.at(i), "DEPTH");
+		//const vector <GDB> temp = sort_by_DEPTH (prGDB_G.at(i));
+
+		const string LOC = temp.at(0).LOC;
+		const string DT = temp.at(0).DATATYPE;
+		const string FM = temp.at(0).FORMATION;
+
+		const bool PLN = is_allowed_plane_datatype (DT);
+		const bool LIN = is_allowed_lineation_datatype (DT);
+
+		const bool PROCESS_AS_WELL = PLN || LIN;
+
+		if (PROCESS_AS_WELL) {
+
+			string PS_NAME = PF.well_ps + BS + DT + BS + LOC + US + FM + US + DT;
+
+			if (by_GROUPCODE) 	PS_NAME = PS_NAME + US + temp.at(0).GC;
+			else if (by_KMEANS) PS_NAME = PS_NAME + US + temp.at(1).GC;
+			else if (by_RUPANG) PS_NAME = PS_NAME + US + temp.at(2).GC;
+			else {}
+
+			PS_NAME = PS_NAME + ".eps";
+
+			ofstream OPS (PS_NAME.c_str());
+
+			const double MIN = temp.at(0).DEPTH;
+			const double MAX = temp.at(temp.size() - 1).DEPTH;
+
+			const double STEP = well_axes_step (MIN, MAX);
+
+			const double MIN_VAL = return_MIN_value (temp, STEP);
+			const double MAX_VAL = return_MAX_value (temp, STEP);
+
+			const PAPER P = PS_dimensions (true);
+
+			PS_well_header (DT, LOC, OPS);
+
+			PS_well_border (temp, OPS, P, TILT);
+
+			PS_well_symbols (OPS, P);
+
+			const double LENGTH = P.Y * 0.8;
+
+			WELL_PS (temp, INTERVAL.at(i), FREQUENCY.at(i), OPS, P, LENGTH, MIN_VAL, MAX_VAL, STEP);
+		}
+	}
+	return;
+}
+ *
+ */

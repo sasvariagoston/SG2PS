@@ -35,16 +35,16 @@ using namespace std;
 
 namespace {
 
-//bool WELLDATA_USE = false;
-//bool WELLDATA_NO = false;
+bool WELLDATA_USE = false;
+bool WELLDATA_NO = false;
 
-//bool WELL_INTERVAL_METER = false;
-//bool WELL_INTERVAL_DATANUMBER = false;
+bool WELL_INTERVAL_METER = false;
+bool WELL_INTERVAL_DATANUMBER = false;
 
-//double WELL_INTERVAL_LENGTH = 999.99;
+double WELL_INTERVAL_LENGTH = 999.99;
 
-//bool WELL_INTERVAL_MIDDLE_MEDIAN = false;
-//bool WELL_INTERVAL_MIDDLE_AVERAGE = false;
+bool WELL_INTERVAL_MIDDLE_MEDIAN = false;
+bool WELL_INTERVAL_MIDDLE_AVERAGE = false;
 
 bool DATARULE_GERMAN = false;
 bool DATARULE_RIGHT_HAND_RULE = false;
@@ -91,9 +91,13 @@ bool INPUTGROUP_NONE = false;
 bool INPUTGROUP_FIRST = false;
 bool INPUTGROUP_SECOND = false;
 bool INPUTGROUP_THIRD = false;
+//bool INPUTGROUP_FOURTH = false;
 
 bool GROUPS_USE = false;
 bool GROUPS_NONE = false;
+
+bool FORMATION_USE = false;
+bool FORMATION_NONE = false;
 
 bool CLUSTERING_NONE = false;
 bool CLUSTERING_AUTOMATIC = false;
@@ -105,6 +109,7 @@ bool RUP_CLUSTERING_RUP = false;
 
 bool GROUPSEPARATION_IGNORE = false;
 bool GROUPSEPARATION_GROUPCODE = false;
+//bool GROUPSEPARATION_FORMATION = false;
 bool GROUPSEPARATION_KMEANS = false;
 bool GROUPSEPARATION_RUPANG = false;
 
@@ -140,14 +145,14 @@ bool GRAYSCALE_USE = false;
 
 bool is_WELLDATA_USE () {
 
-	return false; //WELLDATA_USE;
+	return WELLDATA_USE;
 }
 
 bool is_WELLDATA_NO () {
 
-	return true; //WELLDATA_NO;
+	return WELLDATA_NO;
 }
-/*
+
 bool is_WELL_INTERVAL_METER () {
 
 	return WELL_INTERVAL_METER;
@@ -170,7 +175,7 @@ bool is_WELL_INTERVAL_MIDDLE_AVERAGE () {
 
 	return WELL_INTERVAL_MIDDLE_AVERAGE;
 }
-*/
+
 bool is_DATARULE_GERMAN () {
 
 	return DATARULE_GERMAN;
@@ -321,6 +326,10 @@ bool is_INPUTGROUP_THIRD () {
 
 	return INPUTGROUP_THIRD;
 }
+//bool is_INPUTGROUP_FOURTH () {
+
+	//return INPUTGROUP_FOURTH;
+//}
 
 bool is_GROUPS_USE () {
 
@@ -329,6 +338,15 @@ bool is_GROUPS_USE () {
 bool is_GROUPS_NONE () {
 
 	return GROUPS_NONE;
+}
+
+bool is_FORMATION_USE () {
+
+	return FORMATION_USE;
+}
+bool is_FORMATION_NONE () {
+
+	return FORMATION_NONE;
 }
 
 bool is_CLUSTERING_NONE () {
@@ -365,6 +383,10 @@ bool is_GROUPSEPARATION_GROUPCODE () {
 
 	return GROUPSEPARATION_GROUPCODE;
 }
+//bool is_GROUPSEPARATION_FORMATION () {
+
+	//return GROUPSEPARATION_FORMATION;
+//}
 bool is_GROUPSEPARATION_KMEANS () {
 
 	return GROUPSEPARATION_KMEANS;
@@ -469,13 +491,11 @@ void INIT_SETTINGS (const vector <vector <string> >& SET) {
 		const string KEY = SET.at(i).at(0);
 		const string VAL = SET.at(i).at(1);
 
-		//if (KEY == "WELLDATA:") {
-			//if 		(VAL == "Y") WELLDATA_USE = true;
-			//else if (VAL == "N")
-			//WELLDATA_NO = true;
-			//else ASSERT_DEAD_END();
-		//}
-		/*
+		if (KEY == "WELLDATA:") {
+			if 		(VAL == "Y") WELLDATA_USE = true;
+			else if (VAL == "N") WELLDATA_NO = true;
+			else ASSERT_DEAD_END();
+		}
 		else if (KEY == "WELLINTERVAL:") {
 			if 		(VAL == "M") WELL_INTERVAL_METER = true;
 			else if (VAL == "D") WELL_INTERVAL_DATANUMBER = true;
@@ -489,9 +509,7 @@ void INIT_SETTINGS (const vector <vector <string> >& SET) {
 			else if (VAL == "A") WELL_INTERVAL_MIDDLE_AVERAGE = true;
 			else ASSERT_DEAD_END();
 		}
-		*/
-		//else
-		if (KEY == "DATARULE:") {
+		else if (KEY == "DATARULE:") {
 			if 		(VAL == "G") DATARULE_GERMAN = true;
 			else if (VAL == "R") DATARULE_RIGHT_HAND_RULE = true;
 			else ASSERT_DEAD_END();
@@ -557,11 +575,17 @@ void INIT_SETTINGS (const vector <vector <string> >& SET) {
 			else if (VAL == "F") INPUTGROUP_FIRST = true;
 			else if (VAL == "S") INPUTGROUP_SECOND = true;
 			else if (VAL == "T") INPUTGROUP_THIRD = true;
+			//else if (VAL == "O") INPUTGROUP_FOURTH = true;
 			else ASSERT_DEAD_END();
 		}
 		else if (KEY == "GROUP:") {
 			if 		(VAL == "Y") GROUPS_USE = true;
 			else if (VAL == "N") GROUPS_NONE = true;
+			else ASSERT_DEAD_END();
+		}
+		else if (KEY == "FORMATION:") {
+			if 		(VAL == "Y") FORMATION_USE = true;
+			else if (VAL == "N") FORMATION_NONE = true;
 			else ASSERT_DEAD_END();
 		}
 		else if (KEY == "CLUSTERNUMBER:") {
@@ -582,6 +606,7 @@ void INIT_SETTINGS (const vector <vector <string> >& SET) {
 		else if (KEY == "GROUPSEPARATION:")	{
 			if 		(VAL == "I")  GROUPSEPARATION_IGNORE = true;
 			else if (VAL == "G")  GROUPSEPARATION_GROUPCODE = true;
+			//else if (VAL == "F")  GROUPSEPARATION_FORMATION = true;
 			else if (VAL == "K")  GROUPSEPARATION_KMEANS = true;
 			else if (VAL == "R")  GROUPSEPARATION_RUPANG = true;
 			else ASSERT_DEAD_END();

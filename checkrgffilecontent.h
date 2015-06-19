@@ -10,11 +10,11 @@
 
 using namespace std;
 
-string inputfilename ();
-
 void push_to_table(const string& line);
 bool input_rgf (const string& projectname);
 
+bool by_DEPTH_string (const vector <string> x, const vector <string> y);
+vector <vector <string> > sort_by_DEPTH_string (const vector <vector <string> >& IN);
 void complete_rgf_to_check();
 
 bool IDcheck_duplicate ();
@@ -30,11 +30,6 @@ bool DIPcheck ();
 bool STRIAE_SC_check ();
 bool PALEONcheck ();
 
-vector <string> RETURN_CORRECT_RGF_CMD (vector <string> inputfilename_vector);
-
-vector <string> check_rgf_set_inputs (const vector <string>& inputfilename_vector);
-
-
 bool is_OTHERcorrect (const vector <string>& in);
 bool is_BEDDINGcorrect (const vector <string>& in);
 bool is_SCcorrect (const vector <string>& in);
@@ -49,5 +44,9 @@ bool error_cout (const vector <string>& bad_records, const string recordtype);
 
 bool is_RGF_CORRECT (const string projectname);//ok
 
+bool CHECK_RGF (const string projectname);
+
+
+vector <string> check_rgf_set_inputs (const vector <string>& inputfilename_vector);
 
 #endif

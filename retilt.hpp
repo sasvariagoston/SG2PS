@@ -10,16 +10,16 @@
 
 #include "structs.h"
 
-VCTR return_tilting_axis (const GDB& in, const bool paleonorth);
-double return_tilting_angle (const GDB& in, const bool paleonorth);
+VCTR return_tilting_axis (const GDB& in, const string METHOD);
+double return_tilting_angle (const GDB& in, const string METHOD);
 
 GDB tilt_lineation (const GDB& in, const VCTR& AXIS, const double ANGLE);
 GDB tilt_plane (const GDB& in, const VCTR& AXIS, const double ANGLE);
 GDB tilt_striae (const GDB& in, const VCTR& AXIS, const double ANGLE);
 
-GDB TILT_DATA (const GDB& in, const bool TILT_BY_PALEONORTH);
-GDB S0_TILT (const GDB& in);
+GDB TILT_DATA (const GDB& in, const string METHOD);
+//GDB S0_TILT (const GDB& in);
 
-vector < vector < vector < vector <GDB> > > > RETILT (const vector < vector < vector < vector <GDB> > > >& inGDB); //ok
+vector < vector <GDB> > RETILT (const vector < vector <GDB> >& inGDB, const string METHOD); //ok
 
 #endif

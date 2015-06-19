@@ -71,73 +71,66 @@ vector <vector < vector <string> > > RETURN_ALL_SETTINGS () {
 
 	//-----------------------WELL----------------------------------
 	//00
-
-
-	//pushbach_settings_item (defitem, "WELLDATA:", "  - Do you want to apply well data processing?");
-	//pushbach_settings_option (defitem,
-	//		"N",
-	//		"  - Only process as field/other data.............................",
-	//		"    - processing as well data set: .........................[N]?  ");
-	/*
+	pushbach_settings_item (defitem, "WELLDATA:", "  - Do you want to apply well data processing?");
+	pushbach_settings_option (defitem,
+			"N",
+			"  - Processing ONLY as field/other data.",
+			"    - processing as well data set: .........................[N]?  ");
 	pushbach_settings_option (defitem,
 			"Y",
-			"  - Process as well data as well.................................",
+			"  - Processing as FIELD and WELL data, too.",
 			"    - processing as well data set...........................[y],  ");
-
-	*/
-	//DEF.push_back(defitem);
+	DEF.push_back(defitem);
 
 
 	//01
-
-	/*
 	pushbach_settings_item (defitem, "WELLINTERVAL:", "  - Interval calculation for well data processing by metre or by data number?");
 	pushbach_settings_option (defitem,
 			"M",
-			"  - Well data processing interval by meter.......................",
+			"  - Well data processing interval in METER.",
 			"    - Well data processing interval by meter................[M],  ");
 	pushbach_settings_option (defitem,
 			"D",
-			"  - Well data processing interval by data number.................",
+			"  - Well data processing interval in DATA NUMBER.",
 			"    - well data processing interval by data number..........[d]?  ");
 	DEF.push_back(defitem);
+
+
 	//02
 	pushbach_settings_item (defitem, "WELLINTERVAL_LENGTH:", "  - Well data processing interval length: ");
 	if (!G) pushbach_settings_range (defitem,
 			"1", "5000",
 			"  - Length of a processed interval....: ",
-			" meters / data number",
+			" meters / data number.",
 			"    - 1 to 50000 meter / data number.................................[1..5000]?  ",
 			"");
 	else pushbach_settings_option (defitem,"100","","");
 	DEF.push_back(defitem);
 
-	*/
-	//03
 
-	/*
+	//03
 	pushbach_settings_item (defitem, "WELLINTERVAL_MIDDLE:", "  - Interval mid point calculation?");
 	pushbach_settings_option (defitem,
 			"M",
-			"  - Well interval mid point: median..............................",
+			"  - Well interval mid point is MEDIAN INTERVAL DEPTH.",
 			"    - well interval mid point: median.......................[M],  ");
 	pushbach_settings_option (defitem,
 			"A",
-			"  - Well interval mid point: interval mid point..................",
+			"  - Well interval mid point is AVERAGE INTERVAL DEPTH.",
 			"    - well interval mid point: interval mid point...........[a]?  ");
 	DEF.push_back(defitem);
 
-	*/
+
 	//-----------------------PLOT----------------------------------
 	//04
 	pushbach_settings_item (defitem, "DATARULE:", "  - Data convention:");
 	pushbach_settings_option (defitem,
 			"G",
-			"  - Data convention.............................: german dipdir-dip",
+			"  - Data convention is german DIPDIR / DIP.",
 			"    - german with dip direction.............................[G],  ");
 	pushbach_settings_option (defitem,
 			"R",
-			"  - Data convention ............................: right-hand rule",
+			"  - Data convention is RIGHT HAND RULE.",
 			"    - or right-hand rule with strike........................[r]?  ");
 	DEF.push_back(defitem);
 
@@ -145,11 +138,11 @@ vector <vector < vector <string> > > RETURN_ALL_SETTINGS () {
 	pushbach_settings_item (defitem, "PLOT:", "  - Plot type:");
 	pushbach_settings_option (defitem,
 			"A",
-			"  - Plot type ..................................: Angelier plot",
+			"  - Plot type is ANGELIER plot.",
 			"    - Angelier plot with planes.............................[A],  ");
 	pushbach_settings_option (defitem,
 			"H",
-			"  - Plot type ..................................: Hoeppener plot",
+			"  - Plot type is HOEPPENER (pole point) plot.",
 			"    - or Hoeppener plot with poles..........................[h]?  ");
 	DEF.push_back(defitem);
 
@@ -157,11 +150,11 @@ vector <vector < vector <string> > > RETURN_ALL_SETTINGS () {
 	pushbach_settings_item (defitem, "PLOTTYPE:", "  - Projection:");
 	pushbach_settings_option (defitem,
 			"S",
-			"  - Projection..................................: Schmidt-net",
+			"  - Projection is SCHMIDT net.",
 			"    - equal are Schmidt-net.................................[S],  ");
 	pushbach_settings_option (defitem,
 			"W",
-			"  - Projection..................................: Wulff-net",
+			"  - Projection is WULFF net.",
 			"    - or equal angle Wulff-net..............................[w]?  ");
 	DEF.push_back(defitem);
 
@@ -169,11 +162,11 @@ vector <vector < vector <string> > > RETURN_ALL_SETTINGS () {
 	pushbach_settings_item (defitem,"HEMISPHERE:", "  - Hemisphere:");
 	pushbach_settings_option (defitem,
 			"L",
-			"  - Hemisphere..................................: lower hemisphere",
+			"  - Using LOWER hemisphere.",
 			"    - lower hemisphere......................................[L],  ");
 	pushbach_settings_option (defitem,
 			"U",
-			"  - Hemisphere..................................: upper hemisphere",
+			"  - Using UPPER hemisphere.",
 			"    - or upper hemisphere...................................[u]?  ");
 	DEF.push_back(defitem);
 
@@ -181,23 +174,23 @@ vector <vector < vector <string> > > RETURN_ALL_SETTINGS () {
 	pushbach_settings_item (defitem, "CONTOURING:", "  - Data density contouring on stereonet:");
 	pushbach_settings_option (defitem,
 			"N",
-			"  - Contour of input data.......................: no contouring",
+			"  - NO contour of input data.",
 			"    - no contouring.........................................[N],  ");
 	pushbach_settings_option (defitem,
 			"D",
-			"  - Contour of input data.......................: Dip direction / bearing",
+			"  - Contour of input data by DIP DIRECTION / LINEATION BEARING.",
 			"    - Dip direction / bearing...............................[d],  ");
 	pushbach_settings_option (defitem,
 			"S",
-			"  - Contour of input data.......................: Strike direction / bearing",
+			"  - Contour of input data by STRIKE DIRECTION / LINEATION BEARING.",
 			"    - Strike direction / bearing............................[s],  ");
 	pushbach_settings_option (defitem,
 			"O",
-			"  - Contour of input data.......................: Plane normal / bearing",
+			"  - Contour of input data by PLANE NORMAL / LINEATION BEARING.",
 			"    - Plane normal / bearing................................[o],  ");
 	pushbach_settings_option (defitem,
 			"B",
-			"  - Contour of input data.......................: Striae bearing / bearing",
+			"  - Contour of input data by STRIAE BEARING / LINEATION BEARING.",
 			"    - Striae bearing / bearing..............................[b],  ");
 	DEF.push_back(defitem);
 
@@ -218,15 +211,15 @@ vector <vector < vector <string> > > RETURN_ALL_SETTINGS () {
 	pushbach_settings_item (defitem, "TILTING:", "  - Bedding and paleo North correction:");
 	pushbach_settings_option (defitem,
 			"A",
-			"  - Correct by..................................: bedding and paleo-north",
+			"  - Correct measurements by AVERAGE BEDDING and PALEO NORTH directions.",
 			"    - bedding and paleo-north direction.....................[A],  ");
 	pushbach_settings_option (defitem,
 			"B",
-			"  - Correct by..................................: bedding",
+			"  - Correct measurements by AVERAGE BEDDING direction.",
 			"    - bedding...............................................[b],  ");
 	pushbach_settings_option (defitem,
 			"P",
-			"  - Correct by..................................: paleo-north direction",
+			"  - Correct by PALEO NORTHh direction.",
 			"    - or paleo-north direction..............................[p]?  ");
 	DEF.push_back(defitem);
 
@@ -235,34 +228,34 @@ vector <vector < vector <string> > > RETURN_ALL_SETTINGS () {
 	pushbach_settings_item (defitem, "INVERSION:", "  - Inversion of slickenside data:");
 	pushbach_settings_option (defitem,
 			"D",
-			"  - Inversion...................................: using Sprang (1972) method",
+			"  - Inversion using SPANG's (1972) method.",
 			"    - regression using Sprang's (1972) NDA method...........[D],  ");
 	pushbach_settings_option (defitem,
-			"P","  - Inversion...................................: using Turner's (1953) method",
+			"P","  - Inversion using TURNER's (1953) method.",
 			"    - regression using Turner's (1953) PTN method...........[p],  ");
 	pushbach_settings_option (defitem,
 			"M",
-			"  - Inversion...................................: using using Michael's (1984) method",
+			"  - Inversion using using MICHAEL's (1984) method.",
 			"    - regression using Michael's (1984) method..............[m],  ");
 	pushbach_settings_option (defitem,
 			"S",
-			"  - Inversion...................................: using Shan et al's (2003) method",
+			"  - Inversion using SHAN ET AL's (2003) method.",
 			"    - regression using Shan et al's (2003) method...........[s],  ");
 	pushbach_settings_option (defitem,
 			"F",
-			"  - Inversion...................................: using Fry's (1999) method",
+			"  - Inversion using FRY's (1999) method.",
 			"    - regression using Fry's (1999) method..................[f],  ");
 	pushbach_settings_option (defitem,
 			"A",
-			"  - Inversion...................................: using Angelier's (1990) method",
+			"  - Inversion using ANGELIER's (1990) method.",
 			"    - inversion using Angelier's (1984) method..............[a],  ");
 	pushbach_settings_option (defitem,
 			"O",
-			"  - Inversion...................................: using Mostafa's (2005) method",
+			"  - Inversion using MOSTAFA's (2005) method.",
 			"    - inversion using Mostafa's (2005) method...............[o],  ");
 	pushbach_settings_option (defitem,
 			"B",
-			"  - Inversion...................................: using brute force iteration",
+			"  - Inversion using BRUTE FORCE iteration.",
 			"    - inversion using brute force iteration.................[b],  ");
 	/*
 	pushbach_settings_option (defitem,
@@ -272,7 +265,7 @@ vector <vector < vector <string> > > RETURN_ALL_SETTINGS () {
 	 */
 	pushbach_settings_option (defitem,
 			"N",
-			"  - Inversion...................................: none",
+			"  - NO inversion.",
 			"    - or none...............................................[n]?  ");
 	DEF.push_back(defitem);
 
@@ -280,11 +273,11 @@ vector <vector < vector <string> > > RETURN_ALL_SETTINGS () {
 	pushbach_settings_item (defitem, "BINGHAM:", "  - Virtual symmetric striae set:");
 	pushbach_settings_option (defitem,
 			"B",
-			"  - Fracture statistics.........................: Bingham statistics",
+			"  - USE directional (Bingham) statistics for fractures.",
 			"    - Bingham statistics for weight point calculation.......[B],  ");
 	pushbach_settings_option (defitem,
 			"N",
-			"  - Fracture statistics.........................: no statistics",
+			"  - DO NOT USE directional (Bingham) statistics for fractures.",
 			"    - or none...............................................[n]?  ");
 	DEF.push_back(defitem);
 
@@ -292,8 +285,8 @@ vector <vector < vector <string> > > RETURN_ALL_SETTINGS () {
 	pushbach_settings_item (defitem, "STRESSANGLE:", "  - Angle between s1 and fault plane for regression: ");
 	if (!G) pushbach_settings_range (defitem,
 			"10", "80",
-			"  - Angle in degs between s1 and fault plane....: ",
-			" degree(s)",
+			"  - Angle in DEGREES between s1 and fault plane (for Turner 1953 and Spang 1972 only): ",
+			" degree(s).",
 			"    - 10 to 80 degrees.................................[10..80]?  ",
 			"");
 	else pushbach_settings_option (defitem,"30","","");
@@ -302,15 +295,42 @@ vector <vector < vector <string> > > RETURN_ALL_SETTINGS () {
 	pushbach_settings_item (defitem, "VIRTUAL:", "  - Virtual symmetric striae set:");
 	pushbach_settings_option (defitem,
 			"N",
-			"  - Virtual symmetrical striae set..............: do not use",
+			"  - DO NOT USE forced Andersonian (1952) stress conditions.",
 			"    - do not generate virtual symmetric set.................[N],  ");
 	pushbach_settings_option (defitem,
 			"Y",
-			"  - Virtual symmetrical striae set..............: use",
+			"  - USE forced Andersonian (1952) stress conditions.",
 			"    - or use virtual symmetric striae set...................[y]?  ");
 	DEF.push_back(defitem);
 	//-----------------------DATA GROUP MANAGEMENT----------------------------------
 	//14
+	pushbach_settings_item (defitem, "INPUTGROUP:", "  - How to import input file groups (if more then one available):");
+	pushbach_settings_option (defitem,
+			"N",
+			"  - DO NOT IMPORT any record of former grouping.",
+			"    - don't import any record...............................[N],  ");
+	pushbach_settings_option (defitem,
+			"F",
+			"  - Import FIRST record (used as USER DEFINED GROUP CODES).",
+			"    - import first record (used for group codes)............[f],  ");
+	pushbach_settings_option (defitem,
+			"S",
+			"  - Import SECOND record (used for K-MEANS CLUSTERING).",
+			"    - import second record (used for formation names).......[s]?  ");
+	pushbach_settings_option (defitem,
+			"T",
+			"  - Import THIRD record (used for RUP/ANG CLUSTERING).",
+			"    - import third record (used for clustering).............[t]?  ");
+	//pushbach_settings_option (defitem,
+	//		"O",
+	//		"  - Import third record (used for RUP/ANG clustering)",
+	//		"    - import third record (used for RUP/ABG clustering).....[o]?  ");
+	DEF.push_back(defitem);
+
+	/*
+	 * ORIGINAL
+	 *
+	 * //14
 	pushbach_settings_item (defitem, "INPUTGROUP:", "  - How to import input file groups (if more then one available):");
 	pushbach_settings_option (defitem,
 			"N",
@@ -329,33 +349,47 @@ vector <vector < vector <string> > > RETURN_ALL_SETTINGS () {
 			"  - Import third record (used for RUP/ANG clustering)",
 			"    - import third record (used for RUP/ABG clustering).....[t]?  ");
 	DEF.push_back(defitem);
+	 *
+	 */
 
 	//15
 	pushbach_settings_item (defitem, "GROUP:", "  - Groups from input file:");
 	pushbach_settings_option (defitem,
 			"Y",
-			"  - Use initial groups of input file...........: yes",
+			"  - USE initial (used defined) GROUP CODES of input file.",
 			"    - use initial groups of the input file..................[Y],  ");
 	pushbach_settings_option (defitem,
 			"N",
-			"  - Use initial groups of input file...........: do not use",
+			"  - DO NOT USE initial (used defined) GROUP CODES of input file.",
 			"    - do not use initial groups of the input file...........[n]?  ");
 	DEF.push_back(defitem);
 
 	//16
+	pushbach_settings_item (defitem, "FORMATION:", "  - Groups by formation name:");
+	pushbach_settings_option (defitem,
+			"N",
+			"  - DO NOT USE FORMATION NAMES of the input file for grouping.",
+			"    - do not formation names of the input file..............[n]?  ");
+	pushbach_settings_option (defitem,
+			"Y",
+			"  - USE FORMATION NAMES of the input file for grouping.",
+			"    - use formation names of the input file.................[Y],  ");
+	DEF.push_back(defitem);
+
+	//17
 	pushbach_settings_item (defitem, "CLUSTERNUMBER:", "  - Groups from k-means clustering:");
 	pushbach_settings_option (defitem,
 			"N",
-			"  - Clustering..................................: do not use",
+			"  - DO NOT USE k-means clustering.",
 			"    - no clustering.........................................[N],  ");
 	pushbach_settings_option (defitem,
 			"A",
-			"  - Clustering..................................: iteration for ideal cluster number",
+			"  - ITERATION for ideal cluster number while clustering.",
 			"    - automatic cluster number..............................[a],  ");
 	if (!G) pushbach_settings_range (defitem,
 			"2", "9",
-			"  - Clustering..................................: ",
-			" clusters",
+			"  - Clustering ",
+			" CLUSTERS.",
 			"    - or 2..9 clusters...................................[2..9]?  ",
 			"");
 
@@ -370,154 +404,158 @@ vector <vector < vector <string> > > RETURN_ALL_SETTINGS () {
 
 	DEF.push_back(defitem);
 
-	//17
+	//18
 	pushbach_settings_item (defitem, "RUP_CLUSTERING:", "  - Clustering using stress estimators:");
 	pushbach_settings_option (defitem,
 			"N",
-			"  - Clustering using RUP / ANG values...........: no clustering",
+			"  - NO CLUSTERING for RUP / ANG estimators.",
 			"    - do not use stress estimators..........................[N],  ");
 	pushbach_settings_option (defitem,
 			"A",
-			"  - Clustering using RUP / ANG values...........: use ANG values",
+			"  - Clustering using ANG estimator.",
 			"    - use angular misfit (ANG) for clustering...............[a],  ");
 	pushbach_settings_option (defitem,
 			"R",
-			"  - Clustering using RUP / ANG values...........: use RUP values",
+			"  - Clustering using RUP estimator.",
 			"    - or relative upsilon (RUP) for clustering..............[r]?  ");
 	DEF.push_back(defitem);
 
-	//18
+	//19
 	pushbach_settings_item (defitem, "GROUPSEPARATION:", "  - How to separate?:");
 	pushbach_settings_option (defitem,
 			"I",
-			"  - Ignore all group codes",
+			"  - IGNORE all group codes while separating output data.",
 			"    - ignore all group codes................................[I],  ");
 	pushbach_settings_option (defitem,
 			"G",
-			"  - Use group code to separate",
-			"    - Use group code to seaparate...........................[g]?  ");
+			"  - Use GROUP CODE to separate output data.",
+			"    - Use group code to separate............................[g]?  ");
+	pushbach_settings_option (defitem,
+			"F",
+			"  - Use FORMATION NAME to separate  output data.",
+			"    - Use formation name to separate........................[f]?  ");
 	pushbach_settings_option (defitem,
 			"K",
-			"  - Use k-means group to separate",
+			"  - Use K_MEANS CLUSTERING RESULT group to separate output data.",
 			"    - Use k-means group to separate.........................[k]?  ");
 	pushbach_settings_option (defitem,
 			"R",
-			"  - Use RUP/ANG group to separate",
+			"  - Use RUP/ANG GROUPS to separate output data.",
 			"    - Use RUP/ANG group to separate.........................[r]?  ");
 	DEF.push_back(defitem);
 	//-----------------------ROSE DIAGRAMS----------------------------------
-	//19
+	//20
 	pushbach_settings_item (defitem, "ROSETYPE:", "  - Rose diagram type:");
 	pushbach_settings_option (defitem,
 			"S",
-			"  - Rose plot type..............................: symmetrical",
+			"  - SYMMETRICAL (bidirectional) rose plot.",
 			"    - symmetrical...........................................[S],  ");
 	pushbach_settings_option (defitem,
 			"A",
-		"  - Rose plot type..............................: asymmetrical",
+			"  - ASYMMETRICAL (unidirectional) rose plot.",
 			"    - or asymmetrical.......................................[a]?  ");
 	DEF.push_back(defitem);
 
-	//20
+	//21
 	pushbach_settings_item (defitem, "ROSEDIRECTION:", "  - Rose diagram for:");
 	pushbach_settings_option (defitem,
 			"S",
-			"  - Rose diagram for............................: strikes",
+			"  - Rose diagram to display STRIKES.",
 			"    - strike directions.....................................[S],  ");
 	pushbach_settings_option (defitem,
 			"D",
-			"  - Rose diagram for............................: dips",
+			"  - Rose diagram to display DIPS.",
 			"    - dip directions........................................[d],  ");
 	DEF.push_back(defitem);
 
-	//21
+	//22
 	pushbach_settings_item (defitem, "ROSEBINNING:", "  - Bin size on rose plot:");
 	pushbach_settings_option (defitem,
 			"C",
-			"  - Data bin size on rose plot..................: 10.0 deg",
+			"  - Data BIN SIZE on rose plot: 10 degrees.",
 			"    - 10.0 degrees..........................................[C],  ");
 	pushbach_settings_option (defitem,
 			"A",
-			"  - Data bin size on rose plot..................: 2.5 deg",
+			"  - Data BIN SIZE on rose plot: 2.5 degrees.",
 			"    - 2.5 degrees...........................................[a],  ");
 	pushbach_settings_option (defitem,
 			"B",
-			"  - Data bin size on rose plot..................: 5.0 deg",
+			"  - Data BIN SIZE on rose plot: 5 degrees.",
 			"    - 5.0 degrees...........................................[b],  ");
 	pushbach_settings_option (defitem,
 			"D",
-			"  - Data bin size on rose plot..................: 22.5 deg",
+			"  - Data BIN SIZE on rose plot: 22.5 degrees.",
 			"    - 22.5 degrees..........................................[d],  ");
 	DEF.push_back(defitem);
 
 	//-----------------------ROSE DIAGRAMS----------------------------------
-	//22
+	//23
 	pushbach_settings_item (defitem, "IDEALMOVEMENT:", "  - Ideal movement display for slickensides:");
 	pushbach_settings_option (defitem,
 			"N",
-			"  - Ideal slickenside movement..................: do not display",
+			"  - DO NOT DISPLAY resolved shear direction for slickensides.",
 			"    - do not display........................................[N],  ");
 	pushbach_settings_option (defitem,
 			"Y",
-			"  - Ideal slickenside movement..................: display",
+			"  - DISPLAY resolved shear direction for slickensides.",
 			"    - or display............................................[y]?  ");
 	DEF.push_back(defitem);
 
-	//23
+	//24
 	pushbach_settings_item (defitem, "LABELING:", "  - Labelling on stereonet:");
 	pushbach_settings_option (defitem,
 			"N",
-			"  - Labelling....................................: do not label",
+			"  - DO NOT LABEL stereoplots.",
 			"    - none..................................................[N],  ");
 	pushbach_settings_option (defitem,
 			"Y",
-			"  - Labelling....................................: yes",
+			"  - LABEL stereoplots by DATA_ID field.",
 			"    - or labelling of measured data using data DATA_ID......[y]?  ");
 	DEF.push_back(defitem);
 
-	//24
+	//25
 	pushbach_settings_item (defitem, "LINEWIDTH:", "  - Linewidth in points (1/72 inch):");
 	if (!G) pushbach_settings_range (defitem,
 			"0", "10",
-			"  - Linewidth...................................: ",
+			"  - LINEWIDTH: ",
 			" points",
 			"    - 0.1 to 1.0.............................[1...9, 0 for 1.0]?  ",
 			"6");
 	if (G) pushbach_settings_option (defitem,"6","","");  //temp
 	DEF.push_back(defitem);
 
-	//25
+	//26
 	pushbach_settings_item (defitem, "COLORING:", "  - How to colour?:");
 	pushbach_settings_option (defitem,
 			"I",
-			"  - Ignore all colour codes",
+			"  - IGNORE all colour codes.",
 			"    - ignore all colour codes...............................[I],  ");
 	pushbach_settings_option (defitem,
 			"C",
-			"  - Use color codes",
+			"  - Use COLOUR codes to colour.",
 			"    - Use colour codes......................................[c]?  ");
 	pushbach_settings_option (defitem,
 			"G",
-			"  - Use group code to colour",
+			"  - Use GROUP CODE to colour.",
 			"    - Use group code to colour..............................[g]?  ");
 	pushbach_settings_option (defitem,
 			"K",
-			"  - Use k-means group to colour",
+			"  - Use K-MEANS group to colour.",
 			"    - Use k-means group to colour...........................[k]?  ");
 	pushbach_settings_option (defitem,
 			"R",
-			"  - Use RUP/ANG group to colour",
+			"  - Use RUP/ANG group to colour.",
 			"    - Use RUP/ANG group to colour...........................[r]?  ");
 	DEF.push_back(defitem);
 	//26
 	pushbach_settings_item (defitem, "GRAYSCALE:", "  - Color mode of the grapical output:");
 	pushbach_settings_option (defitem,
 			"N", // 0 1 0
-			"  - Grayscale mode..............................: RGB coloured",
+			"  - RGB coloured output.",
 			"    - coloured output.......................................[N],  ");
 	pushbach_settings_option (defitem,
 			"Y", // 0 2 0
-			"  - Grayscale mode..............................: grayscale",
+			"  - GRAYSCALE output.",
 			"    - grayscale output......................................[y],  ");
 	DEF.push_back(defitem);
 

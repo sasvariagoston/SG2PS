@@ -23,13 +23,13 @@ double bin_size_for_DATA (const vector <double>& in, const size_t bin_number);//
 
 RUP_table return_cost_function_member (const vector <double>& in, const size_t bin_number);//ok
 
-bool by_RUP(const GDB& x, const GDB& y);//ok
-bool by_ANG(const GDB& x, const GDB& y);//ok
-bool by_C(const RUP_table& x, const RUP_table& y);//ok
+//bool by_RUP(const GDB& x, const GDB& y);//ok
+//bool by_ANG(const GDB& x, const GDB& y);//ok
+//bool by_C(const RUP_table& x, const RUP_table& y);//ok
 
-vector <GDB> sort_by_RUP (const vector <GDB>& inGDB);//ok
-vector <GDB> sort_by_ANG (const vector <GDB>& inGDB);//ok
-vector <RUP_table> sort_by_C (const vector <RUP_table>& RT);//ok
+//vector <GDB> sort_by_RUP (const vector <GDB>& inGDB);//ok
+//vector <GDB> sort_by_ANG (const vector <GDB>& inGDB);//ok
+//vector <RUP_table> sort_by_C (const vector <RUP_table>& RT);//ok
 
 size_t return_DATA_ideal_bin_number (const vector <double>& in);//ok
 

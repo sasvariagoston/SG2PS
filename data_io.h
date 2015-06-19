@@ -23,32 +23,37 @@ void create_pointer_to_project_folder(const PFN& names);
 
 void CREATE_PROJECT_FOLDER (const PFN& projectfoldername, const vector <GDB> inGDB);
 
-vector < vector < vector <vector <GDB> > > > SEPARATE_DATASET_TO_GROUPS (const vector <GDB>& inGDB, const string METHOD);
+GDB return_dummy_GDB ();
+bool ACT_NXT_EQ (const GDB& ACT, const GDB& NXT, const string METHOD);
+vector <vector <GDB> > SEPARATE (const vector <GDB> & inGDB, const string METHOD);
+vector <vector <GDB> > SEPARATE_DATASET (const vector <vector <GDB> >& inGDB_G, const string METHOD, const string SORT);
+vector < vector <GDB> > SEPARATE_DATASET_GROUPS (const vector <GDB>& inGDB);
 
-vector <GDB> MERGE_GROUPS_TO_GDB (const vector < vector <vector <vector <GDB> > > >& GDB_G);
-vector <vector <GDB> > MERGE_GROUPS_TO_GDB_G (const vector < vector <vector <vector <GDB> > > >& GDB_G);
+//vector < vector < vector <vector <GDB> > > > SEPARATE_DATASET_TO_GROUPS (const vector <GDB>& inGDB, const string METHOD);
+
+vector <GDB> MERGE_GROUPS_TO_GDB (const vector <vector <GDB> >& GDB_G);
+//vector <vector <GDB> > MERGE_GROUPS_TO_GDB_G (const vector < vector <vector <vector <GDB> > > >& GDB_G);
 
 vector <GDB> combine_inversion_for_none_offset (const vector <GDB>& process_GDB, const vector <GDB>& hasoffset_GDB);
 
 
-vector <vector <vector <vector <GDB> > > > CALCULATE_FOLDSURFACE (const vector <vector <vector <vector <GDB> > > >& inGDB_G);
-vector <vector <vector <vector <GDB> > > > PROCESS_GROUPS (const vector <vector <vector <vector <GDB> > > >& inGDB_G, const bool TILT);
+//vector <vector <vector <vector <GDB> > > > CALCULATE_FOLDSURFACE (const vector <vector <vector <vector <GDB> > > >& inGDB_G);
+vector <vector <GDB> > PROCESS_GROUPS (const vector <vector <GDB> >& inGDB_G, const bool TILT);
 
 void output_rgf_header (ofstream& o, const bool AVERAGE);
 void output_rgf_record (const GDB& i, ofstream& o, const bool AVERAGE);
-void OUTPUT_AVERAGE_TO_RGF (const vector < vector <GDB> >& inGDB_G, const PFN& P, const bool TILT);
+void OUTPUT_AVERAGE_TO_RGF (const vector <GDB> & inGDB_G, const PFN& P, const bool TILT);
 void OUTPUT_GROUPS_TO_RGF (const vector < vector <GDB> >& inGDB_G, const PFN& P, const bool TILTED);
 void OUTPUT_COMPLETED_TO_RGF (const vector <GDB>& outGDB, const PFN& P, const bool TILT);
 void OUTPUT_GDB_to_RGF (ofstream& O, const vector <GDB>& inGDB, const bool AVERAGE);
-void OUTPUT_TO_RGF (const vector <vector <vector <vector <GDB> > > >& inGDB_G, const PFN& projectfoldername, const bool TILT);
+void OUTPUT_TO_RGF (const vector <vector <GDB> >& inGDB_G, const PFN& projectfoldername, const bool TILT);
 
 void cout_method_text (const vector <GDB>& inGDB);
 void cout_original_tilted_text (const bool tilt);
 void cout_less_than_required_text (const bool tilt);
 
 void PS_GDB_DATA (const vector <GDB>& inGDB, ofstream& o, const CENTER& center);
-void OUTPUT_TO_PS (const vector <vector <vector <vector <GDB> > > > n_GDB_G, const vector <vector <vector <vector <GDB> > > > t_GDB_G, const PFN P);
-
+void OUTPUT_TO_PS (const vector <vector <GDB> > in_GDB_G, const PFN P, const bool TILT);
 void dbg_cout_RGF_colors (vector <GDB> inGDB);
 
 #endif

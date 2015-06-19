@@ -9,6 +9,7 @@
 #include <iostream>
 
 #include "array_to_vector.hpp"
+#include "assertions.hpp"
 #include "checksettingfilecontent.h"
 #include "exceptions.hpp"
 #include "generate_default_settings.hpp"
@@ -147,7 +148,15 @@ bool is_SETTINGS_FILE_CORRECT (const string settingfilename) {
 
 	for (size_t i = 0; i < SET.size(); i++) {
 
-		if (!is_SETTINGS_RECORD_CORRECT (SET.at(i))) return false;
+		if (!is_SETTINGS_RECORD_CORRECT (SET.at(i))){
+
+			writeln ("   - Incorrect key/value pair for '" + SET.at(i).at(0)+ "' user input key.");
+			return false;
+		}
+		else {
+
+			writeln ("   - Correct key/value pair for '" + SET.at(i).at(0)+ "' user input key.");
+		}
 	}
 	return true;
 }
@@ -199,106 +208,7 @@ vector <vector <string> > COMPLETE_SET_WITH_DEFAULT (const vector <vector <strin
 	return OUT;
 }
 
-string input_setting_decision_cmd () {
-
-	string c;
-
-	while (!((c == "S") || (c == "D") || (c == "N"))) {
-
-		cout << endl;
-		cout << "Do you want to use and save these settings.....[S]," 			<< endl;
-		cout << "use default values.............................[D]," 			<< endl;
-		cout << "input new ones.................................[N]," 			<< endl;
-		cout << "or exit........................................[X]........?  " << flush;
-
-		cin >> c;
-		c = capslock (c);
-
-		if (c == "X") throw exit_requested();
-	}
-	return c;
-}
-
-vector <vector <string> > is_SETTING_AVAILABE_or_USE_DEFAULT (const string projectname) {
-
-	if (!is_mode_DEBUG()) cout << endl << endl << "CHECK SETTINGS OF '" <<  capslock(projectname) << "' PROJECT"<< endl;
-
-	if (is_SETTINGS_FILE_CORRECT (projectname + ".set")) {
-
-		if (!is_mode_DEBUG()) cout << "  - Using '" << capslock (projectname) << ".SET' setting file." << endl;
-
-		return READ_SETTINGS_FILE (projectname + ".set");
-	}
-	else {
-
-		cout << "  - No valid setting found at all, using hard coded ones." << endl;
-
-		return RETURN_HARDCODED_SETTINGS ();
-	}
-}
-
-void list_settings_option_cmd (const vector <vector <vector <string> > >& DEF, const size_t k) {
-
-	bool is_clustering  = (DEF.at(k).at(0).at(0) == "CLUSTERNUMBER:");
-	bool is_linewidth   = (DEF.at(k).at(0).at(0) == "LINEWIDTH:");
-	bool is_stressangle = (DEF.at(k).at(0).at(0) == "STRESSANGLE:");
-
-	if (is_clustering) {
-
-		for (size_t i = 1; i < DEF.at(k).size() - 1; i++) cout << DEF.at(k).at(i).at(2) << endl;
-
-		cout << DEF.at(k).at(DEF.at(k).size() - 1).at(5) << endl;
-	}
-	else if (is_stressangle || is_linewidth) {
-
-		for (size_t i = 1; i < DEF.at(k).size(); i++) cout << DEF.at(k).at(i).at(5) << endl;
-	}
-	else {
-
-		for (size_t i = 1; i < DEF.at(k).size(); i++) cout << DEF.at(k).at(i).at(2) << endl;
-	}
-}
-
-vector <vector <string> > GET_SETTINGS_CMD (const string projectname) {
-
-	vector <vector <string> > OUT;
-
-	vector <vector <vector <string> > > DEF = RETURN_ALL_SETTINGS ();
-
-	cout << endl << "INPUT USER SETTINGS - to exit: press [X]" << endl;
-
-	for (size_t i = 0; i < DEF.size(); i++) {
-
-		vector <string> buf;
-
-		do {
-
-			string c;
-
-			buf.clear();
-
-			list_settings_option_cmd (DEF, i);
-
-			cin >> c;
-
-			c = capslock(c);
-
-			if (c == "X") throw exit_requested();
-
-			buf.push_back (DEF.at(i).at(0).at(0));
-			buf.push_back (c);
-
-		} while (!is_SETTINGS_RECORD_CORRECT (buf));
-
-		OUT.push_back (buf);
-	}
-	cout << endl << endl;
-	cout << "NEW SETTINGS FOR '" << capslock (projectname) << "' PROJECT"<< endl;
-
-	return OUT;
-}
-
-void load_settings_batch (const string projectname) {
+void LOAD_SETTINGS (const string projectname) {
 
 	vector <vector <string> > SET = READ_SETTINGS_FILE (projectname + ".set");
 
@@ -312,33 +222,6 @@ void load_settings_batch (const string projectname) {
 }
 
 
-void load_settings_cmd (const string projectname) {
-
-	vector <vector <string> > SET = is_SETTING_AVAILABE_or_USE_DEFAULT (projectname);
-
-	string c = "";
-
-	do {
-
-		SET = COMPLETE_SET_WITH_DEFAULT (SET);
-
-		dump_settings (SET);
-
-		c = input_setting_decision_cmd ();
-
-		if (c == "D") SET = RETURN_HARDCODED_SETTINGS ();
-		else if (c == "N") SET = GET_SETTINGS_CMD (projectname);
-		else {}
-
-	} while (!(c == "S"));
-
-	WRITE_SET_FILE (SET, projectname);
-
-	INIT_SETTINGS (SET);
-
-	return;
-}
-
 void WRITE_SET_FILE (const vector <vector <string> >& SET, const string projectname) {
 
 	ofstream o;
@@ -351,7 +234,53 @@ void WRITE_SET_FILE (const vector <vector <string> >& SET, const string projectn
 	}
 }
 
+bool CHECK_SETTINGS (const string projectname) {
+
+	if (!is_mode_GUI() && !is_mode_BATCH() && !is_mode_DEBUG()) ASSERT_DEAD_END();
+
+	const string SFN = capslock (projectname + ".set");
+	const string sfn = projectname + ".set";
+
+	writeln ("");
+	writeln ("============================");
+	writeln ("1) CHECKING OF SETTINGS FILE");
+	writeln ("============================");
+	writeln ("");
+
+	writeln (" - CHECKING " + SFN + " SETTINGS FILE");
+
+	const bool CORR_SET = is_SETTINGS_FILE_CORRECT (sfn);
+
+	if (CORR_SET) {
+
+		writeln (" - " + SFN + " SETTINGS FILE IS CORRECT.");
+
+		vector <vector <string> > SET = READ_SETTINGS_FILE (sfn);
+
+		SET = COMPLETE_SET_WITH_DEFAULT (SET);
+
+		INIT_SETTINGS (SET);
+
+		return true;
+	}
+	else {
+
+		writeln ("");
+		writeln (" WARNING, SET_ERROR: the input " + SFN + "file structure is incorrect, the file will not be processed.");
+
+		if (!CORR_SET && is_mode_GUI()) throw set_error();
+
+		return false;
+	}
+}
+
 void dump_settings (const vector <vector <string> >& SET) {
+
+	writeln ("");
+	writeln ("===============================");
+	writeln ("3) SETTINGS USED FOR EVALUATION");
+	writeln ("===============================");
+	writeln ("");
 
 	vector <vector <vector <string> > > DEF = RETURN_ALL_SETTINGS ();
 
@@ -399,6 +328,8 @@ void dump_settings (const vector <vector <string> >& SET) {
 			}
 		}
 	}
+	writeln ("");
+	return;
 }
 
 void dbg_cout_settings_vector (const vector < vector <string> >& IN) {

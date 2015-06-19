@@ -11,38 +11,45 @@
 
 #include "assertions.hpp"
 #include "average.hpp"
+#include "bingham.h"
 #include "common.h"
+#include "data_sort.hpp"
 #include "rgf.h"
 //#include "run_mode.h"
 #include "settings.hpp"
 #include "structs.h"
 #include "well.hpp"
 
-/*
+
 namespace {
 
-vector <vector <vector <vector <WELL_INTERVAL> > > > W_INTERVAL;
+vector <vector <WELL_INTERVAL> > W_INTERVAL;
 
-vector <vector <vector <vector <WELL_FREQUENCY> > > > W_FREQUENCY;
-
-//vector <WELL_INTERVAL> W_INT_buf2;
+vector <vector <WELL_FREQUENCY> > W_FREQUENCY;
 
 const double MIN_DATAINTERVAL = 0.10;
+
+bool WELL_PROCESSING_CALLS = false;
 
 }
 
 using namespace std;
 
-vector <vector <vector <vector <WELL_INTERVAL> > > > RETURN_INTERVAL (){
+bool is_WELL_PROCESSING_CALLS () {
+
+	return WELL_PROCESSING_CALLS;
+}
+
+vector <vector <WELL_INTERVAL> > RETURN_INTERVAL (){
 
 	return W_INTERVAL;
 }
 
-vector <vector <vector <vector <WELL_FREQUENCY> > > > RETURN_FREQUENCY (){
+vector <vector <WELL_FREQUENCY> > RETURN_FREQUENCY (){
 
 	return W_FREQUENCY;
 }
-
+/*
 vector <vector <WELL_INTERVAL> > MERGE_INTERVAL (const vector < vector <vector <vector <WELL_INTERVAL> > > >& IN) {
 
 	vector <vector <WELL_INTERVAL> > OUT;
@@ -61,7 +68,9 @@ vector <vector <WELL_INTERVAL> > MERGE_INTERVAL (const vector < vector <vector <
 	}
 	return OUT;
 }
+*/
 
+/*
 vector <vector <WELL_FREQUENCY> > MERGE_FREQUENCY (const vector < vector <vector <vector <WELL_FREQUENCY> > > >& IN) {
 
 	vector <vector <WELL_FREQUENCY> > OUT;
@@ -82,7 +91,7 @@ vector <vector <WELL_FREQUENCY> > MERGE_FREQUENCY (const vector < vector <vector
 	}
 	return OUT;
 }
-
+*/
 
 vector <GDB> filter_too_small_distances (const vector <GDB>& IN) {
 
@@ -111,11 +120,14 @@ vector <WELL_FREQUENCY> FREQUENCY (const vector <GDB>& inGDB) {
 
 	vector <WELL_FREQUENCY> OUT;
 
-	vector <GDB> process_GDB = sort_by_DEPTH (inGDB);
+	vector <GDB> process_GDB = SORT_GDB (inGDB, "DEPTH");
+	//vector <GDB> process_GDB = sort_by_DEPTH (inGDB);
 
 	//cout << process_GDB.size() << endl;
 
 	process_GDB = filter_too_small_distances (process_GDB);
+
+	GDB_size_check (process_GDB);
 
 	//cout << process_GDB.size() << endl;
 
@@ -259,7 +271,8 @@ vector <WELL_INTERVAL> FIRST_DERIVATE (const vector <WELL_INTERVAL>& IN) {
 
 double calculate_interval_depth (const vector <GDB>& inGDB) {
 
-	vector <GDB> process_GDB = sort_by_DEPTH (inGDB);
+	vector <GDB> process_GDB = SORT_GDB (inGDB, "DEPTH");
+	//vector <GDB> process_GDB = sort_by_DEPTH (inGDB);
 
 	vector <double> D;
 
@@ -333,13 +346,33 @@ WELL_INTERVAL interval_average (const vector <GDB>& inGDB) {
 
 	WELL_INTERVAL OUT;
 
+	GDB_size_check(inGDB);
+
 	OUT.DEPTH = calculate_interval_depth (inGDB);//ok
 
-	const vector <GDB> dummy = DATATYPE_AVERAGE (inGDB, "");
+	WELL_PROCESSING_CALLS = true;
 
-	OUT.INT_AV_D = dummy.at(0).avD;
+	const vector <GDB> dummy = DATATYPE_AVERAGE (inGDB);
 
-	OUT.INT_AV_DD = dummy.at(0).avd;
+	WELL_PROCESSING_CALLS = false;
+
+	const bool O = is_D_up (dummy.at(0).avD);
+
+	const vector <VCTR> BNG = generate_Bingham_dataset(inGDB);
+	const STRESSTENSOR ST = st_BINGHAM (BNG);
+	const STRESSFIELD SF = sf_BINGHAM (ST);
+
+	if (!O) OUT.INT_AV_D = 	DXDYDZ_from_NXNYNZ (flip_vector (SF.EIGENVECTOR1));
+	else OUT.INT_AV_D = 	DXDYDZ_from_NXNYNZ (SF.EIGENVECTOR1);
+
+	OUT.INT_AV_DD = dipdir_dip_from_DXDYDZ (OUT.INT_AV_D);
+
+	//OUT.INT_AV_D = dummy.at(0).avD;
+	//OUT.INT_AV_DD = dummy.at(0).avd;
+
+	//cout << " ------------------------------------------------ " << endl;
+	//cout << OUT.DEPTH << "  -  "  << OUT.INT_AV_DD.DIPDIR << "/" << OUT.INT_AV_DD.DIP << endl;
+	//dbg_cout_GDB_vector(inGDB);
 
 	OUT.INT_AV_DD_STDEV = stdev_for_interval (dummy, true);//ok
 	OUT.INT_AV_D_STDEV = stdev_for_interval (dummy, false);//ok
@@ -350,6 +383,8 @@ WELL_INTERVAL interval_average (const vector <GDB>& inGDB) {
 vector <WELL_INTERVAL> WELL_AVERAGE_M (const vector <GDB>& p_GDB) {
 
 	vector <WELL_INTERVAL> OUT;
+
+	GDB_size_check (p_GDB);
 
 	const double IVL = is_WELL_INTERVAL_LENGTH();//ok
 
@@ -393,6 +428,8 @@ vector <WELL_INTERVAL> WELL_AVERAGE_D (const vector <GDB>& p_GDB) {
 
 	vector <WELL_INTERVAL> OUT;
 
+	GDB_size_check(p_GDB);
+
 	const double IVL = is_WELL_INTERVAL_LENGTH();
 	const size_t S = p_GDB.size();
 
@@ -428,7 +465,60 @@ vector <WELL_INTERVAL> WELL_AVERAGE_D (const vector <GDB>& p_GDB) {
 	return OUT;
 }
 
-void PROCESS_WELL_GROUPS (const vector <vector <vector <vector <GDB> > > >& inGDB_G, const bool TILT) {
+void PROCESS_WELL_GROUPS (const vector <vector <GDB> >& inGDB_G, const bool TILT) {
+
+	if (is_WELLDATA_NO()) return;
+
+
+	for (size_t i = 0; i < inGDB_G.size(); i++) {
+
+		GDB_size_check (inGDB_G.at(i));
+
+		vector <WELL_INTERVAL> INTERVAL_buf;
+		vector <WELL_FREQUENCY> FREQUENCY_buf;
+
+		vector <GDB> p_GDB = inGDB_G.at(i);
+		p_GDB = SORT_GDB (p_GDB, "DEPTH");
+
+		const bool is_M = is_WELL_INTERVAL_METER();
+		const bool is_D = is_WELL_INTERVAL_DATANUMBER();
+		const size_t S = p_GDB.size();
+
+		const double MIN_DEPTH = p_GDB.at(0).DEPTH;
+		const double MAX_DEPTH = p_GDB.at(S - 1).DEPTH;
+
+		const double IVL = is_WELL_INTERVAL_LENGTH();
+		//const size_t I = double_to_size_t (IVL);
+
+		const size_t I = string_to_double (size_t_to_string (IVL));
+
+		bool PROCESSABLE = false;
+
+		if 		(is_M) 	PROCESSABLE = (MAX_DEPTH - MIN_DEPTH) > IVL;
+		else if (is_D)	PROCESSABLE = (S >= I);
+		else ASSERT_DEAD_END();
+
+		if (p_GDB.size() <= 2) PROCESSABLE = false;
+
+		//dbg_cout_GDB_vector (p_GDB);
+
+		if (PROCESSABLE) {
+
+			if (is_M)	INTERVAL_buf = WELL_AVERAGE_M (p_GDB);//ok
+			else		INTERVAL_buf = WELL_AVERAGE_D (p_GDB);
+
+			INTERVAL_buf = FIRST_DERIVATE (INTERVAL_buf);
+
+			FREQUENCY_buf = FREQUENCY (p_GDB);
+		}
+		W_INTERVAL.push_back (INTERVAL_buf);
+		W_FREQUENCY.push_back (FREQUENCY_buf);
+	}
+	return;
+}
+
+/*
+ * void PROCESS_WELL_GROUPS (const vector <vector <vector <vector <GDB> > > >& inGDB_G, const bool TILT) {
 
 	if (is_WELLDATA_NO()) return;
 
@@ -448,7 +538,8 @@ void PROCESS_WELL_GROUPS (const vector <vector <vector <vector <GDB> > > >& inGD
 				vector <WELL_FREQUENCY> FREQUENCY_buf;
 
 				vector <GDB> p_GDB = inGDB_G.at(i).at(j).at(k);
-				p_GDB = sort_by_DEPTH (p_GDB);
+				p_GDB = SORT_GDB (p_GDB, "DEPTH");
+				//p_GDB = sort_by_DEPTH (p_GDB);
 
 				const bool is_M = is_WELL_INTERVAL_METER();
 				const bool is_D = is_WELL_INTERVAL_DATANUMBER();
@@ -458,7 +549,9 @@ void PROCESS_WELL_GROUPS (const vector <vector <vector <vector <GDB> > > >& inGD
 				const double MAX_DEPTH = p_GDB.at(S - 1).DEPTH;
 
 				const double IVL = is_WELL_INTERVAL_LENGTH();
-				const size_t I = double_to_size_t (IVL);
+				//const size_t I = double_to_size_t (IVL);
+
+				const size_t I = string_to_double (size_t_to_string (IVL));
 
 				bool PROCESSABLE = false;
 
@@ -491,6 +584,12 @@ void PROCESS_WELL_GROUPS (const vector <vector <vector <vector <GDB> > > >& inGD
 	//dbg_cout_GDB_vector_vector (inGDB_G);
 	//dbg_cout_AVERAGE (W_AVERAGE);
 }
+ */
+
+
+
+
+
 
 /*
 void dbg_cout_AVERAGE (vector <vector <vector <vector <WELL_AVERAGE> > > > IN) {
@@ -523,5 +622,3 @@ void dbg_cout_AVERAGE (vector <vector <vector <vector <WELL_AVERAGE> > > > IN) {
 	return;
 }
 */
-
-

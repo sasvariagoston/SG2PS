@@ -231,16 +231,16 @@ vector <vector <double> > clustering_cycle (const size_t cluster_number, const v
 		if (existence_of_group (i, whichgroup)) group_counter++;
 	}
 
-	const bool STRIAE = is_allowed_striae_datatype (inGDB.at(0).DATATYPE);
+	//const bool STRIAE = is_allowed_striae_datatype (inGDB.at(0).DATATYPE);
 
-	if (STRIAE && (is_RUP_CLUSTERING_ANG() || is_RUP_CLUSTERING_RUP())) {
+	//if (STRIAE && (is_RUP_CLUSTERING_ANG() || is_RUP_CLUSTERING_RUP())) {
 
-		if (!is_mode_DEBUG()) cout << "    - RUP clustering into "
-		<< group_counter << " clusters with "
-		<< fixed << setprecision (2) << cml_dst << "% error."
-		<< endl;
-	}
-	else {
+	//	if (!is_mode_DEBUG()) cout << "    - RUP clustering into "
+	//	<< group_counter << " clusters with "
+	//	<< fixed << setprecision (2) << cml_dst << "% error."
+	//	<< endl;
+	//}
+	//else {
 
 		if (!is_mode_DEBUG()) {
 
@@ -250,10 +250,10 @@ vector <vector <double> > clustering_cycle (const size_t cluster_number, const v
 			cout
 			<< inGDB.at(0).LOC << "' location, '"
 			<< inGDB.at(0).DATATYPE << "' data set, '"
-			<< inGDB.at(0).GC << "' group into "
+			<< inGDB.at(0).GC.at(0) << "' group into "
 			<< group_counter << " clusters with "
 			<< fixed << setprecision (2) << cml_dst << "% error." << endl;
-		}
+		//}
 	}
 	return distance_matrix;
 }

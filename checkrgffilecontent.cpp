@@ -74,7 +74,7 @@ struct record {
 };
 
 }
-
+/*
 string inputfilename () {
 
 	string filename;
@@ -103,6 +103,7 @@ string inputfilename () {
 
 	return projectname;
 }
+*/
 
 void read_in_rgf(const string& file_name); // throws rgf_error if duplicate col names are found
 
@@ -134,7 +135,23 @@ bool input_rgf (const string& projectname) {
 	return true;
 }
 
+bool by_DEPTH_string (const vector <string> x, const vector <string> y) {
+
+	return x.at(DEPTH) < y.at(DEPTH);
+}
+
+vector <vector <string> > sort_by_DEPTH_string (const vector <vector <string> >& IN) {
+
+	vector <vector <string> > OUT = IN;
+
+	sort (OUT.begin(), OUT.end(), by_DEPTH_string);
+
+	return OUT;
+}
+
 void complete_rgf_to_check () {
+
+	const bool W = is_WELLDATA_USE();
 
 	for (size_t i = 1; i < rgf_to_check.size(); i++) {
 
@@ -145,11 +162,41 @@ void complete_rgf_to_check () {
 		rgf_to_check.at(i).at(LOCATION) = capslock(rgf_to_check.at(i).at(LOCATION));
 		rgf_to_check.at(i).at(FORMATION) = capslock(rgf_to_check.at(i).at(FORMATION));
 
-		if (rgf_to_check.at(i).at(LOCATION) == "") 	rgf_to_check.at(i).at(LOCATION) = 	rgf_to_check.at(i-1).at(LOCATION);
-		if (rgf_to_check.at(i).at(LOCX) == "") 		rgf_to_check.at(i).at(LOCX) = 		rgf_to_check.at(i-1).at(LOCX);
-		if (rgf_to_check.at(i).at(LOCY) == "") 		rgf_to_check.at(i).at(LOCY) = 		rgf_to_check.at(i-1).at(LOCY);
-		if (rgf_to_check.at(i).at(FORMATION) == "") rgf_to_check.at(i).at(FORMATION) = 	rgf_to_check.at(i-1).at(FORMATION);
-		if (rgf_to_check.at(i).at(DATATYPE) == "") 	rgf_to_check.at(i).at(DATATYPE) = 	rgf_to_check.at(i-1).at(DATATYPE);
+		if (rgf_to_check.at(i).at(LOCATION) == "") {
+
+			rgf_to_check.at(i).at(LOCATION) = rgf_to_check.at(i-1).at(LOCATION);
+		}
+
+		if (rgf_to_check.at(i).at(LOCX) == "") {
+
+			rgf_to_check.at(i).at(LOCX) = rgf_to_check.at(i-1).at(LOCX);
+		}
+
+		if (rgf_to_check.at(i).at(LOCY) == "") {
+
+			rgf_to_check.at(i).at(LOCY) = rgf_to_check.at(i-1).at(LOCY);
+		}
+
+		if (rgf_to_check.at(i).at(FORMATION) == "") {
+
+			if (!W) rgf_to_check.at(i).at(FORMATION) = rgf_to_check.at(i-1).at(FORMATION);
+		}
+
+		if (rgf_to_check.at(i).at(DATATYPE) == "") {
+
+			rgf_to_check.at(i).at(DATATYPE) = rgf_to_check.at(i-1).at(DATATYPE);
+		}
+	}
+	if (!W) return;
+
+	rgf_to_check = sort_by_DEPTH_string (rgf_to_check);
+
+	for (size_t i = 1; i < rgf_to_check.size(); i++) {
+
+		if (rgf_to_check.at(i).at(FORMATION) == "") {
+
+			rgf_to_check.at(i).at(FORMATION) = rgf_to_check.at(i-1).at(FORMATION);
+		}
 	}
 	return;
 }
@@ -394,6 +441,7 @@ bool PALEONcheck () {
 
 }
 
+/*
 vector <string> RETURN_CORRECT_RGF_CMD (vector <string> inputfilename_vector) {
 
 	while (!(is_RGF_CORRECT (inputfilename_vector.at(0)))) {
@@ -404,22 +452,35 @@ vector <string> RETURN_CORRECT_RGF_CMD (vector <string> inputfilename_vector) {
 	}
 	return inputfilename_vector;
 }
+*/
 
+
+/*
 vector <string> check_rgf_set_inputs (const vector <string>& inputfilename_vector) {
 
 	vector <string> corr_IF_V;
 
 	if (!is_mode_GUI() && !is_mode_BATCH() && !is_mode_DEBUG()) ASSERT_DEAD_END();
 
+	writeln ("");
+	writeln ("1) CHECKING OF SETTINGS AND INPUT DATA FILE (S)");
+	writeln ("===============================================");
+	writeln ("");
+
+
 	for (size_t i = 0; i < inputfilename_vector.size(); i++) {
 
 		const string IF = inputfilename_vector.at(i);
 
-		const double CORR_SET = is_SETTINGS_FILE_CORRECT (IF + ".set");
+		writeln (" - CHECKING " + capslock (IF + ".set") + " SETTINGS FILE");
+
+		const bool CORR_SET = is_SETTINGS_FILE_CORRECT (IF + ".set");
 
 		vector <vector <string> > SET;
 
 		if (CORR_SET) {
+
+			writeln (" - " + capslock (IF + ".set") + " SETTINGS FILE IS CORRECT.");
 
 			SET = READ_SETTINGS_FILE (IF + ".set");
 
@@ -429,38 +490,117 @@ vector <string> check_rgf_set_inputs (const vector <string>& inputfilename_vecto
 
 		INIT_SETTINGS (SET);
 
-		const double CORR_RGF = is_RGF_CORRECT (IF);
+		writeln ("");
+		writeln (" - CHECKING " + capslock (IF + ".rgf") + " INPUT DATA FILE");
 
-		string MSG;
+		const double CORR_RGF = is_RGF_CORRECT (IF);
 
 		if (CORR_RGF && CORR_SET) {
 
 			corr_IF_V.push_back (IF);
 
-			MSG = "    - Input " + capslock (IF) + ".RGF file structure is correct.";
+			writeln (" - " + capslock (IF + ".rgf") + " INPUT DATA FILE IS CORRECT.");
 		}
 
 		if (!CORR_RGF) {
 
-			MSG = "    - RGF_ERROR: the input " + capslock (IF) + ".RGF file structure is incorrect, the file will not be processed.";
+			writeln ("");
+			writeln (" WARNING, RGF_ERROR: the input " + capslock (IF) + ".RGF file structure is incorrect, the file will not be processed.");
 		}
 
 		if (!CORR_SET) {
 
-			MSG = "    - SET_ERROR: the input " + capslock (IF) + ".SET file structure is incorrect, the file will not be processed.";
+			writeln ("");
+			writeln (" WARNING, SET_ERROR: the input " + capslock (IF) + ".SET file structure is incorrect, the file will not be processed.");
 		}
-		cout << MSG << endl;
 
 		if (!CORR_RGF && is_mode_GUI()) throw rgf_error();
 		if (!CORR_SET && is_mode_GUI()) throw set_error();
+
+		writeln ("");
 	}
 	if (corr_IF_V.size() < 1) {
 
-		cout << "    - No input file to process, exiting." << endl;
+		writeln ("");
+		writeln (" WARNING, no input file to process, exiting.");
 		runtime_error ("No file to process.");
 	}
 	return corr_IF_V;
 }
+*/
+
+
+/*
+ * vector <string> corr_IF_V;
+
+	if (!is_mode_GUI() && !is_mode_BATCH() && !is_mode_DEBUG()) ASSERT_DEAD_END();
+
+	writeln ("");
+	writeln ("1) CHECKING OF SETTINGS AND INPUT DATA FILE (S)");
+	writeln ("===============================================");
+	writeln ("");
+
+
+	for (size_t i = 0; i < inputfilename_vector.size(); i++) {
+
+		const string IF = inputfilename_vector.at(i);
+
+		writeln (" - CHECKING " + capslock (IF + ".set") + " SETTINGS FILE");
+
+		const bool CORR_SET = is_SETTINGS_FILE_CORRECT (IF + ".set");
+
+		vector <vector <string> > SET;
+
+		if (CORR_SET) {
+
+			writeln (" - " + capslock (IF + ".set") + " SETTINGS FILE IS CORRECT.");
+
+			SET = READ_SETTINGS_FILE (IF + ".set");
+
+			SET = COMPLETE_SET_WITH_DEFAULT (SET);
+		}
+		else SET = RETURN_HARDCODED_SETTINGS ();
+
+		INIT_SETTINGS (SET);
+
+		writeln ("");
+		writeln (" - CHECKING " + capslock (IF + ".rgf") + " INPUT DATA FILE");
+
+		const double CORR_RGF = is_RGF_CORRECT (IF);
+
+		if (CORR_RGF && CORR_SET) {
+
+			corr_IF_V.push_back (IF);
+
+			writeln (" - " + capslock (IF + ".rgf") + " INPUT DATA FILE IS CORRECT.");
+		}
+
+		if (!CORR_RGF) {
+
+			writeln ("");
+			writeln (" WARNING, RGF_ERROR: the input " + capslock (IF) + ".RGF file structure is incorrect, the file will not be processed.");
+		}
+
+		if (!CORR_SET) {
+
+			writeln ("");
+			writeln (" WARNING, SET_ERROR: the input " + capslock (IF) + ".SET file structure is incorrect, the file will not be processed.");
+		}
+
+		if (!CORR_RGF && is_mode_GUI()) throw rgf_error();
+		if (!CORR_SET && is_mode_GUI()) throw set_error();
+
+		writeln ("");
+	}
+	if (corr_IF_V.size() < 1) {
+
+		writeln ("");
+		writeln (" WARNING, no input file to process, exiting.");
+		runtime_error ("No file to process.");
+	}
+	return corr_IF_V;
+}
+ */
 
 bool is_RGF_CORRECT (const string projectname) {
 
@@ -600,7 +740,7 @@ vector <GDB> create_GDB_from_rgf (const string& file_name) {
 
 	vector <GDB> outGDB;
 
-	read_in_rgf (file_name); // TODO Can throw rgf_error in console, batch and debug mode
+	//read_in_rgf (file_name); // TODO Can throw rgf_error in console, batch and debug mode
 
 	complete_rgf_to_check ();
 
@@ -732,6 +872,59 @@ vector <GDB> create_GDB_from_rgf (const string& file_name) {
 	return outGDB;
 }
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+bool CHECK_RGF (const string projectname) {
+
+	if (!is_mode_GUI() && !is_mode_BATCH() && !is_mode_DEBUG()) ASSERT_DEAD_END();
+
+	const string RFN = capslock (projectname);
+	const string rfn = projectname ;
+
+	writeln ("");
+	writeln ("==============================");
+	writeln ("2) CHECKING OF INPUT DATA FILE");
+	writeln ("==============================");
+	writeln ("");
+
+	writeln (" - CHECKING " + RFN + ".RGF INPUT DATA FILE");
+
+	if (is_RGF_CORRECT (rfn)) {
+
+		writeln (" - " + RFN + ".RGF INPUT DATA FILE IS CORRECT.");
+
+		return true;
+	}
+	else {
+
+		writeln ("");
+		writeln (" WARNING, RGF_ERROR: the input " + RFN + ".RGF file structure is incorrect, the file will not be processed.");
+
+		if (is_mode_GUI()) throw rgf_error();
+
+		return false;
+	}
+}
+
+
+
+
+
+
+
+
 //=============================================================================
 // Comma-separated values (CSV) file I/O contributed by Ali Baharev
 
@@ -779,7 +972,7 @@ void show_col_names(const string& msg, const vector<string>& v) {
 		return;
 	}
 
-	cout << "      - The following columns are " << msg << ":\n        ";
+	cout << "    - The following columns are " << msg << ":\n        ";
 
 	for (size_t i=0; i<v.size(); ++i) {
 

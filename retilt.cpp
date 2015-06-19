@@ -16,22 +16,50 @@
 
 using namespace std;
 
-VCTR return_tilting_axis (const GDB& in, const bool paleonorth) {
+VCTR return_tilting_axis (const GDB& in, const string METHOD) {
 
+	const bool B = METHOD == "BEDDING";
+	const bool P = METHOD == "PALEONORTH";
+	const bool T = METHOD == "TRAJECTORY";
 
-	//cout << in.avS0d.DIPDIR << "/" << in.avS0d.DIP << endl;
-
-	if (paleonorth) return unitvector (declare_vector (0.0, 0.0, -1.0));
-	else return unitvector (declare_vector (
+	if (P) return unitvector (declare_vector (0.0, 0.0, -1.0));
+	else if (B) return unitvector (declare_vector (
 			SIN (in.avS0d.DIPDIR + 90.0),
 			COS (in.avS0d.DIPDIR + 90.0),
 			0.0));
+	else if (T) {
+
+		const DIPDIR_DIP DDD = dipdir_dip_from_NXNYNZ(in.T);
+
+		//cout << "for axis: " << DDD.DIPDIR << "/" << DDD.DIP << endl;
+
+		//VCTR dummy = unitvector (declare_vector (
+		//		SIN (DDD.DIPDIR + 90.0),
+		//		COS (DDD.DIPDIR + 90.0),
+		//		0.0));
+
+		//cout << dummy.X << "  -  "<< dummy.Y << "  -  " << dummy.Z << endl;
+
+		return unitvector (declare_vector (
+				SIN (DDD.DIPDIR + 90.0),
+				COS (DDD.DIPDIR + 90.0),
+				0.0));
+	}
+	else {
+
+		ASSERT_DEAD_END();
+		return declare_vector (NaN(), NaN(), NaN());
+	}
 }
 
-double return_tilting_angle (const GDB& in, const bool paleonorth) {
+double return_tilting_angle (const GDB& in, const string METHOD) {
 
-	if (paleonorth) return (- in.PALEON);
-	else {
+	const bool B = METHOD == "BEDDING";
+	const bool P = METHOD == "PALEONORTH";
+	const bool T = METHOD == "TRAJECTORY";
+
+	if (P) return (- in.PALEON);
+	else if (B) {
 
 		if (in.avS0d.DIP <= 90.0 ) return in.avS0d.DIP;
 		else {
@@ -39,6 +67,23 @@ double return_tilting_angle (const GDB& in, const bool paleonorth) {
 			ASSERT_DEAD_END();
 			return NaN ();
 		}
+	}
+	else if (T) {
+
+		const DIPDIR_DIP DDD = dipdir_dip_from_NXNYNZ(in.T);
+
+		//cout << DDD.DIPDIR << "/" << DDD.DIP << endl;
+		if (DDD.DIP <= 90.0 ) return -(90.0 - DDD.DIP);
+		else {
+
+			ASSERT_DEAD_END();
+			return NaN ();
+
+		}
+	}
+	else {
+		ASSERT_DEAD_END();
+		return NaN();
 	}
 }
 
@@ -63,7 +108,23 @@ GDB tilt_plane (const GDB& in, const VCTR& AXIS, const double ANGLE) {
 
 	const bool B = is_allowed_handle_as_bedding(in.DATATYPE);
 
+	//cout << "www1" << endl;
+
+	//cout << " ---------------------------------- " << endl;
+	//cout <<"AXIS"<<endl;
+	//cout <<"===="<<endl;
+	//cout << AXIS.X << " - " << AXIS.Y << " - " << AXIS.Z << endl;
+
+	//cout <<"PLANE NORMAL"<<endl;
+	//cout <<"============"<<endl;
+	//cout << in.N.X << " - " << in.N.Y << " - " << in.N.Z << endl;
+
+	//cout << "ANGLE: " << ANGLE << endl;
+	//cout << " ---------------------------------- " << endl;
+
 	OUT.N = unitvector (ROTATE (AXIS, in.N, ANGLE));
+
+	//cout << "www2" << endl;
 
 	bool O = is_N_down (OUT.N);
 
@@ -149,7 +210,34 @@ GDB tilt_SC (const GDB& in, const VCTR& AXIS, const double ANGLE) {
 	return OUT;
 }
 
-GDB TILT_DATA (const GDB& in, const bool TILT_BY_PALEONORTH) {
+GDB TILT_DATA (const GDB& in, const string METHOD) {
+
+	const bool B = METHOD == "BEDDING";
+	const bool P = METHOD == "PALEONORTH";
+	const bool T = METHOD == "TRAJECTORY";
+
+	if (!B && !P && !T) ASSERT_DEAD_END();
+
+	if (B) {
+		const bool DD =	is_allowed_DIR (in.avS0d.DIPDIR);
+		const bool D = is_allowed_DIP (in.avS0d.DIP);
+		const bool L = is_allowed_lithology_datatype (in.DATATYPE);
+
+		if (!DD || !D || L) return in;
+	}
+	else if (P) {
+
+		const bool PN =	is_allowed_DIR (fabs(in.PALEON));
+
+		if (!PN) return in;
+	}
+	else if (T) {
+
+		const bool TR = is_allowed_N_vector (in.T);
+
+		if (!TR) return in;
+	}
+	else {}
 
 	const bool IS_PL = is_allowed_plane_datatype (in.DATATYPE);
 	const bool IS_LN = is_allowed_lineation_datatype (in.DATATYPE);
@@ -158,13 +246,15 @@ GDB TILT_DATA (const GDB& in, const bool TILT_BY_PALEONORTH) {
 
 	const bool O = is_allowed_bedding_overturned_sense (in.avS0offset);
 
-	double ANGLE = return_tilting_angle (in, TILT_BY_PALEONORTH);
-	const VCTR AXIS = return_tilting_axis (in, TILT_BY_PALEONORTH);
+	double ANGLE = return_tilting_angle (in, METHOD);
 
-	//cout << "ANGLE : " << ANGLE << endl;
-	//cout << "AXIS  : " << AXIS.X << " - " << AXIS.Y << " - " << AXIS.Z << " - " << endl;
+	//cout << in.ID << endl;
+	//cout << fixed << setprecision(6) << ANGLE << endl;
+	const VCTR AXIS = return_tilting_axis (in, METHOD);
 
-	if (O && !TILT_BY_PALEONORTH) ANGLE = 180.0 + ANGLE;
+	//cout << in.DATATYPE << "  -  " << in.corr.DIPDIR << "/" << in.corr.DIP << endl;
+
+	if (O && !P && !T) ANGLE = 180.0 + ANGLE;
 
 	if (IS_LN) 			return tilt_lineation (in, AXIS, ANGLE);
 	else if (IS_PL) 	return tilt_plane (in, AXIS, ANGLE);
@@ -172,16 +262,23 @@ GDB TILT_DATA (const GDB& in, const bool TILT_BY_PALEONORTH) {
 	else if (IS_SC)   	return tilt_SC (in, AXIS, ANGLE);
 	else ASSERT_DEAD_END();
 
+	cout << "4444" << endl;
+
 	return in;
 }
 
-GDB S0_TILT (const GDB& in) {
+/*
+GDB S0_TILT (const GDB& in, const string METHOD) {
+
+
+	//const bool DD =	is_allowed_DIR (ACT.avS0d.DIPDIR);
+	//const bool D = is_allowed_DIP (ACT.avS0d.DIP);
+	//const bool L = is_allowed_lithology_datatype (ACT.DATATYPE);
+
+
+
 
 	GDB out = in;
-
-	//cout << "is_TILTING_BEDDING_PALEONORTH(): " << is_TILTING_BEDDING_PALEONORTH() << endl;
-	//cout << "is_TILTING_BEDDING()           : " << is_TILTING_BEDDING() << endl;
-	//cout << "is_TILTING_PALEONORTH()        : " << is_TILTING_PALEONORTH() << endl;
 
 	if (is_TILTING_BEDDING_PALEONORTH()) {
 
@@ -194,8 +291,22 @@ GDB S0_TILT (const GDB& in) {
 
 	return out;
 }
+*/
+vector < vector <GDB> > RETILT (const vector < vector <GDB> >& inGDB, const string METHOD) {
 
-vector < vector < vector < vector <GDB> > > > RETILT (const vector < vector < vector < vector <GDB> > > >& inGDB) {
+	vector < vector <GDB> > outGDB = inGDB;
+
+	for (size_t i = 0; i < outGDB.size(); i++) {
+		for (size_t j = 0; j < outGDB.at(i).size(); j++) {
+
+			outGDB.at(i).at(j) = TILT_DATA (outGDB.at(i).at(j), METHOD);
+		}
+	}
+	return outGDB;
+}
+
+/*
+ * vector < vector < vector < vector <GDB> > > > RETILT (const vector < vector < vector < vector <GDB> > > >& inGDB) {
 
 	vector < vector < vector < vector <GDB> > > > outGDB = inGDB;
 
@@ -222,3 +333,4 @@ vector < vector < vector < vector <GDB> > > > RETILT (const vector < vector < ve
 	}
 	return outGDB;
 }
+ */

@@ -81,6 +81,7 @@ struct GDB  {
 	double PITCHANGLE;
 
 	VCTR N, NC,	D, DC, S, SC;
+	VCTR T;
 
 	VCTR ptnP, ptnT, ptnN;
 	VCTR avD, avS0D, avS0N;
@@ -317,5 +318,12 @@ struct WELL_INTERVAL {
 	double DD_DERIV;
 
 	double FREQ;
+};
+
+struct TRJ {
+
+	double DEPTH;
+	double X_AZIMUTH;
+	double Y_PLUNGE;
 };
 #endif

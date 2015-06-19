@@ -10,6 +10,7 @@
 #include "allowed_keys.hpp"
 #include "assertions.hpp"
 #include "common.h"
+#include "data_sort.hpp"
 #include "math.h"
 #include "settings.hpp"
 #include "structs.h"
@@ -31,8 +32,8 @@ vector <double> GDB_to_table (const vector <GDB>& inGDB, const string field) {
 
 	vector <GDB> outGDB = inGDB;
 
-	if		(field == "ANG") outGDB = sort_by_ANG (inGDB);
-	else if	(field == "RUP") outGDB = sort_by_RUP (inGDB);
+	if		(field == "ANG") outGDB = SORT_GDB (inGDB, "ANG");
+	else if	(field == "RUP") outGDB = SORT_GDB (inGDB, "RUP");
 	else ASSERT_DEAD_END();
 
 	for (size_t i = 0; i < inGDB.size(); i++) {
@@ -110,7 +111,7 @@ RUP_table return_cost_function_member (const vector <double>& in, const size_t b
 
 	return out;
 }
-
+/*
 bool by_GC(const GDB& x, const GDB& y) {
 
 	return x.GC < y.GC;
@@ -164,7 +165,7 @@ vector <RUP_table> sort_by_C (const vector <RUP_table>& RT) {
 
 	return OUT;
 }
-
+*/
 size_t return_DATA_ideal_bin_number (const vector <double>& in) {
 
 	vector <RUP_table> RT;
@@ -260,14 +261,17 @@ vector <GDB> associate_GDB_DATA_clusters (const vector <GDB>& inGDB, const vecto
 		if ((is_RUP_CLUSTERING_RUP() || is_RUP_CLUSTERING_ANG()) && (V.size() == 0)) {
 
 			outGDB.at(j).GC.at(2) = GC.at(0).at(0);
+			cout << "* 1: " << outGDB.at(j).GC.at(2) << endl;
 		}
 		else if (is_RUP && !is_RUP_CLUSTERING_RUP()) {
 
 			outGDB.at(j).GC.at(2) = GC.at(0).at(0);
+			cout << "* 2: " << outGDB.at(j).GC.at(2) << endl;
 		}
 		else if (is_ANG && !is_RUP_CLUSTERING_ANG()){
 
 			outGDB.at(j).GC.at(2) = GC.at(0).at(0);
+			cout << "* 3: " << outGDB.at(j).GC.at(2) << endl;
 		}
 		else {
 
@@ -280,15 +284,20 @@ vector <GDB> associate_GDB_DATA_clusters (const vector <GDB>& inGDB, const vecto
 				else ASSERT_DEAD_END();
 
 				if (ACT < V.at(0).BIN_CENTER) {
-					outGDB.at(j).GC.at(2) = GC.at(1).at(0); //was 0
+					outGDB.at(j).GC.at(2) = GC.at(1).at(0);
+					cout << "1: " << outGDB.at(j).GC.at(2) << endl;//was 0
 				}
 				else if (ACT > V.at(V.size()-1).BIN_CENTER) {
-					outGDB.at(j).GC.at(2) = GC.at(i+2).at(0);  //was i+=1
+					outGDB.at(j).GC.at(2) = GC.at(i+2).at(0);
+					cout << "2: " << outGDB.at(j).GC.at(2) << endl;//was i+=1
 				}
 				else if (i > 0 && is_in_range (V.at(i-1).BIN_CENTER, V.at(i).BIN_CENTER, ACT)){
-					outGDB.at(j).GC.at(2) = GC.at(i+1).at(0);  //was i
+					outGDB.at(j).GC.at(2) = GC.at(i+1).at(0);
+					cout << "3: " << outGDB.at(j).GC.at(2) << endl;//was i
 				}
 				else {}
+
+				//cout << outGDB.at(j).GC.at(2) << flush;
 			}
 		}
 	}

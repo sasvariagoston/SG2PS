@@ -4,10 +4,12 @@
 // This code is published under the GNU Lesser General Public License.
 
 #include <algorithm>
+#include <iostream>
 
 #include "allowed_keys.hpp"
 #include "array_to_vector.hpp"
-#include <iostream>
+#include "rgf.h"
+
 
 template <typename T>
 bool contains(const vector<T>& vec, const T& elem) {
@@ -607,6 +609,12 @@ vector <string> is_allowed_test_data_generation_mode_vector () {
 	return allowed_test_data_generation_mode;
 }
 
+bool is_allowed_N_vector (const VCTR& N) {
+
+	return !is_N_down (N);
+}
+
+
 bool is_double (const string& s) {
 
 	bool failed = true;
@@ -622,6 +630,5 @@ vector <string> merge_datatypes (vector <string> target, vector <string> source)
 
 		target.push_back(source.at(i));
 	}
-
 	return target;
 }

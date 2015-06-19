@@ -137,8 +137,14 @@ string version();
 string version_id();
 
 bool is_in_range (const double range_min, const double range_max, const double in); //ok
+bool is_in_range_exactly (const double range_min, const double range_max, const double in);
+bool is_in_range_UP_EQ (const double range_min, const double range_max, const double in);
+bool is_in_range_LW_EQ (const double range_min, const double range_max, const double in);
 
 double points_distance (const VCTR& a, const VCTR& b);
+
+void write (const string MSG);
+void writeln (const string MSG);
 
 #if _MSC_VER && !__INTEL_COMPILER
 #include <float.h>

@@ -224,66 +224,31 @@ void INIT_DEBUG () {
 	}
 }
 
-void STANDARD_OUTPUT (const vector <GDB>& nGDB, const vector <GDB>& tGDB) {
+void STANDARD_OUTPUT (const vector <GDB>& inGDB, const bool TILT) {
 
 	if (!is_mode_DEBUG()) return;
 
-	if (is_CHK_LITHOLOGY_DT ()) 	dump_RGF_to_file (nGDB, "ST_DT_LITHOLOGY");
-	else if (is_CHK_LINEATION_DT()) dump_RGF_to_file (nGDB, "ST_DT_LINEATION");
-	else if (is_CHK_PLANE_DT ()) 	dump_RGF_to_file (nGDB, "ST_DT_PLANE");
-	else if (is_CHK_STRIAE_DT ())	dump_RGF_to_file (nGDB, "ST_DT_STRIAE");
-	else if (is_CHK_SC_DT ()) 		dump_RGF_to_file (nGDB, "ST_DT_SC");
+	string T = "N";
+	if (TILT) T = "T";
 
-	else if (is_CHK_ANGELIER() && is_INVERSION_ANGELIER()) 		{
-
-		dump_RGF_SF_to_file (nGDB, "ST_INV_ANGELIER_N");
-		dump_RGF_SF_to_file (tGDB, "ST_INV_ANGELIER_T");
-	}
-	else if (is_CHK_BINGHAM() && is_BINGHAM_USE()) {
-
-		dump_RGF_SF_to_file (nGDB, "ST_INV_BINGHAM_N");
-		dump_RGF_SF_to_file (tGDB, "ST_INV_BINGHAM_T");
-	}
-	else if (is_CHK_BRUTEFORCE() && is_INVERSION_BRUTEFORCE()) {
-
-		dump_RGF_SF_to_file (nGDB, "ST_INV_BRUTEFORCE_N");
-		dump_RGF_SF_to_file (tGDB, "ST_INV_BRUTEFORCE_T");
-	}
-	else if (is_CHK_FRY() && is_INVERSION_FRY()) {
-
-		dump_RGF_SF_to_file (nGDB, "ST_INV_FRY_N");
-		dump_RGF_SF_to_file (tGDB, "ST_INV_FRY_T");
-	}
-	else if (is_CHK_MICHAEL() && is_INVERSION_MICHAEL()) {
-
-		dump_RGF_SF_to_file (nGDB, "ST_INV_MICHAEL_N");
-		dump_RGF_SF_to_file (tGDB, "ST_INV_MICHAEL_T");
-	}
-	else if (is_CHK_MOSTAFA() && is_INVERSION_MOSTAFA()) {
-
-		dump_RGF_SF_to_file (nGDB, "ST_INV_MOSTAFA_N");
-		dump_RGF_SF_to_file (tGDB, "ST_INV_MOSTAFA_T");
-	}
-	else if (is_CHK_SPRANG() && is_INVERSION_SPRANG()) {
-
-		dump_RGF_SF_to_file (nGDB, "ST_INV_SPRANG_N");
-		dump_RGF_SF_to_file (tGDB, "ST_INV_SPRANG_T");
-	}
-	else if (is_CHK_SHAN() && is_INVERSION_SHAN()) {
-
-		dump_RGF_SF_to_file (nGDB, "ST_INV_SHAN_N");
-		dump_RGF_SF_to_file (tGDB, "ST_INV_SHAN_T");
-	}
-	else if (is_CHK_TURNER() && is_INVERSION_TURNER()) {
-
-		dump_RGF_SF_to_file (nGDB, "ST_INV_TURNER_N");
-		dump_RGF_SF_to_file (tGDB, "ST_INV_TURNER_T");
-	}
-
-	else if (is_CHK_RETILT()) 		dump_RGF_to_file (tGDB, "ST_RETILT");
-	else if (is_CHK_AVERAGE())		dump_RGF_to_file (nGDB, "ST_AVERAGE");
-	else if (is_CHK_COLORS()) 		dump_RGF_to_file (nGDB, "ST_COLORS");
-	else if (is_CHK_FOLDSURFACE()) 	dump_RGF_to_file (nGDB, "ST_FOLDSURFACE");
+	if (is_CHK_LITHOLOGY_DT () && !TILT) 		dump_RGF_to_file (inGDB, "ST_DT_LITHOLOGY");
+	else if (is_CHK_LINEATION_DT() && !TILT) 	dump_RGF_to_file (inGDB, "ST_DT_LINEATION");
+	else if (is_CHK_PLANE_DT () && !TILT) 		dump_RGF_to_file (inGDB, "ST_DT_PLANE");
+	else if (is_CHK_STRIAE_DT () && !TILT)		dump_RGF_to_file (inGDB, "ST_DT_STRIAE");
+	else if (is_CHK_SC_DT () && !TILT) 			dump_RGF_to_file (inGDB, "ST_DT_SC");
+	else if (is_CHK_ANGELIER() && is_INVERSION_ANGELIER()) 		dump_RGF_SF_to_file (inGDB, "ST_INV_ANGELIER_"+T);
+	else if (is_CHK_BINGHAM() && is_BINGHAM_USE()) 				dump_RGF_SF_to_file (inGDB, "ST_INV_BINGHAM_"+T);
+	else if (is_CHK_BRUTEFORCE() && is_INVERSION_BRUTEFORCE())	dump_RGF_SF_to_file (inGDB, "ST_INV_BRUTEFORCE_"+T);
+	else if (is_CHK_FRY() && is_INVERSION_FRY()) 				dump_RGF_SF_to_file (inGDB, "ST_INV_FRY_"+T);
+	else if (is_CHK_MICHAEL() && is_INVERSION_MICHAEL()) 		dump_RGF_SF_to_file (inGDB, "ST_INV_MICHAEL_"+T);
+	else if (is_CHK_MOSTAFA() && is_INVERSION_MOSTAFA()) 		dump_RGF_SF_to_file (inGDB, "ST_INV_MOSTAFA_"+T);
+	else if (is_CHK_SPRANG() && is_INVERSION_SPRANG()) 			dump_RGF_SF_to_file (inGDB, "ST_INV_SPRANG_"+T);
+	else if (is_CHK_SHAN() && is_INVERSION_SHAN())				dump_RGF_SF_to_file (inGDB, "ST_INV_SHAN_"+T);
+	else if (is_CHK_TURNER() && is_INVERSION_TURNER())			dump_RGF_SF_to_file (inGDB, "ST_INV_TURNER_"+T);
+	else if (is_CHK_RETILT() && TILT)	dump_RGF_to_file (inGDB, "ST_RETILT");
+	else if (is_CHK_AVERAGE())			dump_RGF_to_file (inGDB, "ST_AVERAGE");
+	else if (is_CHK_COLORS()) 			dump_RGF_to_file (inGDB, "ST_COLORS");
+	else if (is_CHK_FOLDSURFACE()) 		dump_RGF_to_file (inGDB, "ST_FOLDSURFACE");
 	else {};
 }
 

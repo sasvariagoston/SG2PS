@@ -6,6 +6,9 @@
 #define ASSERTIONS_HPP
 
 #include <sstream>
+#include <vector>
+
+#include "structs.h"
 
 // The FORTRAN traditions are followed
 // EQ	==	EQuals
@@ -14,6 +17,8 @@
 // GE   >=	Greater or Equals
 // GT   >	Greater Than // FIXME Finish!
 // CC approx. CirCa
+
+void GDB_size_check (const vector <GDB>& inGDB);
 
 void throw_std_logic_error(const std::string& message);
 

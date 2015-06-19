@@ -1,15 +1,19 @@
-/*
- * well_ps.hpp
- *
- *  Created on: 25 Nov 2015
- *      Author: sasvariagoston_admin
- */
+// Copyright (C) 2012 - 2015 Ágoston Sasvári
+// All rights reserved.
+// This code is published under the GNU Lesser General Public License.
 
 #ifndef WELL_PS_HPP_
 #define WELL_PS_HPP_
 
 void PS_well_header (const string DATATYPE, const string LOC, ofstream& o);
 void PS_well_border (const vector <GDB>& inGDB, ofstream& o, const PAPER& P, const bool TILT);
+
+string generate_colorstep (const VCTR clr1, const VCTR clr2, const VCTR clr3, const size_t percent);
+string generate_error_colors (const size_t percent);
+string generate_binsize_colors (const size_t percent);
+void PS_rectangle (ofstream& o, const PAPER& P, const double X1, const double Y1, const double X2, const double Y2);
+
+void PS_well_symbols (ofstream& o, const PAPER& P);
 
 double well_axes_step (const double MIN, const double MAX);
 
@@ -44,12 +48,15 @@ void plot_curve (const vector <double> DEPTH, const vector <double> VALUE, ofstr
 
 double return_plot_value (const WELL_INTERVAL ACT, const bool DIPDIR, const string TYPE);
 
+vector <size_t> return_records_with_formation_names (const vector <GDB>& inGDB);
+
 void plot_well_curve (const vector <WELL_INTERVAL>& IN, ofstream& o, const PAPER& P, const double X, const double LENGTH, const double MIN_VAL, const double MAX_VAL, const bool DIPDIR, const string TYPE);
 void plot_well_measurements (const vector <GDB>& inGDB, ofstream& o, const PAPER& P, const double X, const double LENGTH, const double MIN_VAL, const double MAX_VAL, const bool DIPDIR);
 
 void PS_well_intervals_error (const vector <WELL_INTERVAL>& INTERVAL, ofstream& o, const PAPER& P, const double X, const double LENGTH, const double MIN_VAL, const double MAX_VAL);
 void PS_well_intervals (const vector <WELL_INTERVAL>& INTERVAL, ofstream& o, const PAPER& P, const double X, const double LENGTH, const double MIN_VAL, const double MAX_VAL);
 
-void OUTPUT_TO_WELL_PS (const vector <vector <vector <vector <GDB> > > > GDB_G, const PFN P, const bool TILT);
+void WELL_PS (const vector <GDB>& inGDB, const vector <WELL_INTERVAL>& INT, const vector <WELL_FREQUENCY>& FREQ, ofstream& OPS, const PAPER& P, const double LENGTH, const double MIN_VAL, const double MAX_VAL, const double STEP);
+void OUTPUT_TO_WELL_PS (const vector <vector <GDB> > GDB_G, const PFN P, const bool TILT);
 
 #endif /* WELL_PS_HPP_ */

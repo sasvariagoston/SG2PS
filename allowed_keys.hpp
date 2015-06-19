@@ -90,6 +90,8 @@ vector <string> allowed_version_id_mode_vector ();
 bool is_allowed_test_data_generation_mode(const string& arg);
 vector <string> is_allowed_test_data_generation_mode_vector ();
 
+bool is_allowed_N_vector (const VCTR& N);
+
 bool is_double (const string& coordinate);
 
 vector <string> merge_datatypes (vector <string> target, vector <string> source);

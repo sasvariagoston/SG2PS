@@ -13,6 +13,7 @@
 #include "checkxycontent.h"
 #include "generate_default_settings.hpp"
 #include "run_mode.h"
+#include "trajectory.hpp"
 
 using namespace std;
 
@@ -20,12 +21,11 @@ void real_main(int argument_number, char *argv[]) {
 
 	vector <string> ARG_V = vector<string>(argv+1, argv+argument_number);
 
-	vector <vector <string> > SET;
+	//vector <vector <string> > SET;
 
-	vector <string> ARG_V_CORRECT;
+	//vector <string> ARG_V_CORRECT;
 
-	bool using_xy_files = true;
-
+	print_banner ();
 
 	MANAGE_RUN_MODE (ARG_V);
 
@@ -33,40 +33,60 @@ void real_main(int argument_number, char *argv[]) {
 
 	CHECK_ARGUMENTS_NUMBER (ARG_V);
 
-	print_banner ();
-
-
-	if (is_mode_COMMANDLINE()) {
-
-		ARG_V.push_back (inputfilename());
-
-		using_xy_files = needxyfile ();
-
-		load_settings_cmd (ARG_V.at(0));
-
-		ARG_V_CORRECT = RETURN_CORRECT_RGF_CMD (ARG_V);
-	}
-	else ARG_V_CORRECT = check_rgf_set_inputs (ARG_V);
-
+	//ARG_V_CORRECT = check_rgf_set_inputs (ARG_V);
+	//ARG_V_CORRECT = check_rgf_set_inputs (ARG_V);
 
 	clock_t starttime = clock ();
 
-	string xy_filename;
+	for (size_t i = 0; i < ARG_V.size() ; i++) {
 
+		const string IF = ARG_V.at(i);
 
-	for (size_t i = 0; i < ARG_V_CORRECT.size() ; i++) {
+		const bool SET_OK = CHECK_SETTINGS (ARG_V.at(i));
 
-		const string IF = ARG_V_CORRECT.at(i);
+		if (SET_OK) {
 
-		load_settings_batch (IF);
+			const bool RGF_OK = CHECK_RGF (ARG_V.at(i));
 
-		if (using_xy_files) xy_filename = check_xy_inputs (IF);
+			if (RGF_OK) {
 
-		process_rgf (IF, xy_filename); // TODO Reads in the rgf file again, was first checked in check_rgf_inputs
+				LOAD_SETTINGS (IF);
 
-		if (!is_mode_DEBUG()) cout << "EVALUATION OF " << capslock(IF) << ".RGF FILE COMPLETED." << endl;
+				CHECK_XY_FILE (IF);
+
+				CHECK_TRAJECTORY_FILE (IF);
+
+				PROCESS_RGF (IF);
+
+				if (!is_mode_DEBUG()) writeln ("EVALUATION OF " + capslock(IF) + ".RGF FILE COMPLETED.");
+			}
+		}
 	}
 	clock_t finishtime = clock();
 
 	output_elapsed_time (starttime, finishtime);
 }
+
+
+
+/*
+ * for (size_t i = 0; i < ARG_V_CORRECT.size() ; i++) {
+
+		const string IF = ARG_V_CORRECT.at(i);
+
+
+
+		load_settings_batch (IF);
+
+		check_xyfile_correct (IF);
+
+		process_rgf (IF);
+
+		if (!is_mode_DEBUG()) writeln ("EVALUATION OF " << capslock(IF) << ".RGF FILE COMPLETED.");
+	}
+	clock_t finishtime = clock();
+
+	output_elapsed_time (starttime, finishtime);
+}
+ *
+ */

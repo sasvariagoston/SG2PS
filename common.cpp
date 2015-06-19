@@ -16,6 +16,7 @@
 #include "array_to_vector.hpp"
 #include "assertions.hpp"
 #include "common.h"
+#include "data_sort.hpp"
 #include "rgf.h"
 #include "run_mode.h"
 #include "settings.hpp"
@@ -49,29 +50,30 @@ void print_banner () {
 
 	if (is_mode_DEBUG ()) return;
 
-	cout << endl << endl;
+	writeln("");
+	writeln(" ------------------------------------------------------------------ ");
+	writeln("|                                                                  |");
+	writeln("|                             SG2PS                                |");
+	writeln("|       Structural Geological data to PostScript converter         |");
+	writeln("|                                                                  |");
+	writeln("|                       Data processing software                   |");
+	writeln("|                                                                  |");
+	writeln("|            Copyright (C) 2012 - 2015 Agoston Sasvari.            |");
+	writeln("|                        All rights reserved.                      |");
+	writeln("|             This a free software, license: GNU LGPL.             |");
+	writeln("|                                                                  |");
+	writeln("|              This software comes with NO WARRANTY.               |");
+	writeln("|                                                                  |");
+	writeln("|            For further information check www.sg2ps.eu            |");
+	writeln("|                                                                  |");
+	writeln(" ------------------------------------------------------------------ ");
+	writeln("|                                                                  |");
+	cout << "|                 Built on: " << version() <<   "                  |"<<endl;
+	writeln("|                                                                  |");
+	writeln(" ------------------------------------------------------------------ ");
+	writeln("");
 
-	cout << " ------------------------------------------------------------------ " << endl;
-	cout << "|                                                                  |" << endl;
-	cout << "|                             SG2PS                                |" << endl;
-	cout << "|       Structural Geological data to PostScript converter         |" << endl;
-	cout << "|                                                                  |" << endl;
-	cout << "|                       Data processing software                   |" << endl;
-	cout << "|                                                                  |" << endl;
-	cout << "|            Copyright (C) 2012 - 2015 Agoston Sasvari.            |" << endl;
-	cout << "|                        All rights reserved.                      |" << endl;
-	cout << "|             This a free software, license: GNU LGPL.             |" << endl;
-	cout << "|                                                                  |" << endl;
-	cout << "|              This software comes with NO WARRANTY.               |" << endl;
-	cout << "|                                                                  |" << endl;
-	cout << "|            For further information check www.sg2ps.eu            |" << endl;
-	cout << "|                                                                  |" << endl;
-	cout << " ------------------------------------------------------------------ " << endl;
-	cout << "|                                                                  |" << endl;
-	cout << "|                 Built on: " << version() <<   "                  | "<< endl;
-	cout << "|                                                                  |" << endl;
-	cout << " ------------------------------------------------------------------ " << endl << endl;
-
+	return;
 }
 
 string capslock (string input) {
@@ -988,7 +990,7 @@ VCTR unitvector (const VCTR& in) {
 
 	if (isnan(in.X)||isnan(in.Y)||isnan(in.Z)) {
 
-		cout << endl;
+		writeln("");
 
 		ASSERT2(false,"NaN detected, [X, Y, Z] = [ "<<in.X<<", "<<in.Y<<", "<<in.Z<<"]");
 	}
@@ -1005,7 +1007,7 @@ VCTR unitvector (const VCTR& in) {
 	}
 	else {
 
-		cout << endl;
+		writeln("");
 
 		ASSERT2(false,"Problem with vector length, [X, Y, Z] = [ "<<OUT.X<<", "<<OUT.Y<<", "<<OUT.Z<<"]");
 	}
@@ -1094,14 +1096,6 @@ VCTR NXNYNZ_from_DXDYDZ (const VCTR& i) {
 
 DIPDIR_DIP dipdir_dip_from_DXDYDZ (const VCTR& i) {
 
-	//if (is_D_up(i)) {
-
-		//cout << fixed << setprecision(6) << endl;
-		//cout << i.X << "  -  " << i.Y << "  -  " << i.Z << "  -  " << endl;
-
-		//ASSERT_DEAD_END();
-	//}
-
 	DIPDIR_DIP actual;
 
 	VCTR out = unitvector (i);
@@ -1165,7 +1159,15 @@ VCTR ROTATE (const VCTR& ax, const VCTR& torotate, const double& A) {
 
 bool existence (const string& expression, const vector<GDB>& inGDB) { // TODO contains? contains datatype?
 
-	bool presence = false;
+	for (size_t i = 0; i < inGDB.size(); i++) {
+
+		if (inGDB.at(i).DATATYPE == expression) return true;
+	}
+	return false;
+
+	/*
+	 *
+	 * bool presence = false;
 
 	size_t i = 0;
 
@@ -1176,6 +1178,8 @@ bool existence (const string& expression, const vector<GDB>& inGDB) { // TODO co
 	}
 
 	return presence;
+	 *
+	 */
 }
 
 bool existence_of_group (const size_t group, const vector <size_t>& whichgroup) {
@@ -1251,10 +1255,6 @@ VCTR VCTR_average (const vector <VCTR>& IN) {
 		X.push_back (IN.at(i).X);
 		Y.push_back (IN.at(i).Y);
 		Z.push_back (IN.at(i).Z);
-
-		//cout << " X: " << IN.at(i).X << flush;
-		//cout << " Y: " << IN.at(i).Y << flush;
-		//cout << " Z: " << IN.at(i).Z << endl;
 	}
 	return unitvector (declare_vector (average(X), average(Y), average(Z)));
 }
@@ -1708,6 +1708,21 @@ bool is_in_range (const double range_min, const double range_max, const double i
 	return (range_min - SN <= in && in <= range_max + SN);
 }
 
+bool is_in_range_exactly (const double range_min, const double range_max, const double in) {
+
+	return (range_min  < in && in < range_max);
+}
+
+bool is_in_range_UP_EQ (const double range_min, const double range_max, const double in) {
+
+	return (range_min  <= in && in < range_max);
+}
+
+bool is_in_range_LW_EQ (const double range_min, const double range_max, const double in) {
+
+	return (range_min  < in && in <= range_max);
+}
+
 double points_distance (const VCTR& a, const VCTR&  b) {
 
 	return sqrt (
@@ -1715,4 +1730,16 @@ double points_distance (const VCTR& a, const VCTR&  b) {
 			(b.Y - a.Y) * (b.Y - a.Y) +
 			(b.Z - a.Z) * (b.Z - a.Z)
 			);
+}
+
+void write (const string MSG) {
+
+	cout << MSG << flush;
+	return;
+}
+
+void writeln (const string MSG) {
+
+	cout << MSG << endl;
+	return;
 }

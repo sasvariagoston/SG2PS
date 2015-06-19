@@ -7,7 +7,16 @@
 #include <stdexcept>
 #include <string>
 
+#include "assertions.hpp"
+
 using namespace std;
+
+void GDB_size_check (const vector <GDB>& inGDB) {
+
+	ASSERT2(inGDB.size() > 0, "vector <GDB> has no records");
+
+	return;
+}
 
 void throw_std_logic_error(const string& msg) {
 

@@ -21,6 +21,7 @@ EIGENVALUES: 0.916728, -0.402233, -0.514495
 #include <iostream>
 
 #include "common.h"
+#include "data_sort.hpp"
 #include "inversion.h"
 #include "fry.h"
 #include "rgf.h"

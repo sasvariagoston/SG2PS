@@ -17,6 +17,7 @@
 #include "checkxycontent.h"
 #include "color_management.hpp"
 #include "data_io.h"
+#include "data_sort.hpp"
 #include "ps.h"
 #include "rakhmanov.hpp"
 #include "random.hpp"
@@ -25,8 +26,8 @@
 #include "run_mode.h"
 #include "settings.hpp"
 #include "standard_output.hpp"
-//#include "well.hpp"
-//#include "well_ps.hpp"
+#include "well.hpp"
+#include "well_ps.hpp"
 
 using namespace std;
 
@@ -35,6 +36,10 @@ namespace {
 string INPUTFILENAME = "";
 
 const double SN = 10e-8;
+
+bool PROCESS_AS_TILTED = false;
+bool PROCESS_AS_TRAJECTORY = false;
+
 }
 
 string return_inputfilename () {
@@ -49,7 +54,7 @@ void set_inputfilename (const string filename) {
 	return;
 }
 
-vector <GDB> competeRGFcontect (const string projectname, const string inputxyfilename) {
+vector <GDB> competeRGFcontect (const string projectname) {
 
 	vector <GDB> outGDB = create_GDB_from_rgf (projectname + ".rgf");
 
@@ -70,7 +75,7 @@ vector <GDB> competeRGFcontect (const string projectname, const string inputxyfi
 
 		if (is_DATARULE_RIGHT_HAND_RULE()) outGDB.at(i).corr.DIPDIR = right_hand_rule_to_german (outGDB.at(i).corr.DIPDIR);
 
-		if (capslock(inputxyfilename) != "NONE")  outGDB.at(i) = insertxy (outGDB.at(i));
+		//if (capslock(inputxyfilename) != "NONE")  outGDB.at(i) = insertxy (outGDB.at(i));
 	}
 	return outGDB;
 }
@@ -459,14 +464,11 @@ string return_new_offset (const double DIP, const double PTC, const bool UP) {
 	if (UP) OFFSET = "REVERSE";
 
 	if (STEEP_DIP && is_in_range (0.0, 45.0, PTC)) {
-	//if (STEEP_DIP && is_in_range (135.0, 180.0, PTC)) {
-
 
 		if (UP) OFFSET = "DEXTRAL";
 		else OFFSET = "SINISTRAL";
 	}
 
-	//if (STEEP_DIP && is_in_range (0.0, 45.0, PTC)) {
 	if (STEEP_DIP && is_in_range (135.0, 180.0, PTC)) {
 
 		if (UP) OFFSET = "SINISTRAL";
@@ -531,15 +533,9 @@ vector <GDB> generate_LAMBDA_STRESSVECTOR_ESTIMATORS (const vector <GDB>& inGDB)
 	return outGDB;
 }
 
-vector < vector < vector <vector <GDB> > > > clustering_GBD (const vector < vector < vector <vector <GDB> > > >& inGDB_G) {
+vector <vector <GDB> > clustering_GBD (const vector <vector <GDB> >& inGDB_G) {
 
-	vector < vector < vector <vector <GDB> > > > outGDB_G = inGDB_G;
-
-	//cout << "CLUSTER" << endl;
-
-	//cout << "is_CLUSTERING_NONE():" << is_CLUSTERING_NONE() << endl;
-
-	//cout << "is_CLUSTERNUMBER()  :" << is_CLUSTERNUMBER() << endl;
+	vector <vector <GDB> > outGDB_G = inGDB_G;
 
 	outGDB_G = associate_empty_clustercode (outGDB_G, 2);
 
@@ -547,82 +543,15 @@ vector < vector < vector <vector <GDB> > > > clustering_GBD (const vector < vect
 
 	if (!is_mode_DEBUG()) cout << "K-MEANS CLUSTERING OF INPUT DATABASE FILE" << endl;
 
-	//outGDB_G = associate_empty_clustercode (outGDB_G, 2);
-
 	for (size_t i = 0; i < outGDB_G.size(); i++) {
-		for (size_t j = 0; j < outGDB_G.at(i).size(); j++) {
-			for (size_t k = 0; k < outGDB_G.at(i).at(j).size(); k++) {
 
-				vector <GDB> process_GDB = outGDB_G.at(i).at(j).at(k);
+		vector <GDB> process_GDB = outGDB_G.at(i);
 
-				const bool LITHOLOGY = is_allowed_lithology_datatype(process_GDB.at(0).DATATYPE);
+		const bool LITHOLOGY = is_allowed_lithology_datatype(process_GDB.at(0).DATATYPE);
 
-				if (process_GDB.size() > 1 && !LITHOLOGY) outGDB_G.at(i).at(j).at(k) = K_MEANS (process_GDB);
-			}
-		}
+		if (process_GDB.size() > 1 && !LITHOLOGY) outGDB_G.at(i) = K_MEANS (process_GDB);
 	}
 	return outGDB_G;
-}
-
-bool byLocTypeGc (const GDB& x, const GDB& y) {
-
-	if (x.LOC != y.LOC) return x.LOC < y.LOC;
-	if (x.DATATYPE != y.DATATYPE) return x.DATATYPE < y.DATATYPE;
-	return x.GC < y.GC;
-}
-
-bool byLocGcType (const GDB& x, const GDB& y) {
-
-	if (x.LOC != y.LOC) return x.LOC < y.LOC;
-	if (x.GC != y.GC) return x.GC < y.GC;
-	return x.DATATYPE < y.DATATYPE;
-}
-
-bool byiID(const GDB& x, const GDB& y) {
-
-	return x.iID < y.iID;
-}
-
-bool byeigenvalue(const sort_jacobi& x, const sort_jacobi& y) {
-
-	return x.eigenvalue < y.eigenvalue;
-}
-
-vector <GDB> sort_by_iID (const vector <GDB>& inGDB) {
-
-	vector <GDB> outGDB = inGDB;
-
-	sort(outGDB.begin(), outGDB.end(), byiID);
-
-	return outGDB;
-}
-
-bool by_DEPTH (const GDB& x, const GDB& y) {
-
-	return x.DEPTH < y.DEPTH;
-}
-
-vector <GDB> sort_by_DEPTH (const vector <GDB>& inGDB) {
-
-	vector <GDB> outGDB = inGDB;
-
-	sort (outGDB.begin(), outGDB.end(), by_DEPTH);
-
-	return outGDB;
-}
-
-bool by_rev_DEPTH (const GDB& x, const GDB& y) {
-
-	return x.DEPTH > y.DEPTH;
-}
-
-vector <GDB> sort_by_rev_DEPTH (const vector <GDB>& inGDB) {
-
-	vector <GDB> outGDB = inGDB;
-
-	sort (outGDB.begin(), outGDB.end(), by_rev_DEPTH);
-
-	return outGDB;
 }
 
 vector <GDB>  PREPARE_GDB_FOR_PROCESSING (const vector <GDB>& inGDB, const bool TILT) {
@@ -647,52 +576,101 @@ vector <GDB>  PREPARE_GDB_FOR_PROCESSING (const vector <GDB>& inGDB, const bool 
 	}
 	outGDB = generate_PITCHANGLE (outGDB);
 
-	//dbg_cout_GDB_vector(outGDB);
-
 	outGDB = generate_OFFSET (outGDB);
-
-	//dbg_cout_GDB_vector(outGDB);
 
 	return outGDB;
 }
 
-vector < vector < vector < vector <GDB> > > > PREPARE_GDB_VECTOR_FOR_PROCESSING (const vector < vector < vector < vector <GDB> > > >& inGDB_G, const bool TILT) {
+vector < vector <GDB> > PREPARE_GDB_VECTOR_FOR_PROCESSING (const vector < vector <GDB> >& inGDB_G, const bool TILT) {
 
-	if (!is_mode_DEBUG()) cout << "GEODATABASE PROCESSING OF INPUT DATABASE FILE" << endl;
+	if (!is_mode_DEBUG()) cout << "  - Geodatabase processing of the input file" << endl;
 
-	vector < vector < vector <vector <GDB> > > > outGDB_G;
+	vector <vector <GDB> > outGDB_G = inGDB_G;
 
 	for (size_t i = 0; i < inGDB_G.size(); i++) {
 
-		vector < vector <vector <GDB> > > buf3;
+		vector <GDB> process_GDB = SORT_GDB (inGDB_G.at(i), "IID");
 
-		for (size_t j = 0; j < inGDB_G.at(i).size(); j++) {
+		process_GDB = PREPARE_GDB_FOR_PROCESSING (process_GDB, TILT);
 
-			vector <vector <GDB> > buf2;
-
-			for (size_t k = 0; k < inGDB_G.at(i).at(j).size(); k++) {
-
-				vector <GDB> buf = inGDB_G.at(i).at(j).at(k);
-
-				buf = sort_by_iID (buf);
-
-				//dbg_cout_GDB_vector(buf);
-
-				if (!TILT) buf = PREPARE_GDB_FOR_PROCESSING (buf, false);
-				else buf = PREPARE_GDB_FOR_PROCESSING (buf, true);
-
-				//dbg_cout_GDB_vector(buf);
-
-				buf2.push_back (buf);
-			}
-			buf3.push_back (buf2);
-		}
-		outGDB_G.push_back (buf3);
+		outGDB_G.at(i) = process_GDB;
 	}
 	return outGDB_G;
 }
 
-void process_rgf (string inputfilename, string XY_filename) {
+void EVALUATE (const vector <vector <GDB> >& inGDB_G, const PFN projectfoldername) {
+
+	vector <vector <GDB> > P = inGDB_G;
+
+	const bool TLT = PROCESS_AS_TILTED;
+	const bool TRJ = PROCESS_AS_TRAJECTORY;
+
+	string msg = "- Data evaluation for the";
+
+	if (TLT) msg = msg + " tilted data set ";
+	else msg = msg + " original data set ";
+
+	if (TRJ) msg = msg + "with trajectory correction.";
+	else msg = msg + "without trajectory correction.";
+
+	if (!is_mode_DEBUG()) writeln (msg);
+
+
+	if (!TLT && !TRJ) P = RETILT (P, "TRAJECTORY");
+
+	if (!TLT) {
+
+		P = RETILT (P, "BEDDING");
+		P = RETILT (P, "PALEONORTH");
+	}
+	else {
+
+		P = PREPARE_GDB_VECTOR_FOR_PROCESSING (P, true);
+		P = AVERAGE (P);
+		P = ASSOCIATE_AVERAGE_BEDDING_GROUPS (P);
+	}
+
+	P = PROCESS_GROUPS (P, TLT);
+
+	PROCESS_WELL_GROUPS (P, TLT);
+
+	/*
+	 PROCESS_WELL_GROUPS (nGDB_G, false);
+	//PROCESS_WELL_GROUPS (tGDB_G, true);
+	//PROCESS_WELL_GROUPS (nGDB_G_tr, true);
+	//PROCESS_WELL_GROUPS (tGDB_G_tr, true);
+	 */
+
+	vector <GDB> p = MERGE_GROUPS_TO_GDB (P);
+
+	p = GENERATE_PS_CODE (p);
+
+	p = SORT_GDB (p, "IID");
+
+	P = SEPARATE_DATASET_GROUPS (p);
+
+	if (is_GROUPSEPARATION_IGNORE()) {}
+	else if (is_GROUPSEPARATION_GROUPCODE()) 	P = SEPARATE_DATASET (P, "GROUPS", "GROUPCODE");//ez nem kell az alapfugvenybe!
+	else if (is_GROUPSEPARATION_KMEANS()) 		P = SEPARATE_DATASET (P, "CLUSTER", "CLUSTER");
+	else if (is_GROUPSEPARATION_RUPANG()) 		P = SEPARATE_DATASET (P, "RUP_ANG", "RUP_ANG");
+	else ASSERT_DEAD_END();
+
+	STANDARD_OUTPUT (p, TLT);
+
+	if (!is_mode_DEBUG()) OUTPUT_TO_RGF (P, projectfoldername, TLT);
+
+	OUTPUT_TO_PS (P,  projectfoldername, TLT);
+
+	OUTPUT_TO_WELL_PS (P, projectfoldername, TLT); //careful! PS module has global variables!!!!
+}
+
+void PROCESS_RGF (const string inputfilename) {
+
+	writeln ("");
+	writeln ("===========================");
+	writeln ("6) PROCESSING DATA FILE(S)");
+	writeln ("===========================");
+	writeln ("");
 
 	set_inputfilename (inputfilename);
 
@@ -700,179 +678,164 @@ void process_rgf (string inputfilename, string XY_filename) {
 
 	const PFN projectfoldername = create_project_folder_names (inputfilename);
 
-	vector <GDB> nGDB, tGDB, ST_nGDB, ST_tGDB;
 
-	if (XY_filename == "NONE") nGDB = competeRGFcontect (inputfilename, "NONE");
-	else nGDB = competeRGFcontect (inputfilename, XY_filename);
-
-	//dbg_cout_GDB_vector(nGDB);
-	sort(nGDB.begin(), nGDB.end(), byLocGcType);
-
+	vector <GDB> nGDB = competeRGFcontect (inputfilename);
+	if (is_XY_FILE_CORRECT()) nGDB = insert_xy_values (nGDB);
+	if (is_TRAJECTORY_FILE_CORRECT()) nGDB = APPLY_TRAJECTORY (nGDB);
 	if (!is_mode_DEBUG()) CREATE_PROJECT_FOLDER (projectfoldername, nGDB);
 
-	vector < vector < vector < vector <GDB> > > > nGDB_G = SEPARATE_DATASET_TO_GROUPS (nGDB, "GROUPS");
 
+	nGDB = SORT_GDB (nGDB, "LOC_GC_TYPE");
+	vector < vector <GDB> > nGDB_G = SEPARATE_DATASET_GROUPS (nGDB);
 	nGDB_G = PREPARE_GDB_VECTOR_FOR_PROCESSING (nGDB_G, false);
-
-	//dbg_cout_GDB_vector_vector(nGDB_G);
-
-	nGDB_G = AVERAGE (nGDB_G);//eddig ok
-
-	//nGDB_G = CALCULATE_FOLDSURFACE (nGDB_G);//new
-
+	nGDB_G = AVERAGE (nGDB_G);
+	nGDB_G = ASSOCIATE_AVERAGE_BEDDING_GROUPS (nGDB_G);
 	nGDB_G = clustering_GBD (nGDB_G);
-
-	//dbg_cout_GDB_vector_vector(nGDB_G);
-
 	nGDB = MERGE_GROUPS_TO_GDB (nGDB_G);
+	nGDB_G = SEPARATE_DATASET_GROUPS (nGDB);
 
-	nGDB_G = SEPARATE_DATASET_TO_GROUPS (nGDB, "CLUSTER");
 
-	//cout << " ************************************************** " << endl;
-	//cout << "RETILT" << endl;
-	//cout << " ************************************************** " << endl;
 
-	vector < vector < vector < vector <GDB> > > > tGDB_G = RETILT (nGDB_G);
+	//vector < vector <GDB> > nGDB_G_tr = RETILT (nGDB_G, "TRAJECTORY");
+	//vector < vector <GDB> > tGDB_G = RETILT (nGDB_G, "BEDDING");
+	//tGDB_G = RETILT (tGDB_G, "PALEONORTH");
+	//vector < vector <GDB> > tGDB_G_tr = RETILT (nGDB_G_tr, "BEDDING");
+	//tGDB_G_tr = RETILT (tGDB_G_tr, "PALEONORTH");
 
-	//cout << "OK1B" << endl;
+	if (!is_mode_DEBUG()) cout << "DATA EVALUATION FROM '" << capslock(inputfilename) << ".RGF' DATABASE FILE" << endl;
+
+	EVALUATE (nGDB_G, projectfoldername);
+
+	PROCESS_AS_TILTED = true;
+	EVALUATE (nGDB_G, projectfoldername);
+
+	PROCESS_AS_TILTED = false;
+	PROCESS_AS_TRAJECTORY = true;
+	EVALUATE (nGDB_G, projectfoldername);
+
+	PROCESS_AS_TILTED = true;
+	EVALUATE (nGDB_G, projectfoldername);
+
+	PROCESS_AS_TILTED = false;
+	PROCESS_AS_TRAJECTORY = false;
+
+	/*
 
 	tGDB_G = PREPARE_GDB_VECTOR_FOR_PROCESSING (tGDB_G, true);
-
-	//cout << "OK2" << endl;
+	tGDB_G_tr = PREPARE_GDB_VECTOR_FOR_PROCESSING (tGDB_G_tr, true);
 
 	tGDB_G = AVERAGE (tGDB_G);
-
-	//cout << " ******** NORMAL ******** " << endl;
-
-	//dbg_cout_GDB_vector_vector(nGDB_G);
-
-	//cout << " ******** TILTED ******** " << endl;
-
-	//dbg_cout_GDB_vector_vector(tGDB_G);
-
-	//cout << "OK3" << endl;
+	tGDB_G = ASSOCIATE_AVERAGE_BEDDING_GROUPS (tGDB_G);
+	tGDB_G_tr = AVERAGE (tGDB_G_tr);
+	tGDB_G_tr = ASSOCIATE_AVERAGE_BEDDING_GROUPS (tGDB_G_tr);
 
 	nGDB_G = PROCESS_GROUPS (nGDB_G, false);
 	tGDB_G = PROCESS_GROUPS (tGDB_G, true);
+	nGDB_G_tr = PROCESS_GROUPS (nGDB_G_tr, false);
+	tGDB_G_tr = PROCESS_GROUPS (tGDB_G_tr, true);
 
-	//PROCESS_WELL_GROUPS (nGDB_G, false);
+	PROCESS_WELL_GROUPS (nGDB_G, false);
 	//PROCESS_WELL_GROUPS (tGDB_G, true);
+	//PROCESS_WELL_GROUPS (nGDB_G_tr, true);
+	//PROCESS_WELL_GROUPS (tGDB_G_tr, true);
 
 	if (!is_mode_DEBUG()) cout << "DATA EVALUATION FROM '" << capslock(inputfilename) << ".RGF' DATABASE FILE" << endl;
 
 	nGDB = MERGE_GROUPS_TO_GDB (nGDB_G);
-	tGDB = MERGE_GROUPS_TO_GDB (tGDB_G);
-
-	//cout << "OK4" << endl;
+	vector <GDB> tGDB = MERGE_GROUPS_TO_GDB (tGDB_G);
+	vector <GDB> nGDB_tr = MERGE_GROUPS_TO_GDB (nGDB_G_tr);
+	vector <GDB> tGDB_tr = MERGE_GROUPS_TO_GDB (tGDB_G_tr);
 
 	nGDB = GENERATE_PS_CODE (nGDB);
 	tGDB = GENERATE_PS_CODE (tGDB);
+	nGDB_tr = GENERATE_PS_CODE (nGDB_tr);
+	tGDB_tr = GENERATE_PS_CODE (tGDB_tr);
 
-	//cout << "OK5" << endl;
+	nGDB = SORT_GDB (nGDB, "IID");
+	tGDB = SORT_GDB (tGDB, "IID");
+	nGDB_tr = SORT_GDB (nGDB_tr, "IID");
+	tGDB_tr = SORT_GDB (tGDB_tr, "IID");
 
-	nGDB = sort_by_iID (nGDB);
-	tGDB = sort_by_iID (tGDB);
+	nGDB_G = SEPARATE_DATASET_GROUPS (nGDB);
+	tGDB_G = SEPARATE_DATASET_GROUPS (tGDB);
+	nGDB_G_tr = SEPARATE_DATASET_GROUPS (nGDB_tr);
+	tGDB_G_tr = SEPARATE_DATASET_GROUPS (tGDB_tr);
 
-	//cout << "OK6" << endl;
-
-	if (is_GROUPSEPARATION_IGNORE()) {
-
-		nGDB_G = SEPARATE_DATASET_TO_GROUPS (nGDB, "NONE");
-		tGDB_G = SEPARATE_DATASET_TO_GROUPS (tGDB, "NONE");
-	}
+	if (is_GROUPSEPARATION_IGNORE()) {}
 	else if (is_GROUPSEPARATION_GROUPCODE()) {
 
-		nGDB_G = SEPARATE_DATASET_TO_GROUPS (nGDB, "GROUPS");
-		tGDB_G = SEPARATE_DATASET_TO_GROUPS (tGDB, "GROUPS");
+		nGDB_G = SEPARATE_DATASET (nGDB_G, "GROUPS", "GROUPCODE");//ez nem kell az alapfugvenybe!
+		tGDB_G = SEPARATE_DATASET (tGDB_G, "GROUPS", "GROUPCODE");
+		nGDB_G_tr = SEPARATE_DATASET (nGDB_G_tr, "GROUPS", "GROUPCODE");//ez nem kell az alapfugvenybe!
+		tGDB_G_tr = SEPARATE_DATASET (tGDB_G_tr, "GROUPS", "GROUPCODE");
 	}
 	else if (is_GROUPSEPARATION_KMEANS()) {
 
-		nGDB_G = SEPARATE_DATASET_TO_GROUPS (nGDB, "CLUSTER");
-		tGDB_G = SEPARATE_DATASET_TO_GROUPS (tGDB, "CLUSTER");
+		nGDB_G = SEPARATE_DATASET (nGDB_G, "CLUSTER", "CLUSTER");
+		tGDB_G = SEPARATE_DATASET (tGDB_G, "CLUSTER", "CLUSTER");
+		nGDB_G_tr = SEPARATE_DATASET (nGDB_G_tr, "CLUSTER", "CLUSTER");
+		tGDB_G_tr = SEPARATE_DATASET (tGDB_G_tr, "CLUSTER", "CLUSTER");
 	}
 	else if (is_GROUPSEPARATION_RUPANG()) {
 
-		nGDB_G = SEPARATE_DATASET_TO_GROUPS (nGDB, "RUP");
-		tGDB_G = SEPARATE_DATASET_TO_GROUPS (tGDB, "RUP");
+		nGDB_G = SEPARATE_DATASET (nGDB_G, "RUP_ANG", "RUP_ANG");
+		tGDB_G = SEPARATE_DATASET (tGDB_G, "RUP_ANG", "RUP_ANG");
+		nGDB_G_tr = SEPARATE_DATASET (nGDB_G_tr, "RUP_ANG", "RUP_ANG");
+		tGDB_G_tr = SEPARATE_DATASET (tGDB_G_tr, "RUP_ANG", "RUP_ANG");
 	}
 	else ASSERT_DEAD_END();
 
-	//cout << "OK7" << endl;
-
-	//dbg_cout_GDB_vector (nGDB);
-	//dbg_cout_GDB_vector (tGDB);
-	//dbg_cout_GDB_vector_vector(nGDB_G);
-	//dbg_cout_GDB_vector_vector(tGDB_G);
-
 	STANDARD_OUTPUT (nGDB, tGDB);
+	STANDARD_OUTPUT (nGDB_tr, tGDB_tr);
 
 	if (!is_mode_DEBUG()) OUTPUT_TO_RGF (nGDB_G, projectfoldername, false);
 	if (!is_mode_DEBUG()) OUTPUT_TO_RGF (tGDB_G, projectfoldername, true);
+	if (!is_mode_DEBUG()) OUTPUT_TO_RGF (nGDB_G_tr, projectfoldername, false);
+	if (!is_mode_DEBUG()) OUTPUT_TO_RGF (tGDB_G_tr, projectfoldername, true);
 
-	//cout << "OK8" << endl;
 
 	OUTPUT_TO_PS (nGDB_G, tGDB_G, projectfoldername);
+	OUTPUT_TO_PS (nGDB_G_tr, tGDB_G_tr, projectfoldername);
 
-	//OUTPUT_TO_WELL_PS (nGDB_G, projectfoldername, false);
+	OUTPUT_TO_WELL_PS (nGDB_G, projectfoldername, false);
 	//OUTPUT_TO_WELL_PS (tGDB_G, projectfoldername, true);
+	//OUTPUT_TO_WELL_PS (nGDB_G_tr, projectfoldername, false);
+	//OUTPUT_TO_WELL_PS (tGDB_G_tr, projectfoldername, true);
 	//careful! PS module has global variables!!!!
 
-	//cout << "OK9" << endl;
 
+	*/
 	if (!is_mode_DEBUG()) cout << "EXPORT FROM '" << capslock(inputfilename) << ".RGF' DATABASE FILE" << endl;
 
 	copy_log(projectfoldername);
 }
 
-void dbg_cout_GDB_v_v_v_v_structure (const vector < vector < vector < vector <GDB> > > >& inGDB_G) {
+void dbg_cout_GDB_vector_vector_structure (const vector < vector <GDB> >& inGDB_G) {
 
-	cout << "inGDB_G.size() : " << inGDB_G.size() << endl;
+	cout << endl;
+	cout << "-------- GBD VECTOR STRUCTURE --------" << endl;
 
-	for (size_t i = 0; i < inGDB_G.size(); i++) {
-
-		cout << inGDB_G.at(i).at(0).at(0).at(0).DATATYPE << endl;
-		cout << "inGDB_G.at(i).size() : " << inGDB_G.at(i).size() << endl;
-
-		for (size_t j = 0; j < inGDB_G.at(i).size(); j++) {
-
-			cout << "inGDB_G.at(i).at(j).size() : " << inGDB_G.at(i).at(j).size() << endl;
-
-			for (size_t k = 0; k < inGDB_G.at(i).at(j).size(); k++) {
-
-				cout << "inGDB_G.at(i).at(j).at(k).size() : " << inGDB_G.at(i).at(j).at(k).size() << endl;
-
-			}
-		}
-	}
-	return;
-}
-
-void dbg_cout_GDB_vector_vector (const vector < vector < vector < vector <GDB> > > >& inGDB_G) {
-
-	for (size_t i = 0; i < inGDB_G.size(); i++) {
-		for (size_t j = 0; j < inGDB_G.at(i).size(); j++) {
-			for (size_t k = 0; k < inGDB_G.at(i).at(j).size(); k++) {
-
-				const vector <GDB> ACT = inGDB_G.at(i).at(j).at(k);
-
-				dbg_cout_GDB_vector (ACT);
-			}
-		}
-	}
-	return;
-}
-
-void dbg_cout_GDB_v_v (const vector < vector <GDB> >& inGDB_G) {
+	cout << " * <vector> GDB size: " << inGDB_G.size() << endl;
 
 	for (size_t i = 0; i < inGDB_G.size(); i++) {
 
-		const vector <GDB> ACT = inGDB_G.at(i);
-
-		dbg_cout_GDB_vector (ACT);
+		cout << " * GDB.at(" << i << ") size: " << inGDB_G.at(i).size() << flush;
+		cout << " " << inGDB_G.at(i).at(0).LOC << flush;
+		cout << " " << inGDB_G.at(i).at(0).DATATYPE << flush;
+		cout << " " << inGDB_G.at(i).at(0).FORMATION << flush;
+		cout << " " << inGDB_G.at(i).at(0).GC << endl;
 	}
+	cout << "------ END GBD VECTOR STRUCTURE ------" << endl;
+	cout << endl;
 	return;
 }
 
+void dbg_cout_GDB_vector_vector (const vector < vector <GDB> >& inGDB_G) {
+
+	for (size_t i = 0; i < inGDB_G.size(); i++) dbg_cout_GDB_vector (inGDB_G.at(i));
+
+	return;
+}
 
 void dbg_cout_GDB_vector (const vector <GDB>& inGDB) {
 
@@ -882,10 +845,10 @@ void dbg_cout_GDB_vector (const vector <GDB>& inGDB) {
 	cout
 	<< "ID" << '\t' << "iID" << '\t'
 	//<< "N.X" << '\t' << "N.Y" << '\t' << "N.Z" << '\t'
-	<< "D.X" << '\t' << "D.Y" << '\t'<< "D.Z" << '\t'
+	//<< "D.X" << '\t' << "D.Y" << '\t'<< "D.Z" << '\t'
 	//<< "S.X" << '\t' << "S.Y" << '\t'<< "S.Z" << '\t'
 	//<< "NC.X" << '\t' << "NC.Y" << '\t'<< "NC.Z" << '\t'
-	<< "DC.X" << '\t' << "DC.Y" << '\t'<< "DC.Z" << '\t'
+	//<< "DC.X" << '\t' << "DC.Y" << '\t'<< "DC.Z" << '\t'
 	//<< "SC.X" << '\t' << "SC.Y" << '\t'<< "SC.Z" << '\t'
 
 	//<< "LPITCH" << '\t'
@@ -894,7 +857,7 @@ void dbg_cout_GDB_vector (const vector <GDB>& inGDB) {
 
 	//<< "MISFIT" << '\t'
 	//<< "LINEATION" << '\t'
-	<< "OFFSET" << '\t'
+	//<< "OFFSET" << '\t'
 	//<< "DEPTH" << '\t'
 	//<< "GC" << '\t'
 	//<< "COLOR" << '\t'
@@ -902,7 +865,7 @@ void dbg_cout_GDB_vector (const vector <GDB>& inGDB) {
 	//<< "LOCX" << '\t'
 	//<< "LOCY" << '\t'
 	//<< "FORMATION" << '\t'
-	//<< "DATATYPE" << '\t'
+	<< "DATATYPE" << '\t'
 	//<< "DIPDIR" << '\t'
 	//<< "DIP" << '\t'
 	//<< "LDIR" << '\t'
@@ -910,8 +873,8 @@ void dbg_cout_GDB_vector (const vector <GDB>& inGDB) {
 
 	<< "corr.DIPDIR" << '\t'
 	<< "corr.DIP" << '\t'
-	<< "corrL.DIPDIR" << '\t'
-	<< "corrL.DIP" << '\t'
+	//<< "corrL.DIPDIR" << '\t'
+	//<< "corrL.DIP" << '\t'
 
 	//<< "PALEON" << '\t'
 	//<< "COMMENT" << '\t'
@@ -933,12 +896,14 @@ void dbg_cout_GDB_vector (const vector <GDB>& inGDB) {
 	//<< "avD.X" << '\t' << "avD.Y" << '\t'<< "avD.Z" << '\t'
 	//<< "avS0D.X" << '\t' << "avS0D.Y" << '\t'<< "avS0D.Z" << '\t'
 	//<< "avS0N.X" << '\t' << "avS0N.Y" << '\t'<< "avS0N.Z" << '\t'
+	<< "T.X" << '\t' << "T.Y" << '\t'<< "T.Z" << '\t'
 
 	//<< "avS0d.DIPDIR" << '\t'
 	//<< "avS0d.DIP" << '\t'
 	//<< "avd.DIPDIR" << '\t'
 	//<< "avd.DIP" << '\t'
 	//<< "avS0offset" << '\t'
+
 
 	//<< "fold_great_circle_N.X" << '\t'
 	//<< "fold_great_circle_N.Y" << '\t'
@@ -964,10 +929,10 @@ void dbg_cout_GDB_vector (const vector <GDB>& inGDB) {
 
 		//<< fixed << setprecision(6)
 		//<< T.N.X << '\t' << T.N.Y << '\t' << T.N.Z << '\t'
-		<< T.D.X << '\t' << T.D.Y << '\t'<< T.D.Z << '\t'
+		//<< T.D.X << '\t' << T.D.Y << '\t'<< T.D.Z << '\t'
 		//<< T.S.X << '\t' << T.S.Y << '\t'<< T.S.Z << '\t'
 		//<< T.NC.X << '\t' << T.NC.Y << '\t'<< T.NC.Z << '\t'
-		<< T.DC.X << '\t' << T.DC.Y << '\t'<< T.DC.Z << '\t'
+		//<< T.DC.X << '\t' << T.DC.Y << '\t'<< T.DC.Z << '\t'
 		//<< T.SC.X << '\t' << T.SC.Y << '\t'<< T.SC.Z << '\t'
 
 		//<< T.LPITCH << '\t'
@@ -977,7 +942,7 @@ void dbg_cout_GDB_vector (const vector <GDB>& inGDB) {
 		//<< fixed << setprecision(8)
 		//<< T.MISFIT << '\t'
 		//<< T.LINEATION << '\t'
-		<< T.OFFSET << '\t'
+		//<< T.OFFSET << '\t'
 
 		//<< fixed << setprecision(0)
 		//<< T.DEPTH << '\t'
@@ -987,7 +952,7 @@ void dbg_cout_GDB_vector (const vector <GDB>& inGDB) {
 		//<< T.LOCX << '\t'
 		//<< T.LOCY << '\t'
 		//<< T.FORMATION << '\t'
-		//<< T.DATATYPE << '\t'
+		<< T.DATATYPE << '\t'
 
 		<< fixed << setprecision (0)
 		//<< T.DIPDIR << '\t'
@@ -997,8 +962,8 @@ void dbg_cout_GDB_vector (const vector <GDB>& inGDB) {
 
 		<< T.corr.DIPDIR << '\t'
 		<< T.corr.DIP << '\t'
-		<< T.corrL.DIPDIR << '\t'
-		<< T.corrL.DIP << '\t'
+		//<< T.corrL.DIPDIR << '\t'
+		//<< T.corrL.DIP << '\t'
 
 		//<< fixed << setprecision(0)
 		//<< T.PALEON << '\t'
@@ -1020,12 +985,13 @@ void dbg_cout_GDB_vector (const vector <GDB>& inGDB) {
 		////<< T.ptnNd.DIPDIR << '\t'
 		////<< T.ptnNd.DIP << '\t'
 
-		//<< fixed << setprecision(6)
+		<< fixed << setprecision(6)
 		//<< T.avD.X << '\t' << T.avD.Y << '\t'<< T.avD.Z << '\t'
 		//<< T.avS0D.X << '\t' << T.avS0D.Y << '\t'<< T.avS0D.Z << '\t'
 		//<< T.avS0N.X << '\t' << T.avS0N.Y << '\t'<< T.avS0N.Z << '\t'
+		<< T.T.X << '\t' << T.T.Y << '\t'<< T.T.Z << '\t'
 
-		//<< fixed << setprecision(1)
+		<< fixed << setprecision(1)
 		//<< T.avS0d.DIPDIR << '\t'
 		//<< T.avS0d.DIP << '\t'
 		//<< T.avd.DIPDIR << '\t'

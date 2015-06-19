@@ -18,6 +18,10 @@ class xy_error {
 
 };
 
+class trajectory_error {
+
+};
+
 class arg_error {
 
 };

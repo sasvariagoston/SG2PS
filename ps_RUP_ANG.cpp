@@ -13,6 +13,7 @@
 #include "allowed_keys.hpp"
 #include "color_management.hpp"
 #include "common.h"
+#include "data_sort.hpp"
 #include "ps.h"
 #include "rup_clustering.hpp"
 #include "settings.hpp"
@@ -37,33 +38,23 @@ vector <BRDR> sort_by_border (const vector <BRDR>& in) {
 
 double return_datamin (const vector <GDB>& inGDB, const string field) {
 
-	if (field == "RUP") {
+	const vector <GDB> outGDB = SORT_GDB (inGDB, field);
 
-		const vector <GDB> outGDB = sort_by_RUP (inGDB);
-		return outGDB.at(0).RUP;
-	}
-	else if (field == "ANG") {
-
-		const vector <GDB> outGDB = sort_by_ANG (inGDB);
-		return outGDB.at(0).ANG;
-	}
+	if (field == "RUP") return outGDB.at(0).RUP;
+	else if (field == "ANG") return outGDB.at(0).ANG;
 	else ASSERT_DEAD_END();
+
 	return NaN();
 }
 
 double return_datamax (const vector <GDB>& inGDB, const string field) {
 
-	if (field == "RUP") {
+	const vector <GDB> outGDB = SORT_GDB (inGDB, field);
 
-		const vector <GDB> outGDB = sort_by_RUP (inGDB);
-		return outGDB.at(inGDB.size() - 1).RUP;
-	}
-	else if (field == "ANG") {
-
-		const vector <GDB> outGDB = sort_by_ANG (inGDB);
-		return outGDB.at(inGDB.size() - 1).ANG;
-	}
+	if (field == "RUP") return outGDB.at(inGDB.size() - 1).RUP;
+	else if (field == "ANG") return outGDB.at(inGDB.size() - 1).ANG;
 	else ASSERT_DEAD_END();
+
 	return NaN();
 }
 

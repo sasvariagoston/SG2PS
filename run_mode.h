@@ -9,7 +9,7 @@ using namespace std;
 
 bool is_mode_GUI ();
 bool is_mode_BATCH ();
-bool is_mode_COMMANDLINE ();
+//bool is_mode_COMMANDLINE ();
 bool is_mode_DEBUG ();
 bool is_mode_VERSION ();
 bool is_mode_VERSION_ID ();

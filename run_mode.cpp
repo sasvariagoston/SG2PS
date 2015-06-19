@@ -16,7 +16,6 @@ namespace {
 
 bool M_GUI = false;
 bool M_BTC = false;
-bool M_CMD = false;
 bool M_DBG = false;
 bool M_VER = false;
 bool M_VID = false;
@@ -31,11 +30,6 @@ bool is_mode_GUI () {
 bool is_mode_BATCH () {
 
 	return M_BTC;
-}
-
-bool is_mode_COMMANDLINE () {
-
-	return M_CMD;
 }
 
 bool is_mode_DEBUG () {
@@ -62,7 +56,6 @@ void setup_run_mode (const vector <string>& ARG_V) {
 
 	M_GUI = false;
 	M_BTC = false;
-	M_CMD = false;
 	M_DBG = false;
 	M_VER = false;
 	M_VID = false;
@@ -70,47 +63,39 @@ void setup_run_mode (const vector <string>& ARG_V) {
 
 	string MODE = "";
 
-	if (ARG_V.size() < 1) {
+	const string ARG = capslock (ARG_V.at(0));
 
-		M_CMD = true;
-		MODE = "COMMAND LINE";
+	if (is_allowed_debug_mode (ARG)) 	{
+
+		M_DBG = true;
+		MODE = "DEBUG";
+	}
+	else if (is_allowed_gui_mode(ARG)) 	{
+
+		M_GUI = true;
+		MODE = "GUI";
+	}
+	else if (is_allowed_version_id_mode(ARG)) {
+
+		M_VID = true;
+		MODE = "VERSION ID";
+	}
+	else if (is_allowed_version_mode(ARG)) {
+		M_VER = true;
+		MODE = "VERSION";
+	}
+	else if (is_allowed_test_data_generation_mode(ARG)) {
+		M_TST = true;
+		MODE = "TEST FILE GENERATION";
 	}
 	else {
-
-		const string ARG = capslock (ARG_V.at(0));
-
-		if (is_allowed_debug_mode (ARG)) 	{
-
-			M_DBG = true;
-			MODE = "DEBUG";
-		}
-		else if (is_allowed_gui_mode(ARG)) 	{
-
-			M_GUI = true;
-			MODE = "GUI";
-		}
-		else if (is_allowed_version_id_mode(ARG)) {
-
-			M_VID = true;
-			MODE = "VERSION ID";
-		}
-		else if (is_allowed_version_mode(ARG)) {
-			M_VER = true;
-			MODE = "VERSION";
-		}
-		else if (is_allowed_test_data_generation_mode(ARG)) {
-			M_TST = true;
-			MODE = "TEST FILE GENERATION";
-		}
-		else {
-			M_BTC = true;
-			MODE = "BATCH";
-		}
+		M_BTC = true;
+		MODE = "BATCH";
 	}
 
-	if (!M_VER && !M_VID) cout << "Running 'SG2PS' in '" << MODE << "' mode." << endl;
+	if (!M_GUI && !M_BTC &&  !M_DBG && !M_VER && !M_VID && !M_TST) ASSERT_DEAD_END();
 
-	if (!M_GUI && !M_BTC && !M_CMD && !M_DBG && !M_VER && !M_VID && !M_TST) ASSERT_DEAD_END();
+	if (!M_VER && !M_VID) cout << "Running 'SG2PS' in '" << MODE << "' mode." << endl;
 
 	return;
 }
@@ -119,7 +104,6 @@ size_t return_min_argument_number () {
 
 	if 		(M_GUI) return 1;
 	else if (M_BTC) return 1;
-	else if (M_CMD) return 0;
 	else if (M_DBG) return 1;
 	else if (M_VER) return 0;
 	else if (M_VID) return 0;
@@ -134,7 +118,6 @@ size_t return_max_argument_number () {
 
 	if 		(M_GUI) return 1;
 	else if (M_BTC) return 999;
-	else if (M_CMD) return 0;
 	else if (M_DBG) return 999;
 	else if (M_VER) return 999;
 	else if (M_VID) return 999;
