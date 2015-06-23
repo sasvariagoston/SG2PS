@@ -24,7 +24,6 @@
 namespace {
 
 vector <vector <WELL_INTERVAL> > W_INTERVAL;
-
 vector <vector <WELL_FREQUENCY> > W_FREQUENCY;
 
 const double MIN_DATAINTERVAL = 0.10;
@@ -465,10 +464,14 @@ vector <WELL_INTERVAL> WELL_AVERAGE_D (const vector <GDB>& p_GDB) {
 	return OUT;
 }
 
-void PROCESS_WELL_GROUPS (const vector <vector <GDB> >& inGDB_G, const bool TILT) {
+void PROCESS_WELL_GROUPS (const vector <vector <GDB> >& inGDB_G) {
+
+	dbg_cout_GDB_vector_vector(inGDB_G);
 
 	if (is_WELLDATA_NO()) return;
 
+	W_INTERVAL.clear();
+	W_FREQUENCY.clear();
 
 	for (size_t i = 0; i < inGDB_G.size(); i++) {
 

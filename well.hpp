@@ -31,6 +31,6 @@ WELL_INTERVAL interval_average (const vector <GDB>& inGDB);
 vector <WELL_INTERVAL> WELL_AVERAGE_M (const vector <GDB>& p_GDB);
 vector <WELL_INTERVAL> WELL_AVERAGE_D (const vector <GDB>& p_GDB);
 
-void PROCESS_WELL_GROUPS (const vector <vector <GDB> >& inGDB_G, const bool TILT);
+void PROCESS_WELL_GROUPS (const vector <vector <GDB> >& inGDB_G);
 
 #endif /* WELL_HPP_ */

@@ -308,12 +308,14 @@ void output_rgf_record (const GDB& i, ofstream& o, const bool AVERAGE) {
 	return;
 }
 
-void OUTPUT_COMPLETED_TO_RGF (const vector <GDB>& inGDB, const PFN& P, const bool TILT) {
+void OUTPUT_COMPLETED_TO_RGF (const vector <GDB>& inGDB, const PFN& P, const bool TILT, const bool TRJ) {
 
 	const string bs = path_separator;
 	string FN = P.completed + bs + capslock(P.projectname) + "_completed";
 
 	if (TILT) FN = FN + "_tilted";
+
+	if (TRJ) FN = FN + "_trajectory_corrected";
 
 	FN = FN + ".rgf";
 
@@ -327,12 +329,14 @@ void OUTPUT_COMPLETED_TO_RGF (const vector <GDB>& inGDB, const PFN& P, const boo
 	O.close();
 }
 
-void OUTPUT_AVERAGE_TO_RGF (const vector <GDB>& inGDB_G, const PFN& P, const bool TILT) {
+void OUTPUT_AVERAGE_TO_RGF (const vector <GDB>& inGDB_G, const PFN& P, const bool TILT, const bool TRJ) {
 
 	const string bs = path_separator;
 	string FN = P.average + bs + capslock(P.projectname);
 
 	if (TILT) FN = FN + "_tilted";
+
+	if (TRJ) FN = FN + "_trajectory_corrected";
 
 	FN = FN + "_average.rgf";
 
@@ -388,7 +392,7 @@ void OUTPUT_AVERAGE_TO_RGF (const vector <GDB>& inGDB_G, const PFN& P, const boo
  *
  */
 
-void OUTPUT_GROUPS_TO_RGF (const vector <vector <GDB> >& inGDB_G, const PFN& P, const bool TILTED) {
+void OUTPUT_GROUPS_TO_RGF (const vector <vector <GDB> >& inGDB_G, const PFN& P, const bool TILT, const bool TRJ) {
 
 	const string bs = path_separator;
 
@@ -419,7 +423,9 @@ void OUTPUT_GROUPS_TO_RGF (const vector <vector <GDB> >& inGDB_G, const PFN& P, 
 		else if (is_GROUPSEPARATION_IGNORE()) {}
 		else ASSERT_DEAD_END();
 
-		if (TILTED) FN = FN + "_tilted";
+		if (TILT) FN = FN + "_tilted";
+
+		if (TRJ) FN = FN + "_trajectory_corrected";
 
 		FN = FN + ".rgf";
 
@@ -430,7 +436,6 @@ void OUTPUT_GROUPS_TO_RGF (const vector <vector <GDB> >& inGDB_G, const PFN& P, 
 		output_rgf_header (O, false);
 
 		T = SORT_GDB(T, "IID");
-		//sort(T.begin(), T.end(), byiID);
 
 		OUTPUT_GDB_to_RGF (O, T, false);
 
@@ -448,17 +453,17 @@ void OUTPUT_GDB_to_RGF (ofstream& O, const vector <GDB>& inGDB, const bool AVERA
 	return;
 }
 
-void OUTPUT_TO_RGF (const vector <vector <GDB> >& inGDB_G, const PFN& projectfoldername, const bool TILT) {
+void OUTPUT_TO_RGF (const vector <vector <GDB> >& inGDB_G, const PFN& projectfoldername, const bool TILT, const bool TRJ) {
 
 	vector <GDB> processGDB = MERGE_GROUPS_TO_GDB (inGDB_G);
 
-	OUTPUT_COMPLETED_TO_RGF (processGDB, projectfoldername, TILT);
+	OUTPUT_COMPLETED_TO_RGF (processGDB, projectfoldername, TILT, TRJ);
 
 	vector <GDB> processGDB_G = MERGE_GROUPS_TO_GDB (inGDB_G);
 
-	OUTPUT_AVERAGE_TO_RGF (processGDB_G, projectfoldername, TILT);
+	OUTPUT_AVERAGE_TO_RGF (processGDB_G, projectfoldername, TILT, TRJ);
 
-	OUTPUT_GROUPS_TO_RGF (inGDB_G, projectfoldername, TILT);
+	OUTPUT_GROUPS_TO_RGF (inGDB_G, projectfoldername, TILT, TRJ);
 
 	return;
 }
@@ -971,7 +976,7 @@ vector <vector <GDB> > PROCESS_GROUPS (const vector <vector <GDB> >& inGDB_G, co
  *
  */
 
-void OUTPUT_TO_PS (const vector <vector <GDB> > in_GDB_G, const PFN P, const bool TILT) {
+void OUTPUT_TO_PS (const vector <vector <GDB> > in_GDB_G, const PFN P, const bool TILT, const bool TRJ) {
 
 	const bool IGNORE = is_GROUPSEPARATION_IGNORE ();
 	const bool by_GROUPCODE = is_GROUPSEPARATION_GROUPCODE ();
@@ -994,12 +999,14 @@ void OUTPUT_TO_PS (const vector <vector <GDB> > in_GDB_G, const PFN P, const boo
 
 			string PS_NAME = P.pssep + BS + DT + BS + LOC + US + DT;
 
+			if (TRJ) PS_NAME = PS_NAME + "_TRAJECTORY_CORRECTED";
+
 			if (by_GROUPCODE) 	PS_NAME = PS_NAME + US + in_GDB_G.at(i).at(0).GC.at(0);
 			else if (by_KMEANS) PS_NAME = PS_NAME + US + in_GDB_G.at(i).at(0).GC.at(1);
 			else if (by_RUPANG) PS_NAME = PS_NAME + US + in_GDB_G.at(i).at(0).GC.at(2);
 			else {}
 
-			PS_NAME = PS_NAME + ".eps";
+			PS_NAME = PS_NAME + ".EPS";
 
 			ofstream OPS (PS_NAME.c_str());
 

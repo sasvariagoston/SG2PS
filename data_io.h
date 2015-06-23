@@ -42,18 +42,18 @@ vector <vector <GDB> > PROCESS_GROUPS (const vector <vector <GDB> >& inGDB_G, co
 
 void output_rgf_header (ofstream& o, const bool AVERAGE);
 void output_rgf_record (const GDB& i, ofstream& o, const bool AVERAGE);
-void OUTPUT_AVERAGE_TO_RGF (const vector <GDB> & inGDB_G, const PFN& P, const bool TILT);
-void OUTPUT_GROUPS_TO_RGF (const vector < vector <GDB> >& inGDB_G, const PFN& P, const bool TILTED);
-void OUTPUT_COMPLETED_TO_RGF (const vector <GDB>& outGDB, const PFN& P, const bool TILT);
+void OUTPUT_AVERAGE_TO_RGF (const vector <GDB> & inGDB_G, const PFN& P, const bool TILT, const bool TRJ);
+void OUTPUT_GROUPS_TO_RGF (const vector < vector <GDB> >& inGDB_G, const PFN& P, const bool TILT);
+void OUTPUT_COMPLETED_TO_RGF (const vector <GDB>& outGDB, const PFN& P, const bool TILT, const bool TRJ);
 void OUTPUT_GDB_to_RGF (ofstream& O, const vector <GDB>& inGDB, const bool AVERAGE);
-void OUTPUT_TO_RGF (const vector <vector <GDB> >& inGDB_G, const PFN& projectfoldername, const bool TILT);
+void OUTPUT_TO_RGF (const vector <vector <GDB> >& inGDB_G, const PFN& projectfoldername, const bool TILT, const bool TRJ);
 
 void cout_method_text (const vector <GDB>& inGDB);
 void cout_original_tilted_text (const bool tilt);
 void cout_less_than_required_text (const bool tilt);
 
 void PS_GDB_DATA (const vector <GDB>& inGDB, ofstream& o, const CENTER& center);
-void OUTPUT_TO_PS (const vector <vector <GDB> > in_GDB_G, const PFN P, const bool TILT);
+void OUTPUT_TO_PS (const vector <vector <GDB> > in_GDB_G, const PFN P, const bool TILT, const bool TRJ);
 void dbg_cout_RGF_colors (vector <GDB> inGDB);
 
 #endif

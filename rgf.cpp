@@ -616,14 +616,16 @@ void EVALUATE (const vector <vector <GDB> >& inGDB_G, const PFN projectfoldernam
 	if (!is_mode_DEBUG()) writeln (msg);
 
 
-	if (!TLT && !TRJ) P = RETILT (P, "TRAJECTORY");
+	if (TRJ) P = RETILT (P, "TRAJECTORY");
 
-	if (!TLT) {
+	if (TLT) {
 
 		P = RETILT (P, "BEDDING");
 		P = RETILT (P, "PALEONORTH");
+
 	}
-	else {
+
+	if (TRJ || TLT) {
 
 		P = PREPARE_GDB_VECTOR_FOR_PROCESSING (P, true);
 		P = AVERAGE (P);
@@ -632,7 +634,7 @@ void EVALUATE (const vector <vector <GDB> >& inGDB_G, const PFN projectfoldernam
 
 	P = PROCESS_GROUPS (P, TLT);
 
-	PROCESS_WELL_GROUPS (P, TLT);
+	PROCESS_WELL_GROUPS (P);
 
 	/*
 	 PROCESS_WELL_GROUPS (nGDB_G, false);
@@ -657,11 +659,11 @@ void EVALUATE (const vector <vector <GDB> >& inGDB_G, const PFN projectfoldernam
 
 	STANDARD_OUTPUT (p, TLT);
 
-	if (!is_mode_DEBUG()) OUTPUT_TO_RGF (P, projectfoldername, TLT);
+	if (!is_mode_DEBUG()) OUTPUT_TO_RGF (P, projectfoldername, TLT, TRJ);
 
-	OUTPUT_TO_PS (P,  projectfoldername, TLT);
+	OUTPUT_TO_PS (P,  projectfoldername, TLT, TRJ);
 
-	OUTPUT_TO_WELL_PS (P, projectfoldername, TLT); //careful! PS module has global variables!!!!
+	OUTPUT_TO_WELL_PS (P, projectfoldername, TLT, TRJ); //careful! PS module has global variables!!!!
 }
 
 void PROCESS_RGF (const string inputfilename) {
@@ -871,8 +873,8 @@ void dbg_cout_GDB_vector (const vector <GDB>& inGDB) {
 	//<< "LDIR" << '\t'
 	//<< "LDIP" << '\t'
 
-	<< "corr.DIPDIR" << '\t'
-	<< "corr.DIP" << '\t'
+	//<< "corr.DIPDIR" << '\t'
+	//<< "corr.DIP" << '\t'
 	//<< "corrL.DIPDIR" << '\t'
 	//<< "corrL.DIP" << '\t'
 
@@ -896,12 +898,12 @@ void dbg_cout_GDB_vector (const vector <GDB>& inGDB) {
 	//<< "avD.X" << '\t' << "avD.Y" << '\t'<< "avD.Z" << '\t'
 	//<< "avS0D.X" << '\t' << "avS0D.Y" << '\t'<< "avS0D.Z" << '\t'
 	//<< "avS0N.X" << '\t' << "avS0N.Y" << '\t'<< "avS0N.Z" << '\t'
-	<< "T.X" << '\t' << "T.Y" << '\t'<< "T.Z" << '\t'
+	//<< "T.X" << '\t' << "T.Y" << '\t'<< "T.Z" << '\t'
 
 	//<< "avS0d.DIPDIR" << '\t'
 	//<< "avS0d.DIP" << '\t'
-	//<< "avd.DIPDIR" << '\t'
-	//<< "avd.DIP" << '\t'
+	<< "avd.DIPDIR" << '\t'
+	<< "avd.DIP" << '\t'
 	//<< "avS0offset" << '\t'
 
 
@@ -960,8 +962,8 @@ void dbg_cout_GDB_vector (const vector <GDB>& inGDB) {
 		//<< T.LDIR << '\t'
 		//<< T.LDIP << '\t'
 
-		<< T.corr.DIPDIR << '\t'
-		<< T.corr.DIP << '\t'
+		//<< T.corr.DIPDIR << '\t'
+		//<< T.corr.DIP << '\t'
 		//<< T.corrL.DIPDIR << '\t'
 		//<< T.corrL.DIP << '\t'
 
@@ -989,13 +991,13 @@ void dbg_cout_GDB_vector (const vector <GDB>& inGDB) {
 		//<< T.avD.X << '\t' << T.avD.Y << '\t'<< T.avD.Z << '\t'
 		//<< T.avS0D.X << '\t' << T.avS0D.Y << '\t'<< T.avS0D.Z << '\t'
 		//<< T.avS0N.X << '\t' << T.avS0N.Y << '\t'<< T.avS0N.Z << '\t'
-		<< T.T.X << '\t' << T.T.Y << '\t'<< T.T.Z << '\t'
+		//<< T.T.X << '\t' << T.T.Y << '\t'<< T.T.Z << '\t'
 
 		<< fixed << setprecision(1)
 		//<< T.avS0d.DIPDIR << '\t'
 		//<< T.avS0d.DIP << '\t'
-		//<< T.avd.DIPDIR << '\t'
-		//<< T.avd.DIP << '\t'
+		<< T.avd.DIPDIR << '\t'
+		<< T.avd.DIP << '\t'
 		//<< T.avS0offset << '\t'
 
 		//<< fixed << setprecision(6)

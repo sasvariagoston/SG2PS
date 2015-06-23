@@ -26,7 +26,15 @@
 #include "well.hpp"
 #include "well_ps.hpp"
 
+struct WELL_TOPS {
+
+	double DEPTH;
+	string FORMATION;
+};
+
 namespace {
+
+vector <WELL_TOPS> WTP;
 
 const double PL_WDT = 4.0;
 
@@ -120,7 +128,7 @@ void PS_well_header (const string DATATYPE, const string LOC, ofstream& o) {
 	return;
 }
 
-void PS_well_border (const vector <GDB>& inGDB, ofstream& o, const PAPER& P, const bool TILT) {
+void PS_well_border (const vector <GDB>& inGDB, ofstream& o, const PAPER& P, const bool TILT, const bool TRJ) {
 
 	const string DT = inGDB.at(0).DATATYPE;
 	const string LOC = inGDB.at(0).LOC;
@@ -208,8 +216,11 @@ void PS_well_border (const vector <GDB>& inGDB, ofstream& o, const PAPER& P, con
 	else if (color_IGNORE) {}
 	else {}
 
-	if (TILT) 	T = T + " - BEDDING CORRECTED DATA SET";
-	else 		T = T + " - ORIGINAL DATA SET";
+	if (!TILT && !TRJ)		T = T + " - ORIGINAL DATA SET";
+	else if (TILT && !TRJ) 	T = T + " - BEDDING/PALEO NORTH CORRECTED DATA SET";
+	else if (TILT && TRJ) 	T = T + " - BEDDING/PALEO NORTH AND TRAJECTORY CORRECTED DATA SET";
+	else if (!TILT && TRJ)	T = T + " - TRAJECTORY CORRECTED DATA SET";
+	else ASSERT_DEAD_END();
 
 	text_PS (o, P.A - P.B + P.D * 20.0, P.Y - P.A - P.D * 5.5, 3, T);
 
@@ -458,39 +469,21 @@ void PS_well_coordinate_axes_INTERVAL (ofstream& o, const PAPER& P, const double
 	return;
 }
 
-void ps_well_formation_tops (const vector <GDB>& inGDB, ofstream& o, const PAPER& P, const double X, const double LENGTH, const double MIN_VAL, const double MAX_VAL, const double STEP) {
+void ps_well_formation_tops (ofstream& o, const PAPER& P, const double X, const double LENGTH, const double MIN_VAL, const double MAX_VAL, const double STEP) {
 
-	const vector <size_t> FN_VAL = return_records_with_formation_names (inGDB);
-
-	const vector <GDB> processGDB = SORT_GDB (inGDB, "DEPTH");
-	//const vector <GDB> processGDB = sort_by_DEPTH (inGDB);
-
-	vector <double> DEPTH;
-	vector <string> FRMTN;
-
-	for (size_t i = 0; i < FN_VAL.size(); i++) {
-		for (size_t j = 0; j < processGDB.size(); j++) {
-
-			if (FN_VAL.at(i) == j) {
-
-				DEPTH.push_back (processGDB.at(j).DEPTH);
-				FRMTN.push_back (processGDB.at(j).FORMATION);
-			}
-		}
-	}
 	font_PS(o, "ArialNarrow", 10);
 	color_PS (o, "0.5 0.5 1.0");
 	linewidth_PS (o, 2, 0);
 
-	for (size_t i = 0; i < DEPTH.size(); i++) {
+	for (size_t i = 0; i < WTP.size(); i++) {
 
-		const double Y = LENGTH * ((DEPTH.at(i) - MIN_VAL) / (MAX_VAL - MIN_VAL));
+		const double Y = LENGTH * ((WTP.at(i).DEPTH - MIN_VAL) / (MAX_VAL - MIN_VAL));
 
 		moveto_PS (o, X + 750.0 * P.D, P.O1Y - Y, 3);
 		lineto_PS (o, X + 170.0 * P.D, P.O1Y - Y, 3);
 		stroke_PS(o);
 
-		const string T = "TOP " + FRMTN.at(i) + " (" + double_to_string (DEPTH.at(i), 0) + ")";
+		const string T = "TOP " + WTP.at(i).FORMATION + " (" + double_to_string (WTP.at(i).DEPTH, 0) + ")";
 
 		text_PS (o, X + 5.0 * P.D, P.O1Y -Y - 5 * P.D, 3, T);
 	}
@@ -1051,23 +1044,35 @@ double return_plot_value (const WELL_INTERVAL ACT, const bool DIPDIR, const stri
 	}
 }
 
-vector <size_t> return_records_with_formation_names (const vector <GDB>& inGDB){
+void return_records_with_formation_names (const vector <vector <GDB> >& inGDB_G){
 
-	const vector <GDB> processGDB = SORT_GDB(inGDB, "DEPTH");
+	const vector <GDB> processGDB = SORT_GDB (MERGE_GROUPS_TO_GDB (inGDB_G), "DEPTH");
 	//const vector <GDB> processGDB = sort_by_DEPTH (inGDB);
 
-	vector <size_t> OUT;
+	WTP.clear();
 
 	for (size_t i = 1; i < processGDB.size(); i++) {
+
+		WELL_TOPS buf;
 
 		const string ACT_FRM = processGDB.at(i - 1).FORMATION;
 		const string NXT_FRM = processGDB.at(i).FORMATION;
 
-		if (i == 1 && ACT_FRM.size() > 0) OUT.push_back (i - 1);
+		if (i == 1 && ACT_FRM.size() > 0) {
 
-		if (ACT_FRM != NXT_FRM) OUT.push_back (i);
+			buf.DEPTH = processGDB.at(i - 1).DEPTH;
+			buf.FORMATION = processGDB.at(i - 1).FORMATION;
+			WTP.push_back(buf);
+		}
+
+		if (ACT_FRM != NXT_FRM) {
+
+			buf.DEPTH = processGDB.at(i).DEPTH;
+			buf.FORMATION = processGDB.at(i).FORMATION;
+			WTP.push_back(buf);
+		}
 	}
-	return OUT;
+	return;
 }
 
 void plot_well_curve (const vector <WELL_INTERVAL>& IN, ofstream& o, const PAPER& P, const double X, const double LENGTH, const double MIN_VAL, const double MAX_VAL, const bool DIPDIR, const string TYPE) {
@@ -1277,7 +1282,7 @@ void WELL_PS (const vector <GDB>& inGDB, const vector <WELL_INTERVAL>& INT, cons
 	PS_well_coordinate_grid_INTERVAL (OPS, P, X, LENGTH, MIN_VAL, MAX_VAL, STEP);
 	PS_well_intervals (INT, OPS, P, X, LENGTH, MIN_VAL, MAX_VAL);
 	PS_well_coordinate_axes_INTERVAL (OPS, P, X, LENGTH);
-	ps_well_formation_tops (inGDB, OPS, P, X, LENGTH, MIN_VAL, MAX_VAL, STEP);
+	ps_well_formation_tops (OPS, P, X, LENGTH, MIN_VAL, MAX_VAL, STEP);
 
 	cout << "2A-----------------------------------------" << endl;
 	X = X + (PL_WDT + PL_GP) * P.A;
@@ -1323,7 +1328,7 @@ void WELL_PS (const vector <GDB>& inGDB, const vector <WELL_INTERVAL>& INT, cons
 	return;
 }
 
-void OUTPUT_TO_WELL_PS (const vector <vector <GDB> > GDB_G, const PFN PF, const bool TILT) {
+void OUTPUT_TO_WELL_PS (const vector <vector <GDB> >& GDB_G, const PFN& PF, const bool TILT, const bool TRJ) {
 
 	if (is_WELLDATA_NO()) return;
 
@@ -1347,6 +1352,8 @@ void OUTPUT_TO_WELL_PS (const vector <vector <GDB> > GDB_G, const PFN PF, const 
 	const string BS = path_separator;
 	const string US = "_";
 
+	return_records_with_formation_names (GDB_G);
+
 	for (size_t i = 0; i < GDB_G.size(); i++) {
 
 		const vector <GDB> temp = SORT_GDB (GDB_G.at(i), "DEPTH");
@@ -1363,7 +1370,8 @@ void OUTPUT_TO_WELL_PS (const vector <vector <GDB> > GDB_G, const PFN PF, const 
 
 		if (PROCESS_AS_WELL) {
 
-			string PS_NAME = PF.well_ps + BS + DT + BS + LOC + US + FM + US + DT;
+			//string PS_NAME = PF.well_ps + BS + DT + BS + LOC + US + FM + US + DT;
+			string PS_NAME = PF.well_ps + BS + DT + BS + LOC + US + FM;
 
 			if (is_FORMATION_USE()) PS_NAME = PS_NAME + US + FM;
 
@@ -1373,6 +1381,10 @@ void OUTPUT_TO_WELL_PS (const vector <vector <GDB> > GDB_G, const PFN PF, const 
 			else if (by_KMEANS) PS_NAME = PS_NAME + US + temp.at(1).GC;
 			else if (by_RUPANG) PS_NAME = PS_NAME + US + temp.at(2).GC;
 			else {}
+
+			if (TILT) PS_NAME = PS_NAME + "_TILTED";
+
+			if (TRJ) PS_NAME = PS_NAME + "_TRAJECTORY_CORRECTED";
 
 			PS_NAME = PS_NAME + ".eps";
 
@@ -1390,7 +1402,7 @@ void OUTPUT_TO_WELL_PS (const vector <vector <GDB> > GDB_G, const PFN PF, const 
 
 			PS_well_header (DT, LOC, OPS);
 
-			PS_well_border (temp, OPS, P, TILT);
+			PS_well_border (temp, OPS, P, TILT, TRJ);
 
 			PS_well_symbols (OPS, P);
 
