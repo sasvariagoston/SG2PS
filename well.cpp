@@ -308,6 +308,10 @@ double stdev_for_interval (const vector <GDB>& inGDB, const bool DIPDIR) {
 
 	const DIPDIR_DIP avDD = inGDB.at(0).avd;
 
+	//cout << "inGDB.at(0).avd: " << inGDB.at(0).avd.DIPDIR << "/" << inGDB.at(0).avd.DIP << endl;
+
+	//cout << "    ANG: " << flush;
+
 	vector <double> MSFT;
 
 	for (size_t i = 0; i < inGDB.size(); i++) {
@@ -334,10 +338,18 @@ double stdev_for_interval (const vector <GDB>& inGDB, const bool DIPDIR) {
 		const VCTR T1 = unitvector (DXDYDZ_from_dipdir_dip (D1));
 		const VCTR T2 = unitvector (DXDYDZ_from_dipdir_dip (D2));
 
-		double ANG = fabs (ACOS (dotproduct (T1, T2, false)));
+		double ANG = vector_angle (T1, T2);
+
+		//cout <<  ANG << " " << flush;
+
+		//double ANG = fabs (ACOS (dotproduct (T1, T2, false)));
 
 		MSFT.push_back (ANG * ANG);
 	}
+
+	//cout << endl;
+
+	//cout << sqrt (average (MSFT)) << endl;
 	return sqrt (average (MSFT));
 }
 
@@ -418,6 +430,9 @@ vector <WELL_INTERVAL> WELL_AVERAGE_M (const vector <GDB>& p_GDB) {
 		buf.MIN = MIN;
 		buf.MAX = MAX;
 
+		//cout << buf.INT_AV_D_STDEV << endl;
+		//cout << "buf.INT_AV_D_STDEV: " << buf.INT_AV_D_STDEV << endl;
+
 		OUT.push_back (buf);
 	}
 	return OUT;
@@ -466,7 +481,7 @@ vector <WELL_INTERVAL> WELL_AVERAGE_D (const vector <GDB>& p_GDB) {
 
 void PROCESS_WELL_GROUPS (const vector <vector <GDB> >& inGDB_G) {
 
-	dbg_cout_GDB_vector_vector(inGDB_G);
+	//dbg_cout_GDB_vector_vector(inGDB_G);
 
 	if (is_WELLDATA_NO()) return;
 
@@ -513,6 +528,7 @@ void PROCESS_WELL_GROUPS (const vector <vector <GDB> >& inGDB_G) {
 			INTERVAL_buf = FIRST_DERIVATE (INTERVAL_buf);
 
 			FREQUENCY_buf = FREQUENCY (p_GDB);
+
 		}
 		W_INTERVAL.push_back (INTERVAL_buf);
 		W_FREQUENCY.push_back (FREQUENCY_buf);

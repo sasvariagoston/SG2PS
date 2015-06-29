@@ -605,6 +605,9 @@ void EVALUATE (const vector <vector <GDB> >& inGDB_G, const PFN projectfoldernam
 	const bool TLT = PROCESS_AS_TILTED;
 	const bool TRJ = PROCESS_AS_TRAJECTORY;
 
+	writeln ("");
+	writeln ("-------------------------------------------------------");
+
 	string msg = "- Data evaluation for the";
 
 	if (TLT) msg = msg + " tilted data set ";
@@ -711,12 +714,15 @@ void PROCESS_RGF (const string inputfilename) {
 	PROCESS_AS_TILTED = true;
 	EVALUATE (nGDB_G, projectfoldername);
 
-	PROCESS_AS_TILTED = false;
-	PROCESS_AS_TRAJECTORY = true;
-	EVALUATE (nGDB_G, projectfoldername);
+	if (is_TRAJECTORY_FILE_CORRECT()) {
 
-	PROCESS_AS_TILTED = true;
-	EVALUATE (nGDB_G, projectfoldername);
+		PROCESS_AS_TILTED = false;
+		PROCESS_AS_TRAJECTORY = true;
+		EVALUATE (nGDB_G, projectfoldername);
+
+		PROCESS_AS_TILTED = true;
+		EVALUATE (nGDB_G, projectfoldername);
+	}
 
 	PROCESS_AS_TILTED = false;
 	PROCESS_AS_TRAJECTORY = false;

@@ -15,6 +15,7 @@
 
 #include "allowed_keys.hpp"
 #include "assertions.hpp"
+#include "common.h"
 #include "data_io.h"
 #include "data_sort.hpp"
 #include "run_mode.h"
@@ -32,21 +33,43 @@ struct WELL_TOPS {
 	string FORMATION;
 };
 
+//struct CURVE_TO_PLOT {
+
+//	vector <double> DEPTH;
+//	vector <double> VALUE;
+//};
+
+struct PEAK_TO_PLOT {
+
+	double DEPTH;
+	double VALUE;
+	double COUNT;
+};
+
 namespace {
 
 vector <WELL_TOPS> WTP;
 
-const double PL_WDT = 4.0;
+vector <PEAK_TO_PLOT> PEAK;
+vector <PEAK_TO_PLOT> FAULTS;
 
-const double PL_GP = 0.9;
-const double PL_AX_GP = 0.2;
+const double PL_WDT = 3.7;//was 4.0
 
-const double PL_LF = -2.5;
+const double PL_GP = 0.35;//was 0.9
+const double PL_AX_GP = 0.1;//was 0.2
+
+const double PL_LF = -2.7;//was -2.5
 
 const string STD_CLR = "0.80 0.80 0.80";
 const string AVR_CLR = "0.00 0.00 0.00";
 const string DRV_CLR = "1.00 0.00 0.00";
 const string FRQ_CLR = "0.00 0.00 1.00";
+
+const VCTR WHT = declare_vector (1.00, 1.00, 1.00);
+const VCTR GRY = declare_vector (0.83, 0.83, 0.83);
+const VCTR BLK = declare_vector (0.00, 0.00, 0.00);
+
+const VCTR PRP = declare_vector (1.00, 0.00, 1.00);
 
 const VCTR RED = declare_vector (1.00, 0.00, 0.00);
 const VCTR YLW = declare_vector (1.00, 1.00, 0.00);
@@ -248,6 +271,11 @@ string generate_colorstep (const VCTR clr1, const VCTR clr2, const VCTR clr3, co
 	}
 }
 
+string generate_peak_colors (const size_t percent) {
+
+	return (generate_colorstep(WHT, GRY, PRP, percent));
+}
+
 string generate_error_colors (const size_t percent) {
 
 	return (generate_colorstep(GRN, YLW, RED, percent));
@@ -431,7 +459,6 @@ bool has_GDB_DEPTH_value_in_range (const vector <GDB>& inGDB, const double MIN, 
 double return_MIN_value (const vector <GDB>& inGDB, const size_t STEP) {
 
 	const vector <GDB> temp = SORT_GDB (inGDB, "DEPTH");
-	//const vector <GDB> temp = sort_by_DEPTH (inGDB);
 
 	const size_t LIMIT = inGDB.at(inGDB.size() - 1).DEPTH;
 
@@ -479,8 +506,8 @@ void ps_well_formation_tops (ofstream& o, const PAPER& P, const double X, const 
 
 		const double Y = LENGTH * ((WTP.at(i).DEPTH - MIN_VAL) / (MAX_VAL - MIN_VAL));
 
-		moveto_PS (o, X + 750.0 * P.D, P.O1Y - Y, 3);
-		lineto_PS (o, X + 170.0 * P.D, P.O1Y - Y, 3);
+		moveto_PS (o, X + 900.0 * P.D, P.O1Y - Y, 3);
+		lineto_PS (o, X + 150.0 * P.D, P.O1Y - Y, 3);
 		stroke_PS(o);
 
 		const string T = "TOP " + WTP.at(i).FORMATION + " (" + double_to_string (WTP.at(i).DEPTH, 0) + ")";
@@ -686,6 +713,62 @@ void PS_well_coordinate_grid_DIP (ofstream& o, const PAPER& P, const double X, c
 	return;
 }
 
+void PS_well_coordinate_axes_FAULTS (ofstream& o, const PAPER& P, const double X, const double LENGTH, const double MIN_VAL, const double MAX_VAL, const double STEP) {
+
+	newpath_PS(o);
+	color_PS (o, "0.9 1.0 1.0");
+	linewidth_PS (o, 0, 1);
+	moveto_PS (o, X, P.O1Y, 3);
+	lineto_PS (o, X, P.O1Y - LENGTH, 3);
+	lineto_PS (o, X + PL_WDT * P.A, P.O1Y - LENGTH, 3);
+	lineto_PS (o, X + PL_WDT * P.A, P.O1Y, 3);
+	fill_PS(o);
+	stroke_PS(o);
+
+	newpath_PS(o);
+	color_PS (o, "0.0 0.0 0.0");
+	linewidth_PS (o, 1, 1);
+	moveto_PS (o, X, P.O1Y, 3);
+	lineto_PS (o, X, P.O1Y - LENGTH, 3);
+	moveto_PS (o, X, P.O1Y, 3);
+	lineto_PS (o, X + PL_WDT * P.A, P.O1Y, 3);
+	stroke_PS(o);
+
+
+	font_PS(o, "ArialNarrow-Bold", 24);
+	color_PS (o, "0.9 0.9 0.9");
+
+	text_PS(o, X + 0.5 * P.A, P.O1Y + 45.0 * P.D, 3, "FAULTS");
+
+	font_PS(o, "ArialNarrow", 12);
+
+	color_PS (o, "0.0 0.0 0.0");
+	text_PS(o, X + 0.8 * P.A, P.O1Y + 25.0 * P.D, 3, "PROBABILITY");
+
+	for (size_t i = 0; i < 4; i++) {
+
+		const double stp = (i * PL_WDT * P.A) / 3.0;
+
+		if (i == 3) {
+
+			moveto_PS (o, X + stp, P.O1Y, 3);
+			lineto_PS (o, X + stp, P.O1Y + 5.0 * P.D, 3);
+			stroke_PS(o);
+
+			color_PS (o, "0.9 0.9 0.9");
+
+			moveto_PS (o, X + stp, P.O1Y - LENGTH, 3);
+			lineto_PS (o, X + stp, P.O1Y - 5.0 * P.D, 3);
+			stroke_PS(o);
+
+			color_PS (o, "0.0 0.0 0.0");
+		}
+		if (i == 0) text_PS (o, X + stp - 3.0 * P.D, P.O1Y + 8.0 * P.D, 3, double_to_string (0.0, 0));
+		if (i == 3) text_PS (o, X + stp - 30.0 * P.D, P.O1Y + 8.0 * P.D, 3, "MAX");
+	}
+	return;
+}
+
 void PS_well_coordinate_axes_FREQUENCY (ofstream& o, const PAPER& P, const double X, const double LENGTH, const double MIN_VAL, const double MAX_VAL, const double STEP) {
 
 	newpath_PS(o);
@@ -695,7 +778,7 @@ void PS_well_coordinate_axes_FREQUENCY (ofstream& o, const PAPER& P, const doubl
 	moveto_PS (o, X, P.O1Y, 3);
 	lineto_PS (o, X, P.O1Y - LENGTH, 3);
 	moveto_PS (o, X, P.O1Y, 3);
-	lineto_PS (o, X + 4.0 * P.A, P.O1Y, 3);
+	lineto_PS (o, X + PL_WDT * P.A, P.O1Y, 3);
 
 	font_PS(o, "ArialNarrow-Bold", 24);
 	color_PS (o, "0.9 0.9 0.9");
@@ -714,7 +797,7 @@ void PS_well_coordinate_axes_FREQUENCY (ofstream& o, const PAPER& P, const doubl
 
 	for (size_t i = 0; i < 4; i++) {
 
-		const double stp = (i * 4.0 * P.A) / 3.0;
+		const double stp = (i * PL_WDT * P.A) / 3.0;
 
 		if (i == 3) {
 
@@ -742,7 +825,7 @@ void PS_well_coordinate_axes_FREQUENCY (ofstream& o, const PAPER& P, const doubl
 
 			color_PS (o, "0.9 0.9 0.9");
 
-			moveto_PS (o, X + 4.0 * P.A, 	P.O1Y - (INT * LENGTH), 3);
+			moveto_PS (o, X + PL_WDT * P.A, P.O1Y - (INT * LENGTH), 3);
 			lineto_PS (o, X + 5.0 * P.D, 	P.O1Y - (INT * LENGTH), 3);
 			stroke_PS(o);
 
@@ -769,6 +852,302 @@ void PS_derivate_DIPDIR_DIP (ofstream& o, const PAPER& P, const double X) {
 	return;
 }
 
+void SETUP_PEAK (const vector <double>& DEPTH, const vector <double>& VALUE) {
+
+	if (DEPTH.size() != VALUE.size()) ASSERT_DEAD_END();
+
+	if (DEPTH.size() < 1 || VALUE.size() < 1) ASSERT_DEAD_END();
+
+	PEAK.clear();
+
+	for (size_t i = 0; i < DEPTH.size(); i++) {
+
+		if (i < DEPTH.size() - 1 && DEPTH.at(i) > DEPTH.at(i+1)) ASSERT_DEAD_END();
+
+		PEAK_TO_PLOT buf;
+
+		buf.DEPTH = DEPTH.at(i);
+		buf.VALUE = VALUE.at(i);
+		buf.COUNT = 0;
+
+		PEAK.push_back (buf);
+	}
+	return;
+}
+
+double RETURN_VALUE_AVERAGE (vector <PEAK_TO_PLOT> IN) {
+
+	vector <double> FOR_AVERAGE;
+
+	for (size_t i = 0; i < IN.size(); i++) FOR_AVERAGE.push_back(IN.at(i).VALUE);
+
+	return average (FOR_AVERAGE);
+
+}
+double RETURN_DEPTH_AVERAGE (vector <PEAK_TO_PLOT> IN) {
+
+	vector <double> FOR_AVERAGE;
+
+	for (size_t i = 0; i < IN.size(); i++) FOR_AVERAGE.push_back(IN.at(i).DEPTH);
+
+	return average (FOR_AVERAGE);
+}
+
+vector <PEAK_TO_PLOT> generate_flattened_curve (const size_t bin) {
+
+	vector <PEAK_TO_PLOT> OUT;
+
+	const size_t PEAK_SIZE = PEAK.size();
+
+	PEAK_TO_PLOT MIN = PEAK.at(0);
+	PEAK_TO_PLOT MAX = PEAK.at(PEAK_SIZE - 1);
+
+	MIN.DEPTH = MIN.DEPTH - 1;
+	MIN.VALUE = RETURN_VALUE_AVERAGE (PEAK);
+
+	MAX.DEPTH = MAX.DEPTH + 1;
+	MAX.VALUE = RETURN_VALUE_AVERAGE (PEAK);
+
+	OUT.push_back (MIN);
+
+	for (size_t i = 0; i < PEAK_SIZE - bin + 1; i++) {
+
+		vector <double> DEPTH_FOR_AVERAGE;
+		vector <double> VALUE_FOR_AVERAGE;
+
+		PEAK_TO_PLOT buf;
+
+		for (size_t j = 0; j < bin; j++) {
+
+			DEPTH_FOR_AVERAGE.push_back (PEAK.at (i+j).DEPTH);
+			VALUE_FOR_AVERAGE.push_back (PEAK.at (i+j).VALUE);
+		}
+		buf.DEPTH = average(DEPTH_FOR_AVERAGE);
+		buf.VALUE = average(VALUE_FOR_AVERAGE);
+		buf.COUNT = NaN();
+
+		OUT.push_back (buf);
+	}
+	OUT.push_back (MAX);
+
+	//for (size_t i = 0; i < OUT.size(); i++) cout << OUT.at(i).DEPTH << '\t' << OUT.at(i).VALUE << '\t' << OUT.at(i).COUNT << endl;
+
+	//for (size_t i = 0; i < OUT.size(); i++) cout << OUT.at(i).DEPTH << '\t' << OUT.at(i).VALUE << '\t' << endl;
+
+	//cout << endl;
+
+	return OUT;
+}
+
+void count_real_peaks (const vector <PEAK_TO_PLOT>& FL_PK, const string METHOD) {
+
+	const bool MIN = (METHOD == "MIN" || METHOD == "MINMAX");
+	const bool MAX = (METHOD == "MAX" || METHOD == "MINMAX");
+
+	for (size_t j = 0; j < FL_PK.size() - 1; j++) {
+		for (size_t i = 1; i < PEAK.size() - 1; i++) {
+
+			const bool LAST = i == PEAK.size() - 2;
+
+			const bool RANGE_OK_LAST = LAST && is_in_range_LW_EQ (FL_PK.at(j).DEPTH, FL_PK.at(j+1).DEPTH, PEAK.at(i).DEPTH);
+			const bool RANGE_OK_OTHR = !LAST && is_in_range_UP_EQ (FL_PK.at(j).DEPTH, FL_PK.at(j+1).DEPTH, PEAK.at(i).DEPTH);
+
+			const bool PRW_SLOPE_UP = PEAK.at(i-1).VALUE < PEAK.at(i).VALUE;
+			const bool NXT_SLOPE_UP = PEAK.at(i).VALUE < PEAK.at(i+1).VALUE;
+
+			const bool MAX_OK = PRW_SLOPE_UP && !NXT_SLOPE_UP;
+			const bool MIN_OK = !PRW_SLOPE_UP && NXT_SLOPE_UP;
+
+			const bool EVAL_MAX = MAX_OK && MAX;
+			const bool EVAL_MIN = MIN_OK && MIN;
+
+			const bool EVAL = (RANGE_OK_LAST || RANGE_OK_OTHR) && (EVAL_MAX || EVAL_MIN);
+
+			if (EVAL) {
+
+				const double ACT_D = FL_PK.at(j).DEPTH;
+				const double NXT_D = FL_PK.at(j+1).DEPTH;
+				const double PEAK_D = PEAK.at(i).DEPTH;
+
+				const double ACT_V = FL_PK.at(j).VALUE;
+				const double NXT_V = FL_PK.at(j+1).VALUE;
+				const double PEAK_V = PEAK.at(i).VALUE;
+
+				if (NXT_D <= ACT_D) ASSERT_DEAD_END();
+
+				const double M = (NXT_D - ACT_D) / (PEAK_D - ACT_D);
+
+				const double P = ((NXT_V - ACT_V) / M) + ACT_V;
+
+				if ((MAX && PEAK_V > P) || (MIN && PEAK_V < P)) PEAK.at(i).COUNT = PEAK.at(i).COUNT + 1;
+			}
+		}
+	}
+	return;
+}
+
+void rescale_peaks () {
+
+	double MAX = 0;
+
+	for (size_t i = 0; i < PEAK.size(); i++) if (PEAK.at(i).COUNT > MAX) MAX = PEAK.at(i).COUNT;
+
+	for (size_t i = 0; i < PEAK.size(); i++) PEAK.at(i).COUNT = PEAK.at(i).COUNT / MAX;
+
+	return;
+}
+
+void associate_peaks_to_faults () {
+
+	for (size_t i = 0; i < FAULTS.size() - 1; i++) {
+		for (size_t j = 0; j < PEAK.size(); j++) {
+
+			const double INT_MIN = FAULTS.at(i).DEPTH;
+			const double INT_MAX = FAULTS.at(i+1).DEPTH;
+
+			const bool LAST = FAULTS.size() - 2;
+
+			bool FIT;
+
+			if (LAST) 	FIT = is_in_range_UP_EQ (INT_MIN, INT_MAX, PEAK.at(j).DEPTH);
+			else 		FIT = is_in_range_LW_EQ (INT_MIN, INT_MAX, PEAK.at(j).DEPTH);
+
+			if (FIT) {
+
+				FAULTS.at(i).COUNT = FAULTS.at(i).COUNT + PEAK.at(j).COUNT;
+			}
+		}
+	}
+
+	//cout << "********  FAULTS  START  ********" << endl;
+
+	//for (size_t i = 0; i < FAULTS.size(); i++) cout << FAULTS.at(i).DEPTH << '\t'<< FAULTS.at(i).COUNT << endl;
+
+	//cout << "********  FAULTS  FINISH  ********" << endl;
+
+}
+
+void PEAK_IDENTIFICATION (const vector <double>& DEPTH, const vector <double>& VALUE, const string METHOD) {
+
+	SETUP_PEAK (DEPTH, VALUE);
+
+	if (METHOD == "NONE") return;
+
+	vector <PEAK_TO_PLOT> PK = PEAK;
+
+	//cout << " ******** PEAK ******** " << endl;
+	//for (size_t i = 0; i < PK.size(); i++) cout << PEAK.at(i).DEPTH << '\t' << PEAK.at(i).VALUE << '\t' << PEAK.at(i).COUNT  << endl;
+	//cout << " ******** PEAK ******** " << endl;
+
+	const size_t STEP =  string_to_size_t (double_to_string ((PEAK.size() / 10.0), 0));
+
+	for (size_t i = 2; i < PK.size(); i+=STEP) {
+
+		//cout << "i: " << i << endl;
+
+		const vector <PEAK_TO_PLOT> FL_PK = generate_flattened_curve (i);
+
+		count_real_peaks (FL_PK, METHOD);
+
+		//associate_peaks_to_faults ();
+	}
+	rescale_peaks ();
+
+	//cout << "yyy" << endl;
+
+	associate_peaks_to_faults ();
+
+	//cout << "xxx" << endl;
+
+	//cout << " ******** PEAK ******** " << endl;
+	//for (size_t i = 0; i < PK.size(); i++) cout << PEAK.at(i).DEPTH << '\t' << PEAK.at(i).VALUE << '\t' << PEAK.at(i).COUNT  << endl;
+	//cout << " ******** PEAK ******** " << endl;
+
+	return;
+}
+
+/*
+void DRAW_PEAKS (ofstream& o, const PAPER& P, const double X, const double LENGTH, const double MIN_VAL, const double MAX_VAL, const bool DIPDIR, const string TYPE) {
+
+	//const bool A = TYPE == "AVERAGE";
+	//const bool E_MN = TYPE == "LOWER_STDEV";
+	//const bool E_MX = TYPE == "UPPER_STDEV";
+	//const bool D = TYPE == "DERIVATE";
+	//const bool F = TYPE == "FREQUENCY";
+
+	linewidth_PS(o, LW, 1);
+
+	for (size_t i = 0; i < DEPTH.size() - 1; i++) {
+
+		string CLR
+
+		color_PS (o, CLR);
+
+		const double ACT_D = DEPTH.at(i);
+		const double ACT_V = VALUE.at(i);
+
+		const double NXT_D = DEPTH.at(i + 1);
+		const double NXT_V = VALUE.at(i + 1);
+
+		const double ACT_data_X = X + (PL_WDT * P.A * ((ACT_V - MN) / (MX - MN)));
+		const double NXT_data_X = X + (PL_WDT * P.A * ((NXT_V - MN) / (MX - MN)));
+
+		const double ACT_data_Y = P.O1Y - (LENGTH * ((ACT_D - MIN_VAL) / (MAX_VAL - MIN_VAL)));
+		const double NXT_data_Y = P.O1Y - (LENGTH * ((NXT_D - MIN_VAL) / (MAX_VAL - MIN_VAL)));
+
+		moveto_PS(o, ACT_data_X, ACT_data_Y, 3);
+		lineto_PS(o, NXT_data_X, NXT_data_Y, 3);
+	}
+	stroke_PS (o);
+	return;
+}
+
+*/
+
+void plot_well_faults (ofstream& o, const PAPER& P, const double X, const double LENGTH, const double MIN_VAL, const double MAX_VAL) {
+
+	if (FAULTS.size() < 1) return;
+
+	//vector <double> DEPTH;
+	//vector <double> VALUE;
+
+	double MAX = 0;
+
+	color_PS (o, "0.00 0.00 0.00");
+	linewidth_PS (o, 2, 1);
+
+	for (size_t i = 0; i < FAULTS.size(); i++) if (FAULTS.at(i).COUNT > MAX) MAX = FAULTS.at(i).COUNT;
+
+	for (size_t i = 0; i < FAULTS.size(); i++) {
+
+		const double DEPTH = FAULTS.at(i).DEPTH;
+		const double VALUE =(FAULTS.at(i).COUNT / MAX) * (FAULTS.at(i).COUNT / MAX);
+
+		const double ACT_data_X = X + (PL_WDT * P.A * VALUE);
+		const double ACT_data_Y = P.O1Y - (LENGTH * ((DEPTH - MIN_VAL) / (MAX_VAL - MIN_VAL)));
+
+		newpath_PS (o);
+		moveto_PS (o, X, ACT_data_Y, 3);
+		lineto_PS (o, ACT_data_X, ACT_data_Y, 3);
+		stroke_PS (o);
+	}
+	//PEAK_IDENTIFICATION (DEPTH, VALUE, "MAX");
+
+	//plot_curve (o, P, X, LENGTH, MIN_VAL, MAX_VAL, false, "DERIVATE");
+
+	return;
+}
+
+
+
+
+
+
+
+
+
+
+
 void plot_well_frequency_derivate (const vector <WELL_FREQUENCY> IN, ofstream& o, const PAPER& P, const double X, const double LENGTH, const double MIN_VAL, const double MAX_VAL) {
 
 	if (IN.size() < 1) return;
@@ -781,6 +1160,10 @@ void plot_well_frequency_derivate (const vector <WELL_FREQUENCY> IN, ofstream& o
 		DEPTH.push_back (IN.at(i).DERIV_DEPTH);
 		VALUE.push_back (IN.at(i).DERIV);
 	}
+	PEAK_IDENTIFICATION (DEPTH, VALUE, "MAX");
+
+	plot_peaks (o, P, X, LENGTH, MIN_VAL, MAX_VAL, false, "DERIVATE");
+
 	plot_curve (DEPTH, VALUE, o, P, X, LENGTH, MIN_VAL, MAX_VAL, false, "DERIVATE");
 
 	return;
@@ -796,6 +1179,10 @@ void plot_well_frequency (const vector <WELL_FREQUENCY> IN, ofstream& o, const P
 		DEPTH.push_back (IN.at(i).DEPTH);
 		VALUE.push_back (IN.at(i).FREQ);
 	}
+	PEAK_IDENTIFICATION (DEPTH, VALUE, "MAX");
+
+	plot_peaks (o, P, X, LENGTH, MIN_VAL, MAX_VAL, false, "FREQUENCY");
+
 	plot_curve (DEPTH, VALUE, o, P, X, LENGTH, MIN_VAL, MAX_VAL, false, "FREQUENCY");
 
 	return;
@@ -878,6 +1265,11 @@ vector <XY> generate_xy_vector (const vector <double>& VALUE, const vector <doub
 			else if (V > 90.0) 	buf.X = 90.0;
 			else 				buf.X = V;
 		}
+
+		//if (buf.X < 0) {
+
+		//	cout << DIPDIR << "  -  " << V << "  -  " << buf.X << endl;
+		//}
 		OUT.push_back (buf);
 	}
 	return OUT;
@@ -954,8 +1346,15 @@ vector <double> generate_DEPTH_from_XY_vector (const vector <XY>& IN) {
 
 void plot_curve (const vector <double> DEPTH, const vector <double> VALUE, ofstream& o, const PAPER& P, const double X, const double LENGTH, const double MIN_VAL, const double MAX_VAL, const bool DIPDIR, const string TYPE) {
 
+	//cout << "plot_curve" << endl;
+
 	if (DEPTH.size() != VALUE.size()) ASSERT_DEAD_END();
 	if (DEPTH.size() < 1) return;
+
+	vector <double> ACT_X;
+	vector <double> ACT_Y;
+	vector <double> NXT_X;
+	vector <double> NXT_Y;
 
 	const bool A = TYPE == "AVERAGE";
 	const bool E_MN = TYPE == "LOWER_STDEV";
@@ -973,15 +1372,15 @@ void plot_curve (const vector <double> DEPTH, const vector <double> VALUE, ofstr
 	if (D) MN = 0.0;
 	if (F) MN = 0.0;
 
-	string CLR = STD_CLR;
-	if (A) CLR = AVR_CLR;
-	if (D) CLR = DRV_CLR;
-	if (F) CLR = FRQ_CLR;
+	string CRV_CLR = STD_CLR;
+	if (A) CRV_CLR = AVR_CLR;
+	if (D) CRV_CLR = DRV_CLR;
+	if (F) CRV_CLR = FRQ_CLR;
 
 	double LW = 1.0;
 	if (E_MN || E_MX) LW = 2.0;
 
-	color_PS (o, CLR);
+	color_PS (o, CRV_CLR);
 	linewidth_PS(o, LW, 1);
 
 	for (size_t i = 0; i < DEPTH.size() - 1; i++) {
@@ -998,12 +1397,103 @@ void plot_curve (const vector <double> DEPTH, const vector <double> VALUE, ofstr
 		const double ACT_data_Y = P.O1Y - (LENGTH * ((ACT_D - MIN_VAL) / (MAX_VAL - MIN_VAL)));
 		const double NXT_data_Y = P.O1Y - (LENGTH * ((NXT_D - MIN_VAL) / (MAX_VAL - MIN_VAL)));
 
-		moveto_PS(o, ACT_data_X, ACT_data_Y, 3);
-		lineto_PS(o, NXT_data_X, NXT_data_Y, 3);
+		ACT_X.push_back (ACT_data_X);
+		ACT_Y.push_back (ACT_data_Y);
+		NXT_X.push_back (NXT_data_X);
+		NXT_Y.push_back (NXT_data_Y);
+	}
+
+	if (!(ACT_X.size() == ACT_Y.size() && ACT_Y.size() == NXT_X.size() &&  NXT_X.size() == NXT_Y.size())) ASSERT_DEAD_END();
+
+	newpath_PS(o);
+	color_PS (o, CRV_CLR);
+	linewidth_PS(o, LW, 1);
+
+	for (size_t i = 0; i < ACT_X.size() - 1; i++) {
+
+		moveto_PS(o, ACT_X.at(i), ACT_Y.at(i), 3);
+		lineto_PS(o, NXT_X.at(i), NXT_Y.at(i), 3);
 	}
 	stroke_PS (o);
 	return;
 }
+
+
+
+
+
+
+void plot_peaks (ofstream& o, const PAPER& P, const double X, const double LENGTH, const double MIN_VAL, const double MAX_VAL, const bool DIPDIR, const string TYPE) {
+
+	//cout << "plot_peaks" << endl;
+
+	vector <double> ACT_X;
+	vector <double> ACT_Y;
+
+	const bool A = TYPE == "AVERAGE";
+	const bool E_MN = TYPE == "LOWER_STDEV";
+	const bool E_MX = TYPE == "UPPER_STDEV";
+	const bool D = TYPE == "DERIVATE";
+	const bool F = TYPE == "FREQUENCY";
+
+	double MX = 90.0;
+	if (DIPDIR) MX = 360.0;
+	if (D) MX = 2.0;
+	if (F) MX = 1.0;
+
+	double MN = 0.0;
+	if (!DIPDIR) MN = -90.0;
+	if (D) MN = 0.0;
+	if (F) MN = 0.0;
+
+	string CRV_CLR = STD_CLR;
+	if (A) CRV_CLR = AVR_CLR;
+	if (D) CRV_CLR = DRV_CLR;
+	if (F) CRV_CLR = FRQ_CLR;
+
+	double LW = 1.0;
+	if (E_MN || E_MX) LW = 2.0;
+
+	color_PS (o, CRV_CLR);
+	linewidth_PS(o, LW, 1);
+
+	for (size_t i = 0; i < PEAK.size(); i++) {
+
+		const double ACT_D = PEAK.at(i).DEPTH;
+		const double ACT_V = PEAK.at(i).VALUE;
+
+		const double ACT_data_X = X + (PL_WDT * P.A * ((ACT_V - MN) / (MX - MN)));
+		const double ACT_data_Y = P.O1Y - (LENGTH * ((ACT_D - MIN_VAL) / (MAX_VAL - MIN_VAL)));
+
+		ACT_X.push_back (ACT_data_X);
+		ACT_Y.push_back (ACT_data_Y);
+	}
+
+	if (!(ACT_X.size() == ACT_Y.size() && ACT_Y.size() == PEAK.size())) ASSERT_DEAD_END();
+
+	linewidth_PS(o, LW, 0);
+
+	for (size_t i = 0; i < PEAK.size(); i++) {
+
+		if (PEAK.at(i).COUNT > 0.0) {
+
+			newpath_PS(o);
+			string CRC_CLR = generate_peak_colors (PEAK.at(i).COUNT * 100);
+			arc_PS (o, ACT_X.at(i), ACT_Y.at(i), 1.5, 0, 360, 1);
+			color_PS (o, CRC_CLR);
+			fill_PS (o);
+			stroke_PS (o);
+		}
+	}
+	return;
+}
+
+
+
+
+
+
+
 
 double return_plot_value (const WELL_INTERVAL ACT, const bool DIPDIR, const string TYPE) {
 
@@ -1013,7 +1503,8 @@ double return_plot_value (const WELL_INTERVAL ACT, const bool DIPDIR, const stri
 	const bool D = TYPE == "DERIVATE";
 
 	const double DIPD = ACT.INT_AV_DD.DIPDIR;
-	const double STDEV = ACT.INT_AV_DD_STDEV;
+	const double DD_STDEV = ACT.INT_AV_DD_STDEV;
+	const double D_STDEV = ACT.INT_AV_D_STDEV;
 	const double DD_DRV = ACT.DD_DERIV;
 	const double D_DRV = ACT.D_DERIV;
 
@@ -1025,13 +1516,13 @@ double return_plot_value (const WELL_INTERVAL ACT, const bool DIPDIR, const stri
 
 	else if (A && !DIPDIR)	return DIP;
 
-	else if (E_MN && DIPDIR) return DIPD - 0.5 * STDEV;
+	else if (E_MN && DIPDIR) return DIPD - 0.5 * DD_STDEV;
 
-	else if (E_MX && DIPDIR) return DIPD + 0.5 * STDEV;
+	else if (E_MX && DIPDIR) return DIPD + 0.5 * DD_STDEV;
 
-	else if (E_MN && !DIPDIR) return DIP - 0.5 * STDEV;
+	else if (E_MN && !DIPDIR) return DIP - 0.5 * D_STDEV;
 
-	else if (E_MX && !DIPDIR) return DIP + 0.5 * STDEV;
+	else if (E_MX && !DIPDIR) return DIP + 0.5 * D_STDEV;
 
 	else if (D && DIPDIR) return DD_DRV;
 
@@ -1075,6 +1566,52 @@ void return_records_with_formation_names (const vector <vector <GDB> >& inGDB_G)
 	return;
 }
 
+/*
+void process_well_curve (const vector <WELL_INTERVAL>& IN, ofstream& o, const PAPER& P, const double X, const double LENGTH, const double MIN_VAL, const double MAX_VAL, const bool DIPDIR, const string TYPE) {
+
+	vector <XY> PLOT = generate_well_curve (IN, o, P, X, LENGTH, MIN_VAL, MAX_VAL, DIPDIR, TYPE);
+
+	//IDENTIFY_PEAKS
+
+	PLOT = cutting_points (PLOT);
+
+	vector <vector <XY> > PLOT_V = generate_xy_vector_vector (PLOT);
+
+	PLOT_V = tidy_xy_vector_vector (PLOT_V);
+
+	for (size_t i = 0; i < PLOT_V.size(); i++) {
+
+		VALUE = generate_VALUE_from_XY_vector (PLOT_V.at(i));
+		DEPTH = generate_DEPTH_from_XY_vector (PLOT_V.at(i));
+
+		plot_curve (DEPTH, VALUE, o, P, X, LENGTH, MIN_VAL, MAX_VAL, DIPDIR, TYPE);
+	}
+	return;
+
+*/
+
+
+	/*
+	 * PLOT = cutting_points (PLOT);
+
+	vector <vector <XY> > PLOT_V = generate_xy_vector_vector (PLOT);
+
+	PLOT_V = tidy_xy_vector_vector (PLOT_V);
+
+	for (size_t i = 0; i < PLOT_V.size(); i++) {
+
+		VALUE = generate_VALUE_from_XY_vector (PLOT_V.at(i));
+		DEPTH = generate_DEPTH_from_XY_vector (PLOT_V.at(i));
+
+		plot_curve (DEPTH, VALUE, o, P, X, LENGTH, MIN_VAL, MAX_VAL, DIPDIR, TYPE);
+	}
+	return;
+	 */
+//}
+
+
+
+//vector <XY> generate_well_curve (const vector <WELL_INTERVAL>& IN, ofstream& o, const PAPER& P, const double X, const double LENGTH, const double MIN_VAL, const double MAX_VAL, const bool DIPDIR, const string TYPE) {
 void plot_well_curve (const vector <WELL_INTERVAL>& IN, ofstream& o, const PAPER& P, const double X, const double LENGTH, const double MIN_VAL, const double MAX_VAL, const bool DIPDIR, const string TYPE) {
 
 	if (IN.size() < 2) return;
@@ -1104,9 +1641,19 @@ void plot_well_curve (const vector <WELL_INTERVAL>& IN, ofstream& o, const PAPER
 			}
 		}
 	}
+	if 		(TYPE == "DERIVATE") 	PEAK_IDENTIFICATION (DEPTH, VALUE, "MAX");
+	else if (TYPE == "AVERAGE") 	PEAK_IDENTIFICATION (DEPTH, VALUE, "MINMAX");
+	else 							PEAK_IDENTIFICATION (DEPTH, VALUE, "NONE");
+
 	vector <XY> PLOT = generate_xy_vector (VALUE, DEPTH, DIPDIR);
+	//return generate_xy_vector (VALUE, DEPTH, DIPDIR);
 
 	PLOT = cutting_points (PLOT);
+
+	//for (size_t i = 0; i < PLOT.size(); i++) {
+
+		//cout << PLOT.at(i).X << endl;
+	//}
 
 	vector <vector <XY> > PLOT_V = generate_xy_vector_vector (PLOT);
 
@@ -1116,6 +1663,8 @@ void plot_well_curve (const vector <WELL_INTERVAL>& IN, ofstream& o, const PAPER
 
 		VALUE = generate_VALUE_from_XY_vector (PLOT_V.at(i));
 		DEPTH = generate_DEPTH_from_XY_vector (PLOT_V.at(i));
+
+		plot_peaks (o, P, X, LENGTH, MIN_VAL, MAX_VAL, DIPDIR, TYPE);
 
 		plot_curve (DEPTH, VALUE, o, P, X, LENGTH, MIN_VAL, MAX_VAL, DIPDIR, TYPE);
 	}
@@ -1274,8 +1823,38 @@ void PS_well_intervals (const vector <WELL_INTERVAL>& INTERVAL, ofstream& o, con
 	}
 }
 
+void INIT_FAULT_POSITIONS (const double MIN_VAL, const double MAX_VAL, const double STEP) {
+
+	FAULTS.clear();
+
+	//cout << MIN_VAL << endl;
+	//cout << MAX_VAL << endl;
+
+	//const double S = STEP / 5.0;
+
+	for (double i = MIN_VAL; i <= MAX_VAL; i+=1) {
+
+		PEAK_TO_PLOT buf;
+
+		buf.DEPTH = i + (0.5);
+		buf.VALUE = NaN();
+		buf.COUNT = 0;
+
+		FAULTS.push_back (buf);
+	}
+	return;
+}
+
+void SETUP_FAULT_POSITIONS (const double MIN_VAL, const double MAX_VAL, const double STEP) {
+
+	INIT_FAULT_POSITIONS (MIN_VAL, MAX_VAL, STEP);
+
+	return;
+}
 
 void WELL_PS (const vector <GDB>& inGDB, const vector <WELL_INTERVAL>& INT, const vector <WELL_FREQUENCY>& FREQ, ofstream& OPS, const PAPER& P, const double LENGTH, const double MIN_VAL, const double MAX_VAL, const double STEP) {
+
+	SETUP_FAULT_POSITIONS (MIN_VAL, MAX_VAL, STEP);
 
 	cout << "1A-----------------------------------------" << endl;
 	double X = P.O1X + PL_LF * P.A;
@@ -1324,6 +1903,14 @@ void WELL_PS (const vector <GDB>& inGDB, const vector <WELL_INTERVAL>& INT, cons
 	PS_derivate_DIPDIR_DIP(OPS, P, X);
 	plot_well_frequency_derivate (FREQ, OPS, P, X, LENGTH, MIN_VAL, MAX_VAL);
 	//delete PS_well_coordinate_axes (prGDB_G.at(i), OPS, PPR);
+
+	cout << "5A-----------------------------------------" << endl;
+	X = X + (PL_WDT * 0.5 + PL_GP) * P.A;
+	PS_well_coordinate_axes_FAULTS (OPS, P, X, LENGTH, MIN_VAL, MAX_VAL, STEP);
+	plot_well_faults (OPS, P, X, LENGTH, MIN_VAL, MAX_VAL);
+
+	//plot_well_frequency (FREQ, OPS, P, X, LENGTH, MIN_VAL, MAX_VAL);
+
 
 	return;
 }
