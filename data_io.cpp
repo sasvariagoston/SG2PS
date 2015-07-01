@@ -816,6 +816,8 @@ vector <vector <vector <vector <GDB> > > > CALCULATE_FOLDSURFACE (const vector <
 
 vector <vector <GDB> > PROCESS_GROUPS (const vector <vector <GDB> >& inGDB_G, const bool TILT) {
 
+	//cout << "PROCESS_GROUPS - " << TILT << endl;
+
 	vector <vector <GDB> > outGDB_G = inGDB_G;
 
 	outGDB_G = associate_empty_clustercode (outGDB_G, 2);
@@ -881,101 +883,7 @@ vector <vector <GDB> > PROCESS_GROUPS (const vector <vector <GDB> >& inGDB_G, co
 	}
 	return outGDB_G;
 }
-
 /*
- * vector <vector <vector <vector <GDB> > > > PROCESS_GROUPS (const vector <vector <vector <vector <GDB> > > >& inGDB_G, const bool TILT) {
-
-	vector <vector <vector <vector <GDB> > > > outGDB_G = inGDB_G;
-
-	outGDB_G = associate_empty_clustercode (outGDB_G, 2);
-
-	for (size_t i = 0; i < outGDB_G.size(); i++) {
-		for (size_t j = 0; j < outGDB_G.at(i).size(); j++) {
-			for (size_t k = 0; k < outGDB_G.at(i).at(j).size(); k++) {
-
-				vector <GDB> process_GDB = outGDB_G.at(i).at(j).at(k);
-
-				const string DT = process_GDB.at(0).DATATYPE;
-				const bool IS_STRIAE = is_allowed_striae_datatype(DT);
-				const bool FOLD_TO_PROCESS = is_allowed_foldsurface_processing(DT);
-
-				const bool FRACTURE_TO_PROCESS = is_BINGHAM_USE() && DT == "FRACTURE";
-				const bool STRIAE_TO_PROCESS = !is_INVERSION_NONE() && IS_STRIAE;
-
-				const bool ENOUGH_HOMOGENEOUS = has_inhomogeneous_enough (process_GDB);
-
-				if (FRACTURE_TO_PROCESS || STRIAE_TO_PROCESS) {
-
-					vector <GDB> hasoffset_GDB = process_GDB;
-
-					if (IS_STRIAE) hasoffset_GDB = return_striae_with_offset (process_GDB);//was testGDB
-
-					const bool ENOUGH_STRIAE = hasoffset_GDB.size() >= minimum_independent_dataset ();
-
-					if (ENOUGH_HOMOGENEOUS && ENOUGH_STRIAE) {
-
-						if (!TILT) cout_method_text (hasoffset_GDB);
-
-						cout_original_tilted_text (TILT);
-
-						if (is_VIRTUAL_USE()) hasoffset_GDB = generate_virtual_striae (hasoffset_GDB);
-
-						INVERSION (hasoffset_GDB);
-
-						//cout << "PR_GR_5" << endl;
-
-						const vector <STRESSTENSOR> STV = return_STV ();
-						const vector <STRESSFIELD> SFV = return_SFV ();
-
-						if (SFV.size() != STV.size()) ASSERT_DEAD_END();
-
-						hasoffset_GDB = ASSOCIATE_STV_SFV (hasoffset_GDB, STV, SFV);
-
-						//cout << "PR_GR_6" << endl;
-
-						const bool SUCCESSFULL = (STV.size() > 0 && SFV.size() > 0);
-
-						//cout << "PR_GR_7" << endl;
-
-						if (SUCCESSFULL && STRIAE_TO_PROCESS) {
-
-							const size_t MX = STV.size() - 1;
-
-							//cout << "PR_GR_7a" << endl;
-
-							hasoffset_GDB = apply_inversion_result (hasoffset_GDB, STV.at(MX));
-
-							//cout << "PR_GR_7b" << endl;
-
-							hasoffset_GDB = apply_RUP_ANG_CLUSTERING_result (hasoffset_GDB);
-
-							//cout << "PR_GR_8" << endl;
-						}
-						//cout << "PR_GR_9" << endl;
-
-						process_GDB = combine_inversion_for_none_offset (process_GDB, hasoffset_GDB);
-
-						//cout << "PR_GR_10" << endl;
-
-						cout_inversion_results (process_GDB, SFV);
-					}
-					else cout_less_than_required_text (TILT);
-				}
-				else if (FOLD_TO_PROCESS) {
-
-					process_GDB = CALCULATE_FOLDSURFACE_NORMAL (process_GDB);
-				}
-				else {}
-
-				outGDB_G.at(i).at(j).at(k) = process_GDB;
-			}
-		}
-	}
-	return outGDB_G;
-}
- *
- */
-
 void OUTPUT_TO_PS (const vector <vector <GDB> > in_GDB_G, const PFN P, const bool TILT, const bool TRJ) {
 
 	const bool IGNORE = is_GROUPSEPARATION_IGNORE ();
@@ -1030,7 +938,7 @@ void OUTPUT_TO_PS (const vector <vector <GDB> > in_GDB_G, const PFN P, const boo
 	}
 	return;
 }
-
+*/
 void cout_method_text (const vector <GDB>& inGDB) {
 
 	if (is_mode_DEBUG()) return;
@@ -1087,6 +995,7 @@ void cout_less_than_required_text (const bool tilt) {
 	if (!tilt) cout << "less (independent) data than required." << endl;
 }
 
+/*
 void PS_GDB_DATA (const vector <GDB>& inGDB, ofstream& o, const CENTER& center) {
 
 	for (size_t i = 0; i < inGDB.size(); i++) {
@@ -1101,6 +1010,7 @@ void PS_GDB_DATA (const vector <GDB>& inGDB, ofstream& o, const CENTER& center) 
 	}
 	return;
 }
+*/
 
 void dbg_cout_RGF_colors (vector <GDB> inGDB) {
 

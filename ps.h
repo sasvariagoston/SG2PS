@@ -33,8 +33,6 @@ void PS_FOLD_GREAT_CIRCLE (const vector <GDB>& inGDB, ofstream& o, const CENTER&
 void PS_datanumber_averagebedding (const GDB& i, ofstream& o, const PAPER& P, const size_t datanumber);
 void PS_net (ofstream& o, const PAPER& P);
 
-void PS_GDB (const vector <GDB>& inGDB, ofstream& o, PAPER P, bool TILT);
-
 void PS_DRAW_lineation (const GDB& i, ofstream& o, const CENTER& center);
 void PS_DRAW_plane (const GDB i, ofstream& o, const CENTER& center);
 void PS_DRAW_striae (const GDB& i, ofstream& o, const CENTER& center);
@@ -80,5 +78,9 @@ void PS_SYMBOLS_BINGHAM (ofstream& o, const PAPER& P);
 void PS_SYMBOLS_LINEATION (const string& DATATYPE, ofstream& o, const PAPER& P);
 void PS_SYMBOLS_STRIAE (ofstream& o, const PAPER& P);
 void PS_SYMBOLS_INVERSION (ofstream& o, const PAPER& P);
+
+void PS_GDB (const vector <GDB>& inGDB, ofstream& o, PAPER P, bool TILT);
+void PS_GDB_DATA (const vector <GDB>& inGDB, ofstream& o, const CENTER& center);
+void OUTPUT_TO_PS (const vector <vector <GDB> >& in_GDB_G, const vector <vector <GDB> >& t_GDB_G, const PFN P, const bool TILT, const bool TRJ);
 
 #endif

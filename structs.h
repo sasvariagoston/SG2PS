@@ -326,4 +326,12 @@ struct TRJ {
 	double X_AZIMUTH;
 	double Y_PLUNGE;
 };
+
+struct PEAK_TO_PLOT {
+
+	double DEPTH;
+	double VALUE;
+	double COUNT;
+};
+
 #endif

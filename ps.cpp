@@ -19,6 +19,7 @@
 #include "ps.h"
 #include "rgf.h"
 #include "common.h"
+#include "platform_dep.hpp"
 #include "ps_RUP_ANG.hpp"
 #include "rose.h"
 #include "run_mode.h"
@@ -1646,6 +1647,21 @@ void PS_datanumber_averagebedding (const GDB& i, ofstream& o, const PAPER& P, co
 	return;
 }
 
+void PS_GDB_DATA (const vector <GDB>& inGDB, ofstream& o, const CENTER& center) {
+
+	for (size_t i = 0; i < inGDB.size(); i++) {
+
+		const string DG = inGDB.at(i).DATAGROUP;
+
+		if (is_allowed_lineation_datatype (DG)) 	PS_DRAW_lineation (inGDB.at(i), o, center);
+		else if (is_allowed_plane_datatype (DG)) 	PS_DRAW_plane (inGDB.at(i), o, center);
+		else if (is_allowed_striae_datatype(DG)) 	PS_DRAW_striae (inGDB.at(i), o, center);
+		else if (is_allowed_SC_datatype (DG)) 		PS_DRAW_sc (inGDB.at(i), o, center);
+		else ASSERT_DEAD_END();
+	}
+	return;
+}
+
 void PS_GDB (const vector <GDB>& inGDB, ofstream& o, PAPER P, bool TILT) {
 
 	CENTER center, rosecenter, vrosecenter, mohrcenter;
@@ -2622,4 +2638,61 @@ void grestore_PS (ofstream& o) {
 void setdash_PS (ofstream& o, const string DASH) {
 
 	o << " [" << DASH << "] 0 setdash" << '\n';
+}
+
+void OUTPUT_TO_PS (const vector <vector <GDB> >& in_GDB_G, const vector <vector <GDB> >& t_GDB_G, const PFN P, const bool TILT, const bool TRJ) {
+
+	if (in_GDB_G.size() != t_GDB_G.size()) ASSERT_DEAD_END();
+
+	const bool IGNORE = is_GROUPSEPARATION_IGNORE ();
+	const bool by_GROUPCODE = is_GROUPSEPARATION_GROUPCODE ();
+	const bool by_KMEANS = is_GROUPSEPARATION_KMEANS ();
+	const bool by_RUPANG = is_GROUPSEPARATION_RUPANG ();
+
+	if (!IGNORE && !by_GROUPCODE && !by_KMEANS && !by_RUPANG) ASSERT_DEAD_END() ;
+
+	const string BS = path_separator;
+	const string US = "_";
+
+	for (size_t i = 0; i < in_GDB_G.size(); i++) {
+
+		const string LOC = in_GDB_G.at(i).at(0).LOC;
+		const string DT = in_GDB_G.at(i).at(0).DATATYPE;
+
+		const bool LITHOLOGY = is_allowed_lithology_datatype (DT);
+
+		if (!LITHOLOGY) {
+
+			string PS_NAME = P.pssep + BS + DT + BS + LOC + US + DT;
+
+			if (TRJ) PS_NAME = PS_NAME + "_TRAJECTORY_CORRECTED";
+
+			if (by_GROUPCODE) 	PS_NAME = PS_NAME + US + in_GDB_G.at(i).at(0).GC.at(0);
+			else if (by_KMEANS) PS_NAME = PS_NAME + US + in_GDB_G.at(i).at(0).GC.at(1);
+			else if (by_RUPANG) PS_NAME = PS_NAME + US + in_GDB_G.at(i).at(0).GC.at(2);
+			else {}
+
+			PS_NAME = PS_NAME + ".EPS";
+
+			ofstream OPS (PS_NAME.c_str());
+
+			PS_stereonet_header (DT, LOC, OPS);
+
+			const PAPER PPR = PS_dimensions (false);
+
+			PS_STEREONET_SYMBOLS (in_GDB_G.at(i), OPS, PPR);
+
+			if (is_allowed_striae_datatype(DT) && ! is_INVERSION_NONE()) PS_stress_scale (OPS, PPR);
+
+			PS_border (in_GDB_G.at(i), OPS, PPR);
+
+			PS_GDB (in_GDB_G.at(i), OPS, PPR, false);
+			PS_GDB (t_GDB_G.at(i), OPS, PPR, true);
+
+			PS_datanumber_averagebedding (in_GDB_G.at(i).at(0), OPS, PPR, in_GDB_G.at(i).size());
+
+			PS_net (OPS, PPR);
+		}
+	}
+	return;
 }

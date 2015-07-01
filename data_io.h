@@ -52,8 +52,8 @@ void cout_method_text (const vector <GDB>& inGDB);
 void cout_original_tilted_text (const bool tilt);
 void cout_less_than_required_text (const bool tilt);
 
-void PS_GDB_DATA (const vector <GDB>& inGDB, ofstream& o, const CENTER& center);
-void OUTPUT_TO_PS (const vector <vector <GDB> > in_GDB_G, const PFN P, const bool TILT, const bool TRJ);
+//void PS_GDB_DATA (const vector <GDB>& inGDB, ofstream& o, const CENTER& center);
+//void OUTPUT_TO_PS (const vector <vector <GDB> > in_GDB_G, const PFN P, const bool TILT, const bool TRJ);
 void dbg_cout_RGF_colors (vector <GDB> inGDB);
 
 #endif

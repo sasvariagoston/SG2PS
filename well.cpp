@@ -39,58 +39,15 @@ bool is_WELL_PROCESSING_CALLS () {
 	return WELL_PROCESSING_CALLS;
 }
 
-vector <vector <WELL_INTERVAL> > RETURN_INTERVAL (){
+vector <vector <WELL_INTERVAL> > RETURN_INTERVAL () {
 
 	return W_INTERVAL;
 }
 
-vector <vector <WELL_FREQUENCY> > RETURN_FREQUENCY (){
+vector <vector <WELL_FREQUENCY> > RETURN_FREQUENCY () {
 
 	return W_FREQUENCY;
 }
-/*
-vector <vector <WELL_INTERVAL> > MERGE_INTERVAL (const vector < vector <vector <vector <WELL_INTERVAL> > > >& IN) {
-
-	vector <vector <WELL_INTERVAL> > OUT;
-
-	for (size_t i = 0; i < IN.size(); i++) {
-		for (size_t j = 0; j < IN.at(i).size(); j++) {
-			for (size_t k = 0; k < IN.at(i).at(j).size(); k++) {
-
-				//cout << i << j << k << IN.at(i).at(j).at(k).size() << endl;
-
-				//cout << IN.at(0).at(0).at(0).at(0).DEPTH << endl;
-
-				OUT.push_back (IN.at(i).at(j).at(k));
-			}
-		}
-	}
-	return OUT;
-}
-*/
-
-/*
-vector <vector <WELL_FREQUENCY> > MERGE_FREQUENCY (const vector < vector <vector <vector <WELL_FREQUENCY> > > >& IN) {
-
-	vector <vector <WELL_FREQUENCY> > OUT;
-
-	for (size_t i = 0; i < IN.size(); i++) {
-		for (size_t j = 0; j < IN.at(i).size(); j++) {
-			for (size_t k = 0; k < IN.at(i).at(j).size(); k++) {
-
-				OUT.push_back (IN.at(i).at(j).at(k));
-
-				//cout << IN.at(0).at(0).at(0).at(0).DEPTH << endl;
-
-				//cout << i << j << k << IN.at(i).at(j).at(k).size() << endl;
-
-
-			}
-		}
-	}
-	return OUT;
-}
-*/
 
 vector <GDB> filter_too_small_distances (const vector <GDB>& IN) {
 
@@ -244,7 +201,7 @@ vector <WELL_INTERVAL> FIRST_DERIVATE (const vector <WELL_INTERVAL>& IN) {
 	}
 
 
-	cout << fixed << setprecision(6) << flush;
+	//cout << fixed << setprecision(6) << flush;
 
 	for (size_t i = 0; i < OUT.size(); i++) {
 
@@ -535,109 +492,3 @@ void PROCESS_WELL_GROUPS (const vector <vector <GDB> >& inGDB_G) {
 	}
 	return;
 }
-
-/*
- * void PROCESS_WELL_GROUPS (const vector <vector <vector <vector <GDB> > > >& inGDB_G, const bool TILT) {
-
-	if (is_WELLDATA_NO()) return;
-
-	for (size_t i = 0; i < inGDB_G.size(); i++) {
-
-		vector <vector <vector <WELL_INTERVAL> > > INTERVAL_buf_3;
-		vector <vector <vector <WELL_FREQUENCY> > > FREQUENCY_buf_3;
-
-		for (size_t j = 0; j < inGDB_G.at(i).size(); j++) {
-
-			vector <vector <WELL_INTERVAL> > INTERVAL_buf_2;
-			vector <vector <WELL_FREQUENCY> > FREQUENCY_buf_2;
-
-			for (size_t k = 0; k < inGDB_G.at(i).at(j).size(); k++) {
-
-				vector <WELL_INTERVAL> INTERVAL_buf;
-				vector <WELL_FREQUENCY> FREQUENCY_buf;
-
-				vector <GDB> p_GDB = inGDB_G.at(i).at(j).at(k);
-				p_GDB = SORT_GDB (p_GDB, "DEPTH");
-				//p_GDB = sort_by_DEPTH (p_GDB);
-
-				const bool is_M = is_WELL_INTERVAL_METER();
-				const bool is_D = is_WELL_INTERVAL_DATANUMBER();
-				const size_t S = p_GDB.size();
-
-				const double MIN_DEPTH = p_GDB.at(0).DEPTH;
-				const double MAX_DEPTH = p_GDB.at(S - 1).DEPTH;
-
-				const double IVL = is_WELL_INTERVAL_LENGTH();
-				//const size_t I = double_to_size_t (IVL);
-
-				const size_t I = string_to_double (size_t_to_string (IVL));
-
-				bool PROCESSABLE = false;
-
-				if 		(is_M) 	PROCESSABLE = (MAX_DEPTH - MIN_DEPTH) > IVL;
-				else if (is_D)	PROCESSABLE = (S >= I);
-				else ASSERT_DEAD_END();
-
-				if (p_GDB.size() <= 2) PROCESSABLE = false;
-
-				//dbg_cout_GDB_vector (p_GDB);
-
-				if (PROCESSABLE) {
-
-					if (is_M)	INTERVAL_buf = WELL_AVERAGE_M (p_GDB);//ok
-					else		INTERVAL_buf = WELL_AVERAGE_D (p_GDB);
-
-					INTERVAL_buf = FIRST_DERIVATE (INTERVAL_buf);
-
-					FREQUENCY_buf = FREQUENCY (p_GDB);
-				}
-				INTERVAL_buf_2.push_back (INTERVAL_buf);
-				FREQUENCY_buf_2.push_back (FREQUENCY_buf);
-			}
-			INTERVAL_buf_3.push_back (INTERVAL_buf_2);
-			FREQUENCY_buf_3.push_back (FREQUENCY_buf_2);
-		}
-		W_INTERVAL.push_back (INTERVAL_buf_3);
-		W_FREQUENCY.push_back(FREQUENCY_buf_3);
-	}
-	//dbg_cout_GDB_vector_vector (inGDB_G);
-	//dbg_cout_AVERAGE (W_AVERAGE);
-}
- */
-
-
-
-
-
-
-/*
-void dbg_cout_AVERAGE (vector <vector <vector <vector <WELL_AVERAGE> > > > IN) {
-
-	cout << "********  DEBUGGING WELL AVERAGES  ********" << endl;
-
-	for (size_t i = 0; i < IN.size(); i++) {
-		for (size_t j = 0; j < IN.at(i).size(); j++) {
-			for (size_t k = 0; k < IN.at(i).at(j).size(); k++) {
-
-				cout << "New average data set" << endl;
-
-				for (size_t l = 0; l < IN.at(i).at(j).at(k).size(); l++) {
-
-					cout
-					<< fixed << setprecision (0)
-					<< IN.at(i).at(j).at(k).at(l).DEPTH << '\t'
-					<< IN.at(i).at(j).at(k).at(l).DD.DIPDIR << '\t'
-					<< IN.at(i).at(j).at(k).at(l).DD.DIP << '\t'
-					<< fixed << setprecision (6)
-					<< IN.at(i).at(j).at(k).at(l).D.X << '\t'
-					<< IN.at(i).at(j).at(k).at(l).D.Y << '\t'
-					<< IN.at(i).at(j).at(k).at(l).D.Z << '\t' << endl;
-				}
-			}
-		}
-	}
-	cout << "********  DEBUGGING WELL AVERAGES  ********" << endl;
-
-	return;
-}
-*/

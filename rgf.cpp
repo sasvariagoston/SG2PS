@@ -40,6 +40,8 @@ const double SN = 10e-8;
 bool PROCESS_AS_TILTED = false;
 bool PROCESS_AS_TRAJECTORY = false;
 
+vector <vector <vector <GDB> > > MASTER_GDB;
+
 }
 
 string return_inputfilename () {
@@ -598,7 +600,7 @@ vector < vector <GDB> > PREPARE_GDB_VECTOR_FOR_PROCESSING (const vector < vector
 	return outGDB_G;
 }
 
-void EVALUATE (const vector <vector <GDB> >& inGDB_G, const PFN projectfoldername) {
+vector <vector <GDB> > EVALUATE (const vector <vector <GDB> >& inGDB_G, const PFN projectfoldername) {
 
 	vector <vector <GDB> > P = inGDB_G;
 
@@ -662,11 +664,14 @@ void EVALUATE (const vector <vector <GDB> >& inGDB_G, const PFN projectfoldernam
 
 	STANDARD_OUTPUT (p, TLT);
 
-	if (!is_mode_DEBUG()) OUTPUT_TO_RGF (P, projectfoldername, TLT, TRJ);
+	//if (!is_mode_DEBUG()) OUTPUT_TO_RGF (P, projectfoldername, TLT, TRJ);
 
-	OUTPUT_TO_PS (P,  projectfoldername, TLT, TRJ);
+	return P;
 
-	OUTPUT_TO_WELL_PS (P, projectfoldername, TLT, TRJ); //careful! PS module has global variables!!!!
+
+	//OUTPUT_TO_PS (P,  projectfoldername, TLT, TRJ);
+
+	//OUTPUT_TO_WELL_PS (P, projectfoldername, TLT, TRJ); //careful! PS module has global variables!!!!
 }
 
 void PROCESS_RGF (const string inputfilename) {
@@ -682,7 +687,6 @@ void PROCESS_RGF (const string inputfilename) {
 	INIT_DEBUG();
 
 	const PFN projectfoldername = create_project_folder_names (inputfilename);
-
 
 	vector <GDB> nGDB = competeRGFcontect (inputfilename);
 	if (is_XY_FILE_CORRECT()) nGDB = insert_xy_values (nGDB);
@@ -709,7 +713,31 @@ void PROCESS_RGF (const string inputfilename) {
 
 	if (!is_mode_DEBUG()) cout << "DATA EVALUATION FROM '" << capslock(inputfilename) << ".RGF' DATABASE FILE" << endl;
 
-	EVALUATE (nGDB_G, projectfoldername);
+	size_t LOOPS_NUMBER = 2;
+	if (is_TRAJECTORY_FILE_CORRECT()) LOOPS_NUMBER = 4;
+
+	for (size_t i = 0; i < LOOPS_NUMBER; i++) {
+
+		PROCESS_AS_TILTED = false;
+		if (i == 1 || i == 3) PROCESS_AS_TILTED = true;
+
+		PROCESS_AS_TRAJECTORY = false;
+		if (i == 2 || i == 3) PROCESS_AS_TRAJECTORY = true;
+
+		const vector <vector <GDB> > process_GDB_G = EVALUATE (nGDB_G, projectfoldername);
+
+		MASTER_GDB.push_back (process_GDB_G);
+
+		if (!is_mode_DEBUG()) OUTPUT_TO_RGF (MASTER_GDB.at(i), projectfoldername, PROCESS_AS_TILTED, PROCESS_AS_TRAJECTORY);
+
+		if (PROCESS_AS_TILTED) OUTPUT_TO_PS (MASTER_GDB.at(i-1), MASTER_GDB.at(i), projectfoldername, PROCESS_AS_TILTED, PROCESS_AS_TRAJECTORY);
+
+		OUTPUT_TO_WELL_PS (MASTER_GDB.at(i), projectfoldername, PROCESS_AS_TILTED, PROCESS_AS_TRAJECTORY);
+	}
+
+
+	/*
+	 * EVALUATE (nGDB_G, projectfoldername);
 
 	PROCESS_AS_TILTED = true;
 	EVALUATE (nGDB_G, projectfoldername);
@@ -723,9 +751,14 @@ void PROCESS_RGF (const string inputfilename) {
 		PROCESS_AS_TILTED = true;
 		EVALUATE (nGDB_G, projectfoldername);
 	}
+	 */
 
-	PROCESS_AS_TILTED = false;
-	PROCESS_AS_TRAJECTORY = false;
+
+
+
+
+	//PROCESS_AS_TILTED = false;
+	//PROCESS_AS_TRAJECTORY = false;
 
 	/*
 

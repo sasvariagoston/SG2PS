@@ -48,7 +48,7 @@ vector <GDB>  PREPARE_GDB_FOR_PROCESSING (const vector <GDB>& inGDB, const bool 
 vector < vector <GDB> >  PREPARE_GDB_VECTOR_FOR_PROCESSING (const vector < vector <GDB> >& inGDB_G, const bool TILT);
 
 void PROCESS_RGF (const string inputfilename);
-void EVALUATE (const vector <vector <GDB> >& inGDB_G, const PFN projectfoldername);
+vector <vector <GDB> > EVALUATE (const vector <vector <GDB> >& inGDB_G, const PFN projectfoldername);
 
 void dbg_cout_GDB_vector_vector_structure (const vector < vector <GDB> >& inGDB_G);
 void dbg_cout_GDB_vector_vector (const vector < vector < GDB> >& inGDB_G);

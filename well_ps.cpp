@@ -33,19 +33,6 @@ struct WELL_TOPS {
 	string FORMATION;
 };
 
-//struct CURVE_TO_PLOT {
-
-//	vector <double> DEPTH;
-//	vector <double> VALUE;
-//};
-
-struct PEAK_TO_PLOT {
-
-	double DEPTH;
-	double VALUE;
-	double COUNT;
-};
-
 namespace {
 
 vector <WELL_TOPS> WTP;
@@ -196,14 +183,6 @@ void PS_well_border (const vector <GDB>& inGDB, ofstream& o, const PAPER& P, con
 
 	color_PS (o, "0.0 0.0 0.0");
 	stroke_PS (o);
-
-	//color_PS (o, "0.8 0.8 0.8");
-	//stroke_PS (o);
-
-	//font_PS (o, "ArialNarrow-Bold", 36);
-	//color_PS (o, "0.8 0.8 0.8");
-	//text_PS (o, 1.5 * P.A, 			P.Y - 2.5 * P.A, 3, "ORIGINAL");
-	//text_PS (o, P.X - 8.5 * P.A, 	P.Y - 2.5 * P.A, 3, "CORRECTED");
 
 	font_PS(o, "ArialNarrow-Bold", 12);
 	color_PS (o, "0.0 0.0 0.0");
@@ -472,7 +451,6 @@ double return_MIN_value (const vector <GDB>& inGDB, const size_t STEP) {
 double return_MAX_value (const vector <GDB>& inGDB, const size_t STEP) {
 
 	const vector <GDB> temp = SORT_GDB (inGDB, "rDEPTH");
-	//const vector <GDB> temp = sort_by_rev_DEPTH (inGDB);
 
 	for (double i = STEP * 2000.0; i > 0.0; i-=STEP) {
 
@@ -854,6 +832,8 @@ void PS_derivate_DIPDIR_DIP (ofstream& o, const PAPER& P, const double X) {
 
 void SETUP_PEAK (const vector <double>& DEPTH, const vector <double>& VALUE) {
 
+	//cout << DEPTH.size() << " - " << VALUE.size() << endl;
+
 	if (DEPTH.size() != VALUE.size()) ASSERT_DEAD_END();
 
 	if (DEPTH.size() < 1 || VALUE.size() < 1) ASSERT_DEAD_END();
@@ -1029,6 +1009,8 @@ void associate_peaks_to_faults () {
 
 void PEAK_IDENTIFICATION (const vector <double>& DEPTH, const vector <double>& VALUE, const string METHOD) {
 
+	//cout << DEPTH.size() << "  xxxx  " << VALUE.size() << endl;
+
 	SETUP_PEAK (DEPTH, VALUE);
 
 	if (METHOD == "NONE") return;
@@ -1066,50 +1048,9 @@ void PEAK_IDENTIFICATION (const vector <double>& DEPTH, const vector <double>& V
 	return;
 }
 
-/*
-void DRAW_PEAKS (ofstream& o, const PAPER& P, const double X, const double LENGTH, const double MIN_VAL, const double MAX_VAL, const bool DIPDIR, const string TYPE) {
-
-	//const bool A = TYPE == "AVERAGE";
-	//const bool E_MN = TYPE == "LOWER_STDEV";
-	//const bool E_MX = TYPE == "UPPER_STDEV";
-	//const bool D = TYPE == "DERIVATE";
-	//const bool F = TYPE == "FREQUENCY";
-
-	linewidth_PS(o, LW, 1);
-
-	for (size_t i = 0; i < DEPTH.size() - 1; i++) {
-
-		string CLR
-
-		color_PS (o, CLR);
-
-		const double ACT_D = DEPTH.at(i);
-		const double ACT_V = VALUE.at(i);
-
-		const double NXT_D = DEPTH.at(i + 1);
-		const double NXT_V = VALUE.at(i + 1);
-
-		const double ACT_data_X = X + (PL_WDT * P.A * ((ACT_V - MN) / (MX - MN)));
-		const double NXT_data_X = X + (PL_WDT * P.A * ((NXT_V - MN) / (MX - MN)));
-
-		const double ACT_data_Y = P.O1Y - (LENGTH * ((ACT_D - MIN_VAL) / (MAX_VAL - MIN_VAL)));
-		const double NXT_data_Y = P.O1Y - (LENGTH * ((NXT_D - MIN_VAL) / (MAX_VAL - MIN_VAL)));
-
-		moveto_PS(o, ACT_data_X, ACT_data_Y, 3);
-		lineto_PS(o, NXT_data_X, NXT_data_Y, 3);
-	}
-	stroke_PS (o);
-	return;
-}
-
-*/
-
 void plot_well_faults (ofstream& o, const PAPER& P, const double X, const double LENGTH, const double MIN_VAL, const double MAX_VAL) {
 
 	if (FAULTS.size() < 1) return;
-
-	//vector <double> DEPTH;
-	//vector <double> VALUE;
 
 	double MAX = 0;
 
@@ -1131,22 +1072,8 @@ void plot_well_faults (ofstream& o, const PAPER& P, const double X, const double
 		lineto_PS (o, ACT_data_X, ACT_data_Y, 3);
 		stroke_PS (o);
 	}
-	//PEAK_IDENTIFICATION (DEPTH, VALUE, "MAX");
-
-	//plot_curve (o, P, X, LENGTH, MIN_VAL, MAX_VAL, false, "DERIVATE");
-
 	return;
 }
-
-
-
-
-
-
-
-
-
-
 
 void plot_well_frequency_derivate (const vector <WELL_FREQUENCY> IN, ofstream& o, const PAPER& P, const double X, const double LENGTH, const double MIN_VAL, const double MAX_VAL) {
 
@@ -1170,6 +1097,8 @@ void plot_well_frequency_derivate (const vector <WELL_FREQUENCY> IN, ofstream& o
 }
 
 void plot_well_frequency (const vector <WELL_FREQUENCY> IN, ofstream& o, const PAPER& P, const double X, const double LENGTH, const double MIN_VAL, const double MAX_VAL) {
+
+	if (IN.size() < 1) return;
 
 	vector <double> DEPTH;
 	vector <double> VALUE;
@@ -1293,6 +1222,8 @@ vector <vector <XY> >  generate_xy_vector_vector (const vector <XY>& IN) {
 
 		const bool CUT = (ACT_VAL < -900.0 && NXT_VAL > 900.0) || (ACT_VAL > 900.0 && NXT_VAL < -900.0);
 
+		if ((ACT_VAL > 900.0 && NXT_VAL > 900.0) || (ACT_VAL < -900.0 && NXT_VAL < -900.0)) ASSERT_DEAD_END();
+
 		if (CUT) {
 
 			OUT.push_back(BUF);
@@ -1315,6 +1246,21 @@ vector <vector <XY> > tidy_xy_vector_vector (vector <vector <XY> >& IN) {
 	vector <vector <XY> > OUT = IN;
 
 	for (size_t i = 0; i < OUT.size(); i++) {
+
+		const double FST = OUT.at(i).at (0).X;
+		const double LST = OUT.at(i).at (OUT.at(i).size() - 1).X;
+
+		const bool FST_OK = (FST < -900 || FST > 900);
+		const bool LST_OK = (LST < -900 || LST > 900);
+
+		//cout << i  << endl;
+		//cout << OUT.at(i).at (0).X << endl;
+		//cout << OUT.at(i).at (OUT.at(i).size() - 1).X << endl;
+
+		if (i > 0 && i < OUT.size() - 1 && !(FST_OK && LST_OK)) ASSERT_DEAD_END();
+		if (i == 0  && FST_OK) ASSERT_DEAD_END();
+		if (i == OUT.size() && LST_OK) ASSERT_DEAD_END();
+
 		for (size_t j = 0; j < OUT.at(i).size(); j++) {
 
 			if (OUT.at(i).at(j).X < -900.0) OUT.at(i).at(j).X = 0.0;
@@ -1409,19 +1355,17 @@ void plot_curve (const vector <double> DEPTH, const vector <double> VALUE, ofstr
 	color_PS (o, CRV_CLR);
 	linewidth_PS(o, LW, 1);
 
-	for (size_t i = 0; i < ACT_X.size() - 1; i++) {
+	for (size_t i = 0; i < ACT_X.size(); i++) {
 
+
+		//newpath_PS(o);
 		moveto_PS(o, ACT_X.at(i), ACT_Y.at(i), 3);
 		lineto_PS(o, NXT_X.at(i), NXT_Y.at(i), 3);
+		//stroke_PS (o);
 	}
 	stroke_PS (o);
 	return;
 }
-
-
-
-
-
 
 void plot_peaks (ofstream& o, const PAPER& P, const double X, const double LENGTH, const double MIN_VAL, const double MAX_VAL, const bool DIPDIR, const string TYPE) {
 
@@ -1487,13 +1431,6 @@ void plot_peaks (ofstream& o, const PAPER& P, const double X, const double LENGT
 	}
 	return;
 }
-
-
-
-
-
-
-
 
 double return_plot_value (const WELL_INTERVAL ACT, const bool DIPDIR, const string TYPE) {
 
@@ -1566,58 +1503,17 @@ void return_records_with_formation_names (const vector <vector <GDB> >& inGDB_G)
 	return;
 }
 
-/*
-void process_well_curve (const vector <WELL_INTERVAL>& IN, ofstream& o, const PAPER& P, const double X, const double LENGTH, const double MIN_VAL, const double MAX_VAL, const bool DIPDIR, const string TYPE) {
-
-	vector <XY> PLOT = generate_well_curve (IN, o, P, X, LENGTH, MIN_VAL, MAX_VAL, DIPDIR, TYPE);
-
-	//IDENTIFY_PEAKS
-
-	PLOT = cutting_points (PLOT);
-
-	vector <vector <XY> > PLOT_V = generate_xy_vector_vector (PLOT);
-
-	PLOT_V = tidy_xy_vector_vector (PLOT_V);
-
-	for (size_t i = 0; i < PLOT_V.size(); i++) {
-
-		VALUE = generate_VALUE_from_XY_vector (PLOT_V.at(i));
-		DEPTH = generate_DEPTH_from_XY_vector (PLOT_V.at(i));
-
-		plot_curve (DEPTH, VALUE, o, P, X, LENGTH, MIN_VAL, MAX_VAL, DIPDIR, TYPE);
-	}
-	return;
-
-*/
-
-
-	/*
-	 * PLOT = cutting_points (PLOT);
-
-	vector <vector <XY> > PLOT_V = generate_xy_vector_vector (PLOT);
-
-	PLOT_V = tidy_xy_vector_vector (PLOT_V);
-
-	for (size_t i = 0; i < PLOT_V.size(); i++) {
-
-		VALUE = generate_VALUE_from_XY_vector (PLOT_V.at(i));
-		DEPTH = generate_DEPTH_from_XY_vector (PLOT_V.at(i));
-
-		plot_curve (DEPTH, VALUE, o, P, X, LENGTH, MIN_VAL, MAX_VAL, DIPDIR, TYPE);
-	}
-	return;
-	 */
-//}
-
-
-
-//vector <XY> generate_well_curve (const vector <WELL_INTERVAL>& IN, ofstream& o, const PAPER& P, const double X, const double LENGTH, const double MIN_VAL, const double MAX_VAL, const bool DIPDIR, const string TYPE) {
 void plot_well_curve (const vector <WELL_INTERVAL>& IN, ofstream& o, const PAPER& P, const double X, const double LENGTH, const double MIN_VAL, const double MAX_VAL, const bool DIPDIR, const string TYPE) {
+
+	//cout << IN.size() << endl;
 
 	if (IN.size() < 2) return;
 
 	vector <double> DEPTH;
 	vector <double> VALUE;
+
+	//cout << "IN.size(): " << IN.size() <<  endl;
+
 
 	for (size_t i = 0; i < IN.size() - 1; i++) {
 
@@ -1646,14 +1542,14 @@ void plot_well_curve (const vector <WELL_INTERVAL>& IN, ofstream& o, const PAPER
 	else 							PEAK_IDENTIFICATION (DEPTH, VALUE, "NONE");
 
 	vector <XY> PLOT = generate_xy_vector (VALUE, DEPTH, DIPDIR);
-	//return generate_xy_vector (VALUE, DEPTH, DIPDIR);
 
 	PLOT = cutting_points (PLOT);
 
 	//for (size_t i = 0; i < PLOT.size(); i++) {
 
-		//cout << PLOT.at(i).X << endl;
+	//	cout << PLOT.at(i).X << endl;
 	//}
+	//cout << endl;
 
 	vector <vector <XY> > PLOT_V = generate_xy_vector_vector (PLOT);
 
@@ -1661,8 +1557,22 @@ void plot_well_curve (const vector <WELL_INTERVAL>& IN, ofstream& o, const PAPER
 
 	for (size_t i = 0; i < PLOT_V.size(); i++) {
 
+		//cout << PLOT_V.at(i).at(0).X << endl;
+		//cout << PLOT_V.at(i).at(PLOT_V.at(i).size() - 1).X << endl;
+
 		VALUE = generate_VALUE_from_XY_vector (PLOT_V.at(i));
 		DEPTH = generate_DEPTH_from_XY_vector (PLOT_V.at(i));
+
+		//cout << i << endl;
+		//cout << VALUE.at(0) << endl;
+		//cout << VALUE.at(VALUE.size() - 1) << endl;
+
+		for (size_t j = 0; j < VALUE.size(); j++) {
+
+			//cout << VALUE.at(j) << endl;
+		}
+
+		//cout << endl << endl;
 
 		plot_peaks (o, P, X, LENGTH, MIN_VAL, MAX_VAL, DIPDIR, TYPE);
 
@@ -1674,7 +1584,6 @@ void plot_well_curve (const vector <WELL_INTERVAL>& IN, ofstream& o, const PAPER
 void plot_well_measurements (const vector <GDB>& inGDB, ofstream& o, const PAPER& P, const double X, const double LENGTH, const double MIN_VAL, const double MAX_VAL, const bool DIPDIR) {
 
 	const vector <GDB> temp = SORT_GDB(inGDB, "DEPTH");
-	//const vector <GDB> temp = sort_by_DEPTH (inGDB);
 
 	double MX = 90.0;
 	if (DIPDIR) MX = 360.0;
@@ -1698,8 +1607,17 @@ void plot_well_measurements (const vector <GDB>& inGDB, ofstream& o, const PAPER
 			if (O && B) DATA = - inGDB.at(i).corr.DIP;
 			else		DATA =   inGDB.at(i).corr.DIP;
 		}
+
+
+		//cout << "DATA: " << DATA << endl;
 		const double data_X = PL_WDT * P.A * ((DATA - MN) / (MX - MN));
 		const double data_Y = LENGTH * ((inGDB.at(i).DEPTH - MIN_VAL) / (MAX_VAL - MIN_VAL));
+
+		//cout << "LENGTH: " << LENGTH << endl;
+		//cout << "MIN_VAL: " << MIN_VAL << endl;
+		//cout << "MAX_VAL: " << MAX_VAL << endl;
+		//cout << "inGDB.at(i).DEPTH: " << inGDB.at(i).DEPTH << endl;
+		//cout << "data_Y: " << data_Y << endl;
 
 		translate_PS (o, X + data_X, P.O1Y - data_Y, 3);
 
@@ -1856,14 +1774,14 @@ void WELL_PS (const vector <GDB>& inGDB, const vector <WELL_INTERVAL>& INT, cons
 
 	SETUP_FAULT_POSITIONS (MIN_VAL, MAX_VAL, STEP);
 
-	cout << "1A-----------------------------------------" << endl;
+	//cout << "1A-----------------------------------------" << endl;
 	double X = P.O1X + PL_LF * P.A;
 	PS_well_coordinate_grid_INTERVAL (OPS, P, X, LENGTH, MIN_VAL, MAX_VAL, STEP);
 	PS_well_intervals (INT, OPS, P, X, LENGTH, MIN_VAL, MAX_VAL);
 	PS_well_coordinate_axes_INTERVAL (OPS, P, X, LENGTH);
 	ps_well_formation_tops (OPS, P, X, LENGTH, MIN_VAL, MAX_VAL, STEP);
 
-	cout << "2A-----------------------------------------" << endl;
+	//cout << "2A-----------------------------------------" << endl;
 	X = X + (PL_WDT + PL_GP) * P.A;
 	PS_well_coordinate_grid_DIPDIR (OPS, P, X, LENGTH, MIN_VAL, MAX_VAL, STEP);
 	PS_well_intervals_error (INT, OPS, P, X, LENGTH, MIN_VAL, MAX_VAL, true);
@@ -1873,12 +1791,12 @@ void WELL_PS (const vector <GDB>& inGDB, const vector <WELL_INTERVAL>& INT, cons
 	plot_well_measurements (inGDB, OPS, P, X, LENGTH, MIN_VAL, MAX_VAL, true);
 	PS_well_coordinate_axes_DIPDIR (OPS, P, X, LENGTH);
 
-	cout << "2B-----------------------------------------" << endl;
+	//cout << "2B-----------------------------------------" << endl;
 	X = X + (PL_WDT + PL_AX_GP) * P.A;
 	PS_derivate_DIPDIR_DIP (OPS, P, X);
 	plot_well_curve (INT, OPS, P, X, LENGTH, MIN_VAL, MAX_VAL, true, "DERIVATE");
 
-	cout << "3A-----------------------------------------" << endl;
+	//cout << "3A-----------------------------------------" << endl;
 	X = X + (PL_WDT * 0.5 + PL_GP) * P.A;
 	PS_well_coordinate_grid_DIP (OPS, P, X, LENGTH, MIN_VAL, MAX_VAL, STEP);
 	PS_well_intervals_error (INT, OPS, P, X, LENGTH, MIN_VAL, MAX_VAL, false);
@@ -1888,23 +1806,23 @@ void WELL_PS (const vector <GDB>& inGDB, const vector <WELL_INTERVAL>& INT, cons
 	plot_well_measurements (inGDB, OPS, P, X, LENGTH, MIN_VAL, MAX_VAL, false);
 	PS_well_coordinate_axes_DIP (OPS, P, X, LENGTH);
 
-	cout << "3B-----------------------------------------" << endl;
+	//cout << "3B-----------------------------------------" << endl;
 	X = X + (PL_WDT + PL_AX_GP) * P.A;
 	PS_derivate_DIPDIR_DIP (OPS, P, X);
 	plot_well_curve (INT, OPS, P, X, LENGTH, MIN_VAL, MAX_VAL, false, "DERIVATE");
 
-	cout << "4A-----------------------------------------" << endl;
+	//cout << "4A-----------------------------------------" << endl;
 	X = X + (PL_WDT * 0.5 + PL_GP) * P.A;
 	PS_well_coordinate_axes_FREQUENCY (OPS, P, X, LENGTH, MIN_VAL, MAX_VAL, STEP);
 	plot_well_frequency (FREQ, OPS, P, X, LENGTH, MIN_VAL, MAX_VAL);
 
-	cout << "4B-----------------------------------------" << endl;
+	//cout << "4B-----------------------------------------" << endl;
 	X = X + (PL_WDT + PL_AX_GP) * P.A;
 	PS_derivate_DIPDIR_DIP(OPS, P, X);
 	plot_well_frequency_derivate (FREQ, OPS, P, X, LENGTH, MIN_VAL, MAX_VAL);
 	//delete PS_well_coordinate_axes (prGDB_G.at(i), OPS, PPR);
 
-	cout << "5A-----------------------------------------" << endl;
+	//cout << "5A-----------------------------------------" << endl;
 	X = X + (PL_WDT * 0.5 + PL_GP) * P.A;
 	PS_well_coordinate_axes_FAULTS (OPS, P, X, LENGTH, MIN_VAL, MAX_VAL, STEP);
 	plot_well_faults (OPS, P, X, LENGTH, MIN_VAL, MAX_VAL);
@@ -1924,11 +1842,6 @@ void OUTPUT_TO_WELL_PS (const vector <vector <GDB> >& GDB_G, const PFN& PF, cons
 	const vector <vector <WELL_INTERVAL> > INTERVAL = RETURN_INTERVAL ();
 	const vector <vector <WELL_FREQUENCY> > FREQUENCY = RETURN_FREQUENCY ();
 
-	//const vector <vector <vector <vector <WELL_INTERVAL> > > > I = RETURN_INTERVAL ();
-	//const vector <vector <WELL_INTERVAL> > INTERVAL = MERGE_INTERVAL (I);
-	//const vector <vector <vector <vector <WELL_FREQUENCY> > > > F = RETURN_FREQUENCY ();
-	//const vector <vector <WELL_FREQUENCY> > FREQUENCY = MERGE_FREQUENCY (F);
-
 	const bool IGNORE = is_GROUPSEPARATION_IGNORE ();
 	const bool by_GROUPCODE = is_GROUPSEPARATION_GROUPCODE ();
 	const bool by_KMEANS = is_GROUPSEPARATION_KMEANS ();
@@ -1944,7 +1857,6 @@ void OUTPUT_TO_WELL_PS (const vector <vector <GDB> >& GDB_G, const PFN& PF, cons
 	for (size_t i = 0; i < GDB_G.size(); i++) {
 
 		const vector <GDB> temp = SORT_GDB (GDB_G.at(i), "DEPTH");
-		//const vector <GDB> temp = sort_by_DEPTH (prGDB_G.at(i));
 
 		const string LOC = temp.at(0).LOC;
 		const string DT = temp.at(0).DATATYPE;
@@ -1975,8 +1887,6 @@ void OUTPUT_TO_WELL_PS (const vector <vector <GDB> >& GDB_G, const PFN& PF, cons
 
 			PS_NAME = PS_NAME + ".eps";
 
-			ofstream OPS (PS_NAME.c_str());
-
 			const double MIN = temp.at(0).DEPTH;
 			const double MAX = temp.at(temp.size() - 1).DEPTH;
 
@@ -1987,91 +1897,27 @@ void OUTPUT_TO_WELL_PS (const vector <vector <GDB> >& GDB_G, const PFN& PF, cons
 
 			const PAPER P = PS_dimensions (true);
 
-			PS_well_header (DT, LOC, OPS);
+			const bool GDB_OK = temp.size() > 1;
+			const bool MIN_VAL_OK = MIN_VAL > 0.0;
+			const bool MAX_VAL_OK = MAX_VAL > MIN_VAL;
+			const bool INT_OK = INTERVAL.at(i).size() > 0;
+			const bool FRQ_OK = FREQUENCY.at(i).size() > 0;
 
-			PS_well_border (temp, OPS, P, TILT, TRJ);
+			if (GDB_OK && MIN_VAL_OK && MAX_VAL_OK && INT_OK && FRQ_OK) {
 
-			PS_well_symbols (OPS, P);
+				ofstream OPS (PS_NAME.c_str());
 
-			const double LENGTH = P.Y * 0.8;
+				PS_well_header (DT, LOC, OPS);
 
-			WELL_PS (temp, INTERVAL.at(i), FREQUENCY.at(i), OPS, P, LENGTH, MIN_VAL, MAX_VAL, STEP);
+				PS_well_border (temp, OPS, P, TILT, TRJ);
+
+				PS_well_symbols (OPS, P);
+
+				const double LENGTH = P.Y * 0.8;
+
+				WELL_PS (temp, INTERVAL.at(i), FREQUENCY.at(i), OPS, P, LENGTH, MIN_VAL, MAX_VAL, STEP);
+			}
 		}
 	}
 	return;
 }
-
-/*
- * void OUTPUT_TO_WELL_PS (const vector <vector <vector <vector <GDB> > > > GDB_G, const PFN PF, const bool TILT) {
-
-	if (is_WELLDATA_NO()) return;
-
-	const vector < vector <GDB> > prGDB_G = MERGE_GROUPS_TO_GDB_G (GDB_G);
-
-	const vector <vector <vector <vector <WELL_INTERVAL> > > > I = RETURN_INTERVAL ();
-	const vector <vector <WELL_INTERVAL> > INTERVAL = MERGE_INTERVAL (I);
-	const vector <vector <vector <vector <WELL_FREQUENCY> > > > F = RETURN_FREQUENCY ();
-	const vector <vector <WELL_FREQUENCY> > FREQUENCY = MERGE_FREQUENCY (F);
-
-	const bool IGNORE = is_GROUPSEPARATION_IGNORE ();
-	const bool by_GROUPCODE = is_GROUPSEPARATION_GROUPCODE ();
-	const bool by_KMEANS = is_GROUPSEPARATION_KMEANS ();
-	const bool by_RUPANG = is_GROUPSEPARATION_RUPANG ();
-
-	if (!IGNORE && !by_GROUPCODE && !by_KMEANS && !by_RUPANG) ASSERT_DEAD_END() ;
-
-	const string BS = path_separator;
-	const string US = "_";
-
-	for (size_t i = 0; i < prGDB_G.size(); i++) {
-
-		const vector <GDB> temp = SORT_GDB (prGDB_G.at(i), "DEPTH");
-		//const vector <GDB> temp = sort_by_DEPTH (prGDB_G.at(i));
-
-		const string LOC = temp.at(0).LOC;
-		const string DT = temp.at(0).DATATYPE;
-		const string FM = temp.at(0).FORMATION;
-
-		const bool PLN = is_allowed_plane_datatype (DT);
-		const bool LIN = is_allowed_lineation_datatype (DT);
-
-		const bool PROCESS_AS_WELL = PLN || LIN;
-
-		if (PROCESS_AS_WELL) {
-
-			string PS_NAME = PF.well_ps + BS + DT + BS + LOC + US + FM + US + DT;
-
-			if (by_GROUPCODE) 	PS_NAME = PS_NAME + US + temp.at(0).GC;
-			else if (by_KMEANS) PS_NAME = PS_NAME + US + temp.at(1).GC;
-			else if (by_RUPANG) PS_NAME = PS_NAME + US + temp.at(2).GC;
-			else {}
-
-			PS_NAME = PS_NAME + ".eps";
-
-			ofstream OPS (PS_NAME.c_str());
-
-			const double MIN = temp.at(0).DEPTH;
-			const double MAX = temp.at(temp.size() - 1).DEPTH;
-
-			const double STEP = well_axes_step (MIN, MAX);
-
-			const double MIN_VAL = return_MIN_value (temp, STEP);
-			const double MAX_VAL = return_MAX_value (temp, STEP);
-
-			const PAPER P = PS_dimensions (true);
-
-			PS_well_header (DT, LOC, OPS);
-
-			PS_well_border (temp, OPS, P, TILT);
-
-			PS_well_symbols (OPS, P);
-
-			const double LENGTH = P.Y * 0.8;
-
-			WELL_PS (temp, INTERVAL.at(i), FREQUENCY.at(i), OPS, P, LENGTH, MIN_VAL, MAX_VAL, STEP);
-		}
-	}
-	return;
-}
- *
- */
