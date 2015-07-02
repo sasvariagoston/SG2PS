@@ -7,6 +7,9 @@
 
 #include "structs.h"
 
+vector <PEAK_TO_PLOT> return_PEAK ();
+vector <PEAK_TO_PLOT> return_FAULTS ();
+
 void PS_well_header (const string DATATYPE, const string LOC, ofstream& o);
 void PS_well_border (const vector <GDB>& inGDB, ofstream& o, const PAPER& P, const bool TILT, const bool TRJ);
 

@@ -22,8 +22,9 @@
 #include "platform_dep.hpp"
 #include "ps.h"
 #include "rgf.h"
-#include "structs.h"
 #include "settings.hpp"
+#include "standard_output.hpp"
+#include "structs.h"
 #include "well.hpp"
 #include "well_ps.hpp"
 
@@ -69,6 +70,15 @@ const VCTR LGN = declare_vector (0.50, 1.00, 0.50);
 
 using namespace std;
 
+vector <PEAK_TO_PLOT> return_PEAK () {
+
+	return PEAK;
+}
+
+vector <PEAK_TO_PLOT> return_FAULTS () {
+
+	return FAULTS;
+}
 void PS_well_header (const string DATATYPE, const string LOC, ofstream& o) {
 
 	const string filename = LOC + "_" + DATATYPE + ".EPS";
@@ -1013,6 +1023,7 @@ void PEAK_IDENTIFICATION (const vector <double>& DEPTH, const vector <double>& V
 
 	SETUP_PEAK (DEPTH, VALUE);
 
+
 	if (METHOD == "NONE") return;
 
 	vector <PEAK_TO_PLOT> PK = PEAK;
@@ -1035,9 +1046,13 @@ void PEAK_IDENTIFICATION (const vector <double>& DEPTH, const vector <double>& V
 	}
 	rescale_peaks ();
 
+	if (is_CHK_WELL()) STANDARD_OUTPUT_PEAKS (METHOD);
+
 	//cout << "yyy" << endl;
 
 	associate_peaks_to_faults ();
+
+	if (is_CHK_WELL()) STANDARD_OUTPUT_FAULTS (METHOD);
 
 	//cout << "xxx" << endl;
 
@@ -1051,6 +1066,8 @@ void PEAK_IDENTIFICATION (const vector <double>& DEPTH, const vector <double>& V
 void plot_well_faults (ofstream& o, const PAPER& P, const double X, const double LENGTH, const double MIN_VAL, const double MAX_VAL) {
 
 	if (FAULTS.size() < 1) return;
+
+	if (is_CHK_WELL()) STANDARD_OUTPUT_FAULTS ("FINAL");
 
 	double MAX = 0;
 
@@ -1369,8 +1386,6 @@ void plot_curve (const vector <double> DEPTH, const vector <double> VALUE, ofstr
 
 void plot_peaks (ofstream& o, const PAPER& P, const double X, const double LENGTH, const double MIN_VAL, const double MAX_VAL, const bool DIPDIR, const string TYPE) {
 
-	//cout << "plot_peaks" << endl;
-
 	vector <double> ACT_X;
 	vector <double> ACT_Y;
 
@@ -1541,6 +1556,8 @@ void plot_well_curve (const vector <WELL_INTERVAL>& IN, ofstream& o, const PAPER
 	else if (TYPE == "AVERAGE") 	PEAK_IDENTIFICATION (DEPTH, VALUE, "MINMAX");
 	else 							PEAK_IDENTIFICATION (DEPTH, VALUE, "NONE");
 
+	if (is_CHK_WELL()) STANDARD_OUTPUT_WELL_PS (DEPTH, VALUE, DIPDIR, TYPE);
+
 	vector <XY> PLOT = generate_xy_vector (VALUE, DEPTH, DIPDIR);
 
 	PLOT = cutting_points (PLOT);
@@ -1557,22 +1574,8 @@ void plot_well_curve (const vector <WELL_INTERVAL>& IN, ofstream& o, const PAPER
 
 	for (size_t i = 0; i < PLOT_V.size(); i++) {
 
-		//cout << PLOT_V.at(i).at(0).X << endl;
-		//cout << PLOT_V.at(i).at(PLOT_V.at(i).size() - 1).X << endl;
-
 		VALUE = generate_VALUE_from_XY_vector (PLOT_V.at(i));
 		DEPTH = generate_DEPTH_from_XY_vector (PLOT_V.at(i));
-
-		//cout << i << endl;
-		//cout << VALUE.at(0) << endl;
-		//cout << VALUE.at(VALUE.size() - 1) << endl;
-
-		for (size_t j = 0; j < VALUE.size(); j++) {
-
-			//cout << VALUE.at(j) << endl;
-		}
-
-		//cout << endl << endl;
 
 		plot_peaks (o, P, X, LENGTH, MIN_VAL, MAX_VAL, DIPDIR, TYPE);
 
@@ -1820,15 +1823,11 @@ void WELL_PS (const vector <GDB>& inGDB, const vector <WELL_INTERVAL>& INT, cons
 	X = X + (PL_WDT + PL_AX_GP) * P.A;
 	PS_derivate_DIPDIR_DIP(OPS, P, X);
 	plot_well_frequency_derivate (FREQ, OPS, P, X, LENGTH, MIN_VAL, MAX_VAL);
-	//delete PS_well_coordinate_axes (prGDB_G.at(i), OPS, PPR);
 
 	//cout << "5A-----------------------------------------" << endl;
 	X = X + (PL_WDT * 0.5 + PL_GP) * P.A;
 	PS_well_coordinate_axes_FAULTS (OPS, P, X, LENGTH, MIN_VAL, MAX_VAL, STEP);
 	plot_well_faults (OPS, P, X, LENGTH, MIN_VAL, MAX_VAL);
-
-	//plot_well_frequency (FREQ, OPS, P, X, LENGTH, MIN_VAL, MAX_VAL);
-
 
 	return;
 }
@@ -1836,8 +1835,6 @@ void WELL_PS (const vector <GDB>& inGDB, const vector <WELL_INTERVAL>& INT, cons
 void OUTPUT_TO_WELL_PS (const vector <vector <GDB> >& GDB_G, const PFN& PF, const bool TILT, const bool TRJ) {
 
 	if (is_WELLDATA_NO()) return;
-
-	//const vector < vector <GDB> > prGDB_G = MERGE_GROUPS_TO_GDB_G (GDB_G);
 
 	const vector <vector <WELL_INTERVAL> > INTERVAL = RETURN_INTERVAL ();
 	const vector <vector <WELL_FREQUENCY> > FREQUENCY = RETURN_FREQUENCY ();

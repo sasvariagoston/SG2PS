@@ -10,6 +10,9 @@
 #include "cluster.h"
 #include "common.h"
 
+bool is_PROCESS_AS_TILTED ();
+bool is_PROCESS_AS_TRAJECTORY ();
+
 string return_inputfilename ();
 void set_inputfilename (const string filename);
 

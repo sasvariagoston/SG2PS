@@ -36,6 +36,8 @@ bool is_CHK_PLOT_LINEATION ();
 bool is_CHK_PLOT_PLANE ();
 bool is_CHK_PLOT_STRIAE ();
 
+bool is_CHK_WELL ();
+
 void check_standard_output_SF (const vector <GDB>& inGDB, const STRESSFIELD& standard);
 
 void INIT_DEBUG ();
@@ -52,5 +54,18 @@ void dump_WHICH_GROUP_to_file (const vector <size_t>& WG, const string FN);
 void dump_HISTOGRAM_to_file (const vector <HISTOGRAM>& H, const string FN);
 void dump_VALLEY_to_file (const vector <VALLEY>& V, const string FN);
 void dump_ROSENUMBER_to_file (const vector <ROSENUMBER>& R, const string FN);
+
+void dump_INTERVAL_to_file (ofstream& o);
+void standard_output_INTERVAL (const bool TLT, const bool TRJ);
+void dump_FREQUENCY_to_file (ofstream& o);
+void standard_output_FREQUENCY (const bool TLT, const bool TRJ);
+void STANDARD_OUTPUT_WELL_GROUPS ();
+
+void dump_CURVE_to_file (const vector <double>& DEPTH, const vector <double>& VALUE, ofstream& o) ;
+void STANDARD_OUTPUT_WELL_PS (const vector <double>& DEPTH, const vector <double>& VALUE, const bool DIPDIR, const string TYPE);
+
+void dump_PEAK_to_file (ofstream& o, const bool PEAK);
+void STANDARD_OUTPUT_PEAKS (const string METHOD);
+void STANDARD_OUTPUT_FAULTS (const string METHOD);
 
 #endif

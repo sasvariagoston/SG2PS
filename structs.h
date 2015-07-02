@@ -316,8 +316,6 @@ struct WELL_INTERVAL {
 
 	double D_DERIV;
 	double DD_DERIV;
-
-	double FREQ;
 };
 
 struct TRJ {

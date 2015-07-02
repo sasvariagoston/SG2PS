@@ -44,6 +44,16 @@ vector <vector <vector <GDB> > > MASTER_GDB;
 
 }
 
+bool is_PROCESS_AS_TILTED () {
+
+	return PROCESS_AS_TILTED;
+}
+
+bool is_PROCESS_AS_TRAJECTORY () {
+
+	return PROCESS_AS_TRAJECTORY;
+}
+
 string return_inputfilename () {
 
 	return INPUTFILENAME;
@@ -641,12 +651,7 @@ vector <vector <GDB> > EVALUATE (const vector <vector <GDB> >& inGDB_G, const PF
 
 	PROCESS_WELL_GROUPS (P);
 
-	/*
-	 PROCESS_WELL_GROUPS (nGDB_G, false);
-	//PROCESS_WELL_GROUPS (tGDB_G, true);
-	//PROCESS_WELL_GROUPS (nGDB_G_tr, true);
-	//PROCESS_WELL_GROUPS (tGDB_G_tr, true);
-	 */
+	STANDARD_OUTPUT_WELL_GROUPS ();
 
 	vector <GDB> p = MERGE_GROUPS_TO_GDB (P);
 
@@ -664,14 +669,7 @@ vector <vector <GDB> > EVALUATE (const vector <vector <GDB> >& inGDB_G, const PF
 
 	STANDARD_OUTPUT (p, TLT);
 
-	//if (!is_mode_DEBUG()) OUTPUT_TO_RGF (P, projectfoldername, TLT, TRJ);
-
 	return P;
-
-
-	//OUTPUT_TO_PS (P,  projectfoldername, TLT, TRJ);
-
-	//OUTPUT_TO_WELL_PS (P, projectfoldername, TLT, TRJ); //careful! PS module has global variables!!!!
 }
 
 void PROCESS_RGF (const string inputfilename) {
@@ -703,14 +701,6 @@ void PROCESS_RGF (const string inputfilename) {
 	nGDB = MERGE_GROUPS_TO_GDB (nGDB_G);
 	nGDB_G = SEPARATE_DATASET_GROUPS (nGDB);
 
-
-
-	//vector < vector <GDB> > nGDB_G_tr = RETILT (nGDB_G, "TRAJECTORY");
-	//vector < vector <GDB> > tGDB_G = RETILT (nGDB_G, "BEDDING");
-	//tGDB_G = RETILT (tGDB_G, "PALEONORTH");
-	//vector < vector <GDB> > tGDB_G_tr = RETILT (nGDB_G_tr, "BEDDING");
-	//tGDB_G_tr = RETILT (tGDB_G_tr, "PALEONORTH");
-
 	if (!is_mode_DEBUG()) cout << "DATA EVALUATION FROM '" << capslock(inputfilename) << ".RGF' DATABASE FILE" << endl;
 
 	size_t LOOPS_NUMBER = 2;
@@ -734,118 +724,6 @@ void PROCESS_RGF (const string inputfilename) {
 
 		OUTPUT_TO_WELL_PS (MASTER_GDB.at(i), projectfoldername, PROCESS_AS_TILTED, PROCESS_AS_TRAJECTORY);
 	}
-
-
-	/*
-	 * EVALUATE (nGDB_G, projectfoldername);
-
-	PROCESS_AS_TILTED = true;
-	EVALUATE (nGDB_G, projectfoldername);
-
-	if (is_TRAJECTORY_FILE_CORRECT()) {
-
-		PROCESS_AS_TILTED = false;
-		PROCESS_AS_TRAJECTORY = true;
-		EVALUATE (nGDB_G, projectfoldername);
-
-		PROCESS_AS_TILTED = true;
-		EVALUATE (nGDB_G, projectfoldername);
-	}
-	 */
-
-
-
-
-
-	//PROCESS_AS_TILTED = false;
-	//PROCESS_AS_TRAJECTORY = false;
-
-	/*
-
-	tGDB_G = PREPARE_GDB_VECTOR_FOR_PROCESSING (tGDB_G, true);
-	tGDB_G_tr = PREPARE_GDB_VECTOR_FOR_PROCESSING (tGDB_G_tr, true);
-
-	tGDB_G = AVERAGE (tGDB_G);
-	tGDB_G = ASSOCIATE_AVERAGE_BEDDING_GROUPS (tGDB_G);
-	tGDB_G_tr = AVERAGE (tGDB_G_tr);
-	tGDB_G_tr = ASSOCIATE_AVERAGE_BEDDING_GROUPS (tGDB_G_tr);
-
-	nGDB_G = PROCESS_GROUPS (nGDB_G, false);
-	tGDB_G = PROCESS_GROUPS (tGDB_G, true);
-	nGDB_G_tr = PROCESS_GROUPS (nGDB_G_tr, false);
-	tGDB_G_tr = PROCESS_GROUPS (tGDB_G_tr, true);
-
-	PROCESS_WELL_GROUPS (nGDB_G, false);
-	//PROCESS_WELL_GROUPS (tGDB_G, true);
-	//PROCESS_WELL_GROUPS (nGDB_G_tr, true);
-	//PROCESS_WELL_GROUPS (tGDB_G_tr, true);
-
-	if (!is_mode_DEBUG()) cout << "DATA EVALUATION FROM '" << capslock(inputfilename) << ".RGF' DATABASE FILE" << endl;
-
-	nGDB = MERGE_GROUPS_TO_GDB (nGDB_G);
-	vector <GDB> tGDB = MERGE_GROUPS_TO_GDB (tGDB_G);
-	vector <GDB> nGDB_tr = MERGE_GROUPS_TO_GDB (nGDB_G_tr);
-	vector <GDB> tGDB_tr = MERGE_GROUPS_TO_GDB (tGDB_G_tr);
-
-	nGDB = GENERATE_PS_CODE (nGDB);
-	tGDB = GENERATE_PS_CODE (tGDB);
-	nGDB_tr = GENERATE_PS_CODE (nGDB_tr);
-	tGDB_tr = GENERATE_PS_CODE (tGDB_tr);
-
-	nGDB = SORT_GDB (nGDB, "IID");
-	tGDB = SORT_GDB (tGDB, "IID");
-	nGDB_tr = SORT_GDB (nGDB_tr, "IID");
-	tGDB_tr = SORT_GDB (tGDB_tr, "IID");
-
-	nGDB_G = SEPARATE_DATASET_GROUPS (nGDB);
-	tGDB_G = SEPARATE_DATASET_GROUPS (tGDB);
-	nGDB_G_tr = SEPARATE_DATASET_GROUPS (nGDB_tr);
-	tGDB_G_tr = SEPARATE_DATASET_GROUPS (tGDB_tr);
-
-	if (is_GROUPSEPARATION_IGNORE()) {}
-	else if (is_GROUPSEPARATION_GROUPCODE()) {
-
-		nGDB_G = SEPARATE_DATASET (nGDB_G, "GROUPS", "GROUPCODE");//ez nem kell az alapfugvenybe!
-		tGDB_G = SEPARATE_DATASET (tGDB_G, "GROUPS", "GROUPCODE");
-		nGDB_G_tr = SEPARATE_DATASET (nGDB_G_tr, "GROUPS", "GROUPCODE");//ez nem kell az alapfugvenybe!
-		tGDB_G_tr = SEPARATE_DATASET (tGDB_G_tr, "GROUPS", "GROUPCODE");
-	}
-	else if (is_GROUPSEPARATION_KMEANS()) {
-
-		nGDB_G = SEPARATE_DATASET (nGDB_G, "CLUSTER", "CLUSTER");
-		tGDB_G = SEPARATE_DATASET (tGDB_G, "CLUSTER", "CLUSTER");
-		nGDB_G_tr = SEPARATE_DATASET (nGDB_G_tr, "CLUSTER", "CLUSTER");
-		tGDB_G_tr = SEPARATE_DATASET (tGDB_G_tr, "CLUSTER", "CLUSTER");
-	}
-	else if (is_GROUPSEPARATION_RUPANG()) {
-
-		nGDB_G = SEPARATE_DATASET (nGDB_G, "RUP_ANG", "RUP_ANG");
-		tGDB_G = SEPARATE_DATASET (tGDB_G, "RUP_ANG", "RUP_ANG");
-		nGDB_G_tr = SEPARATE_DATASET (nGDB_G_tr, "RUP_ANG", "RUP_ANG");
-		tGDB_G_tr = SEPARATE_DATASET (tGDB_G_tr, "RUP_ANG", "RUP_ANG");
-	}
-	else ASSERT_DEAD_END();
-
-	STANDARD_OUTPUT (nGDB, tGDB);
-	STANDARD_OUTPUT (nGDB_tr, tGDB_tr);
-
-	if (!is_mode_DEBUG()) OUTPUT_TO_RGF (nGDB_G, projectfoldername, false);
-	if (!is_mode_DEBUG()) OUTPUT_TO_RGF (tGDB_G, projectfoldername, true);
-	if (!is_mode_DEBUG()) OUTPUT_TO_RGF (nGDB_G_tr, projectfoldername, false);
-	if (!is_mode_DEBUG()) OUTPUT_TO_RGF (tGDB_G_tr, projectfoldername, true);
-
-
-	OUTPUT_TO_PS (nGDB_G, tGDB_G, projectfoldername);
-	OUTPUT_TO_PS (nGDB_G_tr, tGDB_G_tr, projectfoldername);
-
-	OUTPUT_TO_WELL_PS (nGDB_G, projectfoldername, false);
-	//OUTPUT_TO_WELL_PS (tGDB_G, projectfoldername, true);
-	//OUTPUT_TO_WELL_PS (nGDB_G_tr, projectfoldername, false);
-	//OUTPUT_TO_WELL_PS (tGDB_G_tr, projectfoldername, true);
-	//careful! PS module has global variables!!!!
-
-
-	*/
 	if (!is_mode_DEBUG()) cout << "EXPORT FROM '" << capslock(inputfilename) << ".RGF' DATABASE FILE" << endl;
 
 	copy_log(projectfoldername);

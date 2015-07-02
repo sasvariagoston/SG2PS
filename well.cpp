@@ -17,6 +17,7 @@
 #include "rgf.h"
 //#include "run_mode.h"
 #include "settings.hpp"
+#include "standard_output.hpp"
 #include "structs.h"
 #include "well.hpp"
 
@@ -490,5 +491,7 @@ void PROCESS_WELL_GROUPS (const vector <vector <GDB> >& inGDB_G) {
 		W_INTERVAL.push_back (INTERVAL_buf);
 		W_FREQUENCY.push_back (FREQUENCY_buf);
 	}
+	if (is_CHK_WELL()) STANDARD_OUTPUT_WELL_GROUPS ();
+
 	return;
 }

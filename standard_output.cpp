@@ -23,6 +23,8 @@
 #include "standard_output.hpp"
 #include "structs.h"
 #include "valley_method.hpp"
+#include "well.hpp"
+#include "well_ps.hpp"
 
 using namespace std;
 
@@ -57,6 +59,8 @@ bool CHK_COLORS = false;
 bool CHK_PLOT_LINEATION = false;
 bool CHK_PLOT_PLANE = false;
 bool CHK_PLOT_STRIAE = false;
+
+bool CHK_WELL = false;
 
 }
 
@@ -185,6 +189,11 @@ bool is_CHK_PLOT_STRIAE () {
 	return CHK_PLOT_STRIAE;
 }
 
+bool is_CHK_WELL () {
+
+	return CHK_WELL;
+}
+
 void INIT_DEBUG () {
 
 	const string inputfilename = return_inputfilename();
@@ -220,6 +229,8 @@ void INIT_DEBUG () {
 		else if (inputfilename == "ST_PLOT_PLANE") CHK_PLOT_PLANE = true;
 		else if (inputfilename == "ST_PLOT_STRIAE") CHK_PLOT_STRIAE = true;
 		else if (inputfilename == "ST_PLOT_LINEATION") CHK_PLOT_LINEATION = true;
+
+		else if (inputfilename == "ST_WELL") CHK_WELL = true;
 		else ASSERT_DEAD_END();
 	}
 }
@@ -584,8 +595,197 @@ void dump_ROSENUMBER_to_file (const vector <ROSENUMBER>& R, const string FN) {
 		ROSENUMBER r = R.at(i);
 
 		o
-		<< dmp_dbl(r.PLN_NUM, 8) << '\t'
-		<< dmp_dbl(r.LIN_NUM, 8) << endl;
+		<< dmp_dbl (r.PLN_NUM, 8) << '\t'
+		<< dmp_dbl (r.LIN_NUM, 8) << endl;
 	}
 	return;
+}
+
+void dump_INTERVAL_to_file (ofstream& o) {
+
+	vector <vector <WELL_INTERVAL> > I = RETURN_INTERVAL ();
+
+	o
+	<< "DEPTH d" << '\t'
+	<< "SIZE i" << '\t'
+	<< "MIN d" << '\t'
+	<< "MAX d" << '\t'
+	<< "INT_AV_D.X d" << '\t' << "INT_AV_D.Y d" << '\t' << "INT_AV_D.Z d" << '\t'
+	<< "INT_AV_DD.DIPDIR d" << '\t' << "INT_AV_DD.DIP d" << '\t'
+	<< "INT_AV_DD_STDEV d" << '\t' << "INT_AV_D_STDEV d" << '\t'
+	<< "DD_DERIV d" << '\t' << "D_DERIV d" << endl;
+
+	for (size_t i = 0; i < I.size(); i++) {
+		for (size_t j = 0; j < I.at(i).size(); j++) {
+
+			WELL_INTERVAL w = I.at(i).at(j);
+
+			o
+			<< dmp_dbl (w.DEPTH, 8) << '\t'
+			<< w.SIZE << '\t'
+			<< dmp_dbl (w.MIN, 8) << '\t'
+			<< dmp_dbl (w.MAX, 8) << '\t'
+			<< dmp_dbl (w.INT_AV_D.X, 8) << '\t'
+			<< dmp_dbl (w.INT_AV_D.Y, 8) << '\t'
+			<< dmp_dbl (w.INT_AV_D.Z, 8) << '\t'
+			<< dmp_dbl (w.INT_AV_DD.DIPDIR, 8) << '\t'
+			<< dmp_dbl (w.INT_AV_DD.DIP, 8) << '\t'
+			<< dmp_dbl (w.INT_AV_DD_STDEV, 8) << '\t'
+			<< dmp_dbl (w.INT_AV_D_STDEV, 8) << '\t'
+			<< dmp_dbl (w.DD_DERIV, 8) << '\t'
+			<< dmp_dbl (w.D_DERIV, 8) << endl;
+		}
+		o << endl;
+	}
+	return;
+}
+
+void standard_output_INTERVAL (const bool TLT, const bool TRJ) {
+
+	string FN = "ST_WELL_INTERVAL";
+	if (TLT) FN = FN + "_TILTED";
+	if (TRJ) FN = FN + "_TRAJECTORY";
+
+	ofstream o;
+	o.open ((FN + ".csv").c_str());
+
+	dump_INTERVAL_to_file (o);
+
+	return;
+}
+
+void dump_FREQUENCY_to_file (ofstream& o) {
+
+	vector <vector <WELL_FREQUENCY> > F = RETURN_FREQUENCY();
+
+	o
+	<< "DEPTH d" << '\t'
+	<< "FREQ d"	<< '\t'
+	<< "DERIV_DEPTH d" << '\t'
+	<< "DERIV d" << endl;
+
+	for (size_t i = 0; i < F.size(); i++) {
+		for (size_t j = 0; j < F.at(i).size(); j++) {
+
+			WELL_FREQUENCY f = F.at(i).at(j);
+
+			o
+			<< dmp_dbl (f.DEPTH, 8) << '\t'
+			<< dmp_dbl (f.FREQ, 8) << '\t'
+			<< dmp_dbl (f.DERIV_DEPTH, 8) << '\t'
+			<< dmp_dbl (f.DERIV, 8) << endl;
+		}
+		o << endl;
+	}
+	return;
+}
+
+void standard_output_FREQUENCY (const bool TLT, const bool TRJ) {
+
+	string FN = "ST_WELL_FREQUENCY";
+	if (TLT) FN = FN + "_TILTED";
+	if (TRJ) FN = FN + "_TRAJECTORY";
+
+	ofstream o;
+	o.open ((FN + ".csv").c_str());
+
+	dump_FREQUENCY_to_file (o);
+
+	return;
+}
+
+void STANDARD_OUTPUT_WELL_GROUPS () {
+
+	const bool TLT = is_PROCESS_AS_TILTED();
+	const bool TRJ = is_PROCESS_AS_TRAJECTORY();
+
+	standard_output_INTERVAL (TLT, TRJ);
+	standard_output_FREQUENCY (TLT, TRJ);
+
+	return;
+}
+
+void dump_CURVE_to_file (const vector <double>& DEPTH, const vector <double>& VALUE, ofstream& o) {
+
+	o << "DEPTH d" << '\t' << "VALUE d" << endl;
+
+	for (size_t i = 0; i < VALUE.size(); i++) {
+
+		o << dmp_dbl (DEPTH.at(i), 8) << '\t'<< dmp_dbl (VALUE.at(i), 8) << endl;
+	}
+	return;
+}
+
+
+void STANDARD_OUTPUT_WELL_PS (const vector <double>& DEPTH, const vector <double>& VALUE, const bool DIPDIR, const string TYPE) {
+
+	const bool TLT = is_PROCESS_AS_TILTED();
+	const bool TRJ = is_PROCESS_AS_TRAJECTORY();
+
+	string FN = "ST_WELL_CURVE";
+	if (TLT) FN = FN + "_TILTED";
+	if (TRJ) FN = FN + "_TRAJECTORY";
+
+	if (DIPDIR) FN = FN + "_DIPDIR";
+	else FN = FN + "_DIP";
+
+	FN = FN + "_" + TYPE;
+
+	ofstream o;
+	o.open ((FN + ".csv").c_str());
+
+	dump_CURVE_to_file (DEPTH, VALUE, o);
+}
+
+void dump_PEAK_to_file (ofstream& o, const bool PEAK) {
+
+	vector <PEAK_TO_PLOT> P;
+
+	if (PEAK) P = return_PEAK ();
+	else P = return_FAULTS();
+
+	o << "DEPTH d" << '\t' << "VALUE d" << '\t' << "COUNT d"<< endl;
+
+		for (size_t i = 0; i < P.size(); i++) {
+
+			o
+			<< dmp_dbl (P.at(i).DEPTH, 8) << '\t'
+			<< dmp_dbl (P.at(i).VALUE, 8) << '\t'
+			<< dmp_dbl (P.at(i).COUNT, 8) << endl;
+		}
+		return;
+}
+
+void STANDARD_OUTPUT_PEAKS (const string METHOD) {
+
+	const bool TLT = is_PROCESS_AS_TILTED();
+	const bool TRJ = is_PROCESS_AS_TRAJECTORY();
+
+	string FN = "ST_WELL_PEAKS";
+	if (TLT) FN = FN + "_TILTED";
+	if (TRJ) FN = FN + "_TRAJECTORY";
+
+	FN = FN + "_" + METHOD;
+
+	ofstream o;
+	o.open ((FN + ".csv").c_str());
+
+	dump_PEAK_to_file (o, true);
+}
+
+void STANDARD_OUTPUT_FAULTS (const string METHOD) {
+
+	const bool TLT = is_PROCESS_AS_TILTED();
+	const bool TRJ = is_PROCESS_AS_TRAJECTORY();
+
+	string FN = "ST_WELL_FAULTS";
+	if (TLT) FN = FN + "_TILTED";
+	if (TRJ) FN = FN + "_TRAJECTORY";
+
+	FN = FN + "_" + METHOD;
+
+	ofstream o;
+	o.open ((FN + ".csv").c_str());
+
+	dump_PEAK_to_file (o, false);
 }
