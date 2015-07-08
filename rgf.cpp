@@ -18,6 +18,7 @@
 #include "color_management.hpp"
 #include "data_io.h"
 #include "data_sort.hpp"
+#include "filename.hpp"
 #include "ps.h"
 #include "rakhmanov.hpp"
 #include "random.hpp"
@@ -610,7 +611,7 @@ vector < vector <GDB> > PREPARE_GDB_VECTOR_FOR_PROCESSING (const vector < vector
 	return outGDB_G;
 }
 
-vector <vector <GDB> > EVALUATE (const vector <vector <GDB> >& inGDB_G, const PFN projectfoldername) {
+vector <vector <GDB> > EVALUATE (const vector <vector <GDB> >& inGDB_G) {
 
 	vector <vector <GDB> > P = inGDB_G;
 
@@ -630,14 +631,14 @@ vector <vector <GDB> > EVALUATE (const vector <vector <GDB> >& inGDB_G, const PF
 
 	if (!is_mode_DEBUG()) writeln (msg);
 
-
 	if (TRJ) P = RETILT (P, "TRAJECTORY");
+
+	//dbg_cout_GDB_vector_vector (P);
 
 	if (TLT) {
 
 		P = RETILT (P, "BEDDING");
 		P = RETILT (P, "PALEONORTH");
-
 	}
 
 	if (TRJ || TLT) {
@@ -647,19 +648,36 @@ vector <vector <GDB> > EVALUATE (const vector <vector <GDB> >& inGDB_G, const PF
 		P = ASSOCIATE_AVERAGE_BEDDING_GROUPS (P);
 	}
 
+	//dbg_cout_GDB_vector_vector (P);
+
+	//exit (88);
+
 	P = PROCESS_GROUPS (P, TLT);
 
-	PROCESS_WELL_GROUPS (P);
-
-	STANDARD_OUTPUT_WELL_GROUPS ();
+	//dbg_cout_GDB_vector_vector (P);
+	//exit (88);
 
 	vector <GDB> p = MERGE_GROUPS_TO_GDB (P);
 
+	//dbg_cout_GDB_vector(p);
+	//exit (88);
+
+
 	p = GENERATE_PS_CODE (p);
+
+	//dbg_cout_GDB_vector(p);
+	//exit (88);
 
 	p = SORT_GDB (p, "IID");
 
+	//dbg_cout_GDB_vector(p);
+	//exit (88);
+
 	P = SEPARATE_DATASET_GROUPS (p);
+
+	//dbg_cout_GDB_vector_vector(P);
+	//dbg_cout_GDB_vector(p);
+	//exit (88);
 
 	if (is_GROUPSEPARATION_IGNORE()) {}
 	else if (is_GROUPSEPARATION_GROUPCODE()) 	P = SEPARATE_DATASET (P, "GROUPS", "GROUPCODE");//ez nem kell az alapfugvenybe!
@@ -667,7 +685,13 @@ vector <vector <GDB> > EVALUATE (const vector <vector <GDB> >& inGDB_G, const PF
 	else if (is_GROUPSEPARATION_RUPANG()) 		P = SEPARATE_DATASET (P, "RUP_ANG", "RUP_ANG");
 	else ASSERT_DEAD_END();
 
-	STANDARD_OUTPUT (p, TLT);
+	STANDARD_OUTPUT (p);
+
+	//cout << " £££££££££££££££££££££££££££££££££££££££££3" << endl;
+	//dbg_cout_GDB_vector(p);
+	//exit (88);
+
+	PROCESS_WELL_GROUPS (P);
 
 	return P;
 }
@@ -684,18 +708,22 @@ void PROCESS_RGF (const string inputfilename) {
 
 	INIT_DEBUG();
 
-	const PFN projectfoldername = create_project_folder_names (inputfilename);
+	GENERATE_FOLDER_NAMES (inputfilename);
+
+	//const PFN projectfoldername = create_project_folder_names (inputfilename);
 
 	vector <GDB> nGDB = competeRGFcontect (inputfilename);
 	if (is_XY_FILE_CORRECT()) nGDB = insert_xy_values (nGDB);
 	if (is_TRAJECTORY_FILE_CORRECT()) nGDB = APPLY_TRAJECTORY (nGDB);
-	if (!is_mode_DEBUG()) CREATE_PROJECT_FOLDER (projectfoldername, nGDB);
-
+	if (!is_mode_DEBUG()) CREATE_PROJECT_FOLDERS (nGDB);
 
 	nGDB = SORT_GDB (nGDB, "LOC_GC_TYPE");
 	vector < vector <GDB> > nGDB_G = SEPARATE_DATASET_GROUPS (nGDB);
 	nGDB_G = PREPARE_GDB_VECTOR_FOR_PROCESSING (nGDB_G, false);
 	nGDB_G = AVERAGE (nGDB_G);
+
+	//dbg_cout_GDB_vector_vector (nGDB_G);
+
 	nGDB_G = ASSOCIATE_AVERAGE_BEDDING_GROUPS (nGDB_G);
 	nGDB_G = clustering_GBD (nGDB_G);
 	nGDB = MERGE_GROUPS_TO_GDB (nGDB_G);
@@ -708,25 +736,27 @@ void PROCESS_RGF (const string inputfilename) {
 
 	for (size_t i = 0; i < LOOPS_NUMBER; i++) {
 
+		//dbg_cout_GDB_vector_vector (nGDB_G);
+
 		PROCESS_AS_TILTED = false;
 		if (i == 1 || i == 3) PROCESS_AS_TILTED = true;
 
 		PROCESS_AS_TRAJECTORY = false;
 		if (i == 2 || i == 3) PROCESS_AS_TRAJECTORY = true;
 
-		const vector <vector <GDB> > process_GDB_G = EVALUATE (nGDB_G, projectfoldername);
+		const vector <vector <GDB> > process_GDB_G = EVALUATE (nGDB_G);
 
 		MASTER_GDB.push_back (process_GDB_G);
 
-		if (!is_mode_DEBUG()) OUTPUT_TO_RGF (MASTER_GDB.at(i), projectfoldername, PROCESS_AS_TILTED, PROCESS_AS_TRAJECTORY);
+		if (!is_mode_DEBUG()) OUTPUT_TO_RGF (MASTER_GDB.at(i));
 
-		if (PROCESS_AS_TILTED) OUTPUT_TO_PS (MASTER_GDB.at(i-1), MASTER_GDB.at(i), projectfoldername, PROCESS_AS_TILTED, PROCESS_AS_TRAJECTORY);
+		if (PROCESS_AS_TILTED) OUTPUT_TO_PS (MASTER_GDB.at(i-1), MASTER_GDB.at(i));
 
-		OUTPUT_TO_WELL_PS (MASTER_GDB.at(i), projectfoldername, PROCESS_AS_TILTED, PROCESS_AS_TRAJECTORY);
+		OUTPUT_TO_WELL_PS (MASTER_GDB.at(i));
 	}
 	if (!is_mode_DEBUG()) cout << "EXPORT FROM '" << capslock(inputfilename) << ".RGF' DATABASE FILE" << endl;
 
-	copy_log(projectfoldername);
+	copy_log ();
 }
 
 void dbg_cout_GDB_vector_vector_structure (const vector < vector <GDB> >& inGDB_G) {
@@ -749,6 +779,17 @@ void dbg_cout_GDB_vector_vector_structure (const vector < vector <GDB> >& inGDB_
 	return;
 }
 
+vector <double> return_GDB_vector_vector_structure (const vector < vector <GDB> >& inGDB_G) {
+
+	vector <double> OUT;
+
+	for (size_t i = 0; i < inGDB_G.size(); i++) {
+
+		OUT.push_back (inGDB_G.at(i).size());
+	}
+	return OUT;
+}
+
 void dbg_cout_GDB_vector_vector (const vector < vector <GDB> >& inGDB_G) {
 
 	for (size_t i = 0; i < inGDB_G.size(); i++) dbg_cout_GDB_vector (inGDB_G.at(i));
@@ -764,7 +805,7 @@ void dbg_cout_GDB_vector (const vector <GDB>& inGDB) {
 	cout
 	<< "ID" << '\t' << "iID" << '\t'
 	//<< "N.X" << '\t' << "N.Y" << '\t' << "N.Z" << '\t'
-	//<< "D.X" << '\t' << "D.Y" << '\t'<< "D.Z" << '\t'
+	<< "D.X" << '\t' << "D.Y" << '\t'<< "D.Z" << '\t'
 	//<< "S.X" << '\t' << "S.Y" << '\t'<< "S.Z" << '\t'
 	//<< "NC.X" << '\t' << "NC.Y" << '\t'<< "NC.Z" << '\t'
 	//<< "DC.X" << '\t' << "DC.Y" << '\t'<< "DC.Z" << '\t'
@@ -776,22 +817,22 @@ void dbg_cout_GDB_vector (const vector <GDB>& inGDB) {
 
 	//<< "MISFIT" << '\t'
 	//<< "LINEATION" << '\t'
-	//<< "OFFSET" << '\t'
+	<< "OFFSET" << '\t'
 	//<< "DEPTH" << '\t'
-	//<< "GC" << '\t'
-	//<< "COLOR" << '\t'
+	<< "GC" << '\t'
+	<< "COLOR" << '\t'
 	//<< "LOC" << '\t'
 	//<< "LOCX" << '\t'
 	//<< "LOCY" << '\t'
 	//<< "FORMATION" << '\t'
-	<< "DATATYPE" << '\t'
+	//<< "DATATYPE" << '\t'
 	//<< "DIPDIR" << '\t'
 	//<< "DIP" << '\t'
 	//<< "LDIR" << '\t'
 	//<< "LDIP" << '\t'
 
-	//<< "corr.DIPDIR" << '\t'
-	//<< "corr.DIP" << '\t'
+	<< "corr.DIPDIR" << '\t'
+	<< "corr.DIP" << '\t'
 	//<< "corrL.DIPDIR" << '\t'
 	//<< "corrL.DIP" << '\t'
 
@@ -819,8 +860,8 @@ void dbg_cout_GDB_vector (const vector <GDB>& inGDB) {
 
 	//<< "avS0d.DIPDIR" << '\t'
 	//<< "avS0d.DIP" << '\t'
-	<< "avd.DIPDIR" << '\t'
-	<< "avd.DIP" << '\t'
+	//<< "avd.DIPDIR" << '\t'
+	//<< "avd.DIP" << '\t'
 	//<< "avS0offset" << '\t'
 
 
@@ -846,9 +887,9 @@ void dbg_cout_GDB_vector (const vector <GDB>& inGDB) {
 		<< fixed << setprecision(6)
 		<< T.ID << '\t' << T.iID << '\t'
 
-		//<< fixed << setprecision(6)
+		<< fixed << setprecision(6)
 		//<< T.N.X << '\t' << T.N.Y << '\t' << T.N.Z << '\t'
-		//<< T.D.X << '\t' << T.D.Y << '\t'<< T.D.Z << '\t'
+		<< T.D.X << '\t' << T.D.Y << '\t'<< T.D.Z << '\t'
 		//<< T.S.X << '\t' << T.S.Y << '\t'<< T.S.Z << '\t'
 		//<< T.NC.X << '\t' << T.NC.Y << '\t'<< T.NC.Z << '\t'
 		//<< T.DC.X << '\t' << T.DC.Y << '\t'<< T.DC.Z << '\t'
@@ -861,17 +902,17 @@ void dbg_cout_GDB_vector (const vector <GDB>& inGDB) {
 		//<< fixed << setprecision(8)
 		//<< T.MISFIT << '\t'
 		//<< T.LINEATION << '\t'
-		//<< T.OFFSET << '\t'
-
-		//<< fixed << setprecision(0)
+		<< T.OFFSET << '\t'
 		//<< T.DEPTH << '\t'
-		//<< T.GC << '\t'
-		//<< T.COLOR << '\t'
+
+		<< fixed << setprecision(0)
+		<< T.GC << '\t'
+		<< T.COLOR << '\t'
 		//<< T.LOC << '\t'
 		//<< T.LOCX << '\t'
 		//<< T.LOCY << '\t'
 		//<< T.FORMATION << '\t'
-		<< T.DATATYPE << '\t'
+		//<< T.DATATYPE << '\t'
 
 		<< fixed << setprecision (0)
 		//<< T.DIPDIR << '\t'
@@ -879,10 +920,10 @@ void dbg_cout_GDB_vector (const vector <GDB>& inGDB) {
 		//<< T.LDIR << '\t'
 		//<< T.LDIP << '\t'
 
-		//<< T.corr.DIPDIR << '\t'
-		//<< T.corr.DIP << '\t'
-		//<< T.corrL.DIPDIR << '\t'
-		//<< T.corrL.DIP << '\t'
+		<< T.corr.DIPDIR << '\t'
+		<< T.corr.DIP << '\t'
+		<< T.corrL.DIPDIR << '\t'
+		<< T.corrL.DIP << '\t'
 
 		//<< fixed << setprecision(0)
 		//<< T.PALEON << '\t'
@@ -910,11 +951,11 @@ void dbg_cout_GDB_vector (const vector <GDB>& inGDB) {
 		//<< T.avS0N.X << '\t' << T.avS0N.Y << '\t'<< T.avS0N.Z << '\t'
 		//<< T.T.X << '\t' << T.T.Y << '\t'<< T.T.Z << '\t'
 
-		<< fixed << setprecision(1)
+		//<< fixed << setprecision(1)
 		//<< T.avS0d.DIPDIR << '\t'
 		//<< T.avS0d.DIP << '\t'
-		<< T.avd.DIPDIR << '\t'
-		<< T.avd.DIP << '\t'
+		//<< T.avd.DIPDIR << '\t'
+		//<< T.avd.DIP << '\t'
 		//<< T.avS0offset << '\t'
 
 		//<< fixed << setprecision(6)
@@ -935,5 +976,16 @@ void dbg_cout_GDB_vector (const vector <GDB>& inGDB) {
 	}
 	cout << "-------- END DUMPING GBD VECTOR --------" << endl << endl;
 
+	return;
+}
+
+void compare_structures (const vector <double>& IN1, const vector <double>& IN2) {
+
+	if (IN1.size() != IN2.size()) ASSERT_DEAD_END();
+
+	for (size_t i = 0; i < IN1.size(); i++) {
+
+		if (IN1.at(i) != IN2.at(i)) ASSERT_DEAD_END();
+	}
 	return;
 }

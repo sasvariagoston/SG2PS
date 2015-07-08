@@ -9,10 +9,10 @@
 #include <iomanip>
 #include <iostream>
 
-
 #include "assertions.hpp"
 #include "allowed_keys.hpp"
 #include "common.h"
+#include "filename.hpp"
 #include "inversion.h"
 #include "rgf.h"
 //#include "rose.h"
@@ -235,18 +235,26 @@ void INIT_DEBUG () {
 	}
 }
 
-void STANDARD_OUTPUT (const vector <GDB>& inGDB, const bool TILT) {
+void STANDARD_OUTPUT (const vector <GDB>& inGDB) {
 
 	if (!is_mode_DEBUG()) return;
 
-	string T = "N";
-	if (TILT) T = "T";
+	const bool TILT = is_PROCESS_AS_TILTED();
+
+	string T = "NRM";
+	if (TILT) T = "TLT";
+
+	if (is_PROCESS_AS_TRAJECTORY()) T = T + "_TRJ";
 
 	if (is_CHK_LITHOLOGY_DT () && !TILT) 		dump_RGF_to_file (inGDB, "ST_DT_LITHOLOGY");
 	else if (is_CHK_LINEATION_DT() && !TILT) 	dump_RGF_to_file (inGDB, "ST_DT_LINEATION");
 	else if (is_CHK_PLANE_DT () && !TILT) 		dump_RGF_to_file (inGDB, "ST_DT_PLANE");
 	else if (is_CHK_STRIAE_DT () && !TILT)		dump_RGF_to_file (inGDB, "ST_DT_STRIAE");
 	else if (is_CHK_SC_DT () && !TILT) 			dump_RGF_to_file (inGDB, "ST_DT_SC");
+	else if (is_CHK_RETILT() && TILT)			dump_RGF_to_file (inGDB, "ST_RETILT");
+	else if (is_CHK_AVERAGE())					dump_RGF_to_file (inGDB, "ST_AVERAGE_"+T);
+	else if (is_CHK_COLORS()) 					dump_RGF_to_file (inGDB, "ST_COLORS_"+T);
+	else if (is_CHK_FOLDSURFACE()) 				dump_RGF_to_file (inGDB, "ST_FOLDSURFACE");
 	else if (is_CHK_ANGELIER() && is_INVERSION_ANGELIER()) 		dump_RGF_SF_to_file (inGDB, "ST_INV_ANGELIER_"+T);
 	else if (is_CHK_BINGHAM() && is_BINGHAM_USE()) 				dump_RGF_SF_to_file (inGDB, "ST_INV_BINGHAM_"+T);
 	else if (is_CHK_BRUTEFORCE() && is_INVERSION_BRUTEFORCE())	dump_RGF_SF_to_file (inGDB, "ST_INV_BRUTEFORCE_"+T);
@@ -256,10 +264,6 @@ void STANDARD_OUTPUT (const vector <GDB>& inGDB, const bool TILT) {
 	else if (is_CHK_SPRANG() && is_INVERSION_SPRANG()) 			dump_RGF_SF_to_file (inGDB, "ST_INV_SPRANG_"+T);
 	else if (is_CHK_SHAN() && is_INVERSION_SHAN())				dump_RGF_SF_to_file (inGDB, "ST_INV_SHAN_"+T);
 	else if (is_CHK_TURNER() && is_INVERSION_TURNER())			dump_RGF_SF_to_file (inGDB, "ST_INV_TURNER_"+T);
-	else if (is_CHK_RETILT() && TILT)	dump_RGF_to_file (inGDB, "ST_RETILT");
-	else if (is_CHK_AVERAGE())			dump_RGF_to_file (inGDB, "ST_AVERAGE");
-	else if (is_CHK_COLORS()) 			dump_RGF_to_file (inGDB, "ST_COLORS");
-	else if (is_CHK_FOLDSURFACE()) 		dump_RGF_to_file (inGDB, "ST_FOLDSURFACE");
 	else {};
 }
 
@@ -642,12 +646,20 @@ void dump_INTERVAL_to_file (ofstream& o) {
 
 void standard_output_INTERVAL (const bool TLT, const bool TRJ) {
 
-	string FN = "ST_WELL_INTERVAL";
-	if (TLT) FN = FN + "_TILTED";
-	if (TRJ) FN = FN + "_TRAJECTORY";
+	//string T = return_ACTUAL_LOCATION();
+	//T = T + "_" + return_ACTUAL_FORMATION();
+	//T = T + "_" + return_ACTUAL_DATATYPE();
+	//T = T + "_" + return_ACTUAL_GROUPCODE();
+
+	string T = "ST_WELL_INTERVAL";
+
+	if (is_PROCESS_AS_TILTED()) T = T + "_TLT";
+	else T = T + "_NRM";
+
+	if (is_PROCESS_AS_TRAJECTORY()) T = T + "_TRJ";
 
 	ofstream o;
-	o.open ((FN + ".csv").c_str());
+	o.open ((T + ".csv").c_str());
 
 	dump_INTERVAL_to_file (o);
 
@@ -682,12 +694,20 @@ void dump_FREQUENCY_to_file (ofstream& o) {
 
 void standard_output_FREQUENCY (const bool TLT, const bool TRJ) {
 
-	string FN = "ST_WELL_FREQUENCY";
-	if (TLT) FN = FN + "_TILTED";
-	if (TRJ) FN = FN + "_TRAJECTORY";
+	//string T = return_ACTUAL_LOCATION();
+	//T = T + "_" + return_ACTUAL_FORMATION();
+	// = T + "_" + return_ACTUAL_DATATYPE();
+	//T = T + "_" + return_ACTUAL_GROUPCODE();
+
+	string T = "ST_WELL_FREQUENCY";
+
+	if (is_PROCESS_AS_TILTED()) T = T + "_TLT";
+	else T = T + "_NRM";
+
+	if (is_PROCESS_AS_TRAJECTORY()) T = T + "_TRJ";
 
 	ofstream o;
-	o.open ((FN + ".csv").c_str());
+	o.open ((T + ".csv").c_str());
 
 	dump_FREQUENCY_to_file (o);
 
@@ -719,20 +739,23 @@ void dump_CURVE_to_file (const vector <double>& DEPTH, const vector <double>& VA
 
 void STANDARD_OUTPUT_WELL_PS (const vector <double>& DEPTH, const vector <double>& VALUE, const bool DIPDIR, const string TYPE) {
 
-	const bool TLT = is_PROCESS_AS_TILTED();
-	const bool TRJ = is_PROCESS_AS_TRAJECTORY();
+	string T = return_ACTUAL_LOCATION();
+	T = T + "_" + return_ACTUAL_FORMATION();
+	T = T + "_" + return_ACTUAL_DATATYPE();
+	T = T + "_" + return_ACTUAL_GROUPCODE();
 
-	string FN = "ST_WELL_CURVE";
-	if (TLT) FN = FN + "_TILTED";
-	if (TRJ) FN = FN + "_TRAJECTORY";
+	if (is_PROCESS_AS_TILTED()) T = T + "_TLT";
+	else T = T + "_NRM";
 
-	if (DIPDIR) FN = FN + "_DIPDIR";
-	else FN = FN + "_DIP";
+	if (is_PROCESS_AS_TRAJECTORY()) T = T + "_TRJ";
 
-	FN = FN + "_" + TYPE;
+	if (DIPDIR) T = T + "_DIPDIR";
+	else T = T + "_DIP";
+
+	T = T + "_" + TYPE;
 
 	ofstream o;
-	o.open ((FN + ".csv").c_str());
+	o.open (("ST_WELL_CURVE" + T + ".csv").c_str());
 
 	dump_CURVE_to_file (DEPTH, VALUE, o);
 }
@@ -758,34 +781,40 @@ void dump_PEAK_to_file (ofstream& o, const bool PEAK) {
 
 void STANDARD_OUTPUT_PEAKS (const string METHOD) {
 
-	const bool TLT = is_PROCESS_AS_TILTED();
-	const bool TRJ = is_PROCESS_AS_TRAJECTORY();
+	string T = return_ACTUAL_LOCATION();
+	T = T + "_" + return_ACTUAL_FORMATION();
+	T = T + "_" + return_ACTUAL_DATATYPE();
+	T = T + "_" + return_ACTUAL_GROUPCODE();
 
-	string FN = "ST_WELL_PEAKS";
-	if (TLT) FN = FN + "_TILTED";
-	if (TRJ) FN = FN + "_TRAJECTORY";
+	if (is_PROCESS_AS_TILTED()) T = T + "_TLT";
+	else T = T + "_NRM";
 
-	FN = FN + "_" + METHOD;
+	if (is_PROCESS_AS_TRAJECTORY()) T = T + "_TRJ";
+
+	T = T + "_" + METHOD;
 
 	ofstream o;
-	o.open ((FN + ".csv").c_str());
+	o.open (("ST_WELL_PEAKS" + T + ".csv").c_str());
 
 	dump_PEAK_to_file (o, true);
 }
 
 void STANDARD_OUTPUT_FAULTS (const string METHOD) {
 
-	const bool TLT = is_PROCESS_AS_TILTED();
-	const bool TRJ = is_PROCESS_AS_TRAJECTORY();
+	string T = return_ACTUAL_LOCATION();
+	T = T + "_" + return_ACTUAL_FORMATION();
+	T = T + "_" + return_ACTUAL_DATATYPE();
+	T = T + "_" + return_ACTUAL_GROUPCODE();
 
-	string FN = "ST_WELL_FAULTS";
-	if (TLT) FN = FN + "_TILTED";
-	if (TRJ) FN = FN + "_TRAJECTORY";
+	if (is_PROCESS_AS_TILTED()) T = T + "_TLT";
+	else T = T + "_NRM";
 
-	FN = FN + "_" + METHOD;
+	if (is_PROCESS_AS_TRAJECTORY()) T = T + "_TRJ";
+
+	T = T + "_" + METHOD;
 
 	ofstream o;
-	o.open ((FN + ".csv").c_str());
+	o.open (("ST_WELL_FAULTS" + T + ".csv").c_str());
 
 	dump_PEAK_to_file (o, false);
 }

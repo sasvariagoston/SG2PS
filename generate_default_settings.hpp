@@ -23,6 +23,6 @@ void dbg_default_settings_database (const  vector <vector < vector <string> > >&
 
 void dump_keys_values_into_settings_file (const vector <string>& KEY, const vector <string>& VAL, const string FN);
 
-void dbg_generate_settings_file_list ();
+void dbg_generate_settings_file_list (const string ARG);
 
 #endif

@@ -139,11 +139,11 @@ vector <VALLEY> return_valleys (const vector <double>& in, const size_t bin_numb
 
 	V = create_valley_graph (V);
 
-	if (is_CHK_RUP_ANG()) {
+	//if (is_CHK_RUP_ANG()) {
 
-		dump_HISTOGRAM_to_file (H, "ST_RUP_ANG");
-		dump_VALLEY_to_file (V, "ST_RUP_ANG");
-	}
+	//	dump_HISTOGRAM_to_file (H, "ST_RUP_ANG");
+	//	dump_VALLEY_to_file (V, "ST_RUP_ANG");
+	//}
 	return V;
 }
 

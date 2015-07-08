@@ -8,6 +8,7 @@
 
 #include "assertions.hpp"
 #include "allowed_keys.hpp"
+#include "filename.hpp"
 #include "rgf.h"
 #include "rose.h"
 #include "run_mode.h"
@@ -204,7 +205,7 @@ void PS_draw_rose_DATATYPE (const vector <GDB>& inGBD, ofstream& o, const CENTER
 	else ASSERT_DEAD_END();
 }
 
-void PS_draw_rose_DIPDIR_DIP (vector <GDB> inGDB, ofstream& o, CENTER center, const string MODE) {
+void PS_draw_rose_DIPDIR_DIP (vector <GDB> inGDB, ofstream& o, CENTER center, const string MODE, const bool TILT) {
 
 	vector <ROSENUMBER> N;
 	ROSENUMBER MX;
@@ -264,7 +265,21 @@ void PS_draw_rose_DIPDIR_DIP (vector <GDB> inGDB, ofstream& o, CENTER center, co
 		if (N.at(i).PLN_NUM > MX.PLN_NUM) MX.PLN_NUM = N.at(i).PLN_NUM;
 	}
 
-	if (is_mode_DEBUG() && is_CHK_ROSE()) dump_ROSENUMBER_to_file (N, "ST_ROSE");
+	if (is_mode_DEBUG() && is_CHK_ROSE()) {
+
+		string T = return_ACTUAL_LOCATION();
+		T = T + "_" + return_ACTUAL_FORMATION();
+		T = T + "_" + return_ACTUAL_DATATYPE();
+		T = T + "_" + return_ACTUAL_GROUPCODE();
+
+		if (TILT) T = T + "_TLT";
+		else T = T + "_NRM";
+
+		if (is_PROCESS_AS_TRAJECTORY()) T = T + "_TRJ";
+
+
+		dump_ROSENUMBER_to_file (N, "ST_ROSE_"+T);
+	}
 
 	for (size_t i = 0; i < N.size(); i++) {
 

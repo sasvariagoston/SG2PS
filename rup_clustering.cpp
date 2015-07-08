@@ -14,8 +14,10 @@
 #include "math.h"
 #include "settings.hpp"
 #include "structs.h"
+#include "rgf.h"
 #include "run_mode.h"
 #include "rup_clustering.hpp"
+#include "standard_output.hpp"
 #include "valley_method.hpp"
 
 
@@ -261,17 +263,17 @@ vector <GDB> associate_GDB_DATA_clusters (const vector <GDB>& inGDB, const vecto
 		if ((is_RUP_CLUSTERING_RUP() || is_RUP_CLUSTERING_ANG()) && (V.size() == 0)) {
 
 			outGDB.at(j).GC.at(2) = GC.at(0).at(0);
-			cout << "* 1: " << outGDB.at(j).GC.at(2) << endl;
+			//cout << "* 1: " << outGDB.at(j).GC.at(2) << endl;
 		}
 		else if (is_RUP && !is_RUP_CLUSTERING_RUP()) {
 
 			outGDB.at(j).GC.at(2) = GC.at(0).at(0);
-			cout << "* 2: " << outGDB.at(j).GC.at(2) << endl;
+			//cout << "* 2: " << outGDB.at(j).GC.at(2) << endl;
 		}
 		else if (is_ANG && !is_RUP_CLUSTERING_ANG()){
 
 			outGDB.at(j).GC.at(2) = GC.at(0).at(0);
-			cout << "* 3: " << outGDB.at(j).GC.at(2) << endl;
+			//cout << "* 3: " << outGDB.at(j).GC.at(2) << endl;
 		}
 		else {
 
@@ -285,15 +287,15 @@ vector <GDB> associate_GDB_DATA_clusters (const vector <GDB>& inGDB, const vecto
 
 				if (ACT < V.at(0).BIN_CENTER) {
 					outGDB.at(j).GC.at(2) = GC.at(1).at(0);
-					cout << "1: " << outGDB.at(j).GC.at(2) << endl;//was 0
+					//cout << "1: " << outGDB.at(j).GC.at(2) << endl;//was 0
 				}
 				else if (ACT > V.at(V.size()-1).BIN_CENTER) {
 					outGDB.at(j).GC.at(2) = GC.at(i+2).at(0);
-					cout << "2: " << outGDB.at(j).GC.at(2) << endl;//was i+=1
+					//cout << "2: " << outGDB.at(j).GC.at(2) << endl;//was i+=1
 				}
 				else if (i > 0 && is_in_range (V.at(i-1).BIN_CENTER, V.at(i).BIN_CENTER, ACT)){
 					outGDB.at(j).GC.at(2) = GC.at(i+1).at(0);
-					cout << "3: " << outGDB.at(j).GC.at(2) << endl;//was i
+					//cout << "3: " << outGDB.at(j).GC.at(2) << endl;//was i
 				}
 				else {}
 
@@ -308,11 +310,35 @@ vector <GDB> apply_RUP_ANG_CLUSTERING_result (const vector <GDB>& inGDB) {
 
 	if (! is_allowed_striae_datatype (inGDB.at(0).DATATYPE)) ASSERT_DEAD_END();
 
-	vector <VALLEY> V;
+	string FIELD = "";
 
-	if 		(is_RUP_CLUSTERING_ANG()) V = return_valleygraph_for_dataset (inGDB, "ANG");
-	else if (is_RUP_CLUSTERING_RUP()) V = return_valleygraph_for_dataset (inGDB, "RUP");
+	if 		(is_RUP_CLUSTERING_ANG()) FIELD = "ANG";
+	else if (is_RUP_CLUSTERING_RUP()) FIELD = "RUP";
 	else return inGDB;
+
+	vector <VALLEY> V = return_valleygraph_for_dataset (inGDB, FIELD);
+
+	if (is_CHK_RUP_ANG()) {
+
+		vector <double> in = GDB_to_table (inGDB, FIELD);
+
+		size_t bin_number = return_DATA_ideal_bin_number (in);
+
+		const vector <HISTOGRAM> H = generate_DATA_histogram (in, bin_number);
+
+		string T = "ST_RUP_ANG_" +  inGDB.at(0).LOC;
+		T = T + "_" + inGDB.at(0).FORMATION;
+		T = T + "_" + inGDB.at(0).DATATYPE;
+		T = T + "_" + inGDB.at(0).GC;
+
+		if (is_PROCESS_AS_TILTED()) T = T + "_TLT";
+		else T = T + "_NRM";
+
+		if (is_PROCESS_AS_TRAJECTORY()) T = T + "_TRJ";
+
+		dump_HISTOGRAM_to_file (H, T);
+		dump_VALLEY_to_file (V, T);
+	}
 
 	if (V.size() == 1 && V.at(0).DIR == "X") V.clear();
 
@@ -325,8 +351,8 @@ vector <GDB> apply_RUP_ANG_CLUSTERING_result (const vector <GDB>& inGDB) {
 			else					cout << "    - Input data set separated into " << V.size() + 1 << " clusters." << endl;
 		}
 
-		if 		(is_RUP_CLUSTERING_RUP()) 	return associate_GDB_DATA_clusters (inGDB, V, "RUP");
-		else if (is_RUP_CLUSTERING_ANG()) 	return associate_GDB_DATA_clusters (inGDB, V, "ANG");
+		if 		(is_RUP_CLUSTERING_RUP()) 	return associate_GDB_DATA_clusters (inGDB, V, FIELD);
+		else if (is_RUP_CLUSTERING_ANG()) 	return associate_GDB_DATA_clusters (inGDB, V, FIELD);
 		else    		 					return associate_GDB_DATA_clusters (inGDB, V, "");
 	}
 	return inGDB;

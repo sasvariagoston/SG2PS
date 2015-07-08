@@ -95,7 +95,7 @@ void output_contourline (ofstream& o, const PAPER& P, const CENTER& center, vect
 
 bool is_processable_for_contouring (const vector <GDB>& inGDB);
 
-void CONTOURING (const vector <GDB>& inGDB, ofstream& o, const PAPER& P, const CENTER center);
+void CONTOURING (const vector <GDB>& inGDB, ofstream& o, const PAPER& P, const CENTER center, const bool TILT);
 
 void dbg_cout_NET (const vector <vector <vector <VCTR> > >& NET);
 void dbg_cout_TRI_GRID (const vector <TRIANGLE>& TRI_GRID);

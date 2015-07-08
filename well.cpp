@@ -14,13 +14,13 @@
 #include "bingham.h"
 #include "common.h"
 #include "data_sort.hpp"
+#include "filename.hpp"
 #include "rgf.h"
 //#include "run_mode.h"
 #include "settings.hpp"
 #include "standard_output.hpp"
 #include "structs.h"
 #include "well.hpp"
-
 
 namespace {
 
@@ -78,9 +78,6 @@ vector <WELL_FREQUENCY> FREQUENCY (const vector <GDB>& inGDB) {
 	vector <WELL_FREQUENCY> OUT;
 
 	vector <GDB> process_GDB = SORT_GDB (inGDB, "DEPTH");
-	//vector <GDB> process_GDB = sort_by_DEPTH (inGDB);
-
-	//cout << process_GDB.size() << endl;
 
 	process_GDB = filter_too_small_distances (process_GDB);
 
@@ -257,18 +254,7 @@ vector <GDB> return_GDB_for_data_interval (const vector <GDB>& inGDB, const doub
 
 double stdev_for_interval (const vector <GDB>& inGDB, const bool DIPDIR) {
 
-	//if (is_WELL_INTERVAL_DATANUMBER()) {
-
-	//	size_t L = double_to_size_t(is_WELL_INTERVAL_LENGTH());
-
-	//	if (inGDB.size() < L) ASSERT_DEAD_END();
-	//}
-
 	const DIPDIR_DIP avDD = inGDB.at(0).avd;
-
-	//cout << "inGDB.at(0).avd: " << inGDB.at(0).avd.DIPDIR << "/" << inGDB.at(0).avd.DIP << endl;
-
-	//cout << "    ANG: " << flush;
 
 	vector <double> MSFT;
 
@@ -440,6 +426,7 @@ vector <WELL_INTERVAL> WELL_AVERAGE_D (const vector <GDB>& p_GDB) {
 void PROCESS_WELL_GROUPS (const vector <vector <GDB> >& inGDB_G) {
 
 	//dbg_cout_GDB_vector_vector(inGDB_G);
+	//dbg_cout_GDB_vector_vector_structure (inGDB_G);
 
 	if (is_WELLDATA_NO()) return;
 
@@ -449,6 +436,11 @@ void PROCESS_WELL_GROUPS (const vector <vector <GDB> >& inGDB_G) {
 	for (size_t i = 0; i < inGDB_G.size(); i++) {
 
 		GDB_size_check (inGDB_G.at(i));
+
+		setup_ACTUAL_LOCATION (inGDB_G.at(i).at(0).LOC);
+		setup_ACTUAL_DATATYPE (inGDB_G.at(i).at(0).DATATYPE);
+		setup_ACTUAL_FORMATION(inGDB_G.at(i).at(0).FORMATION);
+		setup_ACTUAL_GROUPCODE(inGDB_G.at(i).at(0).GC);
 
 		vector <WELL_INTERVAL> INTERVAL_buf;
 		vector <WELL_FREQUENCY> FREQUENCY_buf;
@@ -493,5 +485,15 @@ void PROCESS_WELL_GROUPS (const vector <vector <GDB> >& inGDB_G) {
 	}
 	if (is_CHK_WELL()) STANDARD_OUTPUT_WELL_GROUPS ();
 
+	for (size_t i = 0; i < W_FREQUENCY.size(); i++) {
+
+		//cout << i << endl;
+
+		for (size_t j = 0; j < W_FREQUENCY.at(i).size(); j++) {
+
+			//cout << j << " - " << flush;
+		}
+		//cout << endl;
+	}
 	return;
 }

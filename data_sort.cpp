@@ -82,10 +82,9 @@ bool by_rev_LOC (const GDB& x, const GDB& y) {
 }
 
 
-
 bool by_RUP_ANG(const GDB& x, const GDB& y) {
 
-	return x.GC.at(3) < y.GC.at(3);
+	return x.GC.at(2) < y.GC.at(2);
 }
 
 bool by_RUP(const GDB& x, const GDB& y) {
@@ -97,10 +96,6 @@ bool by_ANG(const GDB& x, const GDB& y) {
 
 	return x.ANG < y.ANG;
 }
-
-
-
-
 
 bool by_LocGcType (const GDB& x, const GDB& y) {
 
@@ -122,15 +117,6 @@ bool byLocFmType (const GDB& x, const GDB& y) {
 	if (x.FORMATION != y.FORMATION) return x.FORMATION < y.FORMATION;
 	return x.DATATYPE < y.DATATYPE;
 }
-
-
-
-
-
-
-
-
-
 
 vector <GDB> SORT_GDB (const vector <GDB>& inGDB, const string SORT) {
 
@@ -156,8 +142,11 @@ vector <GDB> SORT_GDB (const vector <GDB>& inGDB, const string SORT) {
 	else if (SORT == "DATATYPE")	sort (P.begin(), P.end(), by_DT);
 	else if (SORT == "rDATATYPE")	sort (P.begin(), P.end(), by_rev_DT);
 
-	else if (SORT == "FORMATION")	sort (P.begin(), P.end(), by_GC);
-	else if (SORT == "rFORMATION")	sort (P.begin(), P.end(), by_rev_GC);
+	//else if (SORT == "FORMATION")		sort (P.begin(), P.end(), by_GC);
+	//else if (SORT == "rFORMATION")	sort (P.begin(), P.end(), by_rev_GC);
+
+	else if (SORT == "FORMATION")	sort (P.begin(), P.end(), by_FM);
+	else if (SORT == "rFORMATION")	sort (P.begin(), P.end(), by_rev_FM);
 
 	else if (SORT == "LOCATION")	sort (P.begin(), P.end(), by_LOC);
 	else if (SORT == "rLOCATION")	sort (P.begin(), P.end(), by_rev_LOC);
@@ -209,45 +198,6 @@ vector <TRJ> SORT_TRJ (const vector <TRJ>& inTRJ, const string SORT) {
 	return P;
 }
 
-
-
-//bool by_GC(const GDB& x, const GDB& y) {
-
-//	return x.GC < y.GC;
-//}
-
-
-
-//bool by_C(const RUP_table& x, const RUP_table& y) {
-
-//	return x.C < y.C;
-//}
-
-//vector <GDB> sort_by_GC (vector <GDB> inGDB) {
-
-//	sort(inGDB.begin(), inGDB.end(), by_GC);
-
-//	return inGDB;
-//}
-
-//vector <GDB> sort_by_RUP (const vector <GDB>& inGDB) {
-
-//	vector <GDB> outGDB = inGDB;
-
-//	sort(outGDB.begin(), outGDB.end(), by_RUP);
-
-//	return outGDB;
-//}
-
-//vector <GDB> sort_by_ANG (const vector <GDB>& inGDB) {
-
-//	vector <GDB> outGDB = inGDB;
-
-//	sort(outGDB.begin(), outGDB.end(), by_ANG);
-
-//	return outGDB;
-//}
-
 bool by_C(const RUP_table& x, const RUP_table& y) {
 
 	return x.C < y.C;
@@ -261,69 +211,3 @@ vector <RUP_table> sort_by_C (const vector <RUP_table>& RT) {
 
 	return OUT;
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-/*
-
-vector <GDB> sort_by_iID (const vector <GDB>& inGDB) {
-
-	vector <GDB> outGDB = inGDB;
-
-	sort(outGDB.begin(), outGDB.end(), by_iID);
-
-	return outGDB;
-}
-*/
-
-
-/*
-vector <GDB> sort_by_DEPTH (const vector <GDB>& inGDB) {
-
-	vector <GDB> outGDB = inGDB;
-
-	sort (outGDB.begin(), outGDB.end(), by_DEPTH);
-
-	return outGDB;
-}
-*/
-
-/*
-vector <GDB> sort_by_rev_DEPTH (const vector <GDB>& inGDB) {
-
-	vector <GDB> outGDB = inGDB;
-
-	sort (outGDB.begin(), outGDB.end(), by_rev_DEPTH);
-
-	return outGDB;
-}
-*/

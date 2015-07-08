@@ -11,6 +11,7 @@
 
 #include "assertions.hpp"
 #include "common.h"
+#include "data_io.h"
 #include "exceptions.hpp"
 #include "generate_default_settings.hpp"
 #include "iomanip"
@@ -430,10 +431,10 @@ vector <vector < vector <string> > > RETURN_ALL_SETTINGS () {
 			"G",
 			"  - Use GROUP CODE to separate output data.",
 			"    - Use group code to separate............................[g]?  ");
-	pushbach_settings_option (defitem,
-			"F",
-			"  - Use FORMATION NAME to separate  output data.",
-			"    - Use formation name to separate........................[f]?  ");
+	//pushbach_settings_option (defitem,
+	//		"F",
+	//		"  - Use FORMATION NAME to separate  output data.",
+	//		"    - Use formation name to separate........................[f]?  ");
 	pushbach_settings_option (defitem,
 			"K",
 			"  - Use K_MEANS CLUSTERING RESULT group to separate output data.",
@@ -588,14 +589,20 @@ void dump_keys_values_into_settings_file (const vector <string>& KEY, const vect
 	return;
 }
 
-void dbg_generate_settings_file_list () {
+void dbg_generate_settings_file_list (const string ARG) {
 
 	if (!is_mode_GENERATE_TEST_FILES()) return;
 
 	vector <vector <vector <string> > > DEF = RETURN_ALL_SETTINGS ();
 
+
+	ofstream bat;
+	bat.open (("sg2ps_test_" + ARG + ".bat").c_str());
+
 	const size_t D = DEF.size();
 	const size_t STP = 5;
+
+	size_t counter = 0;
 
 	for (size_t i = 0; i < D - STP + 1; i++) {
 
@@ -648,14 +655,26 @@ void dbg_generate_settings_file_list () {
 								FN = FN + val;
 							}
 
-							cout << FN << ".SET file has been generated. " << endl;
+							counter++;
 
-							dump_keys_values_into_settings_file (KEY, VAL, FN);
+							cout << FN+ARG << ".SET file has been generated. " << endl;
+
+							dump_keys_values_into_settings_file (KEY, VAL, FN+ARG);
+							copy_rgf_to_test_file (FN, ARG);
+							copy_trj_to_test_file (FN, ARG);
+							copy_xy_to_test_file (FN, ARG);
+
+							bat << "sg2ps.exe " << FN+ARG << endl;
 						}
 					}
 				}
 			}
 		}
 	}
+
+	cout << "Test files generated for testing " << counter << " settings combinations." << endl;
+
+	bat.close();
+
 	throw exit_requested ();
 }

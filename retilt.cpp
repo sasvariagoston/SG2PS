@@ -78,7 +78,6 @@ double return_tilting_angle (const GDB& in, const string METHOD) {
 
 			ASSERT_DEAD_END();
 			return NaN ();
-
 		}
 	}
 	else {
@@ -108,23 +107,7 @@ GDB tilt_plane (const GDB& in, const VCTR& AXIS, const double ANGLE) {
 
 	const bool B = is_allowed_handle_as_bedding(in.DATATYPE);
 
-	//cout << "www1" << endl;
-
-	//cout << " ---------------------------------- " << endl;
-	//cout <<"AXIS"<<endl;
-	//cout <<"===="<<endl;
-	//cout << AXIS.X << " - " << AXIS.Y << " - " << AXIS.Z << endl;
-
-	//cout <<"PLANE NORMAL"<<endl;
-	//cout <<"============"<<endl;
-	//cout << in.N.X << " - " << in.N.Y << " - " << in.N.Z << endl;
-
-	//cout << "ANGLE: " << ANGLE << endl;
-	//cout << " ---------------------------------- " << endl;
-
 	OUT.N = unitvector (ROTATE (AXIS, in.N, ANGLE));
-
-	//cout << "www2" << endl;
 
 	bool O = is_N_down (OUT.N);
 
@@ -212,6 +195,8 @@ GDB tilt_SC (const GDB& in, const VCTR& AXIS, const double ANGLE) {
 
 GDB TILT_DATA (const GDB& in, const string METHOD) {
 
+	if (is_allowed_lithology_datatype (in.DATATYPE)) return in;
+
 	const bool B = METHOD == "BEDDING";
 	const bool P = METHOD == "PALEONORTH";
 	const bool T = METHOD == "TRAJECTORY";
@@ -267,31 +252,6 @@ GDB TILT_DATA (const GDB& in, const string METHOD) {
 	return in;
 }
 
-/*
-GDB S0_TILT (const GDB& in, const string METHOD) {
-
-
-	//const bool DD =	is_allowed_DIR (ACT.avS0d.DIPDIR);
-	//const bool D = is_allowed_DIP (ACT.avS0d.DIP);
-	//const bool L = is_allowed_lithology_datatype (ACT.DATATYPE);
-
-
-
-
-	GDB out = in;
-
-	if (is_TILTING_BEDDING_PALEONORTH()) {
-
-		out = TILT_DATA (in, false);
-		out = TILT_DATA (out, true);
-	}
-	else if (is_TILTING_BEDDING()) 		out = TILT_DATA (in, false);
-	else if (is_TILTING_PALEONORTH()) 	out = TILT_DATA (in, true);
-	else ASSERT_DEAD_END();
-
-	return out;
-}
-*/
 vector < vector <GDB> > RETILT (const vector < vector <GDB> >& inGDB, const string METHOD) {
 
 	vector < vector <GDB> > outGDB = inGDB;
@@ -304,33 +264,3 @@ vector < vector <GDB> > RETILT (const vector < vector <GDB> >& inGDB, const stri
 	}
 	return outGDB;
 }
-
-/*
- * vector < vector < vector < vector <GDB> > > > RETILT (const vector < vector < vector < vector <GDB> > > >& inGDB) {
-
-	vector < vector < vector < vector <GDB> > > > outGDB = inGDB;
-
-	for (size_t i = 0; i < outGDB.size(); i++) {
-		for (size_t j = 0; j < outGDB.at(i).size(); j++) {
-			for (size_t k = 0; k < outGDB.at(i).at(j).size(); k++) {
-
-				//dbg_cout_GDB_vector (outGDB.at(i).at(j).at(k));
-
-				for (size_t l = 0; l < outGDB.at(i).at(j).at(k).size(); l++) {
-
-					const GDB ACT = outGDB.at(i).at(j).at(k).at(l);
-
-					const bool DD =	is_allowed_DIR (ACT.avS0d.DIPDIR);
-					const bool D = is_allowed_DIP (ACT.avS0d.DIP);
-					const bool L = is_allowed_lithology_datatype (ACT.DATATYPE);
-
-					if (DD && D && !L) outGDB.at(i).at(j).at(k).at(l) = S0_TILT (ACT);
-
-				}
-				//dbg_cout_GDB_vector (outGDB.at(i).at(j).at(k));
-			}
-		}
-	}
-	return outGDB;
-}
- */

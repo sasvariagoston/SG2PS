@@ -1,0 +1,24 @@
+sg2ps.exe --D ST_AVERAGE
+sg2ps.exe --D ST_COLORS
+sg2ps.exe --D ST_CONTOURING
+sg2ps.exe --D ST_DT_LINEATION
+sg2ps.exe --D ST_DT_LITHOLOGY
+sg2ps.exe --D ST_DT_PLANE
+sg2ps.exe --D ST_DT_SC
+sg2ps.exe --D ST_DT_STRIAE
+sg2ps.exe --D ST_FOLDSURFACE
+sg2ps.exe --D ST_INV_ANGELIER
+sg2ps.exe --D ST_INV_BINGHAM
+sg2ps.exe --D ST_INV_BRUTEFORCE
+sg2ps.exe --D ST_INV_FRY
+sg2ps.exe --D ST_INV_MICHAEL
+sg2ps.exe --D ST_INV_MOSTAFA
+sg2ps.exe --D ST_INV_SHAN
+sg2ps.exe --D ST_INV_SPRANG
+sg2ps.exe --D ST_INV_TURNER
+sg2ps.exe --D ST_K-MEANS
+sg2ps.exe --D ST_RETILT
+sg2ps.exe --D ST_ROSE
+sg2ps.exe --D ST_RUP_ANG
+sg2ps.exe --D ST_WELL
+

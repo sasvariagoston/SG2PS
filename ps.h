@@ -16,7 +16,7 @@ using namespace std;
 void PS_folddata (GDB in, ofstream& o, CENTER center);
 
 PAPER PS_dimensions (const bool WELL);
-void PS_stereonet_header (const string DATATYPE, const string LOC, ofstream& o);
+void PS_stereonet_header (ofstream& o);
 void PS_getstereonet (ofstream& o, CENTER center);
 void PS_stress_scale (ofstream& o, const PAPER& P);
 void PS_border (const vector <GDB>& inGDB, ofstream& o, const PAPER& P);
@@ -81,6 +81,6 @@ void PS_SYMBOLS_INVERSION (ofstream& o, const PAPER& P);
 
 void PS_GDB (const vector <GDB>& inGDB, ofstream& o, PAPER P, bool TILT);
 void PS_GDB_DATA (const vector <GDB>& inGDB, ofstream& o, const CENTER& center);
-void OUTPUT_TO_PS (const vector <vector <GDB> >& in_GDB_G, const vector <vector <GDB> >& t_GDB_G, const PFN P, const bool TILT, const bool TRJ);
+void OUTPUT_TO_PS (const vector <vector <GDB> >& in_GDB_G, const vector <vector <GDB> >& t_GDB_G);
 
 #endif

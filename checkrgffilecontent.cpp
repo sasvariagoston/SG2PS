@@ -74,36 +74,6 @@ struct record {
 };
 
 }
-/*
-string inputfilename () {
-
-	string filename;
-	string projectname;
-	ifstream rgffile;
-
-	do {
-
-		cout << endl << "Enter RGF file (*.rgf) name without extension........:  " << flush;
-
-		cin  >> projectname;
-
-		if ((projectname == "X") || (projectname == "x")) throw exit_requested();
-
-		filename = projectname + ".rgf";
-
-		rgffile.open (filename.c_str());
-		
-		if (rgffile.is_open())cout << "  - Input " << capslock(projectname)<< ".RGF file opened." << endl << endl;
-		else cout << "    - ERROR, cannot open " << capslock(projectname)<< ".RGF geodatabase file. Please try again." << endl << endl;
-	}
-	
-	while (!(rgffile.is_open()));
-
-	rgffile.close();
-
-	return projectname;
-}
-*/
 
 void read_in_rgf(const string& file_name); // throws rgf_error if duplicate col names are found
 

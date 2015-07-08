@@ -260,6 +260,8 @@ size_t has_relevant_bedding (const size_t i, const vector <vector <GDB> >& inGDB
 	//cout << "is_WELLDATA_USE()  : " << is_WELLDATA_USE() << endl;
 	//cout << "is_GROUPS_USE()    : " << is_GROUPS_USE() << endl;
 
+	//dbg_cout_GDB_vector_vector (inGDB_G);
+
 	vector <size_t> EQ;
 
 	const string eLOC = inGDB_G.at(i).at(0).LOC;

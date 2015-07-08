@@ -14,6 +14,7 @@
 #include "color_management.hpp"
 #include "data_io.h"
 #include "density.h"
+#include "filename.hpp"
 #include "homogenity_check.hpp"
 #include "kaalsbeek.hpp"
 #include "ps.h"
@@ -138,9 +139,9 @@ PAPER PS_dimensions (const bool WELL) {
 	return P;
 }
 
-void PS_stereonet_header (const string DATATYPE, const string LOC, ofstream& o) {
+void PS_stereonet_header (ofstream& o) {
 
-	const string filename = LOC + "_" + DATATYPE + ".EPS";
+	const string filename = return_ACTUAL_LOCATION() + "_" + return_ACTUAL_DATATYPE() + ".EPS";
 
 	o << "%!PS-Adobe-3.0 EPSF-3.0" << '\n';
 	o << "%%BoundingBox:  0 0 1191 842" << '\n';
@@ -153,8 +154,8 @@ void PS_stereonet_header (const string DATATYPE, const string LOC, ofstream& o) 
 	o << "%%EndComments" << '\n' << '\n';
 	o << "<</PageSize [ 1191 842 ]>> setpagedevice " << '\n';
 
-	const bool FRACTURE_TO_PROCESS = is_BINGHAM_USE() && DATATYPE == "FRACTURE";
-	const bool IS_STRIAE = is_allowed_striae_datatype (DATATYPE);
+	const bool FRACTURE_TO_PROCESS = is_BINGHAM_USE() && return_ACTUAL_DATATYPE() == "FRACTURE";
+	const bool IS_STRIAE = is_allowed_striae_datatype (return_ACTUAL_DATATYPE());
 	const bool STRIAE_TO_PROCESS = !is_INVERSION_NONE() && IS_STRIAE;
 
 	if (!FRACTURE_TO_PROCESS && !STRIAE_TO_PROCESS) return;
@@ -1692,10 +1693,10 @@ void PS_GDB (const vector <GDB>& inGDB, ofstream& o, PAPER P, bool TILT) {
 		mohrcenter.X = P.O8X;
 		mohrcenter.Y = P.O8Y;
 	}
-	CONTOURING (inGDB, o, P, center);
+	CONTOURING (inGDB, o, P, center, TILT);
 
-	PS_draw_rose_DIPDIR_DIP (inGDB, o, rosecenter, "DIPDIR");
-	PS_draw_rose_DIPDIR_DIP (inGDB, o, vrosecenter, "DIP");
+	PS_draw_rose_DIPDIR_DIP (inGDB, o, rosecenter, "DIPDIR", TILT);
+	PS_draw_rose_DIPDIR_DIP (inGDB, o, vrosecenter, "DIP", TILT);
 
 	PS_GDB_DATA (inGDB, o, center);
 
@@ -2640,49 +2641,55 @@ void setdash_PS (ofstream& o, const string DASH) {
 	o << " [" << DASH << "] 0 setdash" << '\n';
 }
 
-void OUTPUT_TO_PS (const vector <vector <GDB> >& in_GDB_G, const vector <vector <GDB> >& t_GDB_G, const PFN P, const bool TILT, const bool TRJ) {
+void OUTPUT_TO_PS (const vector <vector <GDB> >& in_GDB_G, const vector <vector <GDB> >& t_GDB_G) {
 
 	if (in_GDB_G.size() != t_GDB_G.size()) ASSERT_DEAD_END();
 
-	const bool IGNORE = is_GROUPSEPARATION_IGNORE ();
-	const bool by_GROUPCODE = is_GROUPSEPARATION_GROUPCODE ();
-	const bool by_KMEANS = is_GROUPSEPARATION_KMEANS ();
-	const bool by_RUPANG = is_GROUPSEPARATION_RUPANG ();
+	//const bool IGNORE = is_GROUPSEPARATION_IGNORE ();
+	//const bool by_GROUPCODE = is_GROUPSEPARATION_GROUPCODE ();
+	//const bool by_KMEANS = is_GROUPSEPARATION_KMEANS ();
+	//const bool by_RUPANG = is_GROUPSEPARATION_RUPANG ();
 
-	if (!IGNORE && !by_GROUPCODE && !by_KMEANS && !by_RUPANG) ASSERT_DEAD_END() ;
+	//if (!IGNORE && !by_GROUPCODE && !by_KMEANS && !by_RUPANG) ASSERT_DEAD_END() ;
 
-	const string BS = path_separator;
-	const string US = "_";
+	//const string BS = path_separator;
+	//const string US = "_";
 
 	for (size_t i = 0; i < in_GDB_G.size(); i++) {
 
-		const string LOC = in_GDB_G.at(i).at(0).LOC;
-		const string DT = in_GDB_G.at(i).at(0).DATATYPE;
+		setup_ACTUAL_DATATYPE 	(in_GDB_G.at(i).at(0).DATATYPE);
+		setup_ACTUAL_LOCATION 	(in_GDB_G.at(i).at(0).LOC);
+		setup_ACTUAL_GROUPCODE 	(in_GDB_G.at(i).at(0).GC);
+		setup_ACTUAL_FORMATION 	(in_GDB_G.at(i).at(0).FORMATION);
+
+		const string DT = return_ACTUAL_DATATYPE();
 
 		const bool LITHOLOGY = is_allowed_lithology_datatype (DT);
 
 		if (!LITHOLOGY) {
 
-			string PS_NAME = P.pssep + BS + DT + BS + LOC + US + DT;
+			//string PS_NAME = P.pssep + BS + DT + BS + LOC + US + DT;
 
-			if (TRJ) PS_NAME = PS_NAME + "_TRAJECTORY_CORRECTED";
+			//if (TRJ) PS_NAME = PS_NAME + "_TRAJECTORY_CORRECTED";
 
-			if (by_GROUPCODE) 	PS_NAME = PS_NAME + US + in_GDB_G.at(i).at(0).GC.at(0);
-			else if (by_KMEANS) PS_NAME = PS_NAME + US + in_GDB_G.at(i).at(0).GC.at(1);
-			else if (by_RUPANG) PS_NAME = PS_NAME + US + in_GDB_G.at(i).at(0).GC.at(2);
-			else {}
+			//if (by_GROUPCODE) 	PS_NAME = PS_NAME + US + in_GDB_G.at(i).at(0).GC.at(0);
+			//else if (by_KMEANS) PS_NAME = PS_NAME + US + in_GDB_G.at(i).at(0).GC.at(1);
+			//else if (by_RUPANG) PS_NAME = PS_NAME + US + in_GDB_G.at(i).at(0).GC.at(2);
+			//else {}
 
-			PS_NAME = PS_NAME + ".EPS";
+			//PS_NAME = PS_NAME + ".EPS";
+
+			const string PS_NAME = generate_ACTUAL_PS_NAME();
 
 			ofstream OPS (PS_NAME.c_str());
 
-			PS_stereonet_header (DT, LOC, OPS);
+			PS_stereonet_header (OPS);
 
 			const PAPER PPR = PS_dimensions (false);
 
 			PS_STEREONET_SYMBOLS (in_GDB_G.at(i), OPS, PPR);
 
-			if (is_allowed_striae_datatype(DT) && ! is_INVERSION_NONE()) PS_stress_scale (OPS, PPR);
+			if (is_allowed_striae_datatype (DT) && ! is_INVERSION_NONE()) PS_stress_scale (OPS, PPR);
 
 			PS_border (in_GDB_G.at(i), OPS, PPR);
 

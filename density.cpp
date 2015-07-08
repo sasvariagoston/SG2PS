@@ -11,6 +11,7 @@
 
 #include "assertions.hpp"
 #include "common.h"
+#include "filename.hpp"
 #include "homogenity_check.hpp"
 #include "run_mode.h"
 #include "rgf.h"
@@ -1472,7 +1473,7 @@ bool is_processable_for_contouring (const vector <GDB>& inGDB) {
 	return true;
 }
 
-void CONTOURING (const vector <GDB>& inGDB, ofstream& o, const PAPER& P, const CENTER center) {
+void CONTOURING (const vector <GDB>& inGDB, ofstream& o, const PAPER& P, const CENTER center, const bool TILT) {
 
 	if (is_CONTOURING_NO()) return;
 	if (!is_processable_for_contouring (inGDB)) return;
@@ -1482,7 +1483,6 @@ void CONTOURING (const vector <GDB>& inGDB, ofstream& o, const PAPER& P, const C
 	vector <TRIANGLE> TRI_GRID = generate_net_count (inGDB, NET);
 
 	ofstream r;
-
 
 	vector <GRID_CENTER> TRI_CENTER = generate_triangle_center (TRI_GRID);
 
@@ -1496,9 +1496,19 @@ void CONTOURING (const vector <GDB>& inGDB, ofstream& o, const PAPER& P, const C
 
 	if (is_CHK_CONTOURING()) {
 
-		dump_TRI_GRID_to_file (TRI_GRID, "ST_CONTOURING");
+		string T = return_ACTUAL_LOCATION();
+		T = T + "_" + return_ACTUAL_FORMATION();
+		T = T + "_" + return_ACTUAL_DATATYPE();
+		T = T + "_" + return_ACTUAL_GROUPCODE();
 
-		dump_RECT_GRID_to_file (RECT_GRID, "ST_CONTOURING");
+		if (TILT) T = T + "_TLT";
+		else T = T + "_NRM";
+
+		if (is_PROCESS_AS_TRAJECTORY()) T = T + "_TRJ";
+
+		dump_TRI_GRID_to_file (TRI_GRID, "ST_CONTOURING_"+T);
+
+		dump_RECT_GRID_to_file (RECT_GRID, "ST_CONTOURING_"+T);
 	}
 
 	double C_MN = 0.5;

@@ -214,7 +214,7 @@ void LOAD_SETTINGS (const string projectname) {
 
 	SET = COMPLETE_SET_WITH_DEFAULT (SET);
 
-	if (!is_mode_DEBUG()) dump_settings (SET);
+	dump_settings (SET);
 
 	INIT_SETTINGS (SET);
 
@@ -228,10 +228,7 @@ void WRITE_SET_FILE (const vector <vector <string> >& SET, const string projectn
 
 	o.open ((projectname + ".set").c_str());
 
-	for (size_t i = 0; i < SET.size(); i++) {
-
-		o << SET.at(i).at(0) << '\t' << SET.at(i).at(1) << endl;
-	}
+	for (size_t i = 0; i < SET.size(); i++) o << SET.at(i).at(0) << '\t' << SET.at(i).at(1) << endl;
 }
 
 bool CHECK_SETTINGS (const string projectname) {

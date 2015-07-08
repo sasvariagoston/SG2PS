@@ -65,6 +65,8 @@ void setup_run_mode (const vector <string>& ARG_V) {
 
 	const string ARG = capslock (ARG_V.at(0));
 
+	//cout << ARG << endl;
+
 	if (is_allowed_debug_mode (ARG)) 	{
 
 		M_DBG = true;
@@ -152,7 +154,7 @@ void MANAGE_RUN_MODE (const vector <string>& ARG_V) {
 
 	if (is_mode_GENERATE_TEST_FILES()) {
 
-		dbg_generate_settings_file_list ();
+		dbg_generate_settings_file_list (ARG_V.at(1));
 		throw exit_requested ();
 	}
 

@@ -18,6 +18,7 @@
 #include "common.h"
 #include "data_io.h"
 #include "data_sort.hpp"
+#include "filename.hpp"
 #include "run_mode.h"
 #include "platform_dep.hpp"
 #include "ps.h"
@@ -79,9 +80,10 @@ vector <PEAK_TO_PLOT> return_FAULTS () {
 
 	return FAULTS;
 }
-void PS_well_header (const string DATATYPE, const string LOC, ofstream& o) {
+void PS_well_header (ofstream& o) {
 
-	const string filename = LOC + "_" + DATATYPE + ".EPS";
+	//const string filename = LOC + "_" + DATATYPE + ".EPS";
+	const string filename = return_ACTUAL_LOCATION() + "_" + return_ACTUAL_DATATYPE() + "_" + return_ACTUAL_GROUPCODE() + ".EPS";
 
 	o << "%!PS-Adobe-3.0 EPSF-3.0" << '\n';
 	o << "%%BoundingBox:  0 0 842 1191" << '\n';
@@ -148,12 +150,20 @@ void PS_well_header (const string DATATYPE, const string LOC, ofstream& o) {
 	return;
 }
 
-void PS_well_border (const vector <GDB>& inGDB, ofstream& o, const PAPER& P, const bool TILT, const bool TRJ) {
+void PS_well_border (ofstream& o, const PAPER& P) {
 
+	const string DT = return_ACTUAL_DATATYPE();
+	const string LOC = return_ACTUAL_LOCATION();
+	const string GC = return_ACTUAL_GROUPCODE();
+	const string FM = return_ACTUAL_FORMATION();
+
+	/*
+	 *
 	const string DT = inGDB.at(0).DATATYPE;
 	const string LOC = inGDB.at(0).LOC;
 	const string GC = inGDB.at(0).GC;
 	const string FM = inGDB.at(0).FORMATION;
+	 */
 
 	//const bool STRIAE = is_allowed_striae_datatype (DT);
 
@@ -171,9 +181,9 @@ void PS_well_border (const vector <GDB>& inGDB, ofstream& o, const PAPER& P, con
 	const bool color_by_RUPANG = is_COLOURING_RUPANG ();
 	const bool color_IGNORE = is_COLOURING_IGNORE ();
 
-	const bool exists_GROUPCODE = inGDB.at(0).GC.at(0) != 'X';
-	//const bool exists_KMEANS = inGDB.at(0).GC.at(1) != 'X';
-	const bool exists_RUPANG = inGDB.at(0).GC.at(2) != 'X';
+	const bool exists_GROUPCODE = 	GC.at(0) != 'X';
+	//const bool exists_KMEANS = 	GC.at(1) != 'X';
+	const bool exists_RUPANG = 		GC.at(2) != 'X';
 
 	//if (!by_GROUPCODE && !by_KMEANS && !by_RUPANG && !IGNORE) ASSERT_DEAD_END();
 	//if (!color_by_COLORCODE && !color_by_GROUPCODE && !color_by_KMEANS && !color_by_RUPANG && !color_IGNORE) ASSERT_DEAD_END();
@@ -228,10 +238,13 @@ void PS_well_border (const vector <GDB>& inGDB, ofstream& o, const PAPER& P, con
 	else if (color_IGNORE) {}
 	else {}
 
-	if (!TILT && !TRJ)		T = T + " - ORIGINAL DATA SET";
-	else if (TILT && !TRJ) 	T = T + " - BEDDING/PALEO NORTH CORRECTED DATA SET";
-	else if (TILT && TRJ) 	T = T + " - BEDDING/PALEO NORTH AND TRAJECTORY CORRECTED DATA SET";
-	else if (!TILT && TRJ)	T = T + " - TRAJECTORY CORRECTED DATA SET";
+	const bool TLT = is_PROCESS_AS_TILTED ();
+	const bool TRJ = is_PROCESS_AS_TRAJECTORY ();
+
+	if 		(!TLT && !TRJ)	T = T + " - ORIGINAL DATA SET";
+	else if ( TLT && !TRJ) 	T = T + " - BEDDING/PALEO NORTH CORRECTED DATA SET";
+	else if ( TLT &&  TRJ) 	T = T + " - BEDDING/PALEO NORTH AND TRAJECTORY CORRECTED DATA SET";
+	else if (!TLT &&  TRJ)	T = T + " - TRAJECTORY CORRECTED DATA SET";
 	else ASSERT_DEAD_END();
 
 	text_PS (o, P.A - P.B + P.D * 20.0, P.Y - P.A - P.D * 5.5, 3, T);
@@ -1556,6 +1569,8 @@ void plot_well_curve (const vector <WELL_INTERVAL>& IN, ofstream& o, const PAPER
 	else if (TYPE == "AVERAGE") 	PEAK_IDENTIFICATION (DEPTH, VALUE, "MINMAX");
 	else 							PEAK_IDENTIFICATION (DEPTH, VALUE, "NONE");
 
+	//cout << "is_CHK_WELL(): " << is_CHK_WELL() << endl;
+
 	if (is_CHK_WELL()) STANDARD_OUTPUT_WELL_PS (DEPTH, VALUE, DIPDIR, TYPE);
 
 	vector <XY> PLOT = generate_xy_vector (VALUE, DEPTH, DIPDIR);
@@ -1832,32 +1847,46 @@ void WELL_PS (const vector <GDB>& inGDB, const vector <WELL_INTERVAL>& INT, cons
 	return;
 }
 
-void OUTPUT_TO_WELL_PS (const vector <vector <GDB> >& GDB_G, const PFN& PF, const bool TILT, const bool TRJ) {
+void OUTPUT_TO_WELL_PS (const vector <vector <GDB> >& GDB_G) {
 
 	if (is_WELLDATA_NO()) return;
 
 	const vector <vector <WELL_INTERVAL> > INTERVAL = RETURN_INTERVAL ();
 	const vector <vector <WELL_FREQUENCY> > FREQUENCY = RETURN_FREQUENCY ();
 
-	const bool IGNORE = is_GROUPSEPARATION_IGNORE ();
-	const bool by_GROUPCODE = is_GROUPSEPARATION_GROUPCODE ();
-	const bool by_KMEANS = is_GROUPSEPARATION_KMEANS ();
-	const bool by_RUPANG = is_GROUPSEPARATION_RUPANG ();
+	if (INTERVAL.size() != GDB_G.size()) ASSERT_DEAD_END();
+	if (FREQUENCY.size() != GDB_G.size()) ASSERT_DEAD_END();
 
-	if (!IGNORE && !by_GROUPCODE && !by_KMEANS && !by_RUPANG) ASSERT_DEAD_END() ;
+	//const bool IGNORE = is_GROUPSEPARATION_IGNORE ();
+	//const bool by_GROUPCODE = is_GROUPSEPARATION_GROUPCODE ();
+	//const bool by_KMEANS = is_GROUPSEPARATION_KMEANS ();
+	//const bool by_RUPANG = is_GROUPSEPARATION_RUPANG ();
 
-	const string BS = path_separator;
-	const string US = "_";
+	//if (!IGNORE && !by_GROUPCODE && !by_KMEANS && !by_RUPANG) ASSERT_DEAD_END() ;
+
+	//const string BS = path_separator;
+	//const string US = "_";
 
 	return_records_with_formation_names (GDB_G);
 
+	//dbg_cout_GDB_vector_vector_structure (GDB_G);
+
 	for (size_t i = 0; i < GDB_G.size(); i++) {
+
+		//cout << GDB_G.at(i).size() << endl;
 
 		const vector <GDB> temp = SORT_GDB (GDB_G.at(i), "DEPTH");
 
-		const string LOC = temp.at(0).LOC;
 		const string DT = temp.at(0).DATATYPE;
-		const string FM = temp.at(0).FORMATION;
+
+		setup_ACTUAL_LOCATION (temp.at(0).LOC);
+		setup_ACTUAL_DATATYPE (DT);
+		setup_ACTUAL_FORMATION(temp.at(0).FORMATION);
+		setup_ACTUAL_GROUPCODE(temp.at(0).GC);
+
+		//const string LOC = temp.at(0).LOC;
+		//const string DT = temp.at(0).DATATYPE;
+		//const string FM = temp.at(0).FORMATION;
 
 		const bool PLN = is_allowed_plane_datatype (DT);
 		const bool LIN = is_allowed_lineation_datatype (DT);
@@ -1867,54 +1896,107 @@ void OUTPUT_TO_WELL_PS (const vector <vector <GDB> >& GDB_G, const PFN& PF, cons
 		if (PROCESS_AS_WELL) {
 
 			//string PS_NAME = PF.well_ps + BS + DT + BS + LOC + US + FM + US + DT;
-			string PS_NAME = PF.well_ps + BS + DT + BS + LOC + US + FM;
+			//string PS_NAME = PF.well_ps + BS + DT + BS + LOC + US + FM;
 
-			if (is_FORMATION_USE()) PS_NAME = PS_NAME + US + FM;
+			//if (is_FORMATION_USE()) PS_NAME = PS_NAME + US + FM;
 
-			PS_NAME = PS_NAME + US + DT;
+			//PS_NAME = PS_NAME + US + DT;
 
-			if (by_GROUPCODE) 	PS_NAME = PS_NAME + US + temp.at(0).GC;
-			else if (by_KMEANS) PS_NAME = PS_NAME + US + temp.at(1).GC;
-			else if (by_RUPANG) PS_NAME = PS_NAME + US + temp.at(2).GC;
-			else {}
+			//if (by_GROUPCODE) 	PS_NAME = PS_NAME + US + temp.at(0).GC.at(0);
+			//else if (by_KMEANS) PS_NAME = PS_NAME + US + temp.at(0).GC.at(1);
+			//else if (by_RUPANG) PS_NAME = PS_NAME + US + temp.at(0).GC.at(2);
+			//else {}
 
-			if (TILT) PS_NAME = PS_NAME + "_TILTED";
+			//if (TILT) PS_NAME = PS_NAME + "_TILTED";
 
-			if (TRJ) PS_NAME = PS_NAME + "_TRAJECTORY_CORRECTED";
+			//if (TRJ) PS_NAME = PS_NAME + "_TRAJECTORY_CORRECTED";
 
-			PS_NAME = PS_NAME + ".eps";
+			//PS_NAME = PS_NAME + ".eps";
+
+			//cout << PS_NAME << endl;
 
 			const double MIN = temp.at(0).DEPTH;
 			const double MAX = temp.at(temp.size() - 1).DEPTH;
 
+			//cout << "A" << endl;
+
 			const double STEP = well_axes_step (MIN, MAX);
 
+			//cout << "b" << endl;
+
 			const double MIN_VAL = return_MIN_value (temp, STEP);
+
+			//cout << "c" << endl;
 			const double MAX_VAL = return_MAX_value (temp, STEP);
+			//cout << "d" << endl;
 
 			const PAPER P = PS_dimensions (true);
 
+			//cout << "e" << endl;
+
 			const bool GDB_OK = temp.size() > 1;
+
+			//cout << "e1" << endl;
 			const bool MIN_VAL_OK = MIN_VAL > 0.0;
+
+			//cout << "e2" << endl;
 			const bool MAX_VAL_OK = MAX_VAL > MIN_VAL;
+
+			//cout << "e3" << endl;
 			const bool INT_OK = INTERVAL.at(i).size() > 0;
+
+			//cout << "e4" << endl;
 			const bool FRQ_OK = FREQUENCY.at(i).size() > 0;
+
+			//cout << "f" << endl;
 
 			if (GDB_OK && MIN_VAL_OK && MAX_VAL_OK && INT_OK && FRQ_OK) {
 
+				//cout << "OK " << endl;
+
+				string PS_NAME = generate_ACTUAL_WELL_PS_NAME ();
+
 				ofstream OPS (PS_NAME.c_str());
 
-				PS_well_header (DT, LOC, OPS);
+				PS_well_header (OPS);
 
-				PS_well_border (temp, OPS, P, TILT, TRJ);
+				PS_well_border (OPS, P);
 
 				PS_well_symbols (OPS, P);
 
 				const double LENGTH = P.Y * 0.8;
+
+				//cout << "WELL_PS will be calling " << endl;
 
 				WELL_PS (temp, INTERVAL.at(i), FREQUENCY.at(i), OPS, P, LENGTH, MIN_VAL, MAX_VAL, STEP);
 			}
 		}
 	}
 	return;
+}
+
+vector <double> return_INTERVAL_structure () {
+
+	vector <vector <WELL_INTERVAL> > I = RETURN_INTERVAL();
+
+	vector <double> OUT;
+
+	for (size_t i = 0; i < I.size(); i++) {
+
+		OUT.push_back (I.at(i).size());
+	}
+	return OUT;
+}
+
+vector <double> return_FREQUENCY_structure () {
+
+	vector <vector <WELL_FREQUENCY> > F = RETURN_FREQUENCY();
+
+	vector <double> OUT;
+
+	for (size_t i = 0; i < F.size(); i++) {
+
+		OUT.push_back (F.at(i).size());
+	}
+	return OUT;
 }

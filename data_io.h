@@ -12,16 +12,20 @@
 
 using namespace std;
 
-PFN create_project_folder_names (const string projectname);
+//PFN create_project_folder_names (const string projectname);
 vector <string> possible_folders_name ();
 void make_dir (const string& dir_name);
-void create_folders(const PFN& output, const string& dir);
-void createprojectfolders (const PFN& output, const vector <GDB>& inGDB);
-void copyoriginalfiles (const PFN& output);
-void copy_log(const PFN& names);
-void create_pointer_to_project_folder(const PFN& names);
+//void create_folders(const PFN& output, const string& dir);
+void create_required_folders (const vector <GDB>& inGDB);
+void copy_original_files ();
+void copy_log ();
+void copy_rgf_to_test_file (const string FN, const string ARG);
+void copy_trj_to_test_file (const string FN, const string ARG);
+void copy_xy_to_test_file (const string FN, const string ARG);
 
-void CREATE_PROJECT_FOLDER (const PFN& projectfoldername, const vector <GDB> inGDB);
+void create_pointer_to_project_folder ();
+
+void CREATE_PROJECT_FOLDERS (const vector <GDB>& inGDB);
 
 GDB return_dummy_GDB ();
 bool ACT_NXT_EQ (const GDB& ACT, const GDB& NXT, const string METHOD);
@@ -42,11 +46,11 @@ vector <vector <GDB> > PROCESS_GROUPS (const vector <vector <GDB> >& inGDB_G, co
 
 void output_rgf_header (ofstream& o, const bool AVERAGE);
 void output_rgf_record (const GDB& i, ofstream& o, const bool AVERAGE);
-void OUTPUT_AVERAGE_TO_RGF (const vector <GDB> & inGDB_G, const PFN& P, const bool TILT, const bool TRJ);
-void OUTPUT_GROUPS_TO_RGF (const vector < vector <GDB> >& inGDB_G, const PFN& P, const bool TILT);
-void OUTPUT_COMPLETED_TO_RGF (const vector <GDB>& outGDB, const PFN& P, const bool TILT, const bool TRJ);
+void OUTPUT_AVERAGE_TO_RGF (const vector <GDB> & inGDB_G);
+void OUTPUT_GROUPS_TO_RGF (const vector < vector <GDB> >& inGDB_G);
+void OUTPUT_COMPLETED_TO_RGF (const vector <GDB>& outGDB);
 void OUTPUT_GDB_to_RGF (ofstream& O, const vector <GDB>& inGDB, const bool AVERAGE);
-void OUTPUT_TO_RGF (const vector <vector <GDB> >& inGDB_G, const PFN& projectfoldername, const bool TILT, const bool TRJ);
+void OUTPUT_TO_RGF (const vector <vector <GDB> >& inGDB_G);
 
 void cout_method_text (const vector <GDB>& inGDB);
 void cout_original_tilted_text (const bool tilt);

@@ -10,8 +10,8 @@
 vector <PEAK_TO_PLOT> return_PEAK ();
 vector <PEAK_TO_PLOT> return_FAULTS ();
 
-void PS_well_header (const string DATATYPE, const string LOC, ofstream& o);
-void PS_well_border (const vector <GDB>& inGDB, ofstream& o, const PAPER& P, const bool TILT, const bool TRJ);
+void PS_well_header (ofstream& o);
+void PS_well_border (ofstream& o, const PAPER& P);
 
 string generate_colorstep (const VCTR clr1, const VCTR clr2, const VCTR clr3, const size_t percent);
 string generate_peak_colors (const size_t percent);
@@ -80,6 +80,10 @@ void PS_well_intervals (const vector <WELL_INTERVAL>& INTERVAL, ofstream& o, con
 void INIT_FAULT_POSITIONS (const double MIN_VAL, const double MAX_VAL, const double STEP);
 void SETUP_FAULT_POSITIONS (const double MIN_VAL, const double MAX_VAL, const double STEP);
 void WELL_PS (const vector <GDB>& inGDB, const vector <WELL_INTERVAL>& INT, const vector <WELL_FREQUENCY>& FREQ, ofstream& OPS, const PAPER& P, const double LENGTH, const double MIN_VAL, const double MAX_VAL, const double STEP);
-void OUTPUT_TO_WELL_PS (const vector <vector <GDB> >& GDB_G, const PFN& PF, const bool TILT, const bool TRJ);
+void OUTPUT_TO_WELL_PS (const vector <vector <GDB> >& GDB_G);
+
+vector <double> return_INTERVAL_structure ();
+vector <double> return_FREQUENCY_structure ();
+
 
 #endif /* WELL_PS_HPP_ */

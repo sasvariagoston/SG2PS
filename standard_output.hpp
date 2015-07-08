@@ -41,7 +41,7 @@ bool is_CHK_WELL ();
 void check_standard_output_SF (const vector <GDB>& inGDB, const STRESSFIELD& standard);
 
 void INIT_DEBUG ();
-void STANDARD_OUTPUT (const vector <GDB>& nGDB, const bool TILT);
+void STANDARD_OUTPUT (const vector <GDB>& nGDB);
 
 void dump_RGF_SF_to_file (const vector <GDB>& inGDB, const string FN);
 void dump_RGF_to_file (const vector <GDB>& inGDB, const string FN);
@@ -49,23 +49,23 @@ void dump_SF_to_file (const vector <STRESSFIELD>& SF, const string FN);
 void dump_RECT_GRID_to_file (const vector <vector <GRID_CENTER> >& IN, const string FN);
 void dump_TRI_GRID_to_file (const vector <TRIANGLE>& T, const string FN);
 
-void dump_DISTANCE_MATRIX_to_file (const vector <vector <double> >& DM, const string FN);
-void dump_WHICH_GROUP_to_file (const vector <size_t>& WG, const string FN);
-void dump_HISTOGRAM_to_file (const vector <HISTOGRAM>& H, const string FN);
-void dump_VALLEY_to_file (const vector <VALLEY>& V, const string FN);
-void dump_ROSENUMBER_to_file (const vector <ROSENUMBER>& R, const string FN);
+void dump_DISTANCE_MATRIX_to_file (const vector <vector <double> >& DM, const string FN);//ok
+void dump_WHICH_GROUP_to_file (const vector <size_t>& WG, const string FN);//ok
+void dump_HISTOGRAM_to_file (const vector <HISTOGRAM>& H, const string FN);			// NOT OK
+void dump_VALLEY_to_file (const vector <VALLEY>& V, const string FN);				// NOT OK
+void dump_ROSENUMBER_to_file (const vector <ROSENUMBER>& R, const string FN);//ok
 
-void dump_INTERVAL_to_file (ofstream& o);
-void standard_output_INTERVAL (const bool TLT, const bool TRJ);
+void dump_INTERVAL_to_file (ofstream& o);//ok
+void standard_output_INTERVAL (const bool TLT, const bool TRJ);//ok
 void dump_FREQUENCY_to_file (ofstream& o);
-void standard_output_FREQUENCY (const bool TLT, const bool TRJ);
-void STANDARD_OUTPUT_WELL_GROUPS ();
+void standard_output_FREQUENCY (const bool TLT, const bool TRJ);//ok
+void STANDARD_OUTPUT_WELL_GROUPS ();//ok
 
-void dump_CURVE_to_file (const vector <double>& DEPTH, const vector <double>& VALUE, ofstream& o) ;
-void STANDARD_OUTPUT_WELL_PS (const vector <double>& DEPTH, const vector <double>& VALUE, const bool DIPDIR, const string TYPE);
+void dump_CURVE_to_file (const vector <double>& DEPTH, const vector <double>& VALUE, ofstream& o); //ok
+void STANDARD_OUTPUT_WELL_PS (const vector <double>& DEPTH, const vector <double>& VALUE, const bool DIPDIR, const string TYPE); //ok
 
 void dump_PEAK_to_file (ofstream& o, const bool PEAK);
-void STANDARD_OUTPUT_PEAKS (const string METHOD);
-void STANDARD_OUTPUT_FAULTS (const string METHOD);
+void STANDARD_OUTPUT_PEAKS (const string METHOD);//ok
+void STANDARD_OUTPUT_FAULTS (const string METHOD);//ok
 
 #endif

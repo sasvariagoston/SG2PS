@@ -112,7 +112,7 @@ struct CORRECTSTRIAE {
 	double X, Y, Z, MISFIT;
 };
 
-
+/*
 struct PFN {
 
 	string
@@ -127,6 +127,7 @@ struct PFN {
 	tiltrgfsep,
 	well_ps;};
 
+*/
 struct PAPER {
 
 	double X, Y;
