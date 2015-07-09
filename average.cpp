@@ -53,39 +53,11 @@ bool is_processable_for_average_HMG (const vector <GDB>& inGDB) {
 	return (!check_dataset_homogenity (inGDB) && inGDB.size() > 2);
 }
 
-/*
-VCTR WELL_VCTR_average (const vector <VCTR>& N) {
-
-	cout << "WELL_VCTR_average" << endl;
-
-	vector <VCTR> N_xy = N;
-	vector <VCTR> N_z = N;
-
-	for (size_t i = 0; i < N_xy.size(); i++) {
-
-		N_xy.at(i).Z = 0.0;
-	}
-	const VCTR N_xy_AV = VCTR_average(N_xy);
-
-	vector <double> n;
-
-	for (size_t i = 0; i < N_z.size(); i++) {
-
-		n.push_back (N_z.at(i).Z);
-	}
-	const double N_z_AV = median (n);
-
-	return declare_vector (N_xy_AV.X, N_xy_AV.Y, N_z_AV);
-}
-*/
-
 VCTR process_for_average_MT2 (const vector <GDB>& inGDB) {
 
 	vector <VCTR> N;
 
 	for (size_t i = 0; i < inGDB.size(); i++) N.push_back(inGDB.at(i).N);
-
-	//if (is_WELL_PROCESSING_CALLS()) return WELL_VCTR_average (N);
 
 	return unitvector (VCTR_average(N));
 }
@@ -158,44 +130,10 @@ vector <GDB> DATATYPE_AVERAGE (const vector <GDB>& inGDB) {
 	VCTR AV_D = unitvector(DXDYDZ_from_NXNYNZ (AV_N));
 	if (O) AV_D = flip_vector(AV_D);
 
-	//const DIPDIR_DIP DDD = dipdir_dip_from_DXDYDZ(AV_D);
-
-	//dbg_cout_GDB_vector(inGDB);
-
-	//cout << DDD.DIPDIR << "/" << DDD.DIP << endl;
-
 	outGDB = apply_data_average_vector (outGDB, AV_D);
-
-	//exit (444);
 
 	return outGDB;
 }
-
-/*
-vector < vector <GDB> > calculate_average_for_groups (const vector <vector <GDB> >& inGDB_G) {
-
-	vector <vector <GDB> > outGDB_G = inGDB_G;
-
-	for (size_t i = 0; i < outGDB_G.size(); i++) outGDB_G.at(i) = DATATYPE_AVERAGE (outGDB_G.at(i));
-
-	return outGDB_G;
-}
-*/
-
-/*
-bool has_group_bedding (const vector <vector <GDB> >& inGDB_G) {
-
-	for (size_t i = 0; i < inGDB_G.size(); i++) {
-		for (size_t j = 0; j < inGDB_G.at(i).size(); j++) {
-
-			const string DT = inGDB_G.at(i).at(j).DATATYPE;
-
-			if (is_allowed_handle_as_bedding(DT)) return true;
-		}
-	}
-	return false;
-}
-*/
 
 VCTR return_group_bedding_vector (const vector <GDB>& inGDB) {
 
@@ -209,23 +147,6 @@ VCTR return_group_bedding_vector (const vector <GDB>& inGDB) {
 
 	return declare_vector(NaN(), NaN(), NaN());
 }
-
-/*
- * VCTR return_group_bedding_vector (const vector <vector <GDB> >& inGDB_G) {
-
-	for (size_t i = 0; i < inGDB_G.size(); i++) {
-		for (size_t j = 0; j < inGDB_G.at(i).size(); j++) {
-
-			const string DT = inGDB_G.at(i).at(j).DATATYPE;
-
-			if (is_allowed_handle_as_bedding (DT)) return inGDB_G.at(i).at(j).avD;
-		}
-	}
-	ASSERT_DEAD_END();
-
-	return declare_vector(NaN(), NaN(), NaN());
-}
- */
 
 vector <GDB> apply_group_bedding_vector (const vector <GDB>& inGDB_G, const VCTR AV_D) {
 
@@ -256,12 +177,6 @@ vector <GDB> apply_group_bedding_vector (const vector <GDB>& inGDB_G, const VCTR
 
 size_t has_relevant_bedding (const size_t i, const vector <vector <GDB> >& inGDB_G) {
 
-	//cout << "is_FORMATION_USE() : " << is_FORMATION_USE() << endl;
-	//cout << "is_WELLDATA_USE()  : " << is_WELLDATA_USE() << endl;
-	//cout << "is_GROUPS_USE()    : " << is_GROUPS_USE() << endl;
-
-	//dbg_cout_GDB_vector_vector (inGDB_G);
-
 	vector <size_t> EQ;
 
 	const string eLOC = inGDB_G.at(i).at(0).LOC;
@@ -269,14 +184,7 @@ size_t has_relevant_bedding (const size_t i, const vector <vector <GDB> >& inGDB
 	const string eDT =  inGDB_G.at(i).at(0).DATATYPE;
 	const char eGC =  	inGDB_G.at(i).at(0).GC.at(0);
 
-	//cout << eLOC << " - " <<  eFM << " - " << eDT << " - " << eGC << " has bedding here: " << flush;
-
-	if (is_allowed_handle_as_bedding (eDT)) {
-
-		//cout << " =======> RETURN i" << endl;
-
-		return i;
-	}
+	if (is_allowed_handle_as_bedding (eDT)) return i;
 
 	for (size_t j = 0; j < inGDB_G.size(); j++) {
 
@@ -296,22 +204,11 @@ size_t has_relevant_bedding (const size_t i, const vector <vector <GDB> >& inGDB
 
 		if (is_GROUPS_USE()) FIT = FIT && EQ_GC;
 
-		if (FIT) {
-
-			//cout << LOC << " --- " <<  FM << " --- " << DT << " --- " << GC << endl;
-			//cout << j << endl;
-			EQ.push_back(j);
-		}
-
+		if (FIT) EQ.push_back(j);
 	}
-	if (EQ.size() == 0) {
+	if (EQ.size() == 0) return 99999;
 
-		//cout << " no bedding " << endl;
-		return 99999;
-	}
 	if (EQ.size() > 1) ASSERT_DEAD_END();
-
-	//cout << "end has_relevant_bedding" << endl;
 
 	return EQ.at(0);
 }
@@ -323,8 +220,6 @@ vector <vector <GDB> > ASSOCIATE_AVERAGE_BEDDING_GROUPS (const vector <vector <G
 	for (size_t i = 0; i < outGDB_G.size(); i++) {
 
 		const size_t r = has_relevant_bedding (i, outGDB_G);
-
-		//cout << r << endl;
 
 		if (r < 99990) {
 
@@ -349,32 +244,6 @@ vector <vector <GDB> > AVERAGE (const vector <vector <GDB> >& inGDB_G) {
 
 	return outGDB_G;
 }
-
-/*
- * vector < vector < vector <vector <GDB> > > > AVERAGE (const vector < vector < vector <vector <GDB> > > >& inGDB_G) {
-
-	vector < vector < vector <vector <GDB> > > > outGDB_G = inGDB_G;
-
-	for (size_t i = 0; i < outGDB_G.size(); i++) {
-
-		for (size_t j = 0; j < outGDB_G.at(i).size(); j++) {
-
-			vector <vector <GDB> > ACT = outGDB_G.at(i).at(j);
-
-			ACT = calculate_average_for_groups (ACT);
-
-			if (has_group_bedding (ACT)) {
-
-				const VCTR AV_N = return_group_bedding_vector (ACT);
-
-				ACT = apply_group_bedding_vector (ACT, AV_N);
-			}
-			outGDB_G.at(i).at(j) = ACT;
-		}
-	}
-	return outGDB_G;
-}
- */
 
 void dbg_averages (const vector <GDB>& inGDB) {
 

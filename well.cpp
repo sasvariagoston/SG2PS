@@ -83,11 +83,7 @@ vector <WELL_FREQUENCY> FREQUENCY (const vector <GDB>& inGDB) {
 
 	GDB_size_check (process_GDB);
 
-	//cout << process_GDB.size() << endl;
-
 	double MAX_FREQ = 0.0;
-
-	//cout << fixed << setprecision (6) << endl;
 
 	for (size_t i = 0; i < process_GDB.size() - 1; i++) {
 
@@ -107,11 +103,7 @@ vector <WELL_FREQUENCY> FREQUENCY (const vector <GDB>& inGDB) {
 		if (DIP > 5.0) 	buf.FREQ = 1.0 / ((TAN (DIP)) * INT);
 		else 			buf.FREQ = 1.0 / INT;
 
-		//buf.FREQ = 1.0 / ((COS (90.0 - DIP)) * INT);
-
 		if (buf.FREQ > MAX_FREQ) MAX_FREQ = buf.FREQ;
-
-		//cout << buf.DEPTH << "  -  " << buf.FREQ << "   -    " << DIP << endl;
 
 		OUT.push_back (buf);
 	}
@@ -119,8 +111,6 @@ vector <WELL_FREQUENCY> FREQUENCY (const vector <GDB>& inGDB) {
 	for (size_t i = 0; i < OUT.size(); i++) {
 
 		OUT.at(i).FREQ = OUT.at(i).FREQ / MAX_FREQ;
-
-		//cout << OUT.at(i).DEPTH << "  -  " << OUT.at(i).FREQ << endl;
 	}
 
 	double MAX_DERIV = 0.0;
@@ -141,14 +131,10 @@ vector <WELL_FREQUENCY> FREQUENCY (const vector <GDB>& inGDB) {
 	for (size_t i = 0; i < OUT.size() - 1; i++) {
 
 		OUT.at(i).DERIV = OUT.at(i).DERIV / MAX_DERIV;
-
-		//cout << OUT.at(i).DERIV_DEPTH << "  -  " << OUT.at(i).DERIV << endl;
 	}
 
 	return OUT;
 }
-
-
 
 double record_derivate (const bool DIPDIR, const WELL_INTERVAL& ACT, const WELL_INTERVAL& NXT) {
 
@@ -191,23 +177,16 @@ vector <WELL_INTERVAL> FIRST_DERIVATE (const vector <WELL_INTERVAL>& IN) {
 			if (DD_DRV > MAX_DERIVATE) MAX_DERIVATE = DD_DRV;
 			if (D_DRV > MAX_DERIVATE) MAX_DERIVATE = D_DRV;
 
-			//cout << OUT.at(i).DEPTH << "  -  " << DD_DRV << "  -  " << D_DRV << "  -  " <<  MAX_DERIVATE << endl;
-
 			OUT.at(i).DD_DERIV = DD_DRV;
 			OUT.at(i).D_DERIV = D_DRV;
 		}
 	}
-
-
-	//cout << fixed << setprecision(6) << flush;
 
 	for (size_t i = 0; i < OUT.size(); i++) {
 
 		if (!isnan(OUT.at(i).DD_DERIV)) OUT.at(i).DD_DERIV = OUT.at(i).DD_DERIV / MAX_DERIVATE;
 
 		if (!isnan(OUT.at(i).D_DERIV)) OUT.at(i).D_DERIV = OUT.at(i).D_DERIV / MAX_DERIVATE;
-
-		//cout << OUT.at(i).DEPTH << "  -  " << OUT.at(i).DD_DERIV << "  -  " << OUT.at(i).D_DERIV << endl;
 	}
 
 	for (size_t i = 1; i < OUT.size() ; i++) {
@@ -216,17 +195,13 @@ vector <WELL_INTERVAL> FIRST_DERIVATE (const vector <WELL_INTERVAL>& IN) {
 
 		if (isnan(OUT.at(i).D_DERIV)) OUT.at(i).D_DERIV = OUT.at(i - 1).D_DERIV;
 
-		//cout << OUT.at(i).DEPTH << "  -  " << OUT.at(i).DD_DERIV << "  -  " << OUT.at(i).D_DERIV << endl;
 	}
-
-
 	return OUT;
 }
 
 double calculate_interval_depth (const vector <GDB>& inGDB) {
 
 	vector <GDB> process_GDB = SORT_GDB (inGDB, "DEPTH");
-	//vector <GDB> process_GDB = sort_by_DEPTH (inGDB);
 
 	vector <double> D;
 
@@ -284,16 +259,8 @@ double stdev_for_interval (const vector <GDB>& inGDB, const bool DIPDIR) {
 
 		double ANG = vector_angle (T1, T2);
 
-		//cout <<  ANG << " " << flush;
-
-		//double ANG = fabs (ACOS (dotproduct (T1, T2, false)));
-
 		MSFT.push_back (ANG * ANG);
 	}
-
-	//cout << endl;
-
-	//cout << sqrt (average (MSFT)) << endl;
 	return sqrt (average (MSFT));
 }
 
@@ -321,13 +288,6 @@ WELL_INTERVAL interval_average (const vector <GDB>& inGDB) {
 	else OUT.INT_AV_D = 	DXDYDZ_from_NXNYNZ (SF.EIGENVECTOR1);
 
 	OUT.INT_AV_DD = dipdir_dip_from_DXDYDZ (OUT.INT_AV_D);
-
-	//OUT.INT_AV_D = dummy.at(0).avD;
-	//OUT.INT_AV_DD = dummy.at(0).avd;
-
-	//cout << " ------------------------------------------------ " << endl;
-	//cout << OUT.DEPTH << "  -  "  << OUT.INT_AV_DD.DIPDIR << "/" << OUT.INT_AV_DD.DIP << endl;
-	//dbg_cout_GDB_vector(inGDB);
 
 	OUT.INT_AV_DD_STDEV = stdev_for_interval (dummy, true);//ok
 	OUT.INT_AV_D_STDEV = stdev_for_interval (dummy, false);//ok
@@ -374,9 +334,6 @@ vector <WELL_INTERVAL> WELL_AVERAGE_M (const vector <GDB>& p_GDB) {
 		buf.MIN = MIN;
 		buf.MAX = MAX;
 
-		//cout << buf.INT_AV_D_STDEV << endl;
-		//cout << "buf.INT_AV_D_STDEV: " << buf.INT_AV_D_STDEV << endl;
-
 		OUT.push_back (buf);
 	}
 	return OUT;
@@ -395,13 +352,7 @@ vector <WELL_INTERVAL> WELL_AVERAGE_D (const vector <GDB>& p_GDB) {
 
 	if (S < I) ASSERT_DEAD_END();
 
-	//cout << "S   :" << S << endl;
-	//cout << "I   :" << I << endl;
-	//cout << "IVL :" << IVL << endl;
-
 	for (size_t i = 0; i < S - I + 1; i++) {
-
-		//cout << "WELL_AVERAGE_D : " << i << endl;
 
 		const size_t MIN = i;
 		const size_t MAX = i + I - 1;
@@ -424,9 +375,6 @@ vector <WELL_INTERVAL> WELL_AVERAGE_D (const vector <GDB>& p_GDB) {
 }
 
 void PROCESS_WELL_GROUPS (const vector <vector <GDB> >& inGDB_G) {
-
-	//dbg_cout_GDB_vector_vector(inGDB_G);
-	//dbg_cout_GDB_vector_vector_structure (inGDB_G);
 
 	if (is_WELLDATA_NO()) return;
 
@@ -456,7 +404,6 @@ void PROCESS_WELL_GROUPS (const vector <vector <GDB> >& inGDB_G) {
 		const double MAX_DEPTH = p_GDB.at(S - 1).DEPTH;
 
 		const double IVL = is_WELL_INTERVAL_LENGTH();
-		//const size_t I = double_to_size_t (IVL);
 
 		const size_t I = string_to_double (size_t_to_string (IVL));
 
@@ -467,8 +414,6 @@ void PROCESS_WELL_GROUPS (const vector <vector <GDB> >& inGDB_G) {
 		else ASSERT_DEAD_END();
 
 		if (p_GDB.size() <= 2) PROCESSABLE = false;
-
-		//dbg_cout_GDB_vector (p_GDB);
 
 		if (PROCESSABLE) {
 
@@ -485,15 +430,5 @@ void PROCESS_WELL_GROUPS (const vector <vector <GDB> >& inGDB_G) {
 	}
 	if (is_CHK_WELL()) STANDARD_OUTPUT_WELL_GROUPS ();
 
-	for (size_t i = 0; i < W_FREQUENCY.size(); i++) {
-
-		//cout << i << endl;
-
-		for (size_t j = 0; j < W_FREQUENCY.at(i).size(); j++) {
-
-			//cout << j << " - " << flush;
-		}
-		//cout << endl;
-	}
 	return;
 }

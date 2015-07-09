@@ -32,49 +32,6 @@
 #include "settings.hpp"
 #include "structs.h"
 
-/*PFN create_project_folder_names (const string projectname) {
-
-	time_t current_time;
-	struct tm * TM;
-	const string bs = path_separator;
-
-	time ( &current_time );
-	TM = localtime ( &current_time );
-
-	PFN output;
-
-	output.datetime = int_to_string (TM->tm_year + 1900);
-
-	if (TM->tm_mon < 9) output.datetime = output.datetime + "0";
-	output.datetime = output.datetime + int_to_string (TM->tm_mon + 1);
-
-	if (TM->tm_mday < 10) output.datetime = output.datetime + "0";
-	output.datetime = output.datetime + int_to_string (TM->tm_mday) + "-";
-
-	if (TM->tm_hour < 10) output.datetime = output.datetime + "0";
-	output.datetime = output.datetime + int_to_string (TM->tm_hour);
-
-	if (TM->tm_min < 10) output.datetime = output.datetime + "0";
-	output.datetime = output.datetime + int_to_string (TM->tm_min);
-
-	if (TM->tm_sec < 10) output.datetime = output.datetime + "0";
-	output.datetime = output.datetime + int_to_string (TM->tm_sec);
-
-	if (!is_mode_DEBUG()) output.projectfolder 	= output.datetime + "_-_" + capslock(projectname);
-	else output.projectfolder = capslock(projectname);
-
-	output.projectname 		= projectname; // Converting to uppercase is a bug on Linux
-	output.original			= output.projectfolder +  bs + "1_original";
-	output.completed		= output.projectfolder +  bs + "2_completed";
-	output.average			= output.projectfolder +  bs + "3_average";
-	output.rgfsep			= output.projectfolder +  bs + "4_rgf_separated";
-	output.pssep			= output.projectfolder +  bs + "5_ps_separated";
-
-	if (is_WELLDATA_USE()) output.well_ps = output.projectfolder +  bs + "6_ps_welldata";
-
-	return output;
-}
-*/
 vector <string> possible_folders_name () {
 
 	vector <string> OUT = allowed_lineation_datatype_vector();
@@ -88,8 +45,6 @@ vector <string> possible_folders_name () {
 
 void make_dir (const string& dir_name) {
 
-	//cout << dir_name << endl;
-
 	string command = "mkdir " + dir_name;
 
 	int ret = system(command.c_str());
@@ -97,18 +52,7 @@ void make_dir (const string& dir_name) {
 	if (ret) throw runtime_error("failed to execute command \""+command+"\"");
 }
 
-//void create_folders (const PFN& output, const string& dir) {
-
-	//make_dir(output.rgfsep + path_separator + dir);
-	//make_dir(output.pssep  + path_separator + dir);
-	//if (is_WELLDATA_USE()) make_dir(output.well_ps  + path_separator + dir);
-//}
-
 void create_required_folders (const vector <GDB>& inGDB) {
-
-	//cout << "create_required_folders" << endl;
-
-	//cout << return_PROJECT_FOLDER() << endl;
 
 	make_dir (return_PROJECT_FOLDER());
 	make_dir (return_ORIGINAL_FOLDER());
@@ -117,17 +61,6 @@ void create_required_folders (const vector <GDB>& inGDB) {
 	make_dir (return_RGF_FOLDER());
 	make_dir (return_PS_FOLDER());
 	if (is_WELLDATA_USE()) make_dir (return_WELL_PS_FOLDER());
-
-	/*
-	 * make_dir( output.projectfolder);
-	make_dir( output.original);
-	make_dir( output.completed);
-	make_dir( output.average);
-	make_dir( output.rgfsep);
-	make_dir( output.pssep);
-	 */
-
-
 
 	vector <string> possible_folders = possible_folders_name ();
 
@@ -348,15 +281,6 @@ void output_rgf_record (const GDB& i, ofstream& o, const bool AVERAGE) {
 
 void OUTPUT_COMPLETED_TO_RGF (const vector <GDB>& inGDB) {
 
-	//const string bs = path_separator;
-	//string FN = P.completed + bs + capslock(P.projectname) + "_completed";
-
-	//if (TILT) FN = FN + "_tilted";
-
-	//if (TRJ) FN = FN + "_trajectory_corrected";
-
-	//FN = FN + ".rgf";
-
 	const string FN = generate_ACTUAL_COMPLETED_RGF_NAME ();
 
 	ofstream O;
@@ -370,15 +294,6 @@ void OUTPUT_COMPLETED_TO_RGF (const vector <GDB>& inGDB) {
 }
 
 void OUTPUT_AVERAGE_TO_RGF (const vector <GDB>& inGDB_G) {
-
-	//const string bs = path_separator;
-	//string FN = P.average + bs + capslock(P.projectname);
-
-	//if (TILT) FN = FN + "_tilted";
-
-	//if (TRJ) FN = FN + "_trajectory_corrected";
-
-	//FN = FN + "_average.rgf";
 
 	const string FN = generate_ACTUAL_AVERAGE_RGF_NAME();
 
@@ -403,15 +318,6 @@ void OUTPUT_AVERAGE_TO_RGF (const vector <GDB>& inGDB_G) {
 
 void OUTPUT_GROUPS_TO_RGF (const vector <vector <GDB> >& inGDB_G) {
 
-	//const string bs = path_separator;
-
-	//const bool by_GROUPCODE = is_GROUPSEPARATION_GROUPCODE ();
-	//const bool by_KMEANS = is_GROUPSEPARATION_KMEANS ();
-	//const bool by_RUPANG = is_GROUPSEPARATION_RUPANG ();
-	//const bool IGNORE = is_GROUPSEPARATION_IGNORE ();
-
-	//if (!by_GROUPCODE && !by_KMEANS && !by_RUPANG && !IGNORE) ASSERT_DEAD_END();
-
 	for (size_t i = 0; i < inGDB_G.size(); i++) {
 
 		vector <GDB> T = inGDB_G.at(i);
@@ -419,28 +325,6 @@ void OUTPUT_GROUPS_TO_RGF (const vector <vector <GDB> >& inGDB_G) {
 		setup_ACTUAL_DATATYPE (T.at(0).DATATYPE);
 		setup_ACTUAL_GROUPCODE (T.at(0).GC);
 		setup_ACTUAL_LOCATION (T.at(0).LOC);
-
-		//const string DT =  T.at(0).DATATYPE;
-		//const string LOC = T.at(0).LOC;
-		//const string GC =  T.at(0).GC;
-		//string FN = P.rgfsep + bs + DT + bs + LOC + "_" + DT;
-		//const string FN = generate_ACTUAL_RGF_NAME ();
-
-		//if (by_GROUPCODE && GC.size() < 1) ASSERT_DEAD_END();
-		//if (by_KMEANS && GC.size() < 2) ASSERT_DEAD_END();
-		//if (by_RUPANG && GC.size() < 3) ASSERT_DEAD_END();
-
-		//if (by_GROUPCODE) FN = FN + "_" + GC.at(0);
-		//else if (by_KMEANS) FN = FN + "_" + GC.at(1);
-		//else if (by_RUPANG) FN = FN + "_" + GC.at(2);
-		//else if (is_GROUPSEPARATION_IGNORE()) {}
-		//else ASSERT_DEAD_END();
-//
-		//if (TILT) FN = FN + "_tilted";
-
-		//if (TRJ) FN = FN + "_trajectory_corrected";
-
-		//FN = FN + ".rgf";
 
 		const string FN = generate_ACTUAL_RGF_NAME ();
 
@@ -482,7 +366,6 @@ void OUTPUT_TO_RGF (const vector <vector <GDB> >& inGDB_G) {
 
 	return;
 }
-
 
 GDB return_dummy_GDB () {
 
@@ -545,37 +428,17 @@ vector <vector <GDB> > SEPARATE_DATASET (const vector <vector <GDB> >& inGDB_G, 
 
 	if (inGDB_G.size() == 0) ASSERT_DEAD_END();
 
-	//cout << "******** SEPARATE_DATASET" << " " << METHOD << " " << SORT << endl;
-
-	//cout << "inGDB_G.size(): " << inGDB_G.size() << endl;
-
 	vector <vector <GDB> > OUT;
 
 	for (size_t i = 0; i < inGDB_G.size(); i++) {
 
 		if (inGDB_G.at(i).size() == 0) ASSERT_DEAD_END();
 
-		//cout << "SORT: " << SORT << endl;
-		//cout << "METHOD: " << METHOD << endl;
-
-		//dbg_cout_GDB_vector (inGDB_G.at(i));
-
-
 		const vector <GDB> processGDB = SORT_GDB (inGDB_G.at(i), SORT);
-
-		//cout << "i: " << i << endl;
-		//dbg_cout_GDB_vector (processGDB);
 
 		const vector <vector <GDB> > SEP = SEPARATE (processGDB, METHOD);
 
-		//cout << "SEP.size(): " << SEP.size() << endl;
-
-		//exit (66);
-
-		for (size_t j = 0; j < SEP.size(); j++) {
-
-			OUT.push_back(SEP.at(j));
-		}
+		for (size_t j = 0; j < SEP.size(); j++) OUT.push_back(SEP.at(j));
 	}
 	return OUT;
 }
@@ -592,25 +455,13 @@ vector < vector <GDB> > SEPARATE_DATASET_GROUPS (const vector <GDB>& inGDB) {
 
 	processGDB_G = SEPARATE_DATASET (processGDB_G, "LOCATION", "LOCATION");
 
-	//cout << "W: " << W << endl;
-	//cout << "F: " << F << endl;
-	//cout << "G: " << G << endl;
-
-	//cout << "processGDB_G.size(): " << processGDB_G.size() << endl;
-
 	if (W && F) 		processGDB_G = SEPARATE_DATASET (processGDB_G, "FORMATION", "DEPTH");
 	else if (!W && F)	processGDB_G = SEPARATE_DATASET (processGDB_G, "FORMATION", "FORMATION");
 	else {};
 
-	//cout << processGDB_G.size() << endl;
-
 	processGDB_G = SEPARATE_DATASET (processGDB_G, "DATATYPE", "DATATYPE");
 
-	//cout << processGDB_G.size() << endl;
-
 	if (G) processGDB_G = SEPARATE_DATASET (processGDB_G, "GROUPS", "GROUPCODE");
-
-	//cout << processGDB_G.size() << endl;
 
 	return processGDB_G;
 }
@@ -642,58 +493,7 @@ vector <GDB> combine_inversion_for_none_offset (const vector <GDB>& process_GDB,
 	return OUT;
 }
 
-CENTER return_center (const PAPER P, const bool MOHR, const bool TILT) {
-
-	CENTER center;
-
-	if (MOHR) {
-		if (TILT) {
-			center.X = P.O8X;
-			center.Y = P.O8Y;
-		}
-		else {
-			center.X = P.O7X;
-			center.Y = P.O7Y;
-		}
-	}
-	else {
-		if (TILT) {
-			center.X = P.O2X;
-			center.Y = P.O2Y;
-		}
-		else {
-			center.X = P.O1X;
-			center.Y = P.O1Y;
-		}
-	}
-	return center;
-}
-
-vector <vector <vector <vector <GDB> > > > CALCULATE_FOLDSURFACE (const vector <vector <vector <vector <GDB> > > >& inGDB_G) {
-
-	vector <vector <vector <vector <GDB> > > > outGDB_G = inGDB_G;
-
-	for (size_t i = 0; i < outGDB_G.size(); i++) {
-		for (size_t j = 0; j < outGDB_G.at(i).size(); j++) {
-			for (size_t k = 0; k < outGDB_G.at(i).at(j).size(); k++) {
-
-				vector <GDB> process_GDB = outGDB_G.at(i).at(j).at(k);
-
-				const string DT = process_GDB.at(0).DATATYPE;
-				const bool FOLD_TO_PROCESS = is_allowed_foldsurface_processing(DT);
-
-				if (FOLD_TO_PROCESS) process_GDB = CALCULATE_FOLDSURFACE_NORMAL (process_GDB);
-
-				outGDB_G.at(i).at(j).at(k) = process_GDB;
-			}
-		}
-	}
-	return outGDB_G;
-}
-
 vector <vector <GDB> > PROCESS_GROUPS (const vector <vector <GDB> >& inGDB_G, const bool TILT) {
-
-	//cout << "PROCESS_GROUPS - " << TILT << endl;
 
 	vector <vector <GDB> > outGDB_G = inGDB_G;
 

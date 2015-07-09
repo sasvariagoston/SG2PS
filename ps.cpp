@@ -20,6 +20,7 @@
 #include "ps.h"
 #include "rgf.h"
 #include "common.h"
+#include "paper.hpp"
 #include "platform_dep.hpp"
 #include "ps_RUP_ANG.hpp"
 #include "rose.h"
@@ -66,77 +67,6 @@ const string FLD_GRY_DSH = "6 6";
 const string FLD_RGB_DSH = "6 6";
 const string C_GRY_DSH = "6  6";
 const string C_RGB_DSH = "6  6";
-}
-
-PAPER PS_dimensions (const bool WELL) {
-
-	PAPER P;
-
-	if (WELL) {
-
-		P.Y = mm_to_point (420);
-		P.X = P.Y * 0.707143;
-	}
-	else {
-
-		P.X = mm_to_point (420);
-		P.Y = P.X * 0.707143;
-	}
-
-	P.A = P.X * 0.033670;
-	P.B = P.A / 2.0;
-	P.C = P.B / 2.0;
-	P.D = P.C / 10.0122;
-
-	P.R = P.X * 0.235726  * 0.5;
-
-	P.O1X = 1.5 * P.A  + P.R;
-	P.O1Y = P.Y - P.A - P.A - P.B - P.R;
-
-	P.O2X = P.O1X;
-	P.O2Y = P.O1X + P.B;
-
-	P.O3X = P.O1X + P.R + P.B + P.A + P.R + 3.0 * P.B;
-	P.O3Y = P.O1Y;
-
-	P.O4X = P.O3X;
-	P.O4Y = P.O2Y;
-
-	P.O5X = P.O3X + P.R + 0.5 * P.B + P.A;
-	P.O5Y = P.O3Y + P.R;
-
-	P.O6X = P.O5X;
-	P.O6Y = P.O4Y;
-
-	P.O7X = P.O5X + P.R - 0.0 * P.B;
-	P.O7Y = P.O3Y + P.B;
-
-	P.O8X = P.O7X;
-	P.O8Y = P.O6Y - P.R + P.B;
-
-
-
-
-
-	P.S1X = P.X - (10.0 * P.A);
-	P.S1Y = (P.Y / 2.0) + (3.5 * P.A);
-
-	P.S2X = P.X - (1.00 * P.A);
-	P.S2Y = P.S1Y;
-
-	P.S3X = P.X - (1.00 * P.A);
-	P.S3Y = (P.Y / 2.0) - (3.5 * P.A);
-
-	P.S4X = P.S1X;
-	P.S4Y = P.S3Y;
-
-	P.S5X = P.S1X + 3.0 * P.A;
-	P.S5Y = P.S1Y;
-
-	P.S6X = P.S2X - 3.0 * P.A;
-	P.S6Y = P.S1Y;
-
-	return P;
 }
 
 void PS_stereonet_header (ofstream& o) {
@@ -399,7 +329,9 @@ void PS_stereonet_header (ofstream& o) {
 	return;
 }
 
-void PS_border (const vector <GDB>& inGDB, ofstream& o, const PAPER& P) {
+void PS_border (const vector <GDB>& inGDB, ofstream& o) {
+
+	const PAPER P = RETURN_PAPER();
 
 	const string DT = inGDB.at(0).DATATYPE;
 	const string LOC = inGDB.at(0).LOC;
@@ -517,7 +449,9 @@ void PS_border (const vector <GDB>& inGDB, ofstream& o, const PAPER& P) {
 	text_PS(o, "%%-----end PSborder");
 }
 
-void PS_stress_scale (ofstream& o, const PAPER& P) {
+void PS_stress_scale (ofstream& o) {
+
+	const PAPER P = RETURN_PAPER();
 
 	double value = 0.0;
 
@@ -566,7 +500,9 @@ void PS_stress_scale (ofstream& o, const PAPER& P) {
 	return;
 }
 
-void PS_net (ofstream& o, const PAPER& P) {
+void PS_net (ofstream& o) {
+
+	const PAPER P = RETURN_PAPER();
 
 	string 						T = "Schmidt-net,";
 	if (is_NET_WULFF())			T = "Wulff-net,";
@@ -673,7 +609,9 @@ void PS_net (ofstream& o, const PAPER& P) {
 	return;
 }
 
-void PS_stressdata (const vector <GDB>& inGDB, ofstream& o, const CENTER& center, const PAPER& P, const STRESSFIELD& sf) {
+void PS_stressdata (const vector <GDB>& inGDB, ofstream& o, const CENTER& center, const STRESSFIELD& sf) {
+
+	const PAPER P = RETURN_PAPER();
 
 	const bool FRACTURE = inGDB.at(0).DATATYPE == "FRACTURE" && is_BINGHAM_USE();
 
@@ -758,7 +696,9 @@ void PS_stressdata (const vector <GDB>& inGDB, ofstream& o, const CENTER& center
 	translate_PS(o, - center.X - (center.radius / 2.0) + P.A, - center.Y + center.radius + 20.0 * P.D, 3);
 }
 
-void PS_stressarrows (ofstream& o, const CENTER& center, const PAPER& P, const STRESSFIELD& sf) {
+void PS_stressarrows (ofstream& o, const CENTER& center, const STRESSFIELD& sf) {
+
+	const PAPER P = RETURN_PAPER();
 
 	if ((sf.regime == "COMPRESSIONAL") || (sf.regime == "STRIKE-SLIP")) {
 
@@ -804,7 +744,9 @@ void PS_stressarrows (ofstream& o, const CENTER& center, const PAPER& P, const S
 	return;
 }
 
-void PS_mohr_circle (const vector <GDB>& inGDB, ofstream& o, const CENTER& mohrcenter, const PAPER& P) {
+void PS_mohr_circle (const vector <GDB>& inGDB, ofstream& o, const CENTER& mohrcenter) {
+
+	const PAPER P = RETURN_PAPER();
 
 	if (!is_allowed_striae_datatype (inGDB.at(0).DATATYPE)) ASSERT_DEAD_END();
 
@@ -887,7 +829,9 @@ void PS_mohr_circle (const vector <GDB>& inGDB, ofstream& o, const CENTER& mohrc
 	return;
 }
 
-void PS_RUP_ANG_distribution (const vector <GDB>& inGDB, ofstream& o, const CENTER& center, const PAPER& P, const string method) {
+void PS_RUP_ANG_distribution (const vector <GDB>& inGDB, ofstream& o, const CENTER& center, const string method) {
+
+	const PAPER P = RETURN_PAPER();
 
 	const bool RUP = method == "RUP";
 	const bool ANG = method == "ANG";
@@ -925,7 +869,9 @@ void PS_RUP_ANG_distribution (const vector <GDB>& inGDB, ofstream& o, const CENT
 	ps_percentage_max (o, center, P, method, DATA_max);
 }
 
-void PS_stress_state (ofstream& o, const PAPER P, const CENTER& center, const STRESSFIELD& sf) {
+void PS_stress_state (ofstream& o, const CENTER& center, const STRESSFIELD& sf) {
+
+	const PAPER P = RETURN_PAPER();
 
 	const double value = sf.delvaux_str;
 
@@ -949,11 +895,7 @@ void PS_folddata (GDB in, ofstream& o, CENTER center) {
 
 	string T = "Fold great circle: ";
 
-	//cout << in.fold_great_circle_N.X << endl;
-
 	DIPDIR_DIP DD = dipdir_dip_from_NXNYNZ (in.fold_great_circle_N);
-
-	//cout << DD.DIPDIR << endl;
 
 	if (DD.DIPDIR < 10.0) T = T + "00" + double_to_string (DD.DIPDIR, 0);
 	else if (DD.DIPDIR < 100.0) T = T + "0" + double_to_string (DD.DIPDIR, 0);
@@ -967,8 +909,6 @@ void PS_folddata (GDB in, ofstream& o, CENTER center) {
 	text_PS(o, 0.0, 0.0, 3, T);
 
 	translate_PS (o, - center.X - (center.radius / 2.0), - center.Y + center.radius, 3);
-
-	//cout << "end PS_folddata" << endl;
 
 	return;
 }
@@ -1016,7 +956,6 @@ void PS_lineation (const GDB& i, ofstream& o, const CENTER& center, const STRESS
 		OTHER = true;
 	}
 
-
 	if (is_D_up (L)) {
 
 		cout << fixed << setprecision(6) << endl;
@@ -1025,8 +964,6 @@ void PS_lineation (const GDB& i, ofstream& o, const CENTER& center, const STRESS
 		ASSERT_DEAD_END();
 		L = flip_vector(L);
 	}
-	//if (L.Z > 0.0) L.Z = - L.Z;
-
 	double X = 0.0;
 	double Y = 0.0;
 
@@ -1114,8 +1051,6 @@ void PS_plane (const GDB& i, ofstream& o, const double X, const double Y, const 
 	if (is_NET_SCHMIDT()) 	steps = 60;
 
 	VCTR N;
-	//VCTR D;
-
 	DIPDIR_DIP DD;
 
 	if (C) {
@@ -1135,13 +1070,11 @@ void PS_plane (const GDB& i, ofstream& o, const double X, const double Y, const 
 	else if (FOLD) {
 
 		DD = dipdir_dip_from_NXNYNZ (i.fold_great_circle_N);
-		//D = DXDYDZ_from_NXNYNZ (i.fold_great_circle_N);
 		N = i.fold_great_circle_N;
 	}
 	else {
 
 		DD = i.corr;
-		//D = i.D;
 		N = i.N;
 	}
 
@@ -1375,7 +1308,6 @@ void PS_polepoint (const GDB& i, ofstream& o, const double X, const double Y, co
 	else if (AV || AVO) O = NXNYNZ_from_DXDYDZ (i.avS0D);
 	else if (C) 		O = i.NC;
 	else if (ID) 		O = unitvector (i.SHEAR_S);
-	////else if (ID) 		O = flip_N_vector (unitvector (i.SHEAR_S));
 	else 				O = i.N;
 
 	if (is_N_down (O)) O = flip_vector(O);
@@ -1453,11 +1385,9 @@ void PS_striaearrow (const GDB& i, ofstream& o, const CENTER& center) {
 	string TEXT = "";
 
 	VCTR DATA;// = i.DC;
-	//if (is_DC_up(DATA)) DATA = flip_vector(DATA);
 
 	if (is_PLOT_HOEPPENER()) {
 
-		//DATA = declare_vector (-i.N.X, -i.N.Y, -i.N.Z);
 		DATA = declare_vector (-i.N.X, -i.N.Y, -i.N.Z);
 	}
 	else{
@@ -1513,7 +1443,6 @@ void PS_striaearrow (const GDB& i, ofstream& o, const CENTER& center) {
 	if (is_PLOT_HOEPPENER() && !NONE) {
 
 		ANGLE = - i.corrL.DIPDIR;
-		////if (i.UP) ANGLE = ANGLE + 180.0;
 		TEXT = " newpath normalarrow";
 	}
 	else {
@@ -1567,24 +1496,17 @@ void PS_striaearrow (const GDB& i, ofstream& o, const CENTER& center) {
 	return;
 }
 
-void PS_datanumber_averagebedding (const GDB& i, ofstream& o, const PAPER& P, const size_t datanumber) {
+void PS_datanumber_averagebedding (const GDB& i, ofstream& o, const size_t datanumber) {
+
+	const PAPER P = RETURN_PAPER();
 
 	const bool HAS_BEDDING = (is_allowed_DIR (i.avS0d.DIPDIR) && is_allowed_DIP (i.avS0d.DIP));
-
-
-	//cout << "PS__Y__1" << endl;
-
-	//cout << i.avS0d.DIPDIR << " / " << i.avS0d.DIP << endl;
-
 
 	if (HAS_BEDDING) {
 
 		if (is_PLOT_HOEPPENER()) 	PS_polepoint (i, o, P.O1X, P.O1Y, P.R, "AV");
 		else 						PS_plane     (i, o, P.O1X, P.O1Y, P.R, "AV");
 	}
-
-
-	//cout << "PS__Y__2" << endl;
 
 	font_PS(o, "ArialNarrow-Bold", 8);
 	color_PS(o, "0.0 0.0 0.0");
@@ -1663,7 +1585,9 @@ void PS_GDB_DATA (const vector <GDB>& inGDB, ofstream& o, const CENTER& center) 
 	return;
 }
 
-void PS_GDB (const vector <GDB>& inGDB, ofstream& o, PAPER P, bool TILT) {
+void PS_GDB (const vector <GDB>& inGDB, ofstream& o, bool TILT) {
+
+	const PAPER P = RETURN_PAPER();
 
 	CENTER center, rosecenter, vrosecenter, mohrcenter;
 
@@ -1693,7 +1617,7 @@ void PS_GDB (const vector <GDB>& inGDB, ofstream& o, PAPER P, bool TILT) {
 		mohrcenter.X = P.O8X;
 		mohrcenter.Y = P.O8Y;
 	}
-	CONTOURING (inGDB, o, P, center, TILT);
+	CONTOURING (inGDB, o, center, TILT);
 
 	PS_draw_rose_DIPDIR_DIP (inGDB, o, rosecenter, "DIPDIR", TILT);
 	PS_draw_rose_DIPDIR_DIP (inGDB, o, vrosecenter, "DIP", TILT);
@@ -1702,7 +1626,7 @@ void PS_GDB (const vector <GDB>& inGDB, ofstream& o, PAPER P, bool TILT) {
 
 	PS_FOLD_GREAT_CIRCLE (inGDB, o, center);
 
-	PS_INVERSION_RESULTS (inGDB, o, center, mohrcenter, P);
+	PS_INVERSION_RESULTS (inGDB, o, center, mohrcenter);
 
 	return;
 }
@@ -1836,8 +1760,6 @@ void PS_DRAW_lineation (const GDB& i, ofstream& o, const CENTER& center) {
 
 	STRESSFIELD empty_sf;
 
-	//cout << "PS_LINEATION_called for fault data" << endl;
-
 	if (is_LABELLING_USE()) 		PS_lineation 	(i, o, center, empty_sf, true, "");
 	else 							PS_lineation 	(i, o, center, empty_sf, false, "");
 
@@ -1859,7 +1781,6 @@ void PS_DRAW_sc (const GDB& i, ofstream& o, const CENTER& center) {
 	const double Y = center.Y;
 	const double R = center.radius;
 
-	//const bool L = is_LABELLING_USE();
 	const bool H = is_PLOT_HOEPPENER();
 
 	if (H) {
@@ -1891,25 +1812,19 @@ void PS_idealmovement (const vector <GDB>& inGDB, ofstream& o, const CENTER& cen
 
 void PS_FOLD_GREAT_CIRCLE (const vector <GDB>& inGDB, ofstream& o, const CENTER& center) {
 
-	//cout << "PS_FOLD_GREAT_CIRCLE" << endl;
-
 	const string DT = inGDB.at(0).DATATYPE;
 
 	if (!is_allowed_foldsurface_processing(DT)) return;
 
 	PS_folddata (inGDB.at(0), o, center);
 
-	//const bool LABEL = is_LABELLING_USE();
-
 	PS_plane (inGDB.at(0), o, center.X, center.Y, center.radius, "FOLD");
-
-	//cout << "end PS_FOLD_GREAT_CIRCLE" << endl;
 
 	return;
 }
 
 
-void PS_INVERSION_RESULTS (const vector <GDB>& inGDB, ofstream& o, const CENTER& center, const CENTER& mohr_center, const PAPER& P) {
+void PS_INVERSION_RESULTS (const vector <GDB>& inGDB, ofstream& o, const CENTER& center, const CENTER& mohr_center) {
 
 	const bool STRIAE = is_allowed_striae_datatype(inGDB.at(0).DATATYPE);
 	const bool FRACTURE = inGDB.at(0).DATATYPE == "FRACTURE";
@@ -1924,18 +1839,18 @@ void PS_INVERSION_RESULTS (const vector <GDB>& inGDB, ofstream& o, const CENTER&
 
 	if (STV.size() < 1 || SFV.size() < 1) return;
 
-	PS_stressdata (inGDB, o, center, P, SFV.at(SFV.size() - 1));
+	PS_stressdata (inGDB, o, center, SFV.at(SFV.size() - 1));
 
 	if (STRIAE && !no_INVERSION) {
 
-		PS_stressarrows (o, center, P, SFV.at(SFV.size() - 1));
+		PS_stressarrows (o, center, SFV.at(SFV.size() - 1));
 
-		PS_mohr_circle (inGDB, o, mohr_center, P);
+		PS_mohr_circle (inGDB, o, mohr_center);
 
-		PS_RUP_ANG_distribution (inGDB, o, center, P, "RUP");
-		PS_RUP_ANG_distribution (inGDB, o, center, P, "ANG");
+		PS_RUP_ANG_distribution (inGDB, o, center, "RUP");
+		PS_RUP_ANG_distribution (inGDB, o, center, "ANG");
 
-		PS_stress_state (o, P, center, SFV.at(SFV.size() - 1));
+		PS_stress_state (o, center, SFV.at(SFV.size() - 1));
 
 		PS_idealmovement (inGDB, o, center);
 
@@ -1968,13 +1883,12 @@ void PS_stress_axes (const vector <GDB>& inGDB, ofstream& o, const CENTER& cente
 
 		if (STRIAE && MOSTAFA && i < SF.size()) {
 
-			//cout << "PS_LINEATION_called for strss axis" << endl;
 			PS_lineation (dummy, o, center, SF.at(i), false, "S1_ITER");
 			PS_lineation (dummy, o, center, SF.at(i), false, "S2_ITER");
 			PS_lineation (dummy, o, center, SF.at(i), false, "S3_ITER");
 		}
 		else {
-			//cout << "PS_LINEATION_called for strss axis" << endl;
+
 			PS_lineation (dummy, o, center, SF.at(i), false, "S1");
 			PS_lineation (dummy, o, center, SF.at(i), false, "S2");
 			PS_lineation (dummy, o, center, SF.at(i), false, "S3");
@@ -1983,7 +1897,9 @@ void PS_stress_axes (const vector <GDB>& inGDB, ofstream& o, const CENTER& cente
 	return;
 }
 
-void PS_SYMBOLS_border (ofstream& o, const PAPER& P) {
+void PS_SYMBOLS_border (ofstream& o) {
+
+	const PAPER P = RETURN_PAPER();
 
 	newpath_PS (o);
 
@@ -2021,7 +1937,9 @@ void PS_SYMBOLS_border (ofstream& o, const PAPER& P) {
 	text_PS (o, P.X - (6.1 * P.A), P.Y / 2.0 + 3.5 * P.A, 3, "SYMBOLS");
 }
 
-void PS_SYMBOL_draw_plane (ofstream& o, const double X, const double Y, const PAPER& P, const string& TYPE) {
+void PS_SYMBOL_draw_plane (ofstream& o, const double X, const double Y, const string& TYPE) {
+
+	const PAPER P = RETURN_PAPER();
 
 	const bool GROUP = is_allowed_basic_groupcode_str (TYPE);
 	const bool AV = TYPE == "AV";
@@ -2129,14 +2047,16 @@ void PS_SYMBOL_draw_plane (ofstream& o, const double X, const double Y, const PA
 	return;
 }
 
-void PS_SYMBOLS_STRIAE (ofstream& o, const PAPER& P) {
+void PS_SYMBOLS_STRIAE (ofstream& o) {
+
+	const PAPER P = RETURN_PAPER();
 
 	const bool A = is_PLOT_ANGELIER ();
 	const bool I = is_IDEALMOVEMENT_USE();
 
 	color_PS (o, "0.0 0.0 0.0");
 
-	if (A) PS_SYMBOL_draw_plane (o, 1.0 * P.A, 1.80 * P.A, P, "X");
+	if (A) PS_SYMBOL_draw_plane (o, 1.0 * P.A, 1.80 * P.A, "X");
 	translate_PS (o, P.S1X + 0.6 * P.A, P.S1Y - 3.355 * P.A, 3);
 	rotate_PS (o, 20.0, 1);
 	text_PS(o, " newpath normalarrow");
@@ -2145,7 +2065,7 @@ void PS_SYMBOLS_STRIAE (ofstream& o, const PAPER& P) {
 	color_PS (o, "0.0 0.0 0.0");
 	text_PS (o, P.S1X + 0.6 * P.A + 5.0 * P.D, P.S1Y - 3.655 * P.A, 3, "Normal offset");
 
-	if (A) PS_SYMBOL_draw_plane (o, 1.0 * P.A, 1.97 * P.A, P, "X");
+	if (A) PS_SYMBOL_draw_plane (o, 1.0 * P.A, 1.97 * P.A, "X");
 	translate_PS (o, P.S1X + 0.6 * P.A, P.S1Y - 3.955 * P.A, 3);
 	rotate_PS (o, 160.0, 1);
 	text_PS(o, " newpath normalarrow");
@@ -2154,7 +2074,7 @@ void PS_SYMBOLS_STRIAE (ofstream& o, const PAPER& P) {
 	color_PS (o, "0.0 0.0 0.0");
 	text_PS (o, P.S1X + 0.6 * P.A + 5.0 * P.D, P.S1Y - 4.255 * P.A, 3, "Reverse offset");
 
-	if (A) PS_SYMBOL_draw_plane (o, 1.0 * P.A, 2.14 * P.A, P, "X");
+	if (A) PS_SYMBOL_draw_plane (o, 1.0 * P.A, 2.14 * P.A, "X");
 	translate_PS (o, P.S1X + 0.6 * P.A, P.S1Y - 4.555 * P.A, 3);
 	rotate_PS (o, 60.0, 1);
 	text_PS(o, " newpath dextralarrow");
@@ -2163,7 +2083,7 @@ void PS_SYMBOLS_STRIAE (ofstream& o, const PAPER& P) {
 	color_PS (o, "0.0 0.0 0.0");
 	text_PS (o, P.S1X + 0.6 * P.A + 5.0 * P.D, P.S1Y - 4.855 * P.A, 3, "Dextral offset");
 
-	if (A) PS_SYMBOL_draw_plane (o, 1.0 * P.A, 2.31 * P.A, P, "X");
+	if (A) PS_SYMBOL_draw_plane (o, 1.0 * P.A, 2.31 * P.A, "X");
 	translate_PS (o, P.S1X + 0.6 * P.A, P.S1Y - 5.155 * P.A, 3);
 	rotate_PS (o, 60.0, 1);
 	text_PS(o, " newpath sinistralarrow");
@@ -2172,7 +2092,7 @@ void PS_SYMBOLS_STRIAE (ofstream& o, const PAPER& P) {
 	color_PS (o, "0.0 0.0 0.0");
 	text_PS (o, P.S1X + 0.6 * P.A + 5.0 * P.D, P.S1Y - 5.455 * P.A, 3, "Sinistral offset");
 
-	if (A) PS_SYMBOL_draw_plane (o, 1.0 * P.A, 2.48 * P.A, P, "X");
+	if (A) PS_SYMBOL_draw_plane (o, 1.0 * P.A, 2.48 * P.A, "X");
 	translate_PS (o, P.S1X + 0.6 * P.A, P.S1Y - 5.755 * P.A, 3);
 	rotate_PS (o, 20.0, 1);
 	text_PS(o, " newpath nonearrow");
@@ -2181,7 +2101,7 @@ void PS_SYMBOLS_STRIAE (ofstream& o, const PAPER& P) {
 	color_PS (o, "0.0 0.0 0.0");
 	text_PS (o, P.S1X + 0.6 * P.A + 5.0 * P.D, P.S1Y - 6.055 * P.A, 3, "Unknown offset");
 
-	if (A && I) PS_SYMBOL_draw_plane (o, 1.0 * P.A, 2.65 * P.A, P, "X");
+	if (A && I) PS_SYMBOL_draw_plane (o, 1.0 * P.A, 2.65 * P.A, "X");
 	color_PS (o, "0.0 0.0 0.0");
 	if (I) text_PS (o, P.S1X + 0.6 * P.A + 5.0 * P.D, P.S1Y - 6.655 * P.A, 3, "Ideal movement");
 
@@ -2201,7 +2121,9 @@ void PS_SYMBOLS_STRIAE (ofstream& o, const PAPER& P) {
 	return;
 }
 
-void PS_SYMBOLS_PLANE (const string& DATATYPE, ofstream& o, const PAPER& P) {
+void PS_SYMBOLS_PLANE (const string& DATATYPE, ofstream& o) {
+
+	const PAPER P = RETURN_PAPER();
 
 	const bool FOLDSURFACE = is_allowed_foldsurface_processing(DATATYPE);
 	const bool BEDDING = is_allowed_handle_as_bedding(DATATYPE);
@@ -2227,22 +2149,24 @@ void PS_SYMBOLS_PLANE (const string& DATATYPE, ofstream& o, const PAPER& P) {
 	text_PS (o, X + 5.0 * P.D, Y + 0.40 * P.A, 3, "Average bedding");
 	text_PS (o, X + 5.0 * P.D, Y + 0.22 * P.A, 3, "Overturned");
 
-	PS_SYMBOL_draw_plane (o, P.A, 1.00 * P.A, P, "X");
-	if (C) PS_SYMBOL_draw_plane (o, P.A, 1.20 * P.A, P, "SC");
-	if (BEDDING) PS_SYMBOL_draw_plane (o, P.A, 1.20 * P.A, P, "O");
-	PS_SYMBOL_draw_plane (o, P.A, 1.40 * P.A, P, "AV");
-	PS_SYMBOL_draw_plane (o, P.A, 1.60 * P.A, P, "AV_O");
+	PS_SYMBOL_draw_plane (o, P.A, 1.00 * P.A, "X");
+	if (C) PS_SYMBOL_draw_plane (o, P.A, 1.20 * P.A, "SC");
+	if (BEDDING) PS_SYMBOL_draw_plane (o, P.A, 1.20 * P.A, "O");
+	PS_SYMBOL_draw_plane (o, P.A, 1.40 * P.A, "AV");
+	PS_SYMBOL_draw_plane (o, P.A, 1.60 * P.A, "AV_O");
 
 	if (FOLDSURFACE) {
 
-		PS_SYMBOL_draw_plane (o, P.A, 1.80 * P.A, P, "FOLD");
+		PS_SYMBOL_draw_plane (o, P.A, 1.80 * P.A, "FOLD");
 		color_PS (o, "0.0 0.0 0.0");
 		text_PS (o, X + 5.0 * P.D, Y - (0.3 * P.A), 3, "Fold great circle");
 	}
 	return;
 }
 
-void PS_SYMBOLS_LINEATION (const string& DATATYPE, ofstream& o, const PAPER& P) {
+void PS_SYMBOLS_LINEATION (const string& DATATYPE, ofstream& o) {
+
+	const PAPER P = RETURN_PAPER();
 
 	color_PS (o, "0.0 0.0 0.0");
 	text_PS (o, P.S1X + 0.6 * P.A + 5.0 * P.D, P.S1Y - 0.855 * P.A, 3, DATATYPE);
@@ -2251,8 +2175,8 @@ void PS_SYMBOLS_LINEATION (const string& DATATYPE, ofstream& o, const PAPER& P) 
 	text_PS (o, P.S1X + 0.6 * P.A + 10.0 * P.D, P.S1Y - 3.355 * P.A + 0.40 * P.A, 3, "Average bedding");
 	text_PS (o, P.S1X + 0.6 * P.A + 10.0 * P.D, P.S1Y - 3.355 * P.A + 0.22 * P.A, 3, "Overturned");
 
-	PS_SYMBOL_draw_plane (o, 1.0 * P.A, 1.40 * P.A, P, "AV");
-	PS_SYMBOL_draw_plane (o, 1.0 * P.A, 1.60 * P.A, P, "AV_O");
+	PS_SYMBOL_draw_plane (o, 1.0 * P.A, 1.40 * P.A, "AV");
+	PS_SYMBOL_draw_plane (o, 1.0 * P.A, 1.60 * P.A, "AV_O");
 
 	color_PS (o, "0.0 0.0 0.0");
 	newpath_PS(o);
@@ -2261,7 +2185,9 @@ void PS_SYMBOLS_LINEATION (const string& DATATYPE, ofstream& o, const PAPER& P) 
 	stroke_PS(o);
 }
 
-void PS_SYMBOLS_GROUPS (ofstream& o, const PAPER& P) {
+void PS_SYMBOLS_GROUPS (ofstream& o) {
+
+	const PAPER P = RETURN_PAPER();
 
 	const double X = 6.8 * P.A;
 	double Y = 1.4 * P.A;
@@ -2276,7 +2202,7 @@ void PS_SYMBOLS_GROUPS (ofstream& o, const PAPER& P) {
 
 			const string GROUP = allowed_basic_groupcode_str_vector().at(i);
 
-			PS_SYMBOL_draw_plane (o, X, Y + (i-1)*0.18*P.A - 10.0*P.D, P, GROUP);
+			PS_SYMBOL_draw_plane (o, X, Y + (i-1)*0.18*P.A - 10.0*P.D, GROUP);
 
 			color_PS (o, "0.0 0.0 0.0");
 
@@ -2287,7 +2213,7 @@ void PS_SYMBOLS_GROUPS (ofstream& o, const PAPER& P) {
 
 		const string GROUP = allowed_basic_groupcode_str_vector().at(0);
 
-		PS_SYMBOL_draw_plane (o, X, Y, P, GROUP);
+		PS_SYMBOL_draw_plane (o, X, Y, GROUP);
 
 		color_PS (o, "0.0 0.0 0.0");
 
@@ -2296,7 +2222,9 @@ void PS_SYMBOLS_GROUPS (ofstream& o, const PAPER& P) {
 	return;
 }
 
-void PS_SYMBOLS_INVERSION (ofstream& o, const PAPER& P) {
+void PS_SYMBOLS_INVERSION (ofstream& o) {
+
+	const PAPER P = RETURN_PAPER();
 
 	translate_PS (o, P.S1X + 3.4 * P.A, P.S1Y - 1.255 * P.A, 3);
 	text_PS (o, " newpath s1_axis");
@@ -2345,7 +2273,9 @@ void PS_SYMBOLS_INVERSION (ofstream& o, const PAPER& P) {
 	text_PS(o, P.S1X + 2.4 * P.A, P.S1Y - 5.8055 * P.A, 3, "Minimum horizontal stress");
 }
 
-void PS_SYMBOLS_BINGHAM (ofstream& o, const PAPER& P) {
+void PS_SYMBOLS_BINGHAM (ofstream& o) {
+
+	const PAPER P = RETURN_PAPER();
 
 	color_PS (o, "0.0 0.0 0.0");
 	translate_PS (o, P.S1X + 3.4 * P.A, P.S1Y - 1.255 * P.A, 3);
@@ -2367,7 +2297,9 @@ void PS_SYMBOLS_BINGHAM (ofstream& o, const PAPER& P) {
 	text_PS (o, P.S1X + 2.6 * P.A, P.S1Y - 2.955 * P.A, 3, "Minimum weight point");
 }
 
-void PS_SYMBOLS_ROSE (const vector <GDB>& inGDB, ofstream& o, const PAPER& P) {
+void PS_SYMBOLS_ROSE (const vector <GDB>& inGDB, ofstream& o) {
+
+	const PAPER P = RETURN_PAPER();
 
 	const double angle = 80.0;
 	const double radius = 80.0 * P.D;
@@ -2445,7 +2377,9 @@ void PS_SYMBOLS_ROSE (const vector <GDB>& inGDB, ofstream& o, const PAPER& P) {
 	return;
 }
 
-void PS_SYMBOLS_LABEL (ofstream& o, const PAPER& P) {
+void PS_SYMBOLS_LABEL (ofstream& o) {
+
+	const PAPER P = RETURN_PAPER();
 
 	if (! is_LABELLING_USE()) return;
 
@@ -2473,7 +2407,9 @@ void PS_SYMBOLS_LABEL (ofstream& o, const PAPER& P) {
 	return;
 }
 
-void PS_STEREONET_SYMBOLS (const vector <GDB>& inGDB, ofstream& o, const PAPER& P) {
+void PS_STEREONET_SYMBOLS (const vector <GDB>& inGDB, ofstream& o) {
+
+	const PAPER P = RETURN_PAPER();
 
 	const string DATAGROUP = inGDB.at(0).DATAGROUP;
 	const string DATATYPE = inGDB.at(0).DATATYPE;
@@ -2485,8 +2421,8 @@ void PS_STEREONET_SYMBOLS (const vector <GDB>& inGDB, ofstream& o, const PAPER& 
 	const bool SC = is_allowed_SC_datatype (DATAGROUP);
 	const bool STRIAE = is_allowed_striae_datatype (DATAGROUP);
 
-	PS_SYMBOLS_border (o, P);
-	PS_SYMBOLS_LABEL (o, P);
+	PS_SYMBOLS_border (o);
+	PS_SYMBOLS_LABEL (o);
 
 	font_PS (o, "ArialNarrow", 8);
 
@@ -2495,44 +2431,44 @@ void PS_STEREONET_SYMBOLS (const vector <GDB>& inGDB, ofstream& o, const PAPER& 
 	color_PS (o, "0.0 0.0 0.0");
 	text_PS(o, P.S1X + 7.4 * P.A, P.S1Y - 0.3 * P.A, 3, "GROUPS");
 
-	PS_SYMBOLS_ROSE (inGDB, o, P);
+	PS_SYMBOLS_ROSE (inGDB, o);
 
-	PS_SYMBOLS_GROUPS (o, P);
+	PS_SYMBOLS_GROUPS (o);
 
 	color_PS (o, "0.0 0.0 0.0");
 
 	if (PLANE) {
 
 		text_PS(o, P.S1X + 0.8 * P.A, P.S1Y - 0.3 * P.A, 3, "PLANES");
-		PS_SYMBOLS_PLANE (DATATYPE, o, P);
+		PS_SYMBOLS_PLANE (DATATYPE, o);
 
 		color_PS (o, "0.0 0.0 0.0");
 		text_PS (o, P.S1X + 2.5 * P.A, P.S1Y - 0.3 * P.A, 3, "BINGHAM STATISTICS");
 
 		const bool FRACTURE = DATATYPE == "FRACTURE";
 
-		if (is_BINGHAM_USE() && FRACTURE) PS_SYMBOLS_BINGHAM (o, P);
+		if (is_BINGHAM_USE() && FRACTURE) PS_SYMBOLS_BINGHAM (o);
 	}
 	else if (LINEATION) {
 
 		text_PS(o, P.S1X + 0.6 * P.A, P.S1Y - 0.3 * P.A, 3, "LINEATION");
-		PS_SYMBOLS_LINEATION (DATATYPE, o, P);
+		PS_SYMBOLS_LINEATION (DATATYPE, o);
 	}
 	else if (SC) {
 
 		text_PS(o, P.S1X + 0.1 * P.A, P.S1Y - 0.3 * P.A, 3, "SCHISTOSITY, CLEAVEGE");
-		PS_SYMBOLS_PLANE (DATATYPE, o, P);
+		PS_SYMBOLS_PLANE (DATATYPE, o);
 	}
 	else if (STRIAE) {
 
 		text_PS (o, P.S1X + 0.1 * P.A, P.S1Y - 0.3 * P.A, 3, "FAULT AND STRIAE DATA");
-		PS_SYMBOLS_PLANE (DATATYPE, o, P);
-		PS_SYMBOLS_STRIAE (o, P);
+		PS_SYMBOLS_PLANE (DATATYPE, o);
+		PS_SYMBOLS_STRIAE (o);
 
 		color_PS (o, "0.0 0.0 0.0");
 		text_PS (o, P.S1X + 2.6 * P.A, P.S1Y - 0.3 * P.A, 3, "STRESS INVERSION");
 
-		PS_SYMBOLS_INVERSION (o, P);
+		PS_SYMBOLS_INVERSION (o);
 	}
 	else ASSERT_DEAD_END();
 }
@@ -2645,16 +2581,6 @@ void OUTPUT_TO_PS (const vector <vector <GDB> >& in_GDB_G, const vector <vector 
 
 	if (in_GDB_G.size() != t_GDB_G.size()) ASSERT_DEAD_END();
 
-	//const bool IGNORE = is_GROUPSEPARATION_IGNORE ();
-	//const bool by_GROUPCODE = is_GROUPSEPARATION_GROUPCODE ();
-	//const bool by_KMEANS = is_GROUPSEPARATION_KMEANS ();
-	//const bool by_RUPANG = is_GROUPSEPARATION_RUPANG ();
-
-	//if (!IGNORE && !by_GROUPCODE && !by_KMEANS && !by_RUPANG) ASSERT_DEAD_END() ;
-
-	//const string BS = path_separator;
-	//const string US = "_";
-
 	for (size_t i = 0; i < in_GDB_G.size(); i++) {
 
 		setup_ACTUAL_DATATYPE 	(in_GDB_G.at(i).at(0).DATATYPE);
@@ -2668,37 +2594,26 @@ void OUTPUT_TO_PS (const vector <vector <GDB> >& in_GDB_G, const vector <vector 
 
 		if (!LITHOLOGY) {
 
-			//string PS_NAME = P.pssep + BS + DT + BS + LOC + US + DT;
-
-			//if (TRJ) PS_NAME = PS_NAME + "_TRAJECTORY_CORRECTED";
-
-			//if (by_GROUPCODE) 	PS_NAME = PS_NAME + US + in_GDB_G.at(i).at(0).GC.at(0);
-			//else if (by_KMEANS) PS_NAME = PS_NAME + US + in_GDB_G.at(i).at(0).GC.at(1);
-			//else if (by_RUPANG) PS_NAME = PS_NAME + US + in_GDB_G.at(i).at(0).GC.at(2);
-			//else {}
-
-			//PS_NAME = PS_NAME + ".EPS";
-
 			const string PS_NAME = generate_ACTUAL_PS_NAME();
 
 			ofstream OPS (PS_NAME.c_str());
 
 			PS_stereonet_header (OPS);
 
-			const PAPER PPR = PS_dimensions (false);
+			INIT_PAPER (false);
 
-			PS_STEREONET_SYMBOLS (in_GDB_G.at(i), OPS, PPR);
+			PS_STEREONET_SYMBOLS (in_GDB_G.at(i), OPS);
 
-			if (is_allowed_striae_datatype (DT) && ! is_INVERSION_NONE()) PS_stress_scale (OPS, PPR);
+			if (is_allowed_striae_datatype (DT) && ! is_INVERSION_NONE()) PS_stress_scale (OPS);
 
-			PS_border (in_GDB_G.at(i), OPS, PPR);
+			PS_border (in_GDB_G.at(i), OPS);
 
-			PS_GDB (in_GDB_G.at(i), OPS, PPR, false);
-			PS_GDB (t_GDB_G.at(i), OPS, PPR, true);
+			PS_GDB (in_GDB_G.at(i), OPS, false);
+			PS_GDB (t_GDB_G.at(i), OPS, true);
 
-			PS_datanumber_averagebedding (in_GDB_G.at(i).at(0), OPS, PPR, in_GDB_G.at(i).size());
+			PS_datanumber_averagebedding (in_GDB_G.at(i).at(0), OPS, in_GDB_G.at(i).size());
 
-			PS_net (OPS, PPR);
+			PS_net (OPS);
 		}
 	}
 	return;

@@ -261,10 +261,6 @@ double ATAN (const double& in) {
 	return (out * 180.0) / 3.1415926535;
 }
 
-double mm_to_point (size_t i) {
-
-	return i * 0.03937 * 72.0;
-}
 
 VCTR crossproduct (const VCTR& in1, const VCTR& in2) {
 
@@ -1164,22 +1160,6 @@ bool existence (const string& expression, const vector<GDB>& inGDB) { // TODO co
 		if (inGDB.at(i).DATATYPE == expression) return true;
 	}
 	return false;
-
-	/*
-	 *
-	 * bool presence = false;
-
-	size_t i = 0;
-
-	while (i < inGDB.size()) {
-
-		if (inGDB.at(i).DATATYPE == expression) presence = true;
-		i++;
-	}
-
-	return presence;
-	 *
-	 */
 }
 
 bool existence_of_group (const size_t group, const vector <size_t>& whichgroup) {
@@ -1387,17 +1367,11 @@ vector <double>  quartic_solution (double A, double B, double C, double D, doubl
 	double p_c = 0.0;
 	double q_c = 0.0;
 
-
-
-
 	E = E / A;
 	D = D / A;
 	C = C / A;
 	B = B / A;
 	A = 1.0;
-
-
-
 
 	double f = C - ((3.0 * B * B) / 8.0);
 
@@ -1504,8 +1478,6 @@ bool bycorrDIPDIRcorrDIPcorrLDIPDIRcorrLDIP(const GDB& x, const GDB& y) {
 }
 
 void output_elapsed_time (const clock_t& start_t, const clock_t& finish_t) {
-
-	if (is_mode_DEBUG()) return;
 
 	double elapsed_time = (static_cast<double>(finish_t - start_t))/CLOCKS_PER_SEC;
 

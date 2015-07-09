@@ -81,7 +81,6 @@ bool by_rev_LOC (const GDB& x, const GDB& y) {
 	return x.LOC > y.LOC;
 }
 
-
 bool by_RUP_ANG(const GDB& x, const GDB& y) {
 
 	return x.GC.at(2) < y.GC.at(2);
@@ -142,9 +141,6 @@ vector <GDB> SORT_GDB (const vector <GDB>& inGDB, const string SORT) {
 	else if (SORT == "DATATYPE")	sort (P.begin(), P.end(), by_DT);
 	else if (SORT == "rDATATYPE")	sort (P.begin(), P.end(), by_rev_DT);
 
-	//else if (SORT == "FORMATION")		sort (P.begin(), P.end(), by_GC);
-	//else if (SORT == "rFORMATION")	sort (P.begin(), P.end(), by_rev_GC);
-
 	else if (SORT == "FORMATION")	sort (P.begin(), P.end(), by_FM);
 	else if (SORT == "rFORMATION")	sort (P.begin(), P.end(), by_rev_FM);
 
@@ -164,15 +160,10 @@ vector <GDB> SORT_GDB (const vector <GDB>& inGDB, const string SORT) {
 	return P;
 }
 
-
-
 bool byeigenvalue(const sort_jacobi& x, const sort_jacobi& y) {
 
 	return x.eigenvalue < y.eigenvalue;
 }
-
-
-
 
 bool by_DEPTH_trj (const TRJ& x, const TRJ& y) {
 

@@ -326,7 +326,6 @@ vector <BRUTEFORCE_RESULT> BRUTEFORCE_ENGINE (const vector <GDB>& inGDB, const v
 		N.push_back(inGDB.at(q).N);
 
 		SV.push_back(inGDB.at(q).DC);
-		//was:SV.push_back(inGDB.at(q)._SV);
 	}
 
 	vector <BRUTEFORCE_RESULT> OUT;

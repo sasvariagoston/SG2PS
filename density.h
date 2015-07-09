@@ -11,8 +11,6 @@
 
 #include "structs.h"
 
-//XY stereonet_coordinate_from_DIPDIR_DIP (const DIPDIR_DIP& in, const CENTER& center);
-
 vector < vector <GRID_CENTER> > generate_rectangular_grid_from_triange_center (const size_t cell_number);
 
 double return_grid_size (const vector < vector <GRID_CENTER> >& rect_grid);
@@ -53,8 +51,6 @@ vector < vector <VCTR> > generate_bezier_points (const vector <vector <LINE> >& 
 
 bool is_point_in_circle (const VCTR& in);
 
-//bool is_circle_border (const VCTR& A, const VCTR& B);
-
 VCTR interpolate_between_points (const VCTR& A, const VCTR& B);
 
 VCTR generate_new_start (const VCTR& A);
@@ -91,11 +87,11 @@ vector <VCTR> close_contourline (const vector <VCTR>& I, const double START_ANGL
 
 void contourline_to_ps (ofstream& o, const CENTER& center, const vector <VCTR>& BZ, const double& FRST_ANGLE, const double& LAST_ANGLE, const double& CONTOUR, const double& C_MN, const double& C_MX);
 
-void output_contourline (ofstream& o, const PAPER& P, const CENTER& center, vector <vector <VCTR> >& BZ,  vector < vector <GRID_CENTER> >& RECT_GRID, const double& CONTOUR, const double C_MN, const double C_MX, const double& MAX, const bool is_debug);
+void output_contourline (ofstream& o, const CENTER& center, vector <vector <VCTR> >& BZ,  vector < vector <GRID_CENTER> >& RECT_GRID, const double& CONTOUR, const double C_MN, const double C_MX, const double& MAX, const bool is_debug);
 
 bool is_processable_for_contouring (const vector <GDB>& inGDB);
 
-void CONTOURING (const vector <GDB>& inGDB, ofstream& o, const PAPER& P, const CENTER center, const bool TILT);
+void CONTOURING (const vector <GDB>& inGDB, ofstream& o, const CENTER center, const bool TILT);
 
 void dbg_cout_NET (const vector <vector <vector <VCTR> > >& NET);
 void dbg_cout_TRI_GRID (const vector <TRIANGLE>& TRI_GRID);

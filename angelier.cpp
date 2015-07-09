@@ -43,7 +43,6 @@ ANG_PRM angelier_parameters (const vector <GDB>& inGDB) {
 
 		const VCTR N = inGDB.at(i).N;
 
-		//was: const VCTR S = flip_vector (inGDB.at(i)._SV); was
 		const VCTR S = flip_vector (inGDB.at(i).DC);
 
 		const double lambda = inGDB.at(i).lambda;
@@ -191,8 +190,6 @@ STRESSFIELD sf_ANGELIER (const STRESSTENSOR& st) {
 	sf = correct_SF_to_fit_D (sf);
 
 	sf = computestressfield_DXDYDZ (sf);
-
-	//cout_dbg_stressfield(sf);
 
 	return stress_regime (sf);
 }

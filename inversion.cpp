@@ -172,20 +172,12 @@ vector <GDB> apply_inversion_result (const vector <GDB>& inGDB, const STRESSTENS
 
 	vector <GDB> outGDB = inGDB;
 
-	//cout << "apply_inversion_result_1" << endl;
-
 	const double AV_MISF = return_average_misfit (st, inGDB);
-
-	//cout << "apply_inversion_result_2" << endl;
 
 	string METHOD = "ANGELIER";
 	if (is_INVERSION_MOSTAFA()) METHOD = "MOSTAFA";
 
-	//cout << "apply_inversion_result_3" << endl;
-
 	outGDB = return_stressvector_estimators (st, outGDB, METHOD);
-
-	//cout << "apply_inversion_result_4" << endl;
 
 	for (size_t i = 0; i < inGDB.size(); i++) {
 
@@ -254,7 +246,6 @@ void INVERSION (const vector <GDB>& inGDB) {
 
 		if (!successfull) SFV.clear();
 	}
-	//cout_dbg_stressfield (SFV.at(MAX));
 }
 
 void cout_dbg_sf (const vector <GDB>& inGDB) {

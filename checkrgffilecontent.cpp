@@ -215,18 +215,13 @@ bool IDcheck () {
 
 	if (bad_records.size() == 0) {
 
-		//if (!is_mode_DEBUG())
-
-			cout << "    - Existing DATA_ID's in all records." << endl;
+		cout << "    - Existing DATA_ID's in all records." << endl;
 
 		return true;
 	}
-
 	else {
 
-		//if (!is_mode_DEBUG())
-
-			cout <<"    - ERROR: empty DATA_ID(s) in the following record(s):  " << flush;
+		cout <<"    - ERROR: empty DATA_ID(s) in the following record(s):  " << flush;
 
 		for (size_t j = 0; j < bad_records.size() - 1; j++) {
 
@@ -411,167 +406,6 @@ bool PALEONcheck () {
 
 }
 
-/*
-vector <string> RETURN_CORRECT_RGF_CMD (vector <string> inputfilename_vector) {
-
-	while (!(is_RGF_CORRECT (inputfilename_vector.at(0)))) {
-
-		cout << "    - Input " << capslock(inputfilename_vector.at(0)) << ".RGF file structure is incorrect; please enter file name again, or press 'X' to exit." << endl;
-
-		inputfilename_vector.at(0) = inputfilename();
-	}
-	return inputfilename_vector;
-}
-*/
-
-
-/*
-vector <string> check_rgf_set_inputs (const vector <string>& inputfilename_vector) {
-
-	vector <string> corr_IF_V;
-
-	if (!is_mode_GUI() && !is_mode_BATCH() && !is_mode_DEBUG()) ASSERT_DEAD_END();
-
-	writeln ("");
-	writeln ("1) CHECKING OF SETTINGS AND INPUT DATA FILE (S)");
-	writeln ("===============================================");
-	writeln ("");
-
-
-	for (size_t i = 0; i < inputfilename_vector.size(); i++) {
-
-		const string IF = inputfilename_vector.at(i);
-
-		writeln (" - CHECKING " + capslock (IF + ".set") + " SETTINGS FILE");
-
-		const bool CORR_SET = is_SETTINGS_FILE_CORRECT (IF + ".set");
-
-		vector <vector <string> > SET;
-
-		if (CORR_SET) {
-
-			writeln (" - " + capslock (IF + ".set") + " SETTINGS FILE IS CORRECT.");
-
-			SET = READ_SETTINGS_FILE (IF + ".set");
-
-			SET = COMPLETE_SET_WITH_DEFAULT (SET);
-		}
-		else SET = RETURN_HARDCODED_SETTINGS ();
-
-		INIT_SETTINGS (SET);
-
-		writeln ("");
-		writeln (" - CHECKING " + capslock (IF + ".rgf") + " INPUT DATA FILE");
-
-		const double CORR_RGF = is_RGF_CORRECT (IF);
-
-		if (CORR_RGF && CORR_SET) {
-
-			corr_IF_V.push_back (IF);
-
-			writeln (" - " + capslock (IF + ".rgf") + " INPUT DATA FILE IS CORRECT.");
-		}
-
-		if (!CORR_RGF) {
-
-			writeln ("");
-			writeln (" WARNING, RGF_ERROR: the input " + capslock (IF) + ".RGF file structure is incorrect, the file will not be processed.");
-		}
-
-		if (!CORR_SET) {
-
-			writeln ("");
-			writeln (" WARNING, SET_ERROR: the input " + capslock (IF) + ".SET file structure is incorrect, the file will not be processed.");
-		}
-
-		if (!CORR_RGF && is_mode_GUI()) throw rgf_error();
-		if (!CORR_SET && is_mode_GUI()) throw set_error();
-
-		writeln ("");
-	}
-	if (corr_IF_V.size() < 1) {
-
-		writeln ("");
-		writeln (" WARNING, no input file to process, exiting.");
-		runtime_error ("No file to process.");
-	}
-	return corr_IF_V;
-}
-*/
-
-
-/*
- * vector <string> corr_IF_V;
-
-	if (!is_mode_GUI() && !is_mode_BATCH() && !is_mode_DEBUG()) ASSERT_DEAD_END();
-
-	writeln ("");
-	writeln ("1) CHECKING OF SETTINGS AND INPUT DATA FILE (S)");
-	writeln ("===============================================");
-	writeln ("");
-
-
-	for (size_t i = 0; i < inputfilename_vector.size(); i++) {
-
-		const string IF = inputfilename_vector.at(i);
-
-		writeln (" - CHECKING " + capslock (IF + ".set") + " SETTINGS FILE");
-
-		const bool CORR_SET = is_SETTINGS_FILE_CORRECT (IF + ".set");
-
-		vector <vector <string> > SET;
-
-		if (CORR_SET) {
-
-			writeln (" - " + capslock (IF + ".set") + " SETTINGS FILE IS CORRECT.");
-
-			SET = READ_SETTINGS_FILE (IF + ".set");
-
-			SET = COMPLETE_SET_WITH_DEFAULT (SET);
-		}
-		else SET = RETURN_HARDCODED_SETTINGS ();
-
-		INIT_SETTINGS (SET);
-
-		writeln ("");
-		writeln (" - CHECKING " + capslock (IF + ".rgf") + " INPUT DATA FILE");
-
-		const double CORR_RGF = is_RGF_CORRECT (IF);
-
-		if (CORR_RGF && CORR_SET) {
-
-			corr_IF_V.push_back (IF);
-
-			writeln (" - " + capslock (IF + ".rgf") + " INPUT DATA FILE IS CORRECT.");
-		}
-
-		if (!CORR_RGF) {
-
-			writeln ("");
-			writeln (" WARNING, RGF_ERROR: the input " + capslock (IF) + ".RGF file structure is incorrect, the file will not be processed.");
-		}
-
-		if (!CORR_SET) {
-
-			writeln ("");
-			writeln (" WARNING, SET_ERROR: the input " + capslock (IF) + ".SET file structure is incorrect, the file will not be processed.");
-		}
-
-		if (!CORR_RGF && is_mode_GUI()) throw rgf_error();
-		if (!CORR_SET && is_mode_GUI()) throw set_error();
-
-		writeln ("");
-	}
-	if (corr_IF_V.size() < 1) {
-
-		writeln ("");
-		writeln (" WARNING, no input file to process, exiting.");
-		runtime_error ("No file to process.");
-	}
-	return corr_IF_V;
-}
- */
-
 bool is_RGF_CORRECT (const string projectname) {
 
 	if (!(input_rgf (projectname))) return false;
@@ -595,27 +429,6 @@ bool is_RGF_CORRECT (const string projectname) {
 
 	return SUCCESS;
 }
-
-
-
-/*
-	if  (!(
-			IDcheck () &&
-			IDcheck_duplicate () &&
-			DEPTHcheck () &&
-			GCcheck () &&
-			COLORcheck () &&
-			LOCcheck () &&
-			XY_inrgf_check () &&
-			DATATYPEcheck () &&
-			DIPDIRcheck () &&
-			DIPcheck () &&
-			STRIAE_SC_check	() &&
-			PALEONcheck ()		)) return false;
-
-	return true;
-}
-*/
 
 bool is_OTHERcorrect (const vector <string>& in) {
 
@@ -797,13 +610,8 @@ vector <GDB> create_GDB_from_rgf (const string& file_name) {
 		if (is_allowed_striae_datatype (row.at(DATATYPE))) 		buffer.DATAGROUP = "STRIAE";
 		if (is_allowed_SC_datatype (row.at(DATATYPE))) 			buffer.DATAGROUP = "SC";
 
-		//cout << row.at(DATATYPE) << endl;
-		//cout << buffer.DATAGROUP << endl;
-
-		//if ((row.at(DATATYPE)) == "BEDDING") {
 		if (is_allowed_handle_as_bedding (row.at(DATATYPE))) {
 
-			//cout << "is_allowed_bedding_overturned_sense(row.at(SENSE): " << is_allowed_bedding_overturned_sense(row.at(SENSE)) << endl;
 			if (is_allowed_bedding_overturned_sense(row.at(SENSE))) 	buffer.OFFSET = "OVERTURNED";
 			if (is_allowed_bedding_normal_sense(row.at(SENSE))) 		buffer.OFFSET = "NORMAL";
 		}
@@ -830,31 +638,14 @@ vector <GDB> create_GDB_from_rgf (const string& file_name) {
 
 		if (is_WELLDATA_USE()) buffer.DEPTH = string_to_double (row.at(DEPTH));
 
-		//cout << buffer.OFFSET << endl;
-
 		outGDB.push_back(buffer);
 	}
-
 	ASSERT(outGDB.size()==rgf_to_check.size());
 
 	if (!is_mode_DEBUG()) cout << "  - Geodatabase completed for " << outGDB.size() << " records." << endl; // TODO The original message was lying
 
 	return outGDB;
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 bool CHECK_RGF (const string projectname) {
 
@@ -887,13 +678,6 @@ bool CHECK_RGF (const string projectname) {
 		return false;
 	}
 }
-
-
-
-
-
-
-
 
 //=============================================================================
 // Comma-separated values (CSV) file I/O contributed by Ali Baharev

@@ -321,8 +321,6 @@ VCTR return_stressvector (const STRESSTENSOR& st, const VCTR& N) {
 			(st._12 * N.X + st._22 * N.Y + st._23 * N.Z),
 			(st._13 * N.X + st._23 * N.Y + st._33 * N.Z));
 
-	//was: if (! compression_positive)	out = invert_VCTR(out);
-	//and called as compression_positive = false;
 	return flip_vector (out);
 }
 
@@ -369,9 +367,6 @@ double return_ANG (const STRESSTENSOR& st, const VCTR& N, const VCTR& SV) {
 
 	const VCTR shearstress = return_shearstress (st, N);
 
-	//return ACOS_NUM (dotproduct (SV, shearstress, true)); //was ACOS!!!
-	//check WHY ACOS_NUM was used here!
-
 	return ACOS (dotproduct (SV, shearstress, true));
 }
 
@@ -403,9 +398,6 @@ double return_average_misfit (const STRESSTENSOR& st, const vector <GDB>& inGDB)
 
 		const double ang = return_ANG (st, N, SV);
 		misfit = misfit + ang;
-
-		//was: double ang = return_ANG (st, inGDB.at(i).N, inGDB.at(i)._SV);
-		//was: misfit = misfit + ang;
 	}
 	return misfit / inGDB.size();
 }
@@ -417,9 +409,7 @@ vector <GDB> return_stressvector_estimators (const STRESSTENSOR& st, const vecto
 	for (size_t i = 0; i < inGDB.size(); i++) {
 
 		VCTR N = inGDB.at(i).N;
-
 		VCTR SV = inGDB.at(i).DC;
-		//was: VCTR SV = inGDB.at(i)._SV;
 
 		VCTR UPSILON = 	inGDB.at(i).UPSILON;
 		double lambda = inGDB.at(i).lambda;

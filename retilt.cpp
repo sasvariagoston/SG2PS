@@ -31,15 +31,6 @@ VCTR return_tilting_axis (const GDB& in, const string METHOD) {
 
 		const DIPDIR_DIP DDD = dipdir_dip_from_NXNYNZ(in.T);
 
-		//cout << "for axis: " << DDD.DIPDIR << "/" << DDD.DIP << endl;
-
-		//VCTR dummy = unitvector (declare_vector (
-		//		SIN (DDD.DIPDIR + 90.0),
-		//		COS (DDD.DIPDIR + 90.0),
-		//		0.0));
-
-		//cout << dummy.X << "  -  "<< dummy.Y << "  -  " << dummy.Z << endl;
-
 		return unitvector (declare_vector (
 				SIN (DDD.DIPDIR + 90.0),
 				COS (DDD.DIPDIR + 90.0),
@@ -72,7 +63,6 @@ double return_tilting_angle (const GDB& in, const string METHOD) {
 
 		const DIPDIR_DIP DDD = dipdir_dip_from_NXNYNZ(in.T);
 
-		//cout << DDD.DIPDIR << "/" << DDD.DIP << endl;
 		if (DDD.DIP <= 90.0 ) return -(90.0 - DDD.DIP);
 		else {
 
@@ -233,11 +223,7 @@ GDB TILT_DATA (const GDB& in, const string METHOD) {
 
 	double ANGLE = return_tilting_angle (in, METHOD);
 
-	//cout << in.ID << endl;
-	//cout << fixed << setprecision(6) << ANGLE << endl;
 	const VCTR AXIS = return_tilting_axis (in, METHOD);
-
-	//cout << in.DATATYPE << "  -  " << in.corr.DIPDIR << "/" << in.corr.DIP << endl;
 
 	if (O && !P && !T) ANGLE = 180.0 + ANGLE;
 
@@ -246,8 +232,6 @@ GDB TILT_DATA (const GDB& in, const string METHOD) {
 	else if (IS_ST) 	return tilt_striae (in, AXIS, ANGLE);
 	else if (IS_SC)   	return tilt_SC (in, AXIS, ANGLE);
 	else ASSERT_DEAD_END();
-
-	cout << "4444" << endl;
 
 	return in;
 }

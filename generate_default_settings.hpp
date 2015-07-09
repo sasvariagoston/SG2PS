@@ -17,8 +17,6 @@ void pushbach_settings_range (vector < vector <string> >& defitem, const string 
 
 vector <vector < vector <string> > > RETURN_ALL_SETTINGS ();
 
-//vector <size_t> return_step_numbers (const size_t STP, const vector <vector <vector <string> > >& DEF);
-
 void dbg_default_settings_database (const  vector <vector < vector <string> > >& DEF);
 
 void dump_keys_values_into_settings_file (const vector <string>& KEY, const vector <string>& VAL, const string FN);

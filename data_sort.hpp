@@ -35,49 +35,20 @@ bool by_RUP_ANG(const GDB& x, const GDB& y);
 bool by_RUP(const GDB& x, const GDB& y);
 bool by_ANG(const GDB& x, const GDB& y);
 
-
-
-
 bool by_LocGcType (const GDB& x, const GDB& y);
-//bool byLocType(const GDB& x, const GDB& y);
 bool byLocTypeGc(const GDB& x, const GDB& y);
 bool byLocFmType (const GDB& x, const GDB& y);
 
 bool byeigenvalue(const sort_jacobi& x, const sort_jacobi& y);
 
-
-
 vector <GDB> SORT_GDB (const vector <GDB>& inGDB, const string SORT);
-
-
-
 
 bool by_DEPTH_trj (const TRJ& x, const TRJ& y);
 bool by_rev_DEPTH_trj (const TRJ& x, const TRJ& y);
 
 vector <TRJ> SORT_TRJ (const vector <TRJ>& inTRJ, const string SORT);
 
-
-
-
 bool by_C(const RUP_table& x, const RUP_table& y);
 vector <RUP_table> sort_by_C (const vector <RUP_table>& RT);
-
-
-
-
-
-
-
-
-
-
-
-
-//vector <GDB> sort_by_iID (const vector <GDB>& inGDB);
-//vector <GDB> sort_by_DEPTH (const vector <GDB>& inGDB);
-//vector <GDB> sort_by_rev_DEPTH (const vector <GDB>& inGDB);
-
-
 
 #endif /* DATA_SORT_HPP_ */

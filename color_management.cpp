@@ -32,26 +32,6 @@
 
 using namespace std;
 
-
-/*
-vector <GDB> associate_empty_clustercode (const vector <GDB>& inGDB, const size_t WHICH) {
-
-	if (WHICH != 2 && WHICH != 3) ASSERT_DEAD_END();
-
-	vector <GDB> outGDB = inGDB;
-
-	for (size_t i = 0; i < outGDB.size(); i++) {
-
-		const string GC = outGDB.at(i).GC;
-
-		if (GC.size() != 1 && GC.size() != 2) ASSERT_DEAD_END();
-
-		outGDB.at(i).GC = GC + 'X';
-	}
-	return outGDB;
-}
- */
-
 vector <vector <GDB> > associate_empty_clustercode (const vector <vector <GDB> >& inGDB_G, const size_t WHICH) {
 
 	if (WHICH != 2 && WHICH != 3) ASSERT_DEAD_END();
@@ -70,31 +50,6 @@ vector <vector <GDB> > associate_empty_clustercode (const vector <vector <GDB> >
 	}
 	return outGDB_G;
 }
-
-/*
- * vector < vector < vector <vector <GDB> > > > associate_empty_clustercode (const vector < vector < vector <vector <GDB> > > >& inGDB_G, const size_t WHICH) {
-
-	if (WHICH != 2 && WHICH != 3) ASSERT_DEAD_END();
-
-	vector < vector < vector <vector <GDB> > > > outGDB_G = inGDB_G;
-
-	for (size_t i = 0; i < outGDB_G.size(); i++) {
-		for (size_t j = 0; j < outGDB_G.at(i).size(); j++) {
-			for (size_t k = 0; k < outGDB_G.at(i).at(j).size(); k++) {
-				for (size_t l = 0; l < outGDB_G.at(i).at(j).at(k).size(); l++) {
-
-					const string GC = outGDB_G.at(i).at(j).at(k).at(l).GC;
-
-					if (GC.size() != 1 && GC.size() != 2) ASSERT_DEAD_END();
-
-					outGDB_G.at(i).at(j).at(k).at(l).GC = GC + 'X';
-				}
-			}
-		}
-	}
-	return outGDB_G;
-}
- */
 
 vector <GDB> attach_k_means_group_codes (const vector <size_t>& which_group, const vector <GDB>& inGDB) {
 

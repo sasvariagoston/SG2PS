@@ -65,10 +65,6 @@ vector <vector < double> > stressvector_parameters (const vector <GDB>& inGDB) {
 		o.at((i * 3) + 0).at(0) = inGDB.at(i).DC.X;
 		o.at((i * 3) + 1).at(0) = inGDB.at(i).DC.Y;
 		o.at((i * 3) + 2).at(0) = inGDB.at(i).DC.Z;
-
-		//was: o.at( (i * 3) + 0 ).at(0) =  inGDB.at(i)._SV_.X;
-		//was: o.at( (i * 3) + 1 ).at(0) =  inGDB.at(i)._SV_.Y;
-		//was: o.at( (i * 3) + 2 ).at(0) =  inGDB.at(i)._SV_.Z;
 	}
 	return o;
 }
@@ -124,8 +120,6 @@ STRESSFIELD sf_MICHAEL (const STRESSTENSOR& st) {
 	sf = computestressfield_DXDYDZ (sf);
 
 	sf = stress_regime (sf);
-
-	//cout_dbg_stressfield(sf);
 
 	return sf;
 }

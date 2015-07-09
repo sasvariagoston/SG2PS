@@ -633,8 +633,6 @@ vector <vector <GDB> > EVALUATE (const vector <vector <GDB> >& inGDB_G) {
 
 	if (TRJ) P = RETILT (P, "TRAJECTORY");
 
-	//dbg_cout_GDB_vector_vector (P);
-
 	if (TLT) {
 
 		P = RETILT (P, "BEDDING");
@@ -648,36 +646,15 @@ vector <vector <GDB> > EVALUATE (const vector <vector <GDB> >& inGDB_G) {
 		P = ASSOCIATE_AVERAGE_BEDDING_GROUPS (P);
 	}
 
-	//dbg_cout_GDB_vector_vector (P);
-
-	//exit (88);
-
 	P = PROCESS_GROUPS (P, TLT);
-
-	//dbg_cout_GDB_vector_vector (P);
-	//exit (88);
 
 	vector <GDB> p = MERGE_GROUPS_TO_GDB (P);
 
-	//dbg_cout_GDB_vector(p);
-	//exit (88);
-
-
 	p = GENERATE_PS_CODE (p);
-
-	//dbg_cout_GDB_vector(p);
-	//exit (88);
 
 	p = SORT_GDB (p, "IID");
 
-	//dbg_cout_GDB_vector(p);
-	//exit (88);
-
 	P = SEPARATE_DATASET_GROUPS (p);
-
-	//dbg_cout_GDB_vector_vector(P);
-	//dbg_cout_GDB_vector(p);
-	//exit (88);
 
 	if (is_GROUPSEPARATION_IGNORE()) {}
 	else if (is_GROUPSEPARATION_GROUPCODE()) 	P = SEPARATE_DATASET (P, "GROUPS", "GROUPCODE");//ez nem kell az alapfugvenybe!
@@ -686,10 +663,6 @@ vector <vector <GDB> > EVALUATE (const vector <vector <GDB> >& inGDB_G) {
 	else ASSERT_DEAD_END();
 
 	STANDARD_OUTPUT (p);
-
-	//cout << " £££££££££££££££££££££££££££££££££££££££££3" << endl;
-	//dbg_cout_GDB_vector(p);
-	//exit (88);
 
 	PROCESS_WELL_GROUPS (P);
 
@@ -710,8 +683,6 @@ void PROCESS_RGF (const string inputfilename) {
 
 	GENERATE_FOLDER_NAMES (inputfilename);
 
-	//const PFN projectfoldername = create_project_folder_names (inputfilename);
-
 	vector <GDB> nGDB = competeRGFcontect (inputfilename);
 	if (is_XY_FILE_CORRECT()) nGDB = insert_xy_values (nGDB);
 	if (is_TRAJECTORY_FILE_CORRECT()) nGDB = APPLY_TRAJECTORY (nGDB);
@@ -721,8 +692,6 @@ void PROCESS_RGF (const string inputfilename) {
 	vector < vector <GDB> > nGDB_G = SEPARATE_DATASET_GROUPS (nGDB);
 	nGDB_G = PREPARE_GDB_VECTOR_FOR_PROCESSING (nGDB_G, false);
 	nGDB_G = AVERAGE (nGDB_G);
-
-	//dbg_cout_GDB_vector_vector (nGDB_G);
 
 	nGDB_G = ASSOCIATE_AVERAGE_BEDDING_GROUPS (nGDB_G);
 	nGDB_G = clustering_GBD (nGDB_G);
@@ -735,8 +704,6 @@ void PROCESS_RGF (const string inputfilename) {
 	if (is_TRAJECTORY_FILE_CORRECT()) LOOPS_NUMBER = 4;
 
 	for (size_t i = 0; i < LOOPS_NUMBER; i++) {
-
-		//dbg_cout_GDB_vector_vector (nGDB_G);
 
 		PROCESS_AS_TILTED = false;
 		if (i == 1 || i == 3) PROCESS_AS_TILTED = true;

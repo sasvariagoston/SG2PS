@@ -639,17 +639,12 @@ void dump_INTERVAL_to_file (ofstream& o) {
 			<< dmp_dbl (w.DD_DERIV, 8) << '\t'
 			<< dmp_dbl (w.D_DERIV, 8) << endl;
 		}
-		o << endl;
+		//o << endl;
 	}
 	return;
 }
 
 void standard_output_INTERVAL (const bool TLT, const bool TRJ) {
-
-	//string T = return_ACTUAL_LOCATION();
-	//T = T + "_" + return_ACTUAL_FORMATION();
-	//T = T + "_" + return_ACTUAL_DATATYPE();
-	//T = T + "_" + return_ACTUAL_GROUPCODE();
 
 	string T = "ST_WELL_INTERVAL";
 
@@ -687,17 +682,12 @@ void dump_FREQUENCY_to_file (ofstream& o) {
 			<< dmp_dbl (f.DERIV_DEPTH, 8) << '\t'
 			<< dmp_dbl (f.DERIV, 8) << endl;
 		}
-		o << endl;
+		//o << endl;
 	}
 	return;
 }
 
 void standard_output_FREQUENCY (const bool TLT, const bool TRJ) {
-
-	//string T = return_ACTUAL_LOCATION();
-	//T = T + "_" + return_ACTUAL_FORMATION();
-	// = T + "_" + return_ACTUAL_DATATYPE();
-	//T = T + "_" + return_ACTUAL_GROUPCODE();
 
 	string T = "ST_WELL_FREQUENCY";
 

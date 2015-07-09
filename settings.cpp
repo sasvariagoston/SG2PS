@@ -91,7 +91,6 @@ bool INPUTGROUP_NONE = false;
 bool INPUTGROUP_FIRST = false;
 bool INPUTGROUP_SECOND = false;
 bool INPUTGROUP_THIRD = false;
-//bool INPUTGROUP_FOURTH = false;
 
 bool GROUPS_USE = false;
 bool GROUPS_NONE = false;
@@ -109,7 +108,6 @@ bool RUP_CLUSTERING_RUP = false;
 
 bool GROUPSEPARATION_IGNORE = false;
 bool GROUPSEPARATION_GROUPCODE = false;
-//bool GROUPSEPARATION_FORMATION = false;
 bool GROUPSEPARATION_KMEANS = false;
 bool GROUPSEPARATION_RUPANG = false;
 
@@ -326,10 +324,6 @@ bool is_INPUTGROUP_THIRD () {
 
 	return INPUTGROUP_THIRD;
 }
-//bool is_INPUTGROUP_FOURTH () {
-
-	//return INPUTGROUP_FOURTH;
-//}
 
 bool is_GROUPS_USE () {
 
@@ -383,10 +377,6 @@ bool is_GROUPSEPARATION_GROUPCODE () {
 
 	return GROUPSEPARATION_GROUPCODE;
 }
-//bool is_GROUPSEPARATION_FORMATION () {
-
-	//return GROUPSEPARATION_FORMATION;
-//}
 bool is_GROUPSEPARATION_KMEANS () {
 
 	return GROUPSEPARATION_KMEANS;
@@ -575,7 +565,6 @@ void INIT_SETTINGS (const vector <vector <string> >& SET) {
 			else if (VAL == "F") INPUTGROUP_FIRST = true;
 			else if (VAL == "S") INPUTGROUP_SECOND = true;
 			else if (VAL == "T") INPUTGROUP_THIRD = true;
-			//else if (VAL == "O") INPUTGROUP_FOURTH = true;
 			else ASSERT_DEAD_END();
 		}
 		else if (KEY == "GROUP:") {
@@ -606,7 +595,6 @@ void INIT_SETTINGS (const vector <vector <string> >& SET) {
 		else if (KEY == "GROUPSEPARATION:")	{
 			if 		(VAL == "I")  GROUPSEPARATION_IGNORE = true;
 			else if (VAL == "G")  GROUPSEPARATION_GROUPCODE = true;
-			//else if (VAL == "F")  GROUPSEPARATION_FORMATION = true;
 			else if (VAL == "K")  GROUPSEPARATION_KMEANS = true;
 			else if (VAL == "R")  GROUPSEPARATION_RUPANG = true;
 			else ASSERT_DEAD_END();

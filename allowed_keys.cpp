@@ -236,10 +236,6 @@ const vector<string> allowed_test_data_generation_mode(from_array(test_data_gene
 
 
 
-
-
-
-
 }
 
 const string pscolor_rgb_allowed [] = {

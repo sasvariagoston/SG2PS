@@ -322,36 +322,7 @@ vector <vector < vector <string> > > RETURN_ALL_SETTINGS () {
 			"T",
 			"  - Import THIRD record (used for RUP/ANG CLUSTERING).",
 			"    - import third record (used for clustering).............[t]?  ");
-	//pushbach_settings_option (defitem,
-	//		"O",
-	//		"  - Import third record (used for RUP/ANG clustering)",
-	//		"    - import third record (used for RUP/ABG clustering).....[o]?  ");
 	DEF.push_back(defitem);
-
-	/*
-	 * ORIGINAL
-	 *
-	 * //14
-	pushbach_settings_item (defitem, "INPUTGROUP:", "  - How to import input file groups (if more then one available):");
-	pushbach_settings_option (defitem,
-			"N",
-			"  - Don't import any record",
-			"    - don't import any record...............................[N],  ");
-	pushbach_settings_option (defitem,
-			"F",
-			"  - Import first record (used for group codes)",
-			"    - import first record (used for group codes)............[f],  ");
-	pushbach_settings_option (defitem,
-			"S",
-			"  - Import second record(used for clustering)",
-			"    - import second record (used for clustering)............[s]?  ");
-	pushbach_settings_option (defitem,
-			"T",
-			"  - Import third record (used for RUP/ANG clustering)",
-			"    - import third record (used for RUP/ABG clustering).....[t]?  ");
-	DEF.push_back(defitem);
-	 *
-	 */
 
 	//15
 	pushbach_settings_item (defitem, "GROUP:", "  - Groups from input file:");
@@ -431,10 +402,6 @@ vector <vector < vector <string> > > RETURN_ALL_SETTINGS () {
 			"G",
 			"  - Use GROUP CODE to separate output data.",
 			"    - Use group code to separate............................[g]?  ");
-	//pushbach_settings_option (defitem,
-	//		"F",
-	//		"  - Use FORMATION NAME to separate  output data.",
-	//		"    - Use formation name to separate........................[f]?  ");
 	pushbach_settings_option (defitem,
 			"K",
 			"  - Use K_MEANS CLUSTERING RESULT group to separate output data.",
@@ -444,6 +411,7 @@ vector <vector < vector <string> > > RETURN_ALL_SETTINGS () {
 			"  - Use RUP/ANG GROUPS to separate output data.",
 			"    - Use RUP/ANG group to separate.........................[r]?  ");
 	DEF.push_back(defitem);
+
 	//-----------------------ROSE DIAGRAMS----------------------------------
 	//20
 	pushbach_settings_item (defitem, "ROSETYPE:", "  - Rose diagram type:");
@@ -489,7 +457,7 @@ vector <vector < vector <string> > > RETURN_ALL_SETTINGS () {
 			"    - 22.5 degrees..........................................[d],  ");
 	DEF.push_back(defitem);
 
-	//-----------------------ROSE DIAGRAMS----------------------------------
+	//----------------------- OTHER ----------------------------------
 	//23
 	pushbach_settings_item (defitem, "IDEALMOVEMENT:", "  - Ideal movement display for slickensides:");
 	pushbach_settings_option (defitem,

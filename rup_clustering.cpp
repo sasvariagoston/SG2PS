@@ -113,61 +113,7 @@ RUP_table return_cost_function_member (const vector <double>& in, const size_t b
 
 	return out;
 }
-/*
-bool by_GC(const GDB& x, const GDB& y) {
 
-	return x.GC < y.GC;
-}
-
-bool by_RUP(const GDB& x, const GDB& y) {
-
-	return x.RUP < y.RUP;
-}
-
-bool by_ANG(const GDB& x, const GDB& y) {
-
-	return x.ANG < y.ANG;
-}
-
-bool by_C(const RUP_table& x, const RUP_table& y) {
-
-	return x.C < y.C;
-}
-
-vector <GDB> sort_by_GC (vector <GDB> inGDB) {
-
-	sort(inGDB.begin(), inGDB.end(), by_GC);
-
-	return inGDB;
-}
-
-vector <GDB> sort_by_RUP (const vector <GDB>& inGDB) {
-
-	vector <GDB> outGDB = inGDB;
-
-	sort(outGDB.begin(), outGDB.end(), by_RUP);
-
-	return outGDB;
-}
-
-vector <GDB> sort_by_ANG (const vector <GDB>& inGDB) {
-
-	vector <GDB> outGDB = inGDB;
-
-	sort(outGDB.begin(), outGDB.end(), by_ANG);
-
-	return outGDB;
-}
-
-vector <RUP_table> sort_by_C (const vector <RUP_table>& RT) {
-
-	vector <RUP_table> OUT = RT;
-
-	sort(OUT.begin(), OUT.end(), by_C);
-
-	return OUT;
-}
-*/
 size_t return_DATA_ideal_bin_number (const vector <double>& in) {
 
 	vector <RUP_table> RT;
@@ -209,7 +155,6 @@ void dbg_cout_GDB_RUP (vector <GDB> inGDB) {
 		<< endl;
 	}
 }
-
 
 void dbg_cout_IN_RUP (vector <double> in) {
 
@@ -263,17 +208,14 @@ vector <GDB> associate_GDB_DATA_clusters (const vector <GDB>& inGDB, const vecto
 		if ((is_RUP_CLUSTERING_RUP() || is_RUP_CLUSTERING_ANG()) && (V.size() == 0)) {
 
 			outGDB.at(j).GC.at(2) = GC.at(0).at(0);
-			//cout << "* 1: " << outGDB.at(j).GC.at(2) << endl;
 		}
 		else if (is_RUP && !is_RUP_CLUSTERING_RUP()) {
 
 			outGDB.at(j).GC.at(2) = GC.at(0).at(0);
-			//cout << "* 2: " << outGDB.at(j).GC.at(2) << endl;
 		}
 		else if (is_ANG && !is_RUP_CLUSTERING_ANG()){
 
 			outGDB.at(j).GC.at(2) = GC.at(0).at(0);
-			//cout << "* 3: " << outGDB.at(j).GC.at(2) << endl;
 		}
 		else {
 
@@ -287,19 +229,14 @@ vector <GDB> associate_GDB_DATA_clusters (const vector <GDB>& inGDB, const vecto
 
 				if (ACT < V.at(0).BIN_CENTER) {
 					outGDB.at(j).GC.at(2) = GC.at(1).at(0);
-					//cout << "1: " << outGDB.at(j).GC.at(2) << endl;//was 0
 				}
 				else if (ACT > V.at(V.size()-1).BIN_CENTER) {
 					outGDB.at(j).GC.at(2) = GC.at(i+2).at(0);
-					//cout << "2: " << outGDB.at(j).GC.at(2) << endl;//was i+=1
 				}
 				else if (i > 0 && is_in_range (V.at(i-1).BIN_CENTER, V.at(i).BIN_CENTER, ACT)){
 					outGDB.at(j).GC.at(2) = GC.at(i+1).at(0);
-					//cout << "3: " << outGDB.at(j).GC.at(2) << endl;//was i
 				}
 				else {}
-
-				//cout << outGDB.at(j).GC.at(2) << flush;
 			}
 		}
 	}

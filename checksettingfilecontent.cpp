@@ -221,7 +221,6 @@ void LOAD_SETTINGS (const string projectname) {
 	return;
 }
 
-
 void WRITE_SET_FILE (const vector <vector <string> >& SET, const string projectname) {
 
 	ofstream o;

@@ -36,8 +36,6 @@ vector <VCTR> return_rakhmanov_points (size_t N) {
 
 	double phi_prev = 0.0;
 
-	//cout << fixed << setprecision(6) << endl;
-
 	for (size_t i = 1; i < N_ORIG + 1; i++) {
 
 		double h = -1 + 2.0 * (i - 1) / (N_MAX - 1);

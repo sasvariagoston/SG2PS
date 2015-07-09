@@ -1,9 +1,6 @@
-/*
- * filename.cpp
- *
- *  Created on: 6 Jul 2015
- *      Author: sasvariagoston_admin
- */
+// Copyright (C) 2012 - 2015 Ágoston Sasvári
+// All rights reserved.
+// This code is published under the GNU Lesser General Public License.
 
 #include <ctime>
 #include <iostream>
@@ -35,7 +32,6 @@ const string BS = path_separator;
 const string US = "_";
 
 }
-
 
 void generate_DATE_TIME (const string projectname) {
 
@@ -165,37 +161,31 @@ string return_WELL_PS_FOLDER () {
 void setup_ACTUAL_DATATYPE (const string DT) {
 
 	ACTUAL_DATATYPE = DT;
-
 }
 
 string return_ACTUAL_DATATYPE () {
 
 	return ACTUAL_DATATYPE;
-
 }
 
 void setup_ACTUAL_LOCATION (const string LOC) {
 
 	ACTUAL_LOCATION = LOC;
-
 }
 
 string return_ACTUAL_LOCATION () {
 
 	return ACTUAL_LOCATION;
-
 }
 
 void setup_ACTUAL_GROUPCODE (const string GC) {
 
 	ACTUAL_GROUPCODE = GC;
-
 }
 
 string return_ACTUAL_GROUPCODE () {
 
 	return ACTUAL_GROUPCODE;
-
 }
 
 void setup_ACTUAL_FORMATION (const string FM) {
@@ -237,19 +227,6 @@ string generate_ACTUAL_PS_NAME () {
 	if (is_GROUPSEPARATION_RUPANG ())		PS_NAME + US + GC.at(2);
 
 	return PS_NAME + ".EPS";
-
-	/*
-		 * string PS_NAME = P.pssep + BS + DT + BS + LOC + US + DT;
-
-				if (TRJ) PS_NAME = PS_NAME + "_TRAJECTORY_CORRECTED";
-
-				if (by_GROUPCODE) 	PS_NAME = PS_NAME + US + in_GDB_G.at(i).at(0).GC.at(0);
-				else if (by_KMEANS) PS_NAME = PS_NAME + US + in_GDB_G.at(i).at(0).GC.at(1);
-				else if (by_RUPANG) PS_NAME = PS_NAME + US + in_GDB_G.at(i).at(0).GC.at(2);
-				else {}
-
-				PS_NAME = PS_NAME + ".EPS";
-		 */
 }
 
 string generate_ACTUAL_AVERAGE_RGF_NAME () {
@@ -261,29 +238,11 @@ string generate_ACTUAL_AVERAGE_RGF_NAME () {
 	if (is_PROCESS_AS_TRAJECTORY()) FN = FN + "_TRAJECTORY_CORRECTED";
 
 	return FN + "_AVERAGE.RGF";
-
-	/*
-	 * const string bs = path_separator;
-	string FN = P.average + bs + capslock(P.projectname);
-
-	if (TILT) FN = FN + "_tilted";
-
-	if (TRJ) FN = FN + "_trajectory_corrected";
-
-	FN = FN + "_average.rgf";
-	 */
 }
 
 string generate_ACTUAL_RGF_NAME () {
 
 	check_dataseparation_mode ();
-
-	//const bool by_GROUPCODE = is_GROUPSEPARATION_GROUPCODE ();
-	//const bool by_KMEANS = is_GROUPSEPARATION_KMEANS ();
-	//const bool by_RUPANG = is_GROUPSEPARATION_RUPANG ();
-	//const bool IGNORE = is_GROUPSEPARATION_IGNORE ();
-
-	//if (!by_GROUPCODE && !by_KMEANS && !by_RUPANG && !IGNORE) ASSERT_DEAD_END();
 
 	const string PS = return_PS_FOLDER();
 
@@ -306,44 +265,6 @@ string generate_ACTUAL_RGF_NAME () {
 	if (is_PROCESS_AS_TRAJECTORY()) FN = FN + "_TRAJECTORY_CORRECTED";
 
 	return FN + ".RGF";
-
-/*
- *
- *const string bs = path_separator;
-
-	const bool by_GROUPCODE = is_GROUPSEPARATION_GROUPCODE ();
-	const bool by_KMEANS = is_GROUPSEPARATION_KMEANS ();
-	const bool by_RUPANG = is_GROUPSEPARATION_RUPANG ();
-	const bool IGNORE = is_GROUPSEPARATION_IGNORE ();
-
-	if (!by_GROUPCODE && !by_KMEANS && !by_RUPANG && !IGNORE) ASSERT_DEAD_END();
-
-	for (size_t i = 0; i < inGDB_G.size(); i++) {
-
-		vector <GDB> T = inGDB_G.at(i);
-
-		const string DT =  T.at(0).DATATYPE;
-		const string LOC = T.at(0).LOC;
-		const string GC =  T.at(0).GC;
-
-		string FN = P.rgfsep + bs + DT + bs + LOC + "_" + DT;
-
-		if (by_GROUPCODE && GC.size() < 1) ASSERT_DEAD_END();
-		if (by_KMEANS && GC.size() < 2) ASSERT_DEAD_END();
-		if (by_RUPANG && GC.size() < 3) ASSERT_DEAD_END();
-
-		if (by_GROUPCODE) FN = FN + "_" + GC.at(0);
-		else if (by_KMEANS) FN = FN + "_" + GC.at(1);
-		else if (by_RUPANG) FN = FN + "_" + GC.at(2);
-		else if (is_GROUPSEPARATION_IGNORE()) {}
-		else ASSERT_DEAD_END();
-
-		if (TILT) FN = FN + "_tilted";
-
-		if (TRJ) FN = FN + "_trajectory_corrected";
-
-		FN = FN + ".rgf";
- */
 }
 
 string generate_ACTUAL_COMPLETED_RGF_NAME () {
@@ -355,31 +276,12 @@ string generate_ACTUAL_COMPLETED_RGF_NAME () {
 	if (is_PROCESS_AS_TRAJECTORY()) FN = FN + "_TRAJECTORY_CORRECTED";
 
 	return FN + ".rgf";
-
-	/*
-	 * const string bs = path_separator;
-	string FN = P.completed + bs + capslock(P.projectname) + "_completed";
-
-	if (TILT) FN = FN + "_tilted";
-
-	if (TRJ) FN = FN + "_trajectory_corrected";
-
-	FN = FN + ".rgf";
-	 *
-	 */
 }
 
 
 string generate_ACTUAL_WELL_PS_NAME () {
 
 	check_dataseparation_mode();
-
-	//const bool IGNORE = is_GROUPSEPARATION_IGNORE ();
-	//const bool by_GROUPCODE = is_GROUPSEPARATION_GROUPCODE ();
-	//const bool by_KMEANS = is_GROUPSEPARATION_KMEANS ();
-	//const bool by_RUPANG = is_GROUPSEPARATION_RUPANG ();
-
-	//if (!IGNORE && !by_GROUPCODE && !by_KMEANS && !by_RUPANG) ASSERT_DEAD_END() ;
 
 	const string LOC = return_ACTUAL_LOCATION ();
 	const string DT = return_ACTUAL_DATATYPE ();
@@ -388,15 +290,9 @@ string generate_ACTUAL_WELL_PS_NAME () {
 
 	string PS_NAME = WELL_PS_FOLDER + BS + DT + BS + LOC;
 
-	//cout << PS_NAME << endl;
-
 	if (is_FORMATION_USE()) PS_NAME = PS_NAME + US + FM;
 
-	//cout << PS_NAME << endl;
-
 	PS_NAME = PS_NAME + US + DT;
-
-	//cout << PS_NAME << endl;
 
 	if (is_GROUPSEPARATION_GROUPCODE ())	PS_NAME = PS_NAME + US + GC.at(0);
 	if (is_GROUPSEPARATION_KMEANS ()) 		PS_NAME = PS_NAME + US + GC.at(1);
@@ -406,58 +302,6 @@ string generate_ACTUAL_WELL_PS_NAME () {
 	if (is_PROCESS_AS_TRAJECTORY()) PS_NAME = PS_NAME + "_TRAJECTORY_CORRECTED";
 
 	return PS_NAME + ".EPS";
-
-
-/*
- * 	const bool IGNORE = is_GROUPSEPARATION_IGNORE ();
-	const bool by_GROUPCODE = is_GROUPSEPARATION_GROUPCODE ();
-	const bool by_KMEANS = is_GROUPSEPARATION_KMEANS ();
-	const bool by_RUPANG = is_GROUPSEPARATION_RUPANG ();
-
-	if (!IGNORE && !by_GROUPCODE && !by_KMEANS && !by_RUPANG) ASSERT_DEAD_END() ;
-
-	const string BS = path_separator;
-	const string US = "_";
-
-	return_records_with_formation_names (GDB_G);
-
-	//dbg_cout_GDB_vector_vector_structure (GDB_G);
-
-	for (size_t i = 0; i < GDB_G.size(); i++) {
-
-		//cout << GDB_G.at(i).size() << endl;
-
-		const vector <GDB> temp = SORT_GDB (GDB_G.at(i), "DEPTH");
-
-		const string LOC = temp.at(0).LOC;
-		const string DT = temp.at(0).DATATYPE;
-		const string FM = temp.at(0).FORMATION;
-
-		const bool PLN = is_allowed_plane_datatype (DT);
-		const bool LIN = is_allowed_lineation_datatype (DT);
-
-		const bool PROCESS_AS_WELL = PLN || LIN;
-
-		if (PROCESS_AS_WELL) {
-
-			//string PS_NAME = PF.well_ps + BS + DT + BS + LOC + US + FM + US + DT;
-			string PS_NAME = PF.well_ps + BS + DT + BS + LOC + US + FM;
-
-			if (is_FORMATION_USE()) PS_NAME = PS_NAME + US + FM;
-
-			PS_NAME = PS_NAME + US + DT;
-
-			if (by_GROUPCODE) 	PS_NAME = PS_NAME + US + temp.at(0).GC.at(0);
-			else if (by_KMEANS) PS_NAME = PS_NAME + US + temp.at(0).GC.at(1);
-			else if (by_RUPANG) PS_NAME = PS_NAME + US + temp.at(0).GC.at(2);
-			else {}
-
-			if (TILT) PS_NAME = PS_NAME + "_TILTED";
-
-			if (TRJ) PS_NAME = PS_NAME + "_TRAJECTORY_CORRECTED";
-
-			PS_NAME = PS_NAME + ".eps";
- */
 }
 
 string generate_ACTUAL_RGF_NAME_FOR_STANDARD () {

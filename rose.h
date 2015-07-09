@@ -13,6 +13,4 @@ void PS_draw_rose_DATATYPE (const vector <GDB>& inGBD, ofstream& o, const CENTER
 
 void PS_draw_rose_DIPDIR_DIP (vector <GDB> inGDB, ofstream& o, CENTER center, const string MODE, const bool TILT);
 
-//void PS_draw_rose (const vector <GDB>& roseGDB, ofstream& o, const CENTER center, const bool tilt);//ok
-
 #endif

@@ -41,7 +41,6 @@ double TAN (const double& in);
 double ATAN (const double& in);
 
 double rounding (double in);
-double mm_to_point (size_t i);
 
 VCTR  crossproduct (const VCTR& in1, const VCTR& in2);
 double dotproduct (const VCTR& in1, const VCTR& in2, const bool& normalisation=false);

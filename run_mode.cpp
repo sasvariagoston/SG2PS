@@ -65,8 +65,6 @@ void setup_run_mode (const vector <string>& ARG_V) {
 
 	const string ARG = capslock (ARG_V.at(0));
 
-	//cout << ARG << endl;
-
 	if (is_allowed_debug_mode (ARG)) 	{
 
 		M_DBG = true;

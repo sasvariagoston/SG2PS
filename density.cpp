@@ -13,6 +13,7 @@
 #include "common.h"
 #include "filename.hpp"
 #include "homogenity_check.hpp"
+#include "paper.hpp"
 #include "run_mode.h"
 #include "rgf.h"
 #include "kaalsbeek.hpp"
@@ -107,31 +108,7 @@ vector < vector <GRID_CENTER> > calculate_grid_cell_values_from_triangle (vector
 	}
 	return rect_grid;
 }
-/*
-bool by_GRID_COUNT (const GRID_CENTER& x, const GRID_CENTER& y) {
 
-	return x.COUNT < y.COUNT;
-}
-
-bool by_VALUE (const double& x, const double& y) {
-
-	return x < y;
-}
-
-vector <GRID_CENTER> sort_by_GRID_COUNT (vector <GRID_CENTER> GC) {
-
-	sort(GC.begin(), GC.end(), by_GRID_COUNT);
-
-	return GC;
-}
-
-vector <size_t> sort_by_VALUE (vector <size_t> IN) {
-
-	sort(IN.begin(), IN.end(), by_VALUE);
-
-	return IN;
-}
-*/
 size_t return_RECT_GRID_max_count (const vector < vector <GRID_CENTER> >& RECT_GRID) {
 
 	double MAX = 0.0;
@@ -825,17 +802,6 @@ bool is_point_in_circle (const VCTR& in) {
 	return (sqrt((in.X * in.X) + (in.Y * in.Y)) < 1.0);
 }
 
-/*
-bool is_circle_border (const VCTR& A, const VCTR& B) {
-
-	if (
-			(is_point_in_circle(A) && !is_point_in_circle(B)) ||
-			(is_point_in_circle(B) && !is_point_in_circle(A))
-			) return true;
-	else return false;
-}
-*/
-
 VCTR interpolate_between_points (const VCTR& inA, const VCTR& inB) {
 
 	bool is_A_in = is_point_in_circle(inA);
@@ -1383,15 +1349,13 @@ void contourline_to_ps (ofstream& o, const CENTER& center, const vector <VCTR>& 
 
 }
 
-void output_contourline (ofstream& o, const PAPER& P, const CENTER& center, vector <vector <VCTR> >& BZ,  vector < vector <GRID_CENTER> >& RECT_GRID, const double& CONTOUR, const double C_MN, const double C_MX, const double& MAX) {
+void output_contourline (ofstream& o, const CENTER& center, vector <vector <VCTR> >& BZ,  vector < vector <GRID_CENTER> >& RECT_GRID, const double& CONTOUR, const double C_MN, const double C_MX, const double& MAX) {
 
 	double CELL = return_grid_size(RECT_GRID);
 
 	for (size_t i = 0; i < BZ.size(); i++) {
 
 		vector <VCTR> A =  BZ.at(i);
-
-		//if (is_mode_DEBUG()) dbg_bezier_points (A);
 
 		VCTR FRST_PNT = A.at(0);
 		VCTR LAST_PNT = A.at(A.size() - 1);
@@ -1418,30 +1382,11 @@ void output_contourline (ofstream& o, const PAPER& P, const CENTER& center, vect
 			double A1_AREA = polygon_area (A1);
 			double A2_AREA = polygon_area (A2);
 
-			/*
-			if (is_mode_DEBUG()) {
-
-				cout << endl;
-				cout << "A1 AREA: " << A1_AREA << " A2 AREA: " << A1_AREA << endl;
-				cout << "A1_HAS_PEAK: " << A1_HAS_PEAK << " A2_HAS_PEAK: " << A2_HAS_PEAK << endl;
-				cout << endl;
-			}
-			*/
-
 			bool LARGER_HAS_PEAKS = (
 					(A1_AREA > A2_AREA && A1_HAS_PEAK && !A2_HAS_PEAK) ||
 					(A2_AREA > A1_AREA && A2_HAS_PEAK && !A1_HAS_PEAK));
 			bool LARGE_AT_LEAST_DOUBLE = (
 					A1_AREA > A2_AREA * 2.0 || A2_AREA > A1_AREA * 2.0);
-
-			/*
-			if (is_mode_DEBUG()) {
-
-				cout << endl;
-				cout << "LARGER_HAS_PEAKS: " << LARGER_HAS_PEAKS << " LARGE_AT_LEAST_DOUBLE: " << LARGE_AT_LEAST_DOUBLE << endl;
-				cout << endl;
-			}
-			*/
 
 			bool DRAW_IT = true;
 
@@ -1473,7 +1418,7 @@ bool is_processable_for_contouring (const vector <GDB>& inGDB) {
 	return true;
 }
 
-void CONTOURING (const vector <GDB>& inGDB, ofstream& o, const PAPER& P, const CENTER center, const bool TILT) {
+void CONTOURING (const vector <GDB>& inGDB, ofstream& o, const CENTER center, const bool TILT) {
 
 	if (is_CONTOURING_NO()) return;
 	if (!is_processable_for_contouring (inGDB)) return;
@@ -1524,15 +1469,11 @@ void CONTOURING (const vector <GDB>& inGDB, ofstream& o, const PAPER& P, const C
 
 		vector < vector <GRID_CENTER> > M_SQ = generate_marching_squares (BIN_GRID);
 
-		//if (is_mode_DEBUG()) dbg_cout_rect_grid(M_SQ, false);
-
 		if (M_SQ.size() + 1 != BIN_GRID.size()) ASSERT3("rectangular density grid and/or maching sqare grid error");
 
 		M_SQ = check_saddle (M_SQ, RECT_GRID, CNTR_AT.at(i) * MAX);
 
 		vector <LINE> C_LINE = generate_raw_lines (M_SQ, RECT_GRID, CNTR_AT.at(i) * MAX);
-
-		//if (is_mode_DEBUG()) dbg_cout_line (C_LINE);
 
 		vector <vector <LINE> > LINE_VCTR = generate_line_vector (C_LINE);
 
@@ -1546,7 +1487,7 @@ void CONTOURING (const vector <GDB>& inGDB, ofstream& o, const PAPER& P, const C
 
 		BZ = eliminate_short_distances (BZ);
 
-		output_contourline (o, P, center, BZ, RECT_GRID, CNTR_AT.at(i), C_MN, C_MX, MAX);
+		output_contourline (o, center, BZ, RECT_GRID, CNTR_AT.at(i), C_MN, C_MX, MAX);
 	}
 }
 
@@ -1747,8 +1688,6 @@ void cout_rect_grid_to_ps (const vector <vector < GRID_CENTER> >& rect_grid, ofs
 			double DW = rect_grid.at(j + 0).at(i + 0).COUNT;
 
 			double COUNT = ((AW + BW + CW + DW) / 4.0);
-
-			//inset.grayscale = "N";
 
 			const string COLOR = generate_stress_colors(COUNT);
 

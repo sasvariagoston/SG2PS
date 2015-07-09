@@ -21,10 +21,6 @@ void real_main(int argument_number, char *argv[]) {
 
 	vector <string> ARG_V = vector<string>(argv+1, argv+argument_number);
 
-	//vector <vector <string> > SET;
-
-	//vector <string> ARG_V_CORRECT;
-
 	print_banner ();
 
 	MANAGE_RUN_MODE (ARG_V);
@@ -32,9 +28,6 @@ void real_main(int argument_number, char *argv[]) {
 	ARG_V = REMOVE_FIRST_ARGUMENT (ARG_V);
 
 	CHECK_ARGUMENTS_NUMBER (ARG_V);
-
-	//ARG_V_CORRECT = check_rgf_set_inputs (ARG_V);
-	//ARG_V_CORRECT = check_rgf_set_inputs (ARG_V);
 
 	clock_t starttime = clock ();
 
@@ -66,27 +59,3 @@ void real_main(int argument_number, char *argv[]) {
 
 	output_elapsed_time (starttime, finishtime);
 }
-
-
-
-/*
- * for (size_t i = 0; i < ARG_V_CORRECT.size() ; i++) {
-
-		const string IF = ARG_V_CORRECT.at(i);
-
-
-
-		load_settings_batch (IF);
-
-		check_xyfile_correct (IF);
-
-		process_rgf (IF);
-
-		if (!is_mode_DEBUG()) writeln ("EVALUATION OF " << capslock(IF) << ".RGF FILE COMPLETED.");
-	}
-	clock_t finishtime = clock();
-
-	output_elapsed_time (starttime, finishtime);
-}
- *
- */

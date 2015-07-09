@@ -333,9 +333,6 @@ void generate_trajectory_normal () {
 
 	add_record_zero_max ();
 
-	//dbg_TRAJECTORY();
-	//dbg_TRAJECTORY_N();
-
 	return;
 }
 
@@ -362,9 +359,6 @@ vector <GDB> APPLY_TRAJECTORY (const vector <GDB>& inGDB) {
 
 	vector <GDB> outGDB = inGDB;
 
-	//cout << outGDB.size() << endl;
-	//cout << TRAJECTORY_N.size() << endl;
-
 	size_t counter = 0;
 
 	for (size_t i = 1; i < TRAJECTORY_N.size(); i++) {
@@ -382,11 +376,6 @@ vector <GDB> APPLY_TRAJECTORY (const vector <GDB>& inGDB) {
 
 			if (FIT1 || FIT2) {
 
-				//cout << outGDB.at(j).iID << '\t'<< flush;
-				//cout << ACT_TRJ_DPT << '\t'<< flush;
-				//cout << NXT_TRJ_DPT << '\t' << flush;
-				//cout << DATA_DPT << endl;
-
 				counter++;
 
 				outGDB.at(j).T = TRAJECTORY_N.at(i).N;
@@ -399,8 +388,6 @@ vector <GDB> APPLY_TRAJECTORY (const vector <GDB>& inGDB) {
 
 	return outGDB;
 }
-
-
 
 void dbg_TRAJECTORY () {
 
@@ -444,4 +431,3 @@ void dbg_TRAJECTORY_N () {
 	cout << "******** END DUMPING TRAJECTORY AS NORMAL VECTOR ********" << endl;
 	cout << endl;
 }
-

@@ -12,10 +12,8 @@
 
 using namespace std;
 
-//PFN create_project_folder_names (const string projectname);
 vector <string> possible_folders_name ();
 void make_dir (const string& dir_name);
-//void create_folders(const PFN& output, const string& dir);
 void create_required_folders (const vector <GDB>& inGDB);
 void copy_original_files ();
 void copy_log ();
@@ -33,15 +31,10 @@ vector <vector <GDB> > SEPARATE (const vector <GDB> & inGDB, const string METHOD
 vector <vector <GDB> > SEPARATE_DATASET (const vector <vector <GDB> >& inGDB_G, const string METHOD, const string SORT);
 vector < vector <GDB> > SEPARATE_DATASET_GROUPS (const vector <GDB>& inGDB);
 
-//vector < vector < vector <vector <GDB> > > > SEPARATE_DATASET_TO_GROUPS (const vector <GDB>& inGDB, const string METHOD);
-
 vector <GDB> MERGE_GROUPS_TO_GDB (const vector <vector <GDB> >& GDB_G);
-//vector <vector <GDB> > MERGE_GROUPS_TO_GDB_G (const vector < vector <vector <vector <GDB> > > >& GDB_G);
 
 vector <GDB> combine_inversion_for_none_offset (const vector <GDB>& process_GDB, const vector <GDB>& hasoffset_GDB);
 
-
-//vector <vector <vector <vector <GDB> > > > CALCULATE_FOLDSURFACE (const vector <vector <vector <vector <GDB> > > >& inGDB_G);
 vector <vector <GDB> > PROCESS_GROUPS (const vector <vector <GDB> >& inGDB_G, const bool TILT);
 
 void output_rgf_header (ofstream& o, const bool AVERAGE);
@@ -56,8 +49,6 @@ void cout_method_text (const vector <GDB>& inGDB);
 void cout_original_tilted_text (const bool tilt);
 void cout_less_than_required_text (const bool tilt);
 
-//void PS_GDB_DATA (const vector <GDB>& inGDB, ofstream& o, const CENTER& center);
-//void OUTPUT_TO_PS (const vector <vector <GDB> > in_GDB_G, const PFN P, const bool TILT, const bool TRJ);
 void dbg_cout_RGF_colors (vector <GDB> inGDB);
 
 #endif

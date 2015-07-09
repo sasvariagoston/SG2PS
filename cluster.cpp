@@ -110,10 +110,7 @@ using namespace std;
 
 	 const CENTR_VECT C = centroid;
 	 const VCTR N = in.N;
-
 	 const VCTR SV = in.DC;
-	 //was: const VCTR SV = in._SV;
-
 	 const VCTR DC = in.DC;
 
 	 double distance = (C.U- N.X) * (C.U- N.X) + (C.V- N.Y) * (C.V- N.Y) + (C.W- N.Z) * (C.W- N.Z);
@@ -230,30 +227,18 @@ vector <vector <double> > clustering_cycle (const size_t cluster_number, const v
 
 		if (existence_of_group (i, whichgroup)) group_counter++;
 	}
+	if (!is_mode_DEBUG()) {
 
-	//const bool STRIAE = is_allowed_striae_datatype (inGDB.at(0).DATATYPE);
+		if (is_CLUSTERING_AUTOMATIC())	cout << "  - Automatic k-means clustering of '" << flush;
+		else 							cout << "  - User defined k-means clustering of '" << flush;
 
-	//if (STRIAE && (is_RUP_CLUSTERING_ANG() || is_RUP_CLUSTERING_RUP())) {
+		cout
+		<< inGDB.at(0).LOC << "' location, '"
+		<< inGDB.at(0).DATATYPE << "' data set, '"
+		<< inGDB.at(0).GC.at(0) << "' group into "
+		<< group_counter << " clusters with "
+		<< fixed << setprecision (2) << cml_dst << "% error." << endl;
 
-	//	if (!is_mode_DEBUG()) cout << "    - RUP clustering into "
-	//	<< group_counter << " clusters with "
-	//	<< fixed << setprecision (2) << cml_dst << "% error."
-	//	<< endl;
-	//}
-	//else {
-
-		if (!is_mode_DEBUG()) {
-
-			if (is_CLUSTERING_AUTOMATIC())	cout << "  - Automatic k-means clustering of '" << flush;
-			else 							cout << "  - User defined k-means clustering of '" << flush;
-
-			cout
-			<< inGDB.at(0).LOC << "' location, '"
-			<< inGDB.at(0).DATATYPE << "' data set, '"
-			<< inGDB.at(0).GC.at(0) << "' group into "
-			<< group_counter << " clusters with "
-			<< fixed << setprecision (2) << cml_dst << "% error." << endl;
-		//}
 	}
 	return distance_matrix;
 }

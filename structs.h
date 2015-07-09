@@ -8,6 +8,7 @@
 
 #include <limits>
 #include <string>
+#include <vector>
 
 using namespace std;
 
@@ -112,22 +113,6 @@ struct CORRECTSTRIAE {
 	double X, Y, Z, MISFIT;
 };
 
-/*
-struct PFN {
-
-	string
-	projectname,
-	projectfolder,
-	datetime,
-	original,
-	completed,
-	average,
-	rgfsep,
-	pssep,
-	tiltrgfsep,
-	well_ps;};
-
-*/
 struct PAPER {
 
 	double X, Y;
