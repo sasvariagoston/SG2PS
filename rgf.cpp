@@ -746,9 +746,9 @@ void dbg_cout_GDB_vector_vector_structure (const vector < vector <GDB> >& inGDB_
 	return;
 }
 
-vector <double> return_GDB_vector_vector_structure (const vector < vector <GDB> >& inGDB_G) {
+vector <size_t> return_GDB_vector_vector_structure (const vector < vector <GDB> >& inGDB_G) {
 
-	vector <double> OUT;
+	vector <size_t> OUT;
 
 	for (size_t i = 0; i < inGDB_G.size(); i++) {
 

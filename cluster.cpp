@@ -44,7 +44,7 @@ using namespace std;
 
  	for (size_t i = 0; i < inGDB.size(); i++) {
 
- 		double rnd = uniform_0_1() * cluster_number;
+ 		const double rnd = uniform_0_1() * cluster_number;
 
  		for (size_t j = 0; j < cluster_number; j++) {
 

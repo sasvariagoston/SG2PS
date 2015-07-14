@@ -451,11 +451,11 @@ bool has_GDB_DEPTH_value_in_range (const vector <GDB>& inGDB, const double MIN, 
 	return false;
 }
 
-double return_MIN_value (const vector <GDB>& inGDB, const size_t STEP) {
+double return_MIN_value (const vector <GDB>& inGDB, const double STEP) {
 
 	const vector <GDB> temp = SORT_GDB (inGDB, "DEPTH");
 
-	const size_t LIMIT = inGDB.at(inGDB.size() - 1).DEPTH;
+	const double LIMIT = inGDB.at(inGDB.size() - 1).DEPTH;
 
 	for (double i = 0.0; i < LIMIT; i+=STEP) {
 
@@ -464,7 +464,7 @@ double return_MIN_value (const vector <GDB>& inGDB, const size_t STEP) {
 	return NaN();
 }
 
-double return_MAX_value (const vector <GDB>& inGDB, const size_t STEP) {
+double return_MAX_value (const vector <GDB>& inGDB, const double STEP) {
 
 	const vector <GDB> temp = SORT_GDB (inGDB, "rDEPTH");
 
@@ -1861,11 +1861,11 @@ void OUTPUT_TO_WELL_PS (const vector <vector <GDB> >& GDB_G) {
 	return;
 }
 
-vector <double> return_INTERVAL_structure () {
+vector <size_t> return_INTERVAL_structure () {
 
 	vector <vector <WELL_INTERVAL> > I = RETURN_INTERVAL();
 
-	vector <double> OUT;
+	vector <size_t> OUT;
 
 	for (size_t i = 0; i < I.size(); i++) {
 
@@ -1874,11 +1874,11 @@ vector <double> return_INTERVAL_structure () {
 	return OUT;
 }
 
-vector <double> return_FREQUENCY_structure () {
+vector <size_t> return_FREQUENCY_structure () {
 
 	vector <vector <WELL_FREQUENCY> > F = RETURN_FREQUENCY();
 
-	vector <double> OUT;
+	vector <size_t> OUT;
 
 	for (size_t i = 0; i < F.size(); i++) {
 

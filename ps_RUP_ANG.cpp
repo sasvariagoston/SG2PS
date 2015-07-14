@@ -275,7 +275,7 @@ vector <line_RUP_ANG> generate_graph_histogram (const vector <HISTOGRAM>& H, con
 
 		brdr_buf.border = V.at(i).BIN_CENTER;
 		brdr_buf.ID = "VAL";
-		brdr_buf.COUNT = NaN ();
+		brdr_buf.COUNT = 0;
 		BORDERS.push_back (brdr_buf);
 	}
 

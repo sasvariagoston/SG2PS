@@ -405,7 +405,7 @@ void PROCESS_WELL_GROUPS (const vector <vector <GDB> >& inGDB_G) {
 
 		const double IVL = is_WELL_INTERVAL_LENGTH();
 
-		const size_t I = string_to_double (size_t_to_string (IVL));
+		const size_t I = string_to_size_t (double_to_string (IVL, 0));
 
 		bool PROCESSABLE = false;
 

@@ -49,19 +49,19 @@ void PS_draw_rose_circle (ofstream& o, const CENTER& center, const double percen
 
 void newpath_PS (ofstream& o);
 void color_PS (ofstream& o, const string& RGB);
-void text_PS (ofstream& o, const double X, const double Y, const size_t decimals, const string text);
+void text_PS (ofstream& o, const double X, const double Y, const int decimals, const string text);
 void text_PS (ofstream& o, const string text);
-void moveto_PS (ofstream& o, const double X, const double Y, const size_t decimals);
-void curveto_PS (ofstream& o, const double AX, const double AY, const double BX, const double BY, const double CX, const double DY, const size_t decimals);
-void lineto_PS (ofstream& o, const double X, const double Y, const size_t decimals);
-void rlineto_PS (ofstream& o, const double X, const double Y, const size_t decimals);
-void translate_PS (ofstream& o, const double X, const double Y, const size_t decimals);
-void rotate_PS (ofstream& o, const double ANG, const size_t decimals);
-void linewidth_PS (ofstream& o, const double LW, const size_t decimals);
+void moveto_PS (ofstream& o, const double X, const double Y, const int decimals);
+void curveto_PS (ofstream& o, const double AX, const double AY, const double BX, const double BY, const double CX, const double DY, const int decimals);
+void lineto_PS (ofstream& o, const double X, const double Y, const int decimals);
+void rlineto_PS (ofstream& o, const double X, const double Y, const int decimals);
+void translate_PS (ofstream& o, const double X, const double Y, const int decimals);
+void rotate_PS (ofstream& o, const double ANG, const int decimals);
+void linewidth_PS (ofstream& o, const double LW, const int decimals);
 void stroke_PS (ofstream& o);
 void closepath_PS (ofstream& o);
 void font_PS (ofstream& o, const string& font, const size_t size);
-void arc_PS (ofstream& o, const double X, const double Y, const double R, const double ANG_STR, const double ANG_END, const size_t decimals);
+void arc_PS (ofstream& o, const double X, const double Y, const double R, const double ANG_STR, const double ANG_END, const int decimals);
 void gsave_PS (ofstream& o);
 void fill_PS (ofstream& o);
 void grestore_PS (ofstream& o);

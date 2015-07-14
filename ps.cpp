@@ -2483,9 +2483,9 @@ void color_PS (ofstream& o, const string& RGB) {
 	o << " " << RGB << " setrgbcolor" << '\n';
 }
 
-void text_PS (ofstream& o, const double X, const double Y, const size_t decimals, const string text) {
+void text_PS (ofstream& o, const double X, const double Y, const int decimals, const string text) {
 
-	o << fixed << setprecision(decimals) << flush;
+	o << fixed << setprecision (decimals) << flush;
 	o << " " << X << " " << Y << " moveto (" << text << ") show" << '\n';
 }
 
@@ -2494,45 +2494,45 @@ void text_PS (ofstream& o, const string text) {
 	o << " " << text << '\n';
 }
 
-void moveto_PS (ofstream& o, const double X, const double Y, const size_t decimals) {
+void moveto_PS (ofstream& o, const double X, const double Y, const int decimals) {
 
-	o << fixed << setprecision(decimals) << flush;
+	o << fixed << setprecision (decimals) << flush;
 	o << " " << X << " " << Y << " moveto" << '\n';
 }
 
-void curveto_PS (ofstream& o, const double AX, const double AY, const double BX, const double BY, const double CX, const double CY, const size_t decimals) {
+void curveto_PS (ofstream& o, const double AX, const double AY, const double BX, const double BY, const double CX, const double CY, const int decimals) {
 
-	o << fixed << setprecision(decimals) << flush;
+	o << fixed << setprecision (decimals) << flush;
 	o << " " << AX << " " << AY << " " << BX << " " << BY << " " << CX << " " << CY << " curveto" << '\n';
 }
 
-void lineto_PS (ofstream& o, const double X, const double Y, const size_t decimals) {
+void lineto_PS (ofstream& o, const double X, const double Y, const int decimals) {
 
-	o << fixed << setprecision(decimals) << flush;
+	o << fixed << setprecision (decimals) << flush;
 	o << " " << X << " " << Y << " lineto" << '\n';
 }
 
-void rlineto_PS (ofstream& o, const double X, const double Y, const size_t decimals) {
+void rlineto_PS (ofstream& o, const double X, const double Y, const int decimals) {
 
-	o << fixed << setprecision(decimals) << flush;
+	o << fixed << setprecision (decimals) << flush;
 	o << " " << X << " " << Y << " rlineto" << '\n';
 }
 
-void translate_PS (ofstream& o, const double X, const double Y, const size_t decimals) {
+void translate_PS (ofstream& o, const double X, const double Y, const int decimals) {
 
-	o << fixed << setprecision(decimals) << flush;
+	o << fixed << setprecision (decimals) << flush;
 	o << " " << X << " " << Y << " translate" << '\n';
 }
 
-void rotate_PS (ofstream& o, const double ANG, const size_t decimals) {
+void rotate_PS (ofstream& o, const double ANG, const int decimals) {
 
-	o << fixed << setprecision(decimals) << flush;
+	o << fixed << setprecision (decimals) << flush;
 	o << " " << ANG << " rotate" << '\n';
 }
 
-void linewidth_PS (ofstream& o, const double LW, const size_t decimals) {
+void linewidth_PS (ofstream& o, const double LW, const int decimals) {
 
-	o << fixed << setprecision(decimals) << flush;
+	o << fixed << setprecision (decimals) << flush;
 	o << "  " << LW << " setlinewidth" << '\n';
 }
 
@@ -2551,9 +2551,9 @@ void font_PS (ofstream& o, const string& font, const size_t size) {
 	o << "/" << font << " findfont " << size << " scalefont setfont" << '\n';
 }
 
-void arc_PS (ofstream& o, const double X, const double Y, const double R, const double ANG_STR, const double ANG_END, const size_t decimals) {
+void arc_PS (ofstream& o, const double X, const double Y, const double R, const double ANG_STR, const double ANG_END, const int decimals) {
 
-	o << fixed << setprecision(decimals) << flush;
+	o << fixed << setprecision (decimals) << flush;
 	o << " " << X << " " << Y << " " << R << " " << ANG_STR << " " << ANG_END << " arc" << '\n';
 }
 

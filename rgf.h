@@ -54,7 +54,7 @@ void PROCESS_RGF (const string inputfilename);
 vector <vector <GDB> > EVALUATE (const vector <vector <GDB> >& inGDB_G);
 
 void dbg_cout_GDB_vector_vector_structure (const vector < vector <GDB> >& inGDB_G);
-vector <double> return_GDB_vector_vector_structure (const vector < vector <GDB> >& inGDB_G);
+vector <size_t> return_GDB_vector_vector_structure (const vector < vector <GDB> >& inGDB_G);
 
 void dbg_cout_GDB_vector_vector (const vector < vector < GDB> >& inGDB_G);
 void dbg_cout_GDB_vector (const vector <GDB>& inGDB);

@@ -117,11 +117,11 @@ bool trjDEPTHcheck () {
 
 		bool failed = false;
 
-		const double DEPTH = string_to_double (DPT, failed);
+		const double DPH = string_to_double (DPT, failed);
 
-		const bool POS = DEPTH >= 0.0;
+		const bool POS = DPH >= 0.0;
 
-		if (is_in_range(0.0, 0.0, DEPTH)) TRAJECTORY_HAS_ZERO = true;
+		if (is_in_range(0.0, 0.0, DPH)) TRAJECTORY_HAS_ZERO = true;
 
 		if (failed || !POS) bad_records.push_back (trj_to_check.at(i).at(DEPTH));
 	}

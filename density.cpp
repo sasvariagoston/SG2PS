@@ -100,9 +100,9 @@ vector < vector <GRID_CENTER> > calculate_grid_cell_values_from_triangle (vector
 
 				cml_value = cml_value + (tri_center.at(i).COUNT / (distance));
 			}
-			bool IN_RECT_CELL = (sqrt((R_X * R_X) + (R_Y * R_Y)) <= 1.0);
+			const bool IN_RECT_CELL = (sqrt((R_X * R_X) + (R_Y * R_Y)) <= 1.0);
 
-			if (IN_RECT_CELL)	rect_grid.at(k).at(j).COUNT = cml_value;
+			if (IN_RECT_CELL) rect_grid.at(k).at(j).COUNT = cml_value;
 			else {}
 		}
 	}
@@ -111,7 +111,7 @@ vector < vector <GRID_CENTER> > calculate_grid_cell_values_from_triangle (vector
 
 size_t return_RECT_GRID_max_count (const vector < vector <GRID_CENTER> >& RECT_GRID) {
 
-	double MAX = 0.0;
+	size_t MAX = 0.0;
 
 	for (size_t i = 0; i < RECT_GRID.size(); i++) {
 		for (size_t j = 0; j < RECT_GRID.at(i).size(); j++) {
@@ -1431,7 +1431,7 @@ void CONTOURING (const vector <GDB>& inGDB, ofstream& o, const CENTER center, co
 
 	vector <GRID_CENTER> TRI_CENTER = generate_triangle_center (TRI_GRID);
 
-	size_t cell_number = sqrt (TRI_CENTER.size() / 0.78);
+	size_t cell_number = round (sqrt (TRI_CENTER.size() / 0.78));
 
 	TRI_CENTER = reduce_triangle_center(TRI_CENTER);
 

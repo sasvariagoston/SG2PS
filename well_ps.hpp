@@ -26,8 +26,8 @@ double well_axes_step (const double MIN, const double MAX);
 
 bool has_GDB_DEPTH_value_in_range (const vector <GDB>& inGDB, const double MIN, const double MAX);
 
-double return_MIN_value (const vector <GDB>& inGDB, const size_t STEP);
-double return_MAX_value (const vector <GDB>& inGDB, const size_t STEP);
+double return_MIN_value (const vector <GDB>& inGDB, const double STEP);
+double return_MAX_value (const vector <GDB>& inGDB, const double STEP);
 
 void ps_well_formation_tops (ofstream& o, const double X, const double LENGTH, const double MIN_VAL, const double MAX_VAL, const double STEP);
 
@@ -82,7 +82,7 @@ void SETUP_FAULT_POSITIONS (const double MIN_VAL, const double MAX_VAL, const do
 void WELL_PS (const vector <GDB>& inGDB, const vector <WELL_INTERVAL>& INT, const vector <WELL_FREQUENCY>& FREQ, ofstream& OPS, const double MIN_VAL, const double MAX_VAL, const double STEP);
 void OUTPUT_TO_WELL_PS (const vector <vector <GDB> >& GDB_G);
 
-vector <double> return_INTERVAL_structure ();
-vector <double> return_FREQUENCY_structure ();
+vector <size_t> return_INTERVAL_structure ();
+vector <size_t> return_FREQUENCY_structure ();
 
 #endif /* WELL_PS_HPP_ */
