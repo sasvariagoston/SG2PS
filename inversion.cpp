@@ -77,19 +77,19 @@ vector <GDB> generate_virtual_striae (const vector <GDB>& inGDB) {
 	return outGDB;
 }
 
-void cout_inversion_results (const vector <GDB>& inGDB, const vector <STRESSFIELD>& SFV) {
+void cout_inversion_results (const vector <GDB>& inGDB, const vector <STRESSFIELD>& SF_V) {
 
 	if (is_mode_DEBUG()) return;
 
 	const bool IS_STRIAE = is_allowed_striae_datatype(inGDB.at(0).DATATYPE);
 
-	if (SFV.size() < 1) {
+	if (SF_V.size() < 1) {
 
 		cout << "no stress field was computed for the input data set." << endl;
 		return;
 	}
 
-	const STRESSFIELD MSF = SFV.at (SFV.size() - 1);
+	const STRESSFIELD MSF = SF_V.at (SF_V.size() - 1);
 
 	if (is_BINGHAM_USE() && !IS_STRIAE) {
 
@@ -156,14 +156,14 @@ vector <STRESSFIELD> return_SFV () {
 	return SFV;
 }
 
-vector <GDB> ASSOCIATE_STV_SFV (const vector <GDB>& inGDB, const vector <STRESSTENSOR>& STV, const vector <STRESSFIELD>& SFV) {
+vector <GDB> ASSOCIATE_STV_SFV (const vector <GDB>& inGDB, const vector <STRESSTENSOR>& ST_V, const vector <STRESSFIELD>& SF_V) {
 
 	vector <GDB> outGDB = inGDB;
 
 	for (size_t i = 0; i < outGDB.size(); i++) {
 
-		outGDB.at(i).STV = STV;
-		outGDB.at(i).SFV = SFV;
+		outGDB.at(i).STV = ST_V;
+		outGDB.at(i).SFV = SF_V;
 	}
 	return outGDB;
 }
@@ -342,11 +342,11 @@ void cout_dbg_stresstensor (const STRESSTENSOR& in) {
 	return;
 }
 
-void cout_dbg_STV (const vector <STRESSTENSOR>& STV) {
+void cout_dbg_STV (const vector <STRESSTENSOR>& ST_V) {
 
-	for (size_t i = 0; i < STV.size(); i++) {
+	for (size_t i = 0; i < ST_V.size(); i++) {
 
-		STRESSTENSOR A = STV.at(i);
+		STRESSTENSOR A = ST_V.at(i);
 
 		cout << fixed << setprecision (6) << endl;
 

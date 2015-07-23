@@ -1693,7 +1693,7 @@ void PS_rosesegment (ofstream& o, const CENTER center, const double percentage, 
 	translate_PS (o, -center.X, -center.Y, 3);
 }
 
-void PS_draw_rose_circle (ofstream& o, const CENTER& center, const double percent, const double VERTICAL) {
+void PS_draw_rose_circle (ofstream& o, const CENTER& center, const double percent, const bool VERTICAL) {
 
 	double P = percent;
 

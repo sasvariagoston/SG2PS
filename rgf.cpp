@@ -69,7 +69,7 @@ void set_inputfilename (const string filename) {
 
 vector <GDB> competeRGFcontect (const string projectname) {
 
-	vector <GDB> outGDB = create_GDB_from_rgf (projectname + ".rgf");
+	vector <GDB> outGDB = create_GDB_from_rgf ();
 
 	for (size_t i = 0; i < outGDB.size(); i++) {
 
@@ -952,7 +952,7 @@ void compare_structures (const vector <double>& IN1, const vector <double>& IN2)
 
 	for (size_t i = 0; i < IN1.size(); i++) {
 
-		if (IN1.at(i) != IN2.at(i)) ASSERT_DEAD_END();
+		if (!is_in_range (IN1.at(i), IN2.at(i), IN2.at(i))) ASSERT_DEAD_END();
 	}
 	return;
 }

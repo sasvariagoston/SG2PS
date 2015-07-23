@@ -45,7 +45,7 @@ void PS_striaearrow (const GDB& i, ofstream& o, const CENTER& center);
 void PS_stress_state (ofstream& o, const CENTER& center, const STRESSFIELD& sf);
 
 void PS_rosesegment (ofstream& o, const CENTER center, const double percentage, const double degree, const bool c_plane);
-void PS_draw_rose_circle (ofstream& o, const CENTER& center, const double percent, const double VERTICAL);
+void PS_draw_rose_circle (ofstream& o, const CENTER& center, const double percent, const bool VERTICAL);
 
 void newpath_PS (ofstream& o);
 void color_PS (ofstream& o, const string& RGB);

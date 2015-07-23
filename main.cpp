@@ -56,7 +56,7 @@ int main (int argc, char *argv[]) {
 	}
 	catch (arg_error& e) {
 
-		cout << "Less argument than needed - argument error. " << endl;
+		cout << "Less argument than needed - argument error. "  << endl;
 		return ExitStatus::ARG_ERROR;
 	}
 	catch(exception& e) {

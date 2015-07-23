@@ -33,7 +33,7 @@ const string US = "_";
 
 }
 
-void generate_DATE_TIME (const string projectname) {
+void generate_DATE_TIME () {
 
 	time_t current_time;
 	struct tm * TM;
@@ -331,7 +331,7 @@ string generate_ACTUAL_RGF_NAME_FOR_STANDARD () {
 
 void GENERATE_FOLDER_NAMES (const string projectname) {
 
-	generate_DATE_TIME (projectname);
+	generate_DATE_TIME ();
 	generate_PROJECTNAME ( projectname);
 
 	generate_PROJECT_FOLDER ();

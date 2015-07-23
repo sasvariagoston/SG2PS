@@ -23,10 +23,10 @@
 
 using namespace std;
 
-namespace {
+//namespace {
 
-	const double SN = 10e-8;
-}
+//	const double SN = 10e-8;
+//}
 
 vector <double> GDB_to_table (const vector <GDB>& inGDB, const string field) {
 

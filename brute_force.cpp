@@ -383,21 +383,21 @@ STRESSTENSOR st_BRUTEFORCE (const vector <GDB>& inGDB) {
 
 		VCTR ORIGO = BR_RAW.at(i).NRM;
 		size_t POINTS_DISTANCE = 1;
-		vector <VCTR> CNTRVCTR = generate_centroids_net(ORIGO, POINTS_DISTANCE);
+		vector <VCTR> CNTRVCTR_2 = generate_centroids_net(ORIGO, POINTS_DISTANCE);
 
 		double ANG_MIN = BR_RAW.at(i).ANG - 5.0;
 		double ANG_MAX = BR_RAW.at(i).ANG + 5.0;
 		if (ANG_MIN <   0.0) ANG_MIN = 0.0;
 		if (ANG_MAX > 180.0) ANG_MAX = 180.0;
-		vector <double> ANGVCTR = generate_angle_vector_180 (ANG_MIN, ANG_MAX, 5);
+		vector <double> ANGVCTR_2 = generate_angle_vector_180 (ANG_MIN, ANG_MAX, 5);
 
 		double PHI_MIN = BR_RAW.at(i).PHI - 0.05;
 		double PHI_MAX = BR_RAW.at(i).PHI + 0.05;
 		if (PHI_MIN < 0.0) PHI_MIN = 0.0;
 		if (PHI_MAX > 1.0) PHI_MAX = 1.0;
-		vector <double> PHIVCTR = generate_phi_vector (PHI_MIN, PHI_MAX, 5);
+		vector <double> PHIVCTR_2 = generate_phi_vector (PHI_MIN, PHI_MAX, 5);
 
-		vector <BRUTEFORCE_RESULT> BR_FINE = BRUTEFORCE_ENGINE (inGDB, CNTRVCTR, ANGVCTR, PHIVCTR);
+		vector <BRUTEFORCE_RESULT> BR_FINE = BRUTEFORCE_ENGINE (inGDB, CNTRVCTR_2, ANGVCTR_2, PHIVCTR_2);
 
 		BR_FINE = return_minimum_misfits (BR_FINE, 1);
 

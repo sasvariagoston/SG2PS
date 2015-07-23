@@ -644,7 +644,7 @@ void dump_INTERVAL_to_file (ofstream& o) {
 	return;
 }
 
-void standard_output_INTERVAL (const bool TLT, const bool TRJ) {
+void standard_output_INTERVAL () {
 
 	string T = "ST_WELL_INTERVAL";
 
@@ -687,7 +687,7 @@ void dump_FREQUENCY_to_file (ofstream& o) {
 	return;
 }
 
-void standard_output_FREQUENCY (const bool TLT, const bool TRJ) {
+void standard_output_FREQUENCY () {
 
 	string T = "ST_WELL_FREQUENCY";
 
@@ -706,11 +706,11 @@ void standard_output_FREQUENCY (const bool TLT, const bool TRJ) {
 
 void STANDARD_OUTPUT_WELL_GROUPS () {
 
-	const bool TLT = is_PROCESS_AS_TILTED();
-	const bool TRJ = is_PROCESS_AS_TRAJECTORY();
+	//const bool TLT = is_PROCESS_AS_TILTED();
+	//const bool TRJ = is_PROCESS_AS_TRAJECTORY();
 
-	standard_output_INTERVAL (TLT, TRJ);
-	standard_output_FREQUENCY (TLT, TRJ);
+	standard_output_INTERVAL ();
+	standard_output_FREQUENCY ();
 
 	return;
 }

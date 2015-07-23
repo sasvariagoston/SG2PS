@@ -29,7 +29,7 @@ bool has_GDB_DEPTH_value_in_range (const vector <GDB>& inGDB, const double MIN, 
 double return_MIN_value (const vector <GDB>& inGDB, const double STEP);
 double return_MAX_value (const vector <GDB>& inGDB, const double STEP);
 
-void ps_well_formation_tops (ofstream& o, const double X, const double LENGTH, const double MIN_VAL, const double MAX_VAL, const double STEP);
+void ps_well_formation_tops (ofstream& o, const double X, const double LENGTH, const double MIN_VAL, const double MAX_VAL);
 
 void PS_well_coordinate_axes_INTERVAL (ofstream& o, const double X, const double LENGTH);
 void PS_well_coordinate_grid_INTERVAL (ofstream& o, const double X, const double LENGTH, const double MIN_VAL, const double MAX_VAL, const double STEP);
@@ -38,7 +38,7 @@ void PS_well_coordinate_grid_DIPDIR (ofstream& o, const double X, const double L
 void PS_well_coordinate_axes_DIP (ofstream& o, const double X, const double LENGTH);
 void PS_well_coordinate_grid_DIP (ofstream& o, const double X, const double LENGTH, const double MIN_VAL, const double MAX_VAL, const double STEP);
 
-void PS_well_coordinate_axes_FAULTS (ofstream& o, const double X, const double LENGTH, const double MIN_VAL, const double MAX_VAL, const double STEP);
+void PS_well_coordinate_axes_FAULTS (ofstream& o, const double X, const double LENGTH);
 void PS_well_coordinate_axes_FREQUENCY (ofstream& o, const double X, const double LENGTH, const double MIN_VAL, const double MAX_VAL, const double STEP);
 void PS_derivate_DIPDIR_DIP (ofstream& o, const double X);
 
@@ -77,8 +77,8 @@ void plot_well_measurements (const vector <GDB>& inGDB, ofstream& o, const doubl
 void PS_well_intervals_error (const vector <WELL_INTERVAL>& INTERVAL, ofstream& o, const double X, const double LENGTH, const double MIN_VAL, const double MAX_VAL, const bool DIPDIR);
 void PS_well_intervals (const vector <WELL_INTERVAL>& INTERVAL, ofstream& o, const double X, const double LENGTH, const double MIN_VAL, const double MAX_VAL);
 
-void INIT_FAULT_POSITIONS (const double MIN_VAL, const double MAX_VAL, const double STEP);
-void SETUP_FAULT_POSITIONS (const double MIN_VAL, const double MAX_VAL, const double STEP);
+void INIT_FAULT_POSITIONS (const double MIN_VAL, const double MAX_VAL);
+void SETUP_FAULT_POSITIONS (const double MIN_VAL, const double MAX_VAL);
 void WELL_PS (const vector <GDB>& inGDB, const vector <WELL_INTERVAL>& INT, const vector <WELL_FREQUENCY>& FREQ, ofstream& OPS, const double MIN_VAL, const double MAX_VAL, const double STEP);
 void OUTPUT_TO_WELL_PS (const vector <vector <GDB> >& GDB_G);
 

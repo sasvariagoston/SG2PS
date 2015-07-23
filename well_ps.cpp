@@ -492,7 +492,7 @@ void PS_well_coordinate_axes_INTERVAL (ofstream& o, const double X, const double
 	return;
 }
 
-void ps_well_formation_tops (ofstream& o, const double X, const double LENGTH, const double MIN_VAL, const double MAX_VAL, const double STEP) {
+void ps_well_formation_tops (ofstream& o, const double X, const double LENGTH, const double MIN_VAL, const double MAX_VAL) {
 
 	font_PS(o, "ArialNarrow", 10);
 	color_PS (o, "0.5 0.5 1.0");
@@ -718,7 +718,7 @@ void PS_well_coordinate_grid_DIP (ofstream& o, const double X, const double LENG
 	return;
 }
 
-void PS_well_coordinate_axes_FAULTS (ofstream& o, const double X, const double LENGTH, const double MIN_VAL, const double MAX_VAL, const double STEP) {
+void PS_well_coordinate_axes_FAULTS (ofstream& o, const double X, const double LENGTH) {
 
 	const PAPER P = RETURN_PAPER();
 
@@ -1233,8 +1233,8 @@ vector <vector <XY> >  generate_xy_vector_vector (const vector <XY>& IN) {
 
 		if (LAST) {
 
-			XY buf = IN.at(i+1);
-			BUF.push_back (buf);
+			XY buf_2 = IN.at(i+1);
+			BUF.push_back (buf_2);
 			OUT.push_back(BUF);
 		}
 	}
@@ -1708,7 +1708,7 @@ void PS_well_intervals (const vector <WELL_INTERVAL>& INTERVAL, ofstream& o, con
 	}
 }
 
-void INIT_FAULT_POSITIONS (const double MIN_VAL, const double MAX_VAL, const double STEP) {
+void INIT_FAULT_POSITIONS (const double MIN_VAL, const double MAX_VAL) {
 
 	FAULTS.clear();
 
@@ -1725,9 +1725,9 @@ void INIT_FAULT_POSITIONS (const double MIN_VAL, const double MAX_VAL, const dou
 	return;
 }
 
-void SETUP_FAULT_POSITIONS (const double MIN_VAL, const double MAX_VAL, const double STEP) {
+void SETUP_FAULT_POSITIONS (const double MIN_VAL, const double MAX_VAL) {
 
-	INIT_FAULT_POSITIONS (MIN_VAL, MAX_VAL, STEP);
+	INIT_FAULT_POSITIONS (MIN_VAL, MAX_VAL);
 
 	return;
 }
@@ -1735,7 +1735,7 @@ void SETUP_FAULT_POSITIONS (const double MIN_VAL, const double MAX_VAL, const do
 void WELL_PS (const vector <GDB>& inGDB, const vector <WELL_INTERVAL>& INT, const vector <WELL_FREQUENCY>& FREQ, ofstream& OPS, const double MIN_VAL, const double MAX_VAL, const double STEP) {
 
 	const PAPER P = RETURN_PAPER();
-	SETUP_FAULT_POSITIONS (MIN_VAL, MAX_VAL, STEP);
+	SETUP_FAULT_POSITIONS (MIN_VAL, MAX_VAL);
 
 	const double LENGTH = P.Y * 0.8;
 
@@ -1744,7 +1744,7 @@ void WELL_PS (const vector <GDB>& inGDB, const vector <WELL_INTERVAL>& INT, cons
 	PS_well_coordinate_grid_INTERVAL (OPS, X, LENGTH, MIN_VAL, MAX_VAL, STEP);
 	PS_well_intervals (INT, OPS, X, LENGTH, MIN_VAL, MAX_VAL);
 	PS_well_coordinate_axes_INTERVAL (OPS, X, LENGTH);
-	ps_well_formation_tops (OPS, X, LENGTH, MIN_VAL, MAX_VAL, STEP);
+	ps_well_formation_tops (OPS, X, LENGTH, MIN_VAL, MAX_VAL);
 
 	//cout << "2A-----------------------------------------" << endl;
 	X = X + (PL_WDT + PL_GP) * P.A;
@@ -1788,7 +1788,7 @@ void WELL_PS (const vector <GDB>& inGDB, const vector <WELL_INTERVAL>& INT, cons
 
 	//cout << "5A-----------------------------------------" << endl;
 	X = X + (PL_WDT * 0.5 + PL_GP) * P.A;
-	PS_well_coordinate_axes_FAULTS (OPS, X, LENGTH, MIN_VAL, MAX_VAL, STEP);
+	PS_well_coordinate_axes_FAULTS (OPS, X, LENGTH);
 	plot_well_faults (OPS, X, LENGTH, MIN_VAL, MAX_VAL);
 
 	return;

@@ -247,7 +247,7 @@ bool DEPTHcheck () {
 
 		const double DEPTH = string_to_double (DPT, failed);
 
-		const double POS = DEPTH >= 0.0;
+		const bool POS = DEPTH >= 0.0;
 
 		if (failed || !POS) bad_records.push_back(rgf_to_check.at(i).at(DATA_ID));
 	}
@@ -519,7 +519,7 @@ double to_double(const vector<string>& row, record_name column) {
 	return string_to_double(row.at(column));
 }
 
-vector <GDB> create_GDB_from_rgf (const string& file_name) {
+vector <GDB> create_GDB_from_rgf () {
 
 	vector <GDB> outGDB;
 

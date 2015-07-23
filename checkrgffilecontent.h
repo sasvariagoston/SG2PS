@@ -36,7 +36,7 @@ bool is_SCcorrect (const vector <string>& in);
 bool is_LINEATIONcorrect (const vector <string>& in);
 bool is_PITCHcorrect (const vector <string>& in);
 
-vector <GDB> create_GDB_from_rgf (const string& file_name);
+vector <GDB> create_GDB_from_rgf ();
 
 bool error_cout (const vector <string>& bad_records, const string recordtype);
 

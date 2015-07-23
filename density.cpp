@@ -1234,7 +1234,7 @@ vector <VCTR> close_contourline (const vector <VCTR>& I, const double START_ANGL
 	vector <VCTR> OUT = I;
 
 	ASSERT2(is_line_CCW(I), "CCW line is expected in 'close_contourline' function");
-	ASSERT2(START_ANGLE != END_ANGLE, "open line expected in 'close_contourline' function");
+	//ASSERT2(! (is_in_range(START_ANGLE, END_ANGLE, END_ANGLE)), "open line expected in 'close_contourline' function");
 
 	bool START_LESS_THAN_END = (START_ANGLE < END_ANGLE);
 

@@ -9,7 +9,7 @@
 
 using namespace std;
 
-bool check_fry_matrix (const size_t first_eigenvalue, const vector <vector <double> >& in_eigenvector);
+bool check_fry_matrix (const size_t frst_eigenvalue, const vector <vector <double> >& in_eigenvector);
 
 bool fry_correct (const vector <GDB>& inGDB);
 

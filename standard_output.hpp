@@ -56,9 +56,9 @@ void dump_VALLEY_to_file (const vector <VALLEY>& V, const string FN);				// NOT 
 void dump_ROSENUMBER_to_file (const vector <ROSENUMBER>& R, const string FN);//ok
 
 void dump_INTERVAL_to_file (ofstream& o);//ok
-void standard_output_INTERVAL (const bool TLT, const bool TRJ);//ok
+void standard_output_INTERVAL ();//ok
 void dump_FREQUENCY_to_file (ofstream& o);
-void standard_output_FREQUENCY (const bool TLT, const bool TRJ);//ok
+void standard_output_FREQUENCY ();//ok
 void STANDARD_OUTPUT_WELL_GROUPS ();//ok
 
 void dump_CURVE_to_file (const vector <double>& DEPTH, const vector <double>& VALUE, ofstream& o); //ok

@@ -40,7 +40,7 @@ vector <vector <double> > D = init_matrix (6);
 vector <vector <double> > EVEV;
 }
 
-bool check_fry_matrix (const size_t first_eigenvalue, const vector <vector <double> >& in_eigenvector) {
+bool check_fry_matrix (const size_t frst_eigenvalue, const vector <vector <double> >& in_eigenvector) {
 
 	vector <sort_jacobi> buffer;
 	sort_jacobi buf;
@@ -48,7 +48,7 @@ bool check_fry_matrix (const size_t first_eigenvalue, const vector <vector <doub
 	for (size_t i = 0; i < in_eigenvector.size(); i++) {
 
 		buf.ID = i;
-		buf.eigenvalue = in_eigenvector.at(first_eigenvalue).at(i);
+		buf.eigenvalue = in_eigenvector.at(frst_eigenvalue).at(i);
 		buffer.push_back(buf);
 	}
 

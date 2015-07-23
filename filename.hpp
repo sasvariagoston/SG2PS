@@ -5,7 +5,7 @@
 #ifndef FILENAME_HPP_
 #define FILENAME_HPP_
 
-void generate_DATE_TIME (const string projectname);
+void generate_DATE_TIME ();
 string return_DATE_TIME ();
 
 void generate_PROJECTNAME (string projectname);
