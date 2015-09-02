@@ -224,6 +224,8 @@ vector <GDB> return_GDB_for_data_interval (const vector <GDB>& inGDB, const doub
 
 		if (is_in_range (MIN, MAX, D)) 	OUT.push_back(inGDB.at(i));
 	}
+
+	//if size == 1?
 	return OUT;
 }
 
@@ -280,17 +282,28 @@ WELL_INTERVAL interval_average (const vector <GDB>& inGDB) {
 
 	const bool O = is_D_up (dummy.at(0).avD);
 
-	const vector <VCTR> BNG = generate_Bingham_dataset(inGDB);
-	const STRESSTENSOR ST = st_BINGHAM (BNG);
-	const STRESSFIELD SF = sf_BINGHAM (ST);
+	const bool EQ1 = is_processable_for_average_EQ1 (inGDB);
+	const bool EQ2 = is_processable_for_average_EQ2 (inGDB);
 
-	if (!O) OUT.INT_AV_D = 	DXDYDZ_from_NXNYNZ (flip_vector (SF.EIGENVECTOR1));
-	else OUT.INT_AV_D = 	DXDYDZ_from_NXNYNZ (SF.EIGENVECTOR1);
+	VCTR AV_N;
+
+	if (EQ1 || EQ2) AV_N = calculate_data_average_vector (inGDB);
+
+	else {
+
+		const vector <VCTR> BNG = generate_Bingham_dataset(inGDB);
+		const STRESSTENSOR ST = st_BINGHAM (BNG);
+		const STRESSFIELD SF = sf_BINGHAM (ST);
+
+		AV_N = SF.EIGENVECTOR1;
+	}
+	if (!O) OUT.INT_AV_D = DXDYDZ_from_NXNYNZ (flip_vector (AV_N));
+	else 	OUT.INT_AV_D = DXDYDZ_from_NXNYNZ (AV_N);
 
 	OUT.INT_AV_DD = dipdir_dip_from_DXDYDZ (OUT.INT_AV_D);
 
-	OUT.INT_AV_DD_STDEV = stdev_for_interval (dummy, true);//ok
-	OUT.INT_AV_D_STDEV = stdev_for_interval (dummy, false);//ok
+	OUT.INT_AV_DD_STDEV = stdev_for_interval (dummy, true);
+	OUT.INT_AV_D_STDEV = stdev_for_interval (dummy, false);
 
 	return OUT;
 }
@@ -322,7 +335,11 @@ vector <WELL_INTERVAL> WELL_AVERAGE_M (const vector <GDB>& p_GDB) {
 
 		WELL_INTERVAL buf;
 
-		if (PROCESSABLE) buf = interval_average (temp);//ok
+		if (PROCESSABLE) {
+
+			//dbg_cout_GDB_vector(temp);
+			buf = interval_average (temp);//ok
+		}
 		else {
 
 			buf.INT_AV_DD.DIPDIR = NaN();
@@ -423,7 +440,6 @@ void PROCESS_WELL_GROUPS (const vector <vector <GDB> >& inGDB_G) {
 			INTERVAL_buf = FIRST_DERIVATE (INTERVAL_buf);
 
 			FREQUENCY_buf = FREQUENCY (p_GDB);
-
 		}
 		W_INTERVAL.push_back (INTERVAL_buf);
 		W_FREQUENCY.push_back (FREQUENCY_buf);
