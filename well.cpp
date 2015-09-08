@@ -292,7 +292,7 @@ WELL_INTERVAL interval_average (const vector <GDB>& inGDB) {
 
 	else {
 
-		const vector <VCTR> BNG = generate_Bingham_dataset(inGDB);
+		const vector <VCTR> BNG = generate_Bingham_dataset (inGDB);
 		const STRESSTENSOR ST = st_BINGHAM (BNG);
 		const STRESSFIELD SF = sf_BINGHAM (ST);
 
