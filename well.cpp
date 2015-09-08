@@ -127,11 +127,12 @@ vector <WELL_FREQUENCY> FREQUENCY (const vector <GDB>& inGDB) {
 
 		if (OUT.at(i).DERIV > MAX_DERIV) MAX_DERIV = OUT.at(i).DERIV;
 	}
-
 	for (size_t i = 0; i < OUT.size() - 1; i++) {
 
 		OUT.at(i).DERIV = OUT.at(i).DERIV / MAX_DERIV;
 	}
+	OUT.at(OUT.size() - 1).DERIV = NaN();
+	OUT.at(OUT.size() - 1).DERIV_DEPTH = NaN();
 
 	return OUT;
 }

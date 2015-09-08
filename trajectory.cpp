@@ -196,13 +196,18 @@ bool trj_plunge () {
 
 void CHECK_TRAJECTORY_FILE (const string projectname) {
 
-	if (!is_WELLDATA_USE()) return;
-
 	writeln ("");
 	writeln ("===========================");
 	writeln ("5) CHECKING TRAJECTORY FILE");
 	writeln ("===========================");
 	writeln ("");
+
+	if (!is_WELLDATA_USE()) {
+
+		cout << "  - No well data processed, no need for trajectory file." << endl;
+
+		return;
+	}
 
 	if (!(input_trajectory (projectname))) {
 
