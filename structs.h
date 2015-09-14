@@ -278,6 +278,8 @@ struct WELL_DERIVATE {
 
 struct WELL_FREQUENCY {
 
+	WELL_FREQUENCY() { DEPTH=FREQ=DERIV_DEPTH=DERIV=NaN(); }
+
 	double DEPTH;
 	double FREQ;
 

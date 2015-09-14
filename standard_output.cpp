@@ -808,3 +808,93 @@ void STANDARD_OUTPUT_FAULTS (const string METHOD) {
 
 	dump_PEAK_to_file (o, false);
 }
+
+void dump_INTMINMAX_to_file (const size_t RUN, const size_t SIZE, const double MIN_DEPTH, const double MAX_DEPTH) {
+
+	stringstream s;
+	s << fixed << setfill ('0') << setw (4) << RUN << flush;
+	string T = s.str();
+
+	if (is_PROCESS_AS_TILTED()) T = T + "_TLT";
+	else T = T + "_NRM";
+
+	if (is_PROCESS_AS_TRAJECTORY()) T = T + "_TRJ";
+
+	ofstream o;
+	o.open (("ST_WELL_INTMINMAX_" + T + ".csv").c_str());
+
+	o
+	<< "RUN i" << '\t'
+	<< "SIZE i" << '\t'
+	<< "MIN_DEPTH d" << '\t'
+	<< "MAX_DEPTH d" << endl;
+
+	o
+	<< RUN << '\t'
+	<< SIZE << '\t'
+	<< dmp_dbl (MIN_DEPTH, 8) << '\t'
+	<< dmp_dbl (MAX_DEPTH, 8) << endl;
+}
+
+void dump_STDEV_to_file (const size_t& RUN, const bool DIPDIR, const vector <DIPDIR_DIP>& D1_v, const vector <DIPDIR_DIP>& D2_v, const vector <VCTR>& T1_v, const vector <VCTR>& T2_v, const vector <double>& ANG_v) {
+
+	stringstream s;
+	s << fixed << setfill ('0') << setw (4) << RUN << flush;
+	string T = s.str();
+
+	if (is_PROCESS_AS_TILTED()) T = T + "_TLT";
+	else T = T + "_NRM";
+
+	if (is_PROCESS_AS_TRAJECTORY()) T = T + "_TRJ";
+
+	if (DIPDIR) T = T + "_DIPDIR";
+	else T = T + "_DIP";
+
+	ofstream o;
+	o.open (("ST_WELL_STDEV_" + T + ".csv").c_str());
+
+	o
+	<< "D1.DIPDIR d" << '\t' << "D1.DIP d" << '\t'
+	<< "D2.DIPDIR d" << '\t' << "D2.DIP d" << '\t'
+	<< "T1.X d" << '\t' << "T1.Y d" << '\t' << "T1.Z d" << '\t'
+	<< "T2.X d" << '\t' << "T2.Y d" << '\t' << "T2.Z d" << '\t'
+	<< "ANG d" << endl;
+
+	for (size_t i = 0; i < ANG_v.size(); i++) {
+
+		o
+		<< dmp_dbl (D1_v.at(i).DIPDIR , 8) << '\t' << dmp_dbl (D1_v.at(i).DIP , 8) << '\t'
+		<< dmp_dbl (D2_v.at(i).DIPDIR , 8) << '\t' << dmp_dbl (D2_v.at(i).DIP , 8) << '\t'
+		<< dmp_dbl (T1_v.at(i).X , 8) << '\t' << dmp_dbl (T1_v.at(i).Y , 8) << '\t' << dmp_dbl (T1_v.at(i).Z , 8) << '\t'
+		<< dmp_dbl (T2_v.at(i).X , 8) << '\t' << dmp_dbl (T2_v.at(i).Y , 8) << '\t' << dmp_dbl (T2_v.at(i).Z , 8) << '\t'
+		<< dmp_dbl (ANG_v.at(i), 8) << endl;
+	}
+	return;
+}
+
+void dump_FREQ_PRM_to_file (const vector <double>& INT_v, const vector <double>& DIP_v, const vector <double>& FREQ_v) {
+
+	string T = return_ACTUAL_DATATYPE();
+
+	if (is_PROCESS_AS_TILTED()) T = T + "_TLT";
+	else T = T + "_NRM";
+
+	if (is_PROCESS_AS_TRAJECTORY()) T = T + "_TRJ";
+
+	ofstream o;
+	o.open (("ST_WELL_FREQ_PRM_" + T + ".csv").c_str());
+
+	o
+	<< "INT d" << '\t'
+	<< "DIP d" << '\t'
+	<< "FREQ d" << endl;
+
+	for (size_t i = 0; i < INT_v.size(); i++) {
+
+		o
+		<< dmp_dbl (INT_v.at(i), 8) << '\t'
+		<< dmp_dbl (DIP_v.at(i), 8) << '\t'
+		<< dmp_dbl (FREQ_v.at(i), 8) << endl;
+	}
+	return;
+}

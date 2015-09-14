@@ -85,6 +85,8 @@ vector <WELL_FREQUENCY> FREQUENCY (const vector <GDB>& inGDB) {
 
 	double MAX_FREQ = 0.0;
 
+	vector <double> DIP_v, INT_v, FREQ_v;
+
 	for (size_t i = 0; i < process_GDB.size() - 1; i++) {
 
 		WELL_FREQUENCY buf;
@@ -106,11 +108,20 @@ vector <WELL_FREQUENCY> FREQUENCY (const vector <GDB>& inGDB) {
 		if (buf.FREQ > MAX_FREQ) MAX_FREQ = buf.FREQ;
 
 		OUT.push_back (buf);
+
+		INT_v.push_back (INT);
+		DIP_v.push_back (DIP);
+		FREQ_v.push_back (buf.FREQ);
 	}
+
+	if (is_CHK_WELL()) dump_FREQ_PRM_to_file (INT_v, DIP_v, FREQ_v);
 
 	for (size_t i = 0; i < OUT.size(); i++) {
 
 		OUT.at(i).FREQ = OUT.at(i).FREQ / MAX_FREQ;
+
+		//cout << fixed << setprecision (3) << buf.DEPTH << "  -  " << buf.FREQ << endl;
+
 	}
 
 	double MAX_DERIV = 0.0;
@@ -230,11 +241,15 @@ vector <GDB> return_GDB_for_data_interval (const vector <GDB>& inGDB, const doub
 	return OUT;
 }
 
-double stdev_for_interval (const vector <GDB>& inGDB, const bool DIPDIR) {
+double stdev_for_interval (const vector <GDB>& inGDB, const bool DIPDIR, const size_t RUN) {
 
 	const DIPDIR_DIP avDD = inGDB.at(0).avd;
 
 	vector <double> MSFT;
+
+	vector <VCTR> T1_v, T2_v;
+	vector <DIPDIR_DIP> D1_v, D2_v;
+	vector <double> ANG_v;
 
 	for (size_t i = 0; i < inGDB.size(); i++) {
 
@@ -262,12 +277,21 @@ double stdev_for_interval (const vector <GDB>& inGDB, const bool DIPDIR) {
 
 		double ANG = vector_angle (T1, T2);
 
+		D1_v.push_back (D1);
+		D2_v.push_back (D2);
+		T1_v.push_back (T1);
+		T2_v.push_back (T2);
+
+		ANG_v.push_back (ANG);
+
 		MSFT.push_back (ANG * ANG);
 	}
+	if (is_CHK_WELL()) dump_STDEV_to_file (RUN, DIPDIR, D1_v, D2_v, T1_v, T2_v, ANG_v);
+
 	return sqrt (average (MSFT));
 }
 
-WELL_INTERVAL interval_average (const vector <GDB>& inGDB) {
+WELL_INTERVAL interval_average (const vector <GDB>& inGDB, const size_t RUN) {
 
 	WELL_INTERVAL OUT;
 
@@ -303,8 +327,8 @@ WELL_INTERVAL interval_average (const vector <GDB>& inGDB) {
 
 	OUT.INT_AV_DD = dipdir_dip_from_DXDYDZ (OUT.INT_AV_D);
 
-	OUT.INT_AV_DD_STDEV = stdev_for_interval (dummy, true);
-	OUT.INT_AV_D_STDEV = stdev_for_interval (dummy, false);
+	OUT.INT_AV_DD_STDEV = stdev_for_interval (dummy, true, RUN);//should be inGDB!
+	OUT.INT_AV_D_STDEV = stdev_for_interval (dummy, false, RUN);//should be inGDB!
 
 	return OUT;
 }
@@ -336,10 +360,12 @@ vector <WELL_INTERVAL> WELL_AVERAGE_M (const vector <GDB>& p_GDB) {
 
 		WELL_INTERVAL buf;
 
+		size_t RUN = string_to_size_t (double_to_string(i, 0));
+
 		if (PROCESSABLE) {
 
 			//dbg_cout_GDB_vector(temp);
-			buf = interval_average (temp);//ok
+			buf = interval_average (temp, RUN);//ok
 		}
 		else {
 
@@ -353,6 +379,8 @@ vector <WELL_INTERVAL> WELL_AVERAGE_M (const vector <GDB>& p_GDB) {
 		buf.MAX = MAX;
 
 		OUT.push_back (buf);
+
+		if (is_CHK_WELL()) dump_INTMINMAX_to_file (RUN, temp.size(), MIN, MAX);
 	}
 	return OUT;
 }
@@ -379,7 +407,7 @@ vector <WELL_INTERVAL> WELL_AVERAGE_D (const vector <GDB>& p_GDB) {
 
 		temp.insert (temp.end(), p_GDB.begin() + MIN, p_GDB.begin() + MAX + 1);
 
-		WELL_INTERVAL wbuf = interval_average (temp);
+		WELL_INTERVAL wbuf = interval_average (temp, i);
 
 		wbuf.SIZE = temp.size();
 		wbuf.MIN = temp.at(0).DEPTH;
@@ -388,6 +416,8 @@ vector <WELL_INTERVAL> WELL_AVERAGE_D (const vector <GDB>& p_GDB) {
 		if (temp.size() == 0) ASSERT_DEAD_END();
 
 		OUT.push_back (wbuf);
+
+		if (is_CHK_WELL()) dump_INTMINMAX_to_file (i, temp.size(), MIN, MAX);
 	}
 	return OUT;
 }
