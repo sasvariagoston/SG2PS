@@ -872,7 +872,7 @@ void dump_STDEV_to_file (const size_t& RUN, const bool DIPDIR, const vector <DIP
 	return;
 }
 
-void dump_FREQ_PRM_to_file (const vector <double>& INT_v, const vector <double>& DIP_v, const vector <double>& FREQ_v) {
+void dump_FREQ_PRM_to_file (const vector <double>& INT_v, const vector <double>& DIP_v, const vector <double>& FREQ_v, const vector <double>& FREQ_v2, const vector <double>& MAX_FREQ_v) {
 
 	string T = return_ACTUAL_DATATYPE();
 
@@ -887,14 +887,18 @@ void dump_FREQ_PRM_to_file (const vector <double>& INT_v, const vector <double>&
 	o
 	<< "INT d" << '\t'
 	<< "DIP d" << '\t'
-	<< "FREQ d" << endl;
+	<< "FREQ d" << '\t'
+	<< "FREQ_NRM d" << '\t'
+	<< "FREQ_MAX d" << endl;
 
 	for (size_t i = 0; i < INT_v.size(); i++) {
 
 		o
 		<< dmp_dbl (INT_v.at(i), 8) << '\t'
 		<< dmp_dbl (DIP_v.at(i), 8) << '\t'
-		<< dmp_dbl (FREQ_v.at(i), 8) << endl;
+		<< dmp_dbl (FREQ_v.at(i), 8) << '\t'
+		<< dmp_dbl (FREQ_v2.at(i), 8) << '\t'
+		<< dmp_dbl (MAX_FREQ_v.at(i), 8) << endl;
 	}
 	return;
 }
