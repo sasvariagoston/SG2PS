@@ -820,6 +820,11 @@ void dump_INTMINMAX_to_file (const size_t RUN, const size_t SIZE, const double M
 
 	if (is_PROCESS_AS_TRAJECTORY()) T = T + "_TRJ";
 
+	T = T + "_" + return_ACTUAL_DATATYPE();
+	T = T + "_" + return_ACTUAL_FORMATION();
+	T = T + "_" + return_ACTUAL_LOCATION();
+	T = T + "_" + return_ACTUAL_GROUPCODE();
+
 	ofstream o;
 	o.open (("ST_WELL_INTMINMAX_" + T + ".csv").c_str());
 
@@ -836,7 +841,7 @@ void dump_INTMINMAX_to_file (const size_t RUN, const size_t SIZE, const double M
 	<< dmp_dbl (MAX_DEPTH, 8) << endl;
 }
 
-void dump_STDEV_to_file (const size_t& RUN, const bool DIPDIR, const vector <DIPDIR_DIP>& D1_v, const vector <DIPDIR_DIP>& D2_v, const vector <VCTR>& T1_v, const vector <VCTR>& T2_v, const vector <double>& ANG_v) {
+void dump_STDEV_to_file (const size_t& RUN, const bool DIPDIR, const vector <string> ID_v, const vector <DIPDIR_DIP>& D1_v, const vector <DIPDIR_DIP>& D2_v, const vector <VCTR>& T1_v, const vector <VCTR>& T2_v, const vector <double>& ANG_v) {
 
 	stringstream s;
 	s << fixed << setfill ('0') << setw (4) << RUN << flush;
@@ -850,10 +855,16 @@ void dump_STDEV_to_file (const size_t& RUN, const bool DIPDIR, const vector <DIP
 	if (DIPDIR) T = T + "_DIPDIR";
 	else T = T + "_DIP";
 
+	T = T + "_" + return_ACTUAL_DATATYPE();
+	T = T + "_" + return_ACTUAL_FORMATION();
+	T = T + "_" + return_ACTUAL_LOCATION();
+	T = T + "_" + return_ACTUAL_GROUPCODE();
+
 	ofstream o;
 	o.open (("ST_WELL_STDEV_" + T + ".csv").c_str());
 
 	o
+	<< "ID s" << '\t'
 	<< "D1.DIPDIR d" << '\t' << "D1.DIP d" << '\t'
 	<< "D2.DIPDIR d" << '\t' << "D2.DIP d" << '\t'
 	<< "T1.X d" << '\t' << "T1.Y d" << '\t' << "T1.Z d" << '\t'
@@ -863,6 +874,7 @@ void dump_STDEV_to_file (const size_t& RUN, const bool DIPDIR, const vector <DIP
 	for (size_t i = 0; i < ANG_v.size(); i++) {
 
 		o
+		<< ID_v.at(i) << '\t'
 		<< dmp_dbl (D1_v.at(i).DIPDIR , 8) << '\t' << dmp_dbl (D1_v.at(i).DIP , 8) << '\t'
 		<< dmp_dbl (D2_v.at(i).DIPDIR , 8) << '\t' << dmp_dbl (D2_v.at(i).DIP , 8) << '\t'
 		<< dmp_dbl (T1_v.at(i).X , 8) << '\t' << dmp_dbl (T1_v.at(i).Y , 8) << '\t' << dmp_dbl (T1_v.at(i).Z , 8) << '\t'
@@ -872,7 +884,7 @@ void dump_STDEV_to_file (const size_t& RUN, const bool DIPDIR, const vector <DIP
 	return;
 }
 
-void dump_FREQ_PRM_to_file (const vector <double>& INT_v, const vector <double>& DIP_v, const vector <double>& FREQ_v, const vector <double>& FREQ_v2, const vector <double>& MAX_FREQ_v) {
+void dump_FREQ_PRM_to_file (const vector <string>& ID_v, const vector <double>& INT_v, const vector <double>& DIP_v, const vector <double>& FREQ_v, const vector <double>& FREQ_v2, const vector <double>& MAX_FREQ_v) {
 
 	string T = return_ACTUAL_DATATYPE();
 
@@ -881,10 +893,16 @@ void dump_FREQ_PRM_to_file (const vector <double>& INT_v, const vector <double>&
 
 	if (is_PROCESS_AS_TRAJECTORY()) T = T + "_TRJ";
 
+	T = T + "_" + return_ACTUAL_DATATYPE();
+	T = T + "_" + return_ACTUAL_FORMATION();
+	T = T + "_" + return_ACTUAL_LOCATION();
+	T = T + "_" + return_ACTUAL_GROUPCODE();
+
 	ofstream o;
 	o.open (("ST_WELL_FREQ_PRM_" + T + ".csv").c_str());
 
 	o
+	<< "ID s" << '\t'
 	<< "INT d" << '\t'
 	<< "DIP d" << '\t'
 	<< "FREQ d" << '\t'
@@ -894,6 +912,7 @@ void dump_FREQ_PRM_to_file (const vector <double>& INT_v, const vector <double>&
 	for (size_t i = 0; i < INT_v.size(); i++) {
 
 		o
+		<< ID_v.at(i) << '\t'
 		<< dmp_dbl (INT_v.at(i), 8) << '\t'
 		<< dmp_dbl (DIP_v.at(i), 8) << '\t'
 		<< dmp_dbl (FREQ_v.at(i), 8) << '\t'

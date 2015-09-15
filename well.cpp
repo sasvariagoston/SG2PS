@@ -86,6 +86,7 @@ vector <WELL_FREQUENCY> FREQUENCY (const vector <GDB>& inGDB) {
 	double MAX_FREQ = 0.0;
 
 	vector <double> DIP_v, INT_v, FREQ_v, FREQ_v2, MAX_FREQ_v;
+	vector <string> ID_v;
 
 	for (size_t i = 0; i < process_GDB.size() - 1; i++) {
 
@@ -113,6 +114,7 @@ vector <WELL_FREQUENCY> FREQUENCY (const vector <GDB>& inGDB) {
 		DIP_v.push_back (DIP);
 		FREQ_v.push_back (buf.FREQ);
 		MAX_FREQ_v.push_back(MAX_FREQ);
+		ID_v.push_back (process_GDB.at(i).ID);
 	}
 
 	for (size_t i = 0; i < OUT.size(); i++) {
@@ -121,7 +123,7 @@ vector <WELL_FREQUENCY> FREQUENCY (const vector <GDB>& inGDB) {
 		FREQ_v2.push_back (OUT.at(i).FREQ);
 	}
 
-	if (is_CHK_WELL()) dump_FREQ_PRM_to_file (INT_v, DIP_v, FREQ_v, FREQ_v2, MAX_FREQ_v);
+	if (is_CHK_WELL()) dump_FREQ_PRM_to_file (ID_v, INT_v, DIP_v, FREQ_v, FREQ_v2, MAX_FREQ_v);
 
 	double MAX_DERIV = 0.0;
 
@@ -252,6 +254,7 @@ double stdev_for_interval (const vector <GDB>& inGDB, const bool DIPDIR, const s
 	vector <VCTR> T1_v, T2_v;
 	vector <DIPDIR_DIP> D1_v, D2_v;
 	vector <double> ANG_v;
+	vector <string> ID_v;
 
 	const vector <GDB> p_GDB = SORT_GDB (inGDB, "DEPTH");
 
@@ -285,12 +288,13 @@ double stdev_for_interval (const vector <GDB>& inGDB, const bool DIPDIR, const s
 		D2_v.push_back (D2);
 		T1_v.push_back (T1);
 		T2_v.push_back (T2);
+		ID_v.push_back (p_GDB.at(i).ID);
 
 		ANG_v.push_back (ANG);
 
 		MSFT.push_back (ANG * ANG);
 	}
-	if (is_CHK_WELL()) dump_STDEV_to_file (RUN, DIPDIR, D1_v, D2_v, T1_v, T2_v, ANG_v);
+	if (is_CHK_WELL()) dump_STDEV_to_file (RUN, DIPDIR, ID_v, D1_v, D2_v, T1_v, T2_v, ANG_v);
 
 	return sqrt (average (MSFT));
 }
