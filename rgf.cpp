@@ -772,7 +772,7 @@ void dbg_cout_GDB_vector (const vector <GDB>& inGDB) {
 	cout
 	<< "ID" << '\t' << "iID" << '\t'
 	//<< "N.X" << '\t' << "N.Y" << '\t' << "N.Z" << '\t'
-	<< "D.X" << '\t' << "D.Y" << '\t'<< "D.Z" << '\t'
+	//<< "D.X" << '\t' << "D.Y" << '\t'<< "D.Z" << '\t'
 	//<< "S.X" << '\t' << "S.Y" << '\t'<< "S.Z" << '\t'
 	//<< "NC.X" << '\t' << "NC.Y" << '\t'<< "NC.Z" << '\t'
 	//<< "DC.X" << '\t' << "DC.Y" << '\t'<< "DC.Z" << '\t'
@@ -784,22 +784,22 @@ void dbg_cout_GDB_vector (const vector <GDB>& inGDB) {
 
 	//<< "MISFIT" << '\t'
 	//<< "LINEATION" << '\t'
-	<< "OFFSET" << '\t'
+	//<< "OFFSET" << '\t'
 	//<< "DEPTH" << '\t'
-	<< "GC" << '\t'
-	<< "COLOR" << '\t'
+	//<< "GC" << '\t'
+	//<< "COLOR" << '\t'
 	//<< "LOC" << '\t'
 	//<< "LOCX" << '\t'
 	//<< "LOCY" << '\t'
-	//<< "FORMATION" << '\t'
-	//<< "DATATYPE" << '\t'
+	<< "FORMATION" << '\t'
+	<< "DATATYPE" << '\t'
 	//<< "DIPDIR" << '\t'
 	//<< "DIP" << '\t'
 	//<< "LDIR" << '\t'
 	//<< "LDIP" << '\t'
 
-	<< "corr.DIPDIR" << '\t'
-	<< "corr.DIP" << '\t'
+	//<< "corr.DIPDIR" << '\t'
+	//<< "corr.DIP" << '\t'
 	//<< "corrL.DIPDIR" << '\t'
 	//<< "corrL.DIP" << '\t'
 
@@ -856,7 +856,7 @@ void dbg_cout_GDB_vector (const vector <GDB>& inGDB) {
 
 		<< fixed << setprecision(6)
 		//<< T.N.X << '\t' << T.N.Y << '\t' << T.N.Z << '\t'
-		<< T.D.X << '\t' << T.D.Y << '\t'<< T.D.Z << '\t'
+		//<< T.D.X << '\t' << T.D.Y << '\t'<< T.D.Z << '\t'
 		//<< T.S.X << '\t' << T.S.Y << '\t'<< T.S.Z << '\t'
 		//<< T.NC.X << '\t' << T.NC.Y << '\t'<< T.NC.Z << '\t'
 		//<< T.DC.X << '\t' << T.DC.Y << '\t'<< T.DC.Z << '\t'
@@ -869,28 +869,28 @@ void dbg_cout_GDB_vector (const vector <GDB>& inGDB) {
 		//<< fixed << setprecision(8)
 		//<< T.MISFIT << '\t'
 		//<< T.LINEATION << '\t'
-		<< T.OFFSET << '\t'
+		//<< T.OFFSET << '\t'
 		//<< T.DEPTH << '\t'
 
 		<< fixed << setprecision(0)
-		<< T.GC << '\t'
-		<< T.COLOR << '\t'
+		//<< T.GC << '\t'
+		//<< T.COLOR << '\t'
 		//<< T.LOC << '\t'
 		//<< T.LOCX << '\t'
 		//<< T.LOCY << '\t'
-		//<< T.FORMATION << '\t'
-		//<< T.DATATYPE << '\t'
+		<< T.FORMATION << '\t'
+		<< T.DATATYPE << '\t'
 
-		<< fixed << setprecision (0)
+		//<< fixed << setprecision (0)
 		//<< T.DIPDIR << '\t'
 		//<< T.DIP << '\t'
 		//<< T.LDIR << '\t'
 		//<< T.LDIP << '\t'
 
-		<< T.corr.DIPDIR << '\t'
-		<< T.corr.DIP << '\t'
-		<< T.corrL.DIPDIR << '\t'
-		<< T.corrL.DIP << '\t'
+		//<< T.corr.DIPDIR << '\t'
+		//<< T.corr.DIP << '\t'
+		//<< T.corrL.DIPDIR << '\t'
+		//<< T.corrL.DIP << '\t'
 
 		//<< fixed << setprecision(0)
 		//<< T.PALEON << '\t'
@@ -912,7 +912,7 @@ void dbg_cout_GDB_vector (const vector <GDB>& inGDB) {
 		////<< T.ptnNd.DIPDIR << '\t'
 		////<< T.ptnNd.DIP << '\t'
 
-		<< fixed << setprecision(6)
+		//<< fixed << setprecision(6)
 		//<< T.avD.X << '\t' << T.avD.Y << '\t'<< T.avD.Z << '\t'
 		//<< T.avS0D.X << '\t' << T.avS0D.Y << '\t'<< T.avS0D.Z << '\t'
 		//<< T.avS0N.X << '\t' << T.avS0N.Y << '\t'<< T.avS0N.Z << '\t'

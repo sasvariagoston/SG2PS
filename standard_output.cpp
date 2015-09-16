@@ -821,8 +821,6 @@ void dump_INTMINMAX_to_file (const size_t RUN, const size_t SIZE, const double M
 	if (is_PROCESS_AS_TRAJECTORY()) T = T + "_TRJ";
 
 	T = T + "_" + return_ACTUAL_DATATYPE();
-	T = T + "_" + return_ACTUAL_FORMATION();
-	T = T + "_" + return_ACTUAL_LOCATION();
 	T = T + "_" + return_ACTUAL_GROUPCODE();
 
 	ofstream o;
@@ -856,8 +854,6 @@ void dump_STDEV_to_file (const size_t& RUN, const bool DIPDIR, const vector <str
 	else T = T + "_DIP";
 
 	T = T + "_" + return_ACTUAL_DATATYPE();
-	T = T + "_" + return_ACTUAL_FORMATION();
-	T = T + "_" + return_ACTUAL_LOCATION();
 	T = T + "_" + return_ACTUAL_GROUPCODE();
 
 	ofstream o;
@@ -894,8 +890,6 @@ void dump_FREQ_PRM_to_file (const vector <string>& ID_v, const vector <double>& 
 	if (is_PROCESS_AS_TRAJECTORY()) T = T + "_TRJ";
 
 	T = T + "_" + return_ACTUAL_DATATYPE();
-	T = T + "_" + return_ACTUAL_FORMATION();
-	T = T + "_" + return_ACTUAL_LOCATION();
 	T = T + "_" + return_ACTUAL_GROUPCODE();
 
 	ofstream o;

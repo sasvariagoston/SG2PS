@@ -25,8 +25,8 @@ bool by_rev_GC (const GDB& x, const GDB& y);
 bool by_DT (const GDB& x, const GDB& y);
 bool by_rev_DT (const GDB& x, const GDB& y);
 
-bool by_FM (const GDB& x, const GDB& y);
-bool by_rev_FM (const GDB& x, const GDB& y);
+//bool by_FM (const GDB& x, const GDB& y);
+//bool by_rev_FM (const GDB& x, const GDB& y);
 
 bool by_LOC (const GDB& x, const GDB& y);
 bool by_rev_LOC (const GDB& x, const GDB& y);

@@ -446,6 +446,15 @@ void PROCESS_WELL_GROUPS (const vector <vector <GDB> >& inGDB_G) {
 		setup_ACTUAL_FORMATION(inGDB_G.at(i).at(0).FORMATION);
 		setup_ACTUAL_GROUPCODE(inGDB_G.at(i).at(0).GC);
 
+		//dbg_cout_GDB_vector(inGDB_G.at(i));
+
+		//cout << " ------------------------- " << endl;
+		//cout << inGDB_G.at(i).at(0).LOC << endl;
+		//cout << inGDB_G.at(i).at(0).DATATYPE << endl;
+		//cout << inGDB_G.at(i).at(0).FORMATION << endl;
+		//cout << inGDB_G.at(i).at(0).GC << endl;
+		//cout << " ------------------------- " << endl << endl;
+
 		vector <WELL_INTERVAL> INTERVAL_buf;
 		vector <WELL_FREQUENCY> FREQUENCY_buf;
 

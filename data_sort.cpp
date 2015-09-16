@@ -63,6 +63,7 @@ bool by_rev_DT (const GDB& x, const GDB& y) {
 	return x.DATATYPE > y.DATATYPE;
 }
 
+/*
 bool by_FM (const GDB& x, const GDB& y) {
 
 	return x.FORMATION < y.FORMATION;
@@ -71,6 +72,7 @@ bool by_rev_FM (const GDB& x, const GDB& y) {
 
 	return x.FORMATION > y.FORMATION;
 }
+*/
 
 bool by_LOC (const GDB& x, const GDB& y) {
 
@@ -141,8 +143,8 @@ vector <GDB> SORT_GDB (const vector <GDB>& inGDB, const string SORT) {
 	else if (SORT == "DATATYPE")	sort (P.begin(), P.end(), by_DT);
 	else if (SORT == "rDATATYPE")	sort (P.begin(), P.end(), by_rev_DT);
 
-	else if (SORT == "FORMATION")	sort (P.begin(), P.end(), by_FM);
-	else if (SORT == "rFORMATION")	sort (P.begin(), P.end(), by_rev_FM);
+	//else if (SORT == "FORMATION")		sort (P.begin(), P.end(), by_FM);
+	//else if (SORT == "rFORMATION")	sort (P.begin(), P.end(), by_rev_FM);
 
 	else if (SORT == "LOCATION")	sort (P.begin(), P.end(), by_LOC);
 	else if (SORT == "rLOCATION")	sort (P.begin(), P.end(), by_rev_LOC);
