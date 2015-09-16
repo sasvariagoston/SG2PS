@@ -123,36 +123,36 @@ vector <GDB> SORT_GDB (const vector <GDB>& inGDB, const string SORT) {
 
 	vector <GDB> P = inGDB;
 
-	if (SORT == "ID") 				sort (P.begin(), P.end(), by_ID);
-	else if (SORT == "rID") 		sort (P.begin(), P.end(), by_rev_ID);
+	if (SORT == "ID") 				stable_sort (P.begin(), P.end(), by_ID);
+	else if (SORT == "rID") 		stable_sort (P.begin(), P.end(), by_rev_ID);
 
-	else if (SORT == "IID")			sort (P.begin(), P.end(), by_iID);
-	else if (SORT == "rIID")		sort (P.begin(), P.end(), by_rev_iID);
+	else if (SORT == "IID")			stable_sort (P.begin(), P.end(), by_iID);
+	else if (SORT == "rIID")		stable_sort (P.begin(), P.end(), by_rev_iID);
 
-	else if (SORT == "DEPTH") 		sort (P.begin(), P.end(), by_DEPTH);
-	else if (SORT == "rDEPTH")		sort (P.begin(), P.end(), by_rev_DEPTH);
+	else if (SORT == "DEPTH") 		stable_sort (P.begin(), P.end(), by_DEPTH);
+	else if (SORT == "rDEPTH")		stable_sort (P.begin(), P.end(), by_rev_DEPTH);
 
-	else if (SORT == "LOC_GC_TYPE")	sort (P.begin(), P.end(), by_LocGcType);
+	else if (SORT == "LOC_GC_TYPE")	stable_sort (P.begin(), P.end(), by_LocGcType);
 
-	else if (SORT == "GROUPCODE")	sort (P.begin(), P.end(), by_GC);
-	else if (SORT == "rGROUPCODE")	sort (P.begin(), P.end(), by_rev_GC);
+	else if (SORT == "GROUPCODE")	stable_sort (P.begin(), P.end(), by_GC);
+	else if (SORT == "rGROUPCODE")	stable_sort (P.begin(), P.end(), by_rev_GC);
 
-	else if (SORT == "CLUSTER")		sort (P.begin(), P.end(), by_CLUSTER);
-	else if (SORT == "rCLUSTER")	sort (P.begin(), P.end(), by_rev_CLUSTER);
+	else if (SORT == "CLUSTER")		stable_sort (P.begin(), P.end(), by_CLUSTER);
+	else if (SORT == "rCLUSTER")	stable_sort (P.begin(), P.end(), by_rev_CLUSTER);
 
-	else if (SORT == "DATATYPE")	sort (P.begin(), P.end(), by_DT);
-	else if (SORT == "rDATATYPE")	sort (P.begin(), P.end(), by_rev_DT);
+	else if (SORT == "DATATYPE")	stable_sort (P.begin(), P.end(), by_DT);
+	else if (SORT == "rDATATYPE")	stable_sort (P.begin(), P.end(), by_rev_DT);
 
-	//else if (SORT == "FORMATION")		sort (P.begin(), P.end(), by_FM);
-	//else if (SORT == "rFORMATION")	sort (P.begin(), P.end(), by_rev_FM);
+	//else if (SORT == "FORMATION")		stable_sort (P.begin(), P.end(), by_FM);
+	//else if (SORT == "rFORMATION")	stable_sort (P.begin(), P.end(), by_rev_FM);
 
-	else if (SORT == "LOCATION")	sort (P.begin(), P.end(), by_LOC);
-	else if (SORT == "rLOCATION")	sort (P.begin(), P.end(), by_rev_LOC);
+	else if (SORT == "LOCATION")	stable_sort (P.begin(), P.end(), by_LOC);
+	else if (SORT == "rLOCATION")	stable_sort (P.begin(), P.end(), by_rev_LOC);
 
-	else if (SORT == "RUP_ANG")		sort (P.begin(), P.end(), by_RUP_ANG);
+	else if (SORT == "RUP_ANG")		stable_sort (P.begin(), P.end(), by_RUP_ANG);
 
-	else if (SORT == "RUP")			sort (P.begin(), P.end(), by_RUP);
-	else if (SORT == "ANG")			sort (P.begin(), P.end(), by_ANG);
+	else if (SORT == "RUP")			stable_sort (P.begin(), P.end(), by_RUP);
+	else if (SORT == "ANG")			stable_sort (P.begin(), P.end(), by_ANG);
 
 	else {
 

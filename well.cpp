@@ -81,6 +81,8 @@ vector <WELL_FREQUENCY> FREQUENCY (const vector <GDB>& inGDB) {
 
 	process_GDB = filter_too_small_distances (process_GDB);
 
+	process_GDB = SORT_GDB (process_GDB, "DEPTH");
+
 	GDB_size_check (process_GDB);
 
 	double MAX_FREQ = 0.0;
@@ -295,7 +297,8 @@ double stdev_for_interval (const vector <GDB>& inGDB, const bool DIPDIR, const s
 
 		MSFT.push_back (ANG * ANG);
 	}
-	if (is_CHK_WELL()) dump_STDEV_to_file (RUN, DIPDIR, ID_v, D1_v, D2_v, T1_v, T2_v, ANG_v, MSFT_v);
+	////if (is_CHK_WELL()) dump_STDEV_to_file (RUN, DIPDIR, ID_v, D1_v, D2_v, T1_v, T2_v, ANG_v, MSFT_v);
+	////DEBUGGED, OK
 
 	return sqrt (average (MSFT));
 }
@@ -389,7 +392,8 @@ vector <WELL_INTERVAL> WELL_AVERAGE_M (const vector <GDB>& p_GDB) {
 
 		OUT.push_back (buf);
 
-		if (is_CHK_WELL()) dump_INTMINMAX_to_file (RUN, temp.size(), MIN, MAX);
+		////if (is_CHK_WELL()) dump_INTMINMAX_to_file (RUN, temp.size(), MIN, MAX);
+		////DEBUGGED, OK
 	}
 	return OUT;
 }
@@ -426,7 +430,8 @@ vector <WELL_INTERVAL> WELL_AVERAGE_D (const vector <GDB>& p_GDB) {
 
 		OUT.push_back (wbuf);
 
-		if (is_CHK_WELL()) dump_INTMINMAX_to_file (i, temp.size(), MIN, MAX);
+		////if (is_CHK_WELL()) dump_INTMINMAX_to_file (i, temp.size(), MIN, MAX);
+		////DEBUGGED, OK
 	}
 	return OUT;
 }
