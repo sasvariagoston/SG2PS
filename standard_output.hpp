@@ -69,6 +69,6 @@ void STANDARD_OUTPUT_PEAKS (const string METHOD);//ok
 void STANDARD_OUTPUT_FAULTS (const string METHOD);//ok
 
 void dump_INTMINMAX_to_file (const size_t RUN, const size_t SIZE, const double MIN_DEPTH, const double MAX_DEPTH);
-void dump_STDEV_to_file (const size_t& RUN, const bool DIPDIR, const vector <string> ID_v, const vector <DIPDIR_DIP>& D1_v, const vector <DIPDIR_DIP>& D2_v, const vector <VCTR>& T1_v, const vector <VCTR>& T2_v, const vector <double>& ANG_v);
+void dump_STDEV_to_file (const size_t& RUN, const bool DIPDIR, const vector <string> ID_v, const vector <DIPDIR_DIP>& D1_v, const vector <DIPDIR_DIP>& D2_v, const vector <VCTR>& T1_v, const vector <VCTR>& T2_v, const vector <double>& ANG_v, const vector <double>& MSFT_v);
 void dump_FREQ_PRM_to_file (const vector <string>& ID_v, const vector <double>& INT_v, const vector <double>& DIP_v, const vector <double>& FREQ_v, const vector <double>& FREQ_v2, const vector <double>& MAX_FREQ_v);
 #endif

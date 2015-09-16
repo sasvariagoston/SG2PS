@@ -253,10 +253,10 @@ double stdev_for_interval (const vector <GDB>& inGDB, const bool DIPDIR, const s
 
 	vector <VCTR> T1_v, T2_v;
 	vector <DIPDIR_DIP> D1_v, D2_v;
-	vector <double> ANG_v;
+	vector <double> ANG_v, MSFT_v;
 	vector <string> ID_v;
 
-	const vector <GDB> p_GDB = SORT_GDB (inGDB, "DEPTH");
+	const vector <GDB> p_GDB = SORT_GDB (inGDB, "ID");
 
 	for (size_t i = 0; i < p_GDB.size(); i++) {
 
@@ -291,10 +291,11 @@ double stdev_for_interval (const vector <GDB>& inGDB, const bool DIPDIR, const s
 		ID_v.push_back (p_GDB.at(i).ID);
 
 		ANG_v.push_back (ANG);
+		MSFT_v.push_back (ANG * ANG);
 
 		MSFT.push_back (ANG * ANG);
 	}
-	if (is_CHK_WELL()) dump_STDEV_to_file (RUN, DIPDIR, ID_v, D1_v, D2_v, T1_v, T2_v, ANG_v);
+	if (is_CHK_WELL()) dump_STDEV_to_file (RUN, DIPDIR, ID_v, D1_v, D2_v, T1_v, T2_v, ANG_v, MSFT_v);
 
 	return sqrt (average (MSFT));
 }

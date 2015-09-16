@@ -839,7 +839,7 @@ void dump_INTMINMAX_to_file (const size_t RUN, const size_t SIZE, const double M
 	<< dmp_dbl (MAX_DEPTH, 8) << endl;
 }
 
-void dump_STDEV_to_file (const size_t& RUN, const bool DIPDIR, const vector <string> ID_v, const vector <DIPDIR_DIP>& D1_v, const vector <DIPDIR_DIP>& D2_v, const vector <VCTR>& T1_v, const vector <VCTR>& T2_v, const vector <double>& ANG_v) {
+void dump_STDEV_to_file (const size_t& RUN, const bool DIPDIR, const vector <string> ID_v, const vector <DIPDIR_DIP>& D1_v, const vector <DIPDIR_DIP>& D2_v, const vector <VCTR>& T1_v, const vector <VCTR>& T2_v, const vector <double>& ANG_v, const vector <double>& MSFT_v) {
 
 	stringstream s;
 	s << fixed << setfill ('0') << setw (4) << RUN << flush;
@@ -865,7 +865,8 @@ void dump_STDEV_to_file (const size_t& RUN, const bool DIPDIR, const vector <str
 	<< "D2.DIPDIR d" << '\t' << "D2.DIP d" << '\t'
 	<< "T1.X d" << '\t' << "T1.Y d" << '\t' << "T1.Z d" << '\t'
 	<< "T2.X d" << '\t' << "T2.Y d" << '\t' << "T2.Z d" << '\t'
-	<< "ANG d" << endl;
+	<< "ANG d" << '\t'
+	<< "MSFT d" << endl;
 
 	for (size_t i = 0; i < ANG_v.size(); i++) {
 
@@ -875,7 +876,8 @@ void dump_STDEV_to_file (const size_t& RUN, const bool DIPDIR, const vector <str
 		<< dmp_dbl (D2_v.at(i).DIPDIR , 8) << '\t' << dmp_dbl (D2_v.at(i).DIP , 8) << '\t'
 		<< dmp_dbl (T1_v.at(i).X , 8) << '\t' << dmp_dbl (T1_v.at(i).Y , 8) << '\t' << dmp_dbl (T1_v.at(i).Z , 8) << '\t'
 		<< dmp_dbl (T2_v.at(i).X , 8) << '\t' << dmp_dbl (T2_v.at(i).Y , 8) << '\t' << dmp_dbl (T2_v.at(i).Z , 8) << '\t'
-		<< dmp_dbl (ANG_v.at(i), 8) << endl;
+		<< dmp_dbl (ANG_v.at(i), 8) << '\t'
+		<< dmp_dbl (MSFT_v.at(i), 8) << endl;
 	}
 	return;
 }
