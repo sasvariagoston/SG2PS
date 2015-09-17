@@ -52,7 +52,7 @@ bool check_dataset_offset_homogenity (const vector <GDB>& inGDB) {
 	vector <GDB> TEST = inGDB;
 	const size_t SIZE = TEST.size() - 1;
 
-	sort (TEST.begin(), TEST.end(), byOFFSET);
+	stable_sort (TEST.begin(), TEST.end(), byOFFSET);
 
 	const string ofs1 = TEST.at(0).OFFSET;
 	const string ofs2 = inGDB.at(SIZE).OFFSET;
@@ -65,7 +65,7 @@ bool check_dataset_geometry_homogenity (const vector <GDB>& inGDB) {
 	vector <GDB> TEST = inGDB;
 	const size_t SIZE = TEST.size() - 1;
 
-	sort (TEST.begin(), TEST.end(), bycorrDIPDIRcorrDIPcorrLDIPDIRcorrLDIP);
+	stable_sort (TEST.begin(), TEST.end(), bycorrDIPDIRcorrDIPcorrLDIPDIRcorrLDIP);
 
 	const bool STRIAE = 	is_allowed_striae_datatype(TEST.at(0).DATATYPE);
 	const bool SC = 		is_allowed_SC_datatype(TEST.at(0).DATATYPE);
@@ -112,8 +112,8 @@ vector <GDB> return_GDB_with_no_homogeneous_data (const vector <GDB>& inGDB) {
 	const bool STRIAE = 	(is_allowed_striae_datatype(processGDB.at(0).DATATYPE));
 	const bool SC = 		(is_allowed_SC_datatype(processGDB.at(0).DATATYPE));
 
-	if (SC || STRIAE)	sort(processGDB.begin(), processGDB.end(), bycorrDIPDIRcorrDIPcorrLDIPDIRcorrLDIP);
-	else 				sort(processGDB.begin(), processGDB.end(), bycorrDIPDIRcorrDIP);
+	if (SC || STRIAE)	stable_sort (processGDB.begin(), processGDB.end(), bycorrDIPDIRcorrDIPcorrLDIPDIRcorrLDIP);
+	else 				stable_sort (processGDB.begin(), processGDB.end(), bycorrDIPDIRcorrDIP);
 
 	for (size_t i = 0; i < processGDB.size() - 1; i++) {
 

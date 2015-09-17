@@ -155,7 +155,7 @@ vector <BRUTEFORCE_RESULT> return_minimum_misfits (vector <BRUTEFORCE_RESULT> IN
 
 	vector <BRUTEFORCE_RESULT> OUT;
 
-	sort(TEMP.begin(), TEMP.end(), by_MISFIT_ANGLE);
+	stable_sort (TEMP.begin(), TEMP.end(), by_MISFIT_ANGLE);
 
 	for (size_t i = 0; i < records_number; i++) {
 

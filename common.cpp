@@ -622,7 +622,7 @@ int return_second_eigenvalue (const vector <vector <double> >& in) {
 
 	} while (j < in.size());
 
-	sort(buffer.begin(), buffer.end(), byeigenvalue);
+	stable_sort (buffer.begin(), buffer.end(), byeigenvalue);
 
 	return buffer.at(1).ID;
 }
@@ -644,7 +644,7 @@ int return_first_eigenvalue (const vector <vector <double> >& in) {
 
 	} while (j < in.size());
 
-	sort(buffer.begin(), buffer.end(), byeigenvalue);
+	stable_sort (buffer.begin(), buffer.end(), byeigenvalue);
 
 	return buffer.at(0).ID;
 }
@@ -1245,7 +1245,7 @@ double median (const vector <double>& IN) {
 
 	vector <double> temp = IN;
 
-	sort (temp.begin(), temp.end());
+	stable_sort (temp.begin(), temp.end());
 
 	const size_t S = temp.size();
 

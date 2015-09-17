@@ -31,7 +31,7 @@ vector <BRDR> sort_by_border (const vector <BRDR>& in) {
 
 	vector <BRDR> out = in;
 
-	sort(out.begin(), out.end(), by_border);
+	stable_sort (out.begin(), out.end(), by_border);
 
 	return out;
 }

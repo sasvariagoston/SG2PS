@@ -189,7 +189,7 @@ vector <HISTOGRAM> sort_by_COUNT (const vector <HISTOGRAM>& H) {
 
 	vector <HISTOGRAM> OUT = H;
 
-	sort(OUT.begin(), OUT.end(), by_COUNT);
+	stable_sort(OUT.begin(), OUT.end(), by_COUNT);
 
 	return OUT;
 }

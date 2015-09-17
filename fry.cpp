@@ -52,7 +52,7 @@ bool check_fry_matrix (const size_t frst_eigenvalue, const vector <vector <doubl
 		buffer.push_back(buf);
 	}
 
-	sort(buffer.begin(), buffer.end(), byeigenvalue);
+	stable_sort(buffer.begin(), buffer.end(), byeigenvalue);
 
 	if (
 		is_in_range(-0.005, 0.005, buffer.at(0).eigenvalue) &&

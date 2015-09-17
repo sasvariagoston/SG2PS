@@ -52,6 +52,8 @@ vector <vector <WELL_FREQUENCY> > RETURN_FREQUENCY () {
 
 vector <GDB> filter_too_small_distances (const vector <GDB>& IN) {
 
+	cout << "IN.size(): " << IN.size() << endl;
+
 	vector <GDB> OUT;
 
 	for (size_t i = 0; i < IN.size() - 1; i++) {
@@ -67,7 +69,16 @@ vector <GDB> filter_too_small_distances (const vector <GDB>& IN) {
 
 			OUT.push_back (ACT);
 
-			if (LAST) OUT.push_back (NXT);
+			if (LAST) {
+
+				OUT.push_back (NXT);
+				cout << "Last element: " << NXT.ID << ", counter: " << i << endl;
+			}
+		}
+		else {
+
+			cout << "This will be filtered: " << ACT.ID << flush;
+			cout << ", and this will survive: " << NXT.ID << endl;
 		}
 	}
 	return OUT;
@@ -77,7 +88,8 @@ vector <WELL_FREQUENCY> FREQUENCY (const vector <GDB>& inGDB) {
 
 	vector <WELL_FREQUENCY> OUT;
 
-	vector <GDB> process_GDB = SORT_GDB (inGDB, "DEPTH");
+	vector <GDB> process_GDB = SORT_GDB (inGDB, "ID");
+	process_GDB = SORT_GDB (process_GDB, "DEPTH");
 
 	process_GDB = filter_too_small_distances (process_GDB);
 

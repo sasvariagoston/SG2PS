@@ -114,7 +114,7 @@ vector <vector <string> > sort_by_DEPTH_string (const vector <vector <string> >&
 
 	vector <vector <string> > OUT = IN;
 
-	sort (OUT.begin(), OUT.end(), by_DEPTH_string);
+	stable_sort (OUT.begin(), OUT.end(), by_DEPTH_string);
 
 	return OUT;
 }
@@ -706,9 +706,9 @@ size_t cell_index(size_t i) {
 template <typename T>
 const vector<T> set_difference(vector<T> A, vector<T> B) {
 
-	sort(A.begin(), A.end());
+	stable_sort (A.begin(), A.end());
 
-	sort(B.begin(), B.end());
+	stable_sort (B.begin(), B.end());
 
 	vector<T> C;
 

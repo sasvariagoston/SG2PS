@@ -69,7 +69,7 @@ STRESSFIELD eigenvalue_eigenvector (STRESSTENSOR st) {
 
 	X = cubic_solution (A, B, C, D);
 
-	sort(X.begin(), X.begin()+3);
+	stable_sort (X.begin(), X.begin()+3);
 
 	sf.EIGENVALUE.X = X.at(2);
 	sf.EIGENVALUE.Y = X.at(1);
