@@ -137,7 +137,7 @@ vector <WELL_FREQUENCY> FREQUENCY (const vector <GDB>& inGDB) {
 		FREQ_v2.push_back (OUT.at(i).FREQ);
 	}
 
-	if (is_CHK_WELL()) dump_FREQ_PRM_to_file (ID_v, INT_v, DIP_v, FREQ_v, FREQ_v2, MAX_FREQ_v);
+	//if (is_CHK_WELL()) dump_FREQ_PRM_to_file (ID_v, INT_v, DIP_v, FREQ_v, FREQ_v2, MAX_FREQ_v);
 
 	double MAX_DERIV = 0.0;
 
