@@ -180,8 +180,8 @@ vector <TRJ> SORT_TRJ (const vector <TRJ>& inTRJ, const string SORT) {
 
 	vector <TRJ> P = inTRJ;
 
-	if (SORT == "DEPTH") 		sort (P.begin(), P.end(), by_DEPTH_trj);
-	else if (SORT == "rDEPTH")		sort (P.begin(), P.end(), by_rev_DEPTH_trj);
+	if (SORT == "DEPTH") 		stable_sort (P.begin(), P.end(), by_DEPTH_trj);
+	else if (SORT == "rDEPTH")	stable_sort (P.begin(), P.end(), by_rev_DEPTH_trj);
 
 	else {
 
@@ -200,7 +200,7 @@ vector <RUP_table> sort_by_C (const vector <RUP_table>& RT) {
 
 	vector <RUP_table> OUT = RT;
 
-	sort (OUT.begin(), OUT.end(), by_C);
+	stable_sort (OUT.begin(), OUT.end(), by_C);
 
 	return OUT;
 }
