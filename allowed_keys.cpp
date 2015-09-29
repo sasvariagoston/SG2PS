@@ -19,7 +19,7 @@ bool contains(const vector<T>& vec, const T& elem) {
 
 namespace {
 const string groupcode_basic_allowed_str [] = {
-		"X", "A", "B", "C", "D", "E", "F", "G", "H", "I", "J"
+		"X", "A", "B", "C", "D", "E", "F", "G", "H", "I"
 };
 const vector<string> allowed_basic_groupcodes_str(from_array(groupcode_basic_allowed_str));
 

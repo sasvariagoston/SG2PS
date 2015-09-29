@@ -149,10 +149,27 @@ GDB tilt_striae (const GDB& in, const VCTR& AXIS, const double ANGLE) {
 
 	const double ANG_OUT = fabs (vector_angle (OUT.N, OUT.DC));
 
-	if (! is_in_range(ANG_IN, ANG_IN, ANG_OUT)) ASSERT_DEAD_END();
-	if (! is_in_range(090.0, 090.0, ANG_OUT)) ASSERT_DEAD_END();
-	if (! is_in_range(090.0, 090.0, ANG_IN)) ASSERT_DEAD_END();
+	//if (! is_in_range(ANG_IN, ANG_IN, ANG_OUT)) {
 
+	//	cout << fixed << setprecision(6) << flush;
+	//	cout << ANG_IN << endl;
+	//	cout << ANG_OUT << endl;
+	//	ASSERT_DEAD_END();
+	//}
+	if (! is_in_range(089.9999, 090.0001, ANG_OUT)) {
+
+		cout << fixed << setprecision(6) << flush;
+		cout << ANG_IN << endl;
+		cout << ANG_OUT << endl;
+		ASSERT_DEAD_END();
+	}
+	if (! is_in_range(089.9999, 090.0001, ANG_IN)) {
+
+		cout << fixed << setprecision(6) << flush;
+		cout << ANG_IN << endl;
+		cout << ANG_OUT << endl;
+		ASSERT_DEAD_END();
+	}
 	return OUT;
 }
 

@@ -52,7 +52,7 @@ vector <vector <WELL_FREQUENCY> > RETURN_FREQUENCY () {
 
 vector <GDB> filter_too_small_distances (const vector <GDB>& IN) {
 
-	cout << "IN.size(): " << IN.size() << endl;
+	//cout << "IN.size(): " << IN.size() << endl;
 
 	vector <GDB> OUT;
 
@@ -72,13 +72,13 @@ vector <GDB> filter_too_small_distances (const vector <GDB>& IN) {
 			if (LAST) {
 
 				OUT.push_back (NXT);
-				cout << "Last element: " << NXT.ID << ", counter: " << i << endl;
+				//cout << "Last element: " << NXT.ID << ", counter: " << i << endl;
 			}
 		}
 		else {
 
-			cout << "This will be filtered: " << ACT.ID << flush;
-			cout << ", and this will survive: " << NXT.ID << endl;
+			//cout << "This will be filtered: " << ACT.ID << flush;
+			//cout << ", and this will survive: " << NXT.ID << endl;
 		}
 	}
 	return OUT;
