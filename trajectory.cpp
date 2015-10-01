@@ -218,7 +218,11 @@ void CHECK_TRAJECTORY_FILE (const string projectname) {
 	if  (!(trjDEPTHcheck_duplicate() && trjDEPTHcheck () && trjXYcheck ())) {
 
 		if (is_mode_GUI()) throw trajectory_error ();
-		else TRAJECTORY_FILE_CORRECT = false;
+		else {
+
+			TRAJECTORY_FILE_CORRECT = false;
+			return;
+		}
 	}
 	TRAJECTORY_FILE_CORRECT = true;
 
