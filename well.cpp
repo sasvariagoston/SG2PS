@@ -93,9 +93,9 @@ vector <WELL_FREQUENCY> FREQUENCY (const vector <GDB>& inGDB) {
 
 	process_GDB = filter_too_small_distances (process_GDB);
 
-	process_GDB = SORT_GDB (process_GDB, "DEPTH");
+    ASSERT(!process_GDB.empty());
 
-	GDB_size_check (process_GDB);
+	process_GDB = SORT_GDB (process_GDB, "DEPTH");
 
 	double MAX_FREQ = 0.0;
 
@@ -319,7 +319,7 @@ WELL_INTERVAL interval_average (const vector <GDB>& inGDB, const size_t RUN) {
 
 	WELL_INTERVAL OUT;
 
-	GDB_size_check(inGDB);
+	ASSERT(!inGDB.empty());
 
 	OUT.DEPTH = calculate_interval_depth (inGDB);//ok
 
@@ -361,7 +361,7 @@ vector <WELL_INTERVAL> WELL_AVERAGE_M (const vector <GDB>& p_GDB) {
 
 	vector <WELL_INTERVAL> OUT;
 
-	GDB_size_check (p_GDB);
+	ASSERT(!p_GDB.empty());
 
 	const double IVL = is_WELL_INTERVAL_LENGTH();//ok
 
@@ -414,7 +414,7 @@ vector <WELL_INTERVAL> WELL_AVERAGE_D (const vector <GDB>& p_GDB) {
 
 	vector <WELL_INTERVAL> OUT;
 
-	GDB_size_check(p_GDB);
+	ASSERT(!p_GDB.empty());
 
 	const double IVL = is_WELL_INTERVAL_LENGTH();
 	const size_t S = p_GDB.size();
@@ -457,7 +457,7 @@ void PROCESS_WELL_GROUPS (const vector <vector <GDB> >& inGDB_G) {
 
 	for (size_t i = 0; i < inGDB_G.size(); i++) {
 
-		GDB_size_check (inGDB_G.at(i));
+		ASSERT(!inGDB_G.at(i).empty());
 
 		setup_ACTUAL_LOCATION (inGDB_G.at(i).at(0).LOC);
 		setup_ACTUAL_DATATYPE (inGDB_G.at(i).at(0).DATATYPE);

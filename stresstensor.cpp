@@ -8,7 +8,6 @@
 #include <stdexcept>
 
 #include "allowed_keys.hpp"
-#include "array_to_vector.hpp"
 #include "assertions.hpp"
 #include "brute_force.hpp"
 #include "common.h"

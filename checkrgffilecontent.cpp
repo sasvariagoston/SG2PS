@@ -12,7 +12,6 @@
 #include <stdexcept>
 
 #include "allowed_keys.hpp"
-#include "array_to_vector.hpp"
 #include "assertions.hpp"
 #include "checkrgffilecontent.h"
 #include "checksettingfilecontent.h"
@@ -52,25 +51,6 @@ enum record_name {
 	PALEONORTH,
 	COMMENT,
 	SIZE
-};
-
-struct record {
-
-	string data_id;
-	string group;
-	string color;
-	string location;
-	string locx;
-	string locy;
-	string formation;
-	string datatype;
-	double dir;
-	double dip;
-	double ldir;
-	double ldip;
-	string sense;
-	double paleonorth;
-	string comment;
 };
 
 }

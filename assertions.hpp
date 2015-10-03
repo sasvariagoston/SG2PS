@@ -1,4 +1,3 @@
-
 // Copyright (C) 2012 - 2015 Ali Baharev
 // All rights reserved.
 // This code is published under the GNU Lesser General Public License.
@@ -8,8 +7,6 @@
 #include <sstream>
 #include <vector>
 
-#include "structs.h"
-
 // The FORTRAN traditions are followed
 // EQ	==	EQuals
 // LE   <=	Less or Equals
@@ -17,8 +14,6 @@
 // GE   >=	Greater or Equals
 // GT   >	Greater Than // FIXME Finish!
 // CC approx. CirCa
-
-void GDB_size_check (const vector <GDB>& inGDB);
 
 void throw_std_logic_error(const std::string& message);
 
@@ -43,13 +38,6 @@ void throw_std_logic_error(const std::string& message);
 		os << message ; \
 		throw_std_logic_error(os.str()); \
 	} \
-}
-
-#define ASSERT3(message) { \
-		std::ostringstream os; \
-		os << " failed in \'" << FUNCTION_NAME << "\' at "<< __FILE__ << ':' << __LINE__ << '\n'; \
-		os << message ; \
-		throw_std_logic_error(os.str()); \
 }
 
 #define ASSERT_DEAD_END() { \

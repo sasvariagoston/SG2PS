@@ -1469,7 +1469,7 @@ void CONTOURING (const vector <GDB>& inGDB, ofstream& o, const CENTER center, co
 
 		vector < vector <GRID_CENTER> > M_SQ = generate_marching_squares (BIN_GRID);
 
-		if (M_SQ.size() + 1 != BIN_GRID.size()) ASSERT3("rectangular density grid and/or maching sqare grid error");
+		ASSERT2(M_SQ.size()+1==BIN_GRID.size(), "rectangular density grid and/or matching square grid error");
 
 		M_SQ = check_saddle (M_SQ, RECT_GRID, CNTR_AT.at(i) * MAX);
 

@@ -8,7 +8,6 @@
 #include <iomanip>
 #include <iostream>
 
-#include "array_to_vector.hpp"
 #include "assertions.hpp"
 #include "checksettingfilecontent.h"
 #include "exceptions.hpp"

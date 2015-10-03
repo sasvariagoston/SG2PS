@@ -12,7 +12,6 @@
 #include <stdexcept>
 
 #include "allowed_keys.hpp"
-#include "array_to_vector.hpp"
 #include "assertions.hpp"
 #include "color_management.hpp"
 #include "data_io.h"
