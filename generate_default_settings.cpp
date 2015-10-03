@@ -557,6 +557,7 @@ void dump_keys_values_into_settings_file (const vector <string>& KEY, const vect
 	return;
 }
 
+// FIXME Why do we need this, and the corresponding mode?
 void dbg_generate_settings_file_list (const string ARG) {
 
 	if (!is_mode_GENERATE_TEST_FILES()) return;
