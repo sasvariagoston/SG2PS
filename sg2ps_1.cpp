@@ -21,9 +21,9 @@ void real_main(int argument_number, char *argv[]) {
 
 	vector <string> ARG_V = vector<string>(argv+1, argv+argument_number);
 
-	print_banner ();
+    MANAGE_RUN_MODE (ARG_V);
 
-	MANAGE_RUN_MODE (ARG_V);
+	print_banner ();
 
 	ARG_V = REMOVE_FIRST_ARGUMENT (ARG_V);
 
