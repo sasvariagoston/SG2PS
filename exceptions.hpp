@@ -18,7 +18,7 @@ class xy_error {
 
 };
 
-class trajectory_error {
+class trj_error {
 
 };
 

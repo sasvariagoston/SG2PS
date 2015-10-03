@@ -85,18 +85,9 @@ bool input_rgf (const string& projectname) {
 	return true;
 }
 
-bool by_DEPTH_string (const vector <string> x, const vector <string> y) {
+static bool by_DEPTH_string(const vector<string>& x, const vector<string>& y) {
 
-	return x.at(DEPTH) < y.at(DEPTH);
-}
-
-vector <vector <string> > sort_by_DEPTH_string (const vector <vector <string> >& IN) {
-
-	vector <vector <string> > OUT = IN;
-
-	stable_sort (OUT.begin(), OUT.end(), by_DEPTH_string);
-
-	return OUT;
+    return x.at(DEPTH) < y.at(DEPTH);
 }
 
 void complete_rgf_to_check () {
@@ -139,7 +130,7 @@ void complete_rgf_to_check () {
 	}
 	if (!W) return;
 
-	rgf_to_check = sort_by_DEPTH_string (rgf_to_check);
+	stable_sort(rgf_to_check.begin(), rgf_to_check.end(), by_DEPTH_string);
 
 	for (size_t i = 1; i < rgf_to_check.size(); i++) {
 

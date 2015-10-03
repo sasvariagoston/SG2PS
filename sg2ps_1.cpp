@@ -49,6 +49,8 @@ void real_main(int argument_number, char *argv[]) {
 
 				CHECK_TRAJECTORY_FILE (IF);
 
+				// FIXME Errors are ignored!
+
 				PROCESS_RGF (IF);
 
 				if (!is_mode_DEBUG()) writeln ("EVALUATION OF " + capslock(IF) + ".RGF FILE COMPLETED.");

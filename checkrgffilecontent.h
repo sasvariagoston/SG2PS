@@ -12,9 +12,6 @@ using namespace std;
 
 void push_to_table(const string& line);
 bool input_rgf (const string& projectname);
-
-bool by_DEPTH_string (const vector <string> x, const vector <string> y);
-vector <vector <string> > sort_by_DEPTH_string (const vector <vector <string> >& IN);
 void complete_rgf_to_check();
 
 bool IDcheck_duplicate ();
