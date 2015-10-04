@@ -138,6 +138,8 @@ void copy_original_files () {
 	back_up_file (".set", project_name, new_path); // TODO In batch and debug mode, failures were ignored
 	                                              // TODO In batch mode, shouldn't it dump a set file?
 	back_up_file (".xy", project_name, new_path);
+
+	back_up_file (".trj", project_name, new_path);
 }
 
 
