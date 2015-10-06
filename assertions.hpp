@@ -96,4 +96,35 @@ void throw_std_logic_error(const std::string& message);
 	} \
 }
 
+//------------------------------------------------------------------------------
+
+template <size_t n>
+int number_of_true_values(const bool (&array)[n]) {
+    int count = 0;
+    for (size_t i=0; i<n; ++i)
+        if (array[i])
+            ++count;
+    return count;
+}
+
+template <typename T, size_t n>
+void print_values(std::ostream& os, const T (&array)[n]) {
+    for (size_t i=0; i<n; ++i)
+        os << array[i] << ", ";
+}
+
+#define ASSERT_EXACTLY_ONE_TRUE(...) { \
+    bool arr[] = { __VA_ARGS__ } ; \
+    int count = number_of_true_values(arr); \
+    if (count!=1) { \
+        std::ostringstream os; \
+        os << "Expected exactly 1 true value but got " << count <<  " in \'" \
+           << FUNCTION_NAME << "\' at "<< __FILE__ << ':' << __LINE__ << '\n'; \
+        os << "Arguments were: " << #__VA_ARGS__ << '\n' ; \
+        os << "Their values:   " ; \
+        print_values(os, arr); \
+        throw_std_logic_error(os.str()); \
+    } \
+}
+
 #endif

@@ -484,6 +484,8 @@ void INIT_SETTINGS (const vector <vector <string> >& SET) {
 			if 		(VAL == "Y") WELLDATA_USE = true;
 			else if (VAL == "N") WELLDATA_NO = true;
 			else ASSERT_DEAD_END();
+
+			ASSERT_EXACTLY_ONE_TRUE(WELLDATA_USE, WELLDATA_NO);
 		}
 		else if (KEY == "WELLINTERVAL:") {
 			if 		(VAL == "M") WELL_INTERVAL_METER = true;
