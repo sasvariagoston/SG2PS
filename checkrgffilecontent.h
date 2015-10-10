@@ -40,7 +40,7 @@ bool error_cout (const vector <string>& bad_records, const string recordtype);
 
 bool is_RGF_CORRECT (const string projectname);//ok
 
-bool CHECK_RGF (const string projectname);
+void CHECK_RGF (const string projectname);
 
 vector <string> check_rgf_set_inputs (const vector <string>& inputfilename_vector);
 

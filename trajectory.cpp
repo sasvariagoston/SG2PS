@@ -25,7 +25,7 @@ struct TRJ_N {
 
 namespace {
 
-bool TRAJECTORY_FILE_CORRECT = false;
+//bool TRAJECTORY_FILE_CORRECT = false;
 bool TRAJECTORY_ZXY = false;
 bool TRAJECTORY_DAP = false;
 
@@ -49,11 +49,6 @@ enum record_name {
 }
 
 using namespace std;
-
-bool is_TRAJECTORY_FILE_CORRECT () {
-
-	return TRAJECTORY_FILE_CORRECT;
-}
 
 vector <TRJ> return_TRAJECTORY () {
 
@@ -194,11 +189,11 @@ bool trj_plunge () {
 	return true;
 }
 
-void CHECK_TRAJECTORY_FILE (const string projectname) {
+bool CHECK_TRAJECTORY_FILE (const string projectname) {
 
 	writeln ("");
 	writeln ("===========================");
-	writeln ("5) CHECKING TRAJECTORY FILE");
+	writeln ("4) CHECKING TRAJECTORY FILE");
 	writeln ("===========================");
 	writeln ("");
 
@@ -206,25 +201,12 @@ void CHECK_TRAJECTORY_FILE (const string projectname) {
 
 		cout << "  - No well data processed, no need for trajectory file." << endl;
 
-		return;
+		return false;
 	}
 
-	if (!(input_trajectory (projectname))) {
+	if (!(input_trajectory (projectname))) return false;
 
-		TRAJECTORY_FILE_CORRECT = false;
-		return;
-	}
-
-	if  (!(trjDEPTHcheck_duplicate() && trjDEPTHcheck () && trjXYcheck ())) {
-
-		if (is_mode_GUI()) throw trj_error();
-		else {
-
-			TRAJECTORY_FILE_CORRECT = false;
-			return;
-		}
-	}
-	TRAJECTORY_FILE_CORRECT = true;
+	if  (!(trjDEPTHcheck_duplicate() && trjDEPTHcheck () && trjXYcheck ())) throw trj_error();
 
 	string MSG;
 
@@ -240,7 +222,7 @@ void CHECK_TRAJECTORY_FILE (const string projectname) {
 		MSG = " 'depth - X - Y' ";
 	}
 	writeln ("    - Trajectory file has"+MSG+"records.");
-	return;
+	return true;
 }
 
 void generate_trajectory_vector () {

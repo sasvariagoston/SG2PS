@@ -13,10 +13,9 @@
 #include "run_mode.h"
 #include "exceptions.hpp"
 #include "read_csv.hpp"
+#include "settings.hpp"
 
 namespace {
-
-bool XY_FILE_CORRECT = false;
 
 vector <vector <string> > xy_to_check;
 vector <vector <string> > orig_table;
@@ -32,11 +31,6 @@ enum record_name {
 }
 
 using namespace std;
-
-bool is_XY_FILE_CORRECT () {
-
-	return XY_FILE_CORRECT;
-}
 
 void read_in_xy(const string& file_name) {
 
@@ -178,7 +172,7 @@ vector <GDB> insert_xy_values (const vector <GDB>& inGDB) {
 	return outGDB;
 }
 
-void CHECK_XY_FILE (const string projectname) {
+bool CHECK_XY_FILE (const string projectname) {
 
 	writeln ("");
 	writeln ("===========================");
@@ -186,16 +180,16 @@ void CHECK_XY_FILE (const string projectname) {
 	writeln ("===========================");
 	writeln ("");
 
-	if (!(input_xy (projectname))) {
+	if (is_WELLDATA_USE()) {
 
-		XY_FILE_CORRECT = false;
-		return;
+		cout << "  - No well data processed, no need for trajectory file." << endl;
+
+		return false;
 	}
 
-	if  (!(LOCATIONcheck () && LOCATIONcheck_duplicate () && XYcheck ())) {
+	if (!(input_xy (projectname))) return false;
 
-		if (is_mode_GUI()) throw xy_error ();
-		else XY_FILE_CORRECT = false;
-	}
-	XY_FILE_CORRECT = true;
+	if  (!(LOCATIONcheck () && LOCATIONcheck_duplicate () && XYcheck ())) throw xy_error (); //{
+
+	return true;
 }

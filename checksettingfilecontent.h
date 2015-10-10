@@ -22,7 +22,7 @@ void LOAD_SETTINGS (const string projectname);
 
 void WRITE_SET_FILE (const vector <vector <string> >& SET, const string projectname);
 
-bool CHECK_SETTINGS (const string projectname);
+void CHECK_SETTINGS (const string projectname);
 
 void dump_settings (const vector <vector <string> >& SET);
 

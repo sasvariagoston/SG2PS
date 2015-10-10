@@ -169,7 +169,7 @@ void copy_xy_to_test_file (const string FN, const string ARG) {
 
 void copy_log () {
 
-	if (is_mode_GUI()) {
+	if (is_mode_STD()) {
 
 		cout.flush();
 
@@ -181,7 +181,7 @@ void copy_log () {
 
 void create_pointer_to_project_folder () {
 
-	if (is_mode_GUI()) {
+	if (is_mode_STD()) {
 
 		ofstream pointer_to ("project_folder_name");
 

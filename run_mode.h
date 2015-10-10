@@ -6,23 +6,16 @@
 
 using namespace std;
 
-bool is_mode_GUI ();
-bool is_mode_BATCH ();
-//bool is_mode_COMMANDLINE ();
+//bool is_mode_GUI ();
+bool is_mode_STD ();
 bool is_mode_DEBUG ();
 bool is_mode_VERSION ();
 bool is_mode_VERSION_ID ();
 bool is_mode_GENERATE_TEST_FILES ();
 
-void setup_run_mode (const vector <string>& ARG_V);
+void init_run_mode ();
+void setup_run_mode (const vector <string>&  ARG);
 
-size_t return_min_argument_number ();
-size_t return_max_argument_number ();
-
-void CHECK_ARGUMENTS_NUMBER (const vector <string>& ARG_V);
-
-vector <string> REMOVE_FIRST_ARGUMENT (vector <string> ARG_V);
-
-void MANAGE_RUN_MODE (const vector <string>& ARG_V) ;
+void MANAGE_RUN_MODE (const vector <string>&  ARG) ;
 
 #endif

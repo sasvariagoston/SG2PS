@@ -6,6 +6,7 @@
 #include <string>
 #include <ctime>
 
+#include "exceptions.hpp"
 #include "rgf.h"
 #include "checksettingfilecontent.h"
 #include "checkrgffilecontent.h"
@@ -20,40 +21,32 @@ void real_main(int argument_number, char *argv[]) {
 
 	vector <string> ARG_V = vector<string>(argv+1, argv+argument_number);
 
-    MANAGE_RUN_MODE (ARG_V);
+	if (ARG_V.size() < 1 || ARG_V.size() > 2) throw arg_error();
+
+	MANAGE_RUN_MODE (ARG_V);
+
+	cout << " eee" << endl;
 
 	print_banner ();
 
-	ARG_V = REMOVE_FIRST_ARGUMENT (ARG_V);
-
-	CHECK_ARGUMENTS_NUMBER (ARG_V);
+	string FILE_TO_EVAL = ARG_V.at(0);
+	if (! is_mode_STD()) FILE_TO_EVAL = ARG_V.at(1);
 
 	clock_t starttime = clock ();
 
-	for (size_t i = 0; i < ARG_V.size() ; i++) {
+	CHECK_SETTINGS (FILE_TO_EVAL);
 
-		const string IF = ARG_V.at(i);
+	CHECK_RGF (FILE_TO_EVAL);
 
-		const bool SET_OK = CHECK_SETTINGS (ARG_V.at(i));
+	LOAD_SETTINGS (FILE_TO_EVAL);
 
-		if (SET_OK) {
+	const bool XY_OK = CHECK_XY_FILE (FILE_TO_EVAL);
 
-			const bool RGF_OK = CHECK_RGF (ARG_V.at(i));
+	const bool TRJ_OK = CHECK_TRAJECTORY_FILE (FILE_TO_EVAL);
 
-			if (RGF_OK) {
+	PROCESS_RGF (FILE_TO_EVAL, XY_OK, TRJ_OK);
 
-				LOAD_SETTINGS (IF);
-
-				CHECK_XY_FILE (IF);
-
-				CHECK_TRAJECTORY_FILE (IF);
-
-				PROCESS_RGF (IF);
-
-				if (!is_mode_DEBUG()) writeln ("EVALUATION OF " + capslock(IF) + ".RGF FILE COMPLETED.");
-			}
-		}
-	}
+	if (!is_mode_DEBUG()) writeln ("EVALUATION OF " + capslock(FILE_TO_EVAL) + ".RGF FILE COMPLETED.");
 	clock_t finishtime = clock();
 
 	output_elapsed_time (starttime, finishtime);

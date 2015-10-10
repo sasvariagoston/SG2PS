@@ -617,9 +617,9 @@ vector <GDB> create_GDB_from_rgf () {
 	return outGDB;
 }
 
-bool CHECK_RGF (const string projectname) {
+void CHECK_RGF (const string projectname) {
 
-	if (!is_mode_GUI() && !is_mode_BATCH() && !is_mode_DEBUG()) ASSERT_DEAD_END();
+	if (!is_mode_STD() && !is_mode_DEBUG()) ASSERT_DEAD_END();
 
 	const string RFN = capslock (projectname);
 	const string rfn = projectname ;
@@ -632,20 +632,16 @@ bool CHECK_RGF (const string projectname) {
 
 	writeln (" - CHECKING " + RFN + ".RGF INPUT DATA FILE");
 
-	if (is_RGF_CORRECT (rfn)) {
+	if (is_RGF_CORRECT (rfn)) writeln (" - " + RFN + ".RGF INPUT DATA FILE IS CORRECT.");
 
-		writeln (" - " + RFN + ".RGF INPUT DATA FILE IS CORRECT.");
 
-		return true;
-	}
+
 	else {
 
 		writeln ("");
 		writeln (" WARNING, RGF_ERROR: the input " + RFN + ".RGF file structure is incorrect, the file will not be processed.");
 
-		if (is_mode_GUI()) throw rgf_error();
-
-		return false;
+		throw rgf_error();
 	}
 }
 

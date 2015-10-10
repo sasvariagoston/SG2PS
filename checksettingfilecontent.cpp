@@ -228,9 +228,10 @@ void WRITE_SET_FILE (const vector <vector <string> >& SET, const string projectn
 	for (size_t i = 0; i < SET.size(); i++) o << SET.at(i).at(0) << '\t' << SET.at(i).at(1) << endl;
 }
 
-bool CHECK_SETTINGS (const string projectname) {
+void CHECK_SETTINGS (const string projectname) {
 
-	if (!is_mode_GUI() && !is_mode_BATCH() && !is_mode_DEBUG()) ASSERT_DEAD_END();
+	if (!is_mode_STD() && !is_mode_DEBUG()) ASSERT_DEAD_END();
+	//if (!is_mode_GUI() && !is_mode_BATCH() && !is_mode_DEBUG()) ASSERT_DEAD_END();
 
 	const string SFN = capslock (projectname + ".set");
 	const string sfn = projectname + ".set";
@@ -254,17 +255,13 @@ bool CHECK_SETTINGS (const string projectname) {
 		SET = COMPLETE_SET_WITH_DEFAULT (SET);
 
 		INIT_SETTINGS (SET);
-
-		return true;
 	}
 	else {
 
 		writeln ("");
-		writeln (" WARNING, SET_ERROR: the input " + SFN + "file structure is incorrect, the file will not be processed.");
+		writeln (" WARNING, SET_ERROR: the input " + SFN + " file structure is incorrect, the file will not be processed.");
 
-		if (!CORR_SET && is_mode_GUI()) throw set_error();
-
-		return false;
+		throw set_error();
 	}
 }
 

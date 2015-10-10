@@ -8,8 +8,6 @@
 
 using namespace std;
 
-bool is_XY_FILE_CORRECT ();
-
 void read_in_xy (const string& file_name);
 bool input_xy (const string& projectname);
 
@@ -18,6 +16,6 @@ bool LOCATIONcheck_duplicate ();
 bool XYcheck ();
 
 vector <GDB> insert_xy_values (const vector <GDB>& inGDB);
-void CHECK_XY_FILE (const string projectname);
+bool CHECK_XY_FILE (const string projectname);
 
 #endif

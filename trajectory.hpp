@@ -7,11 +7,9 @@
 
 #include "structs.h"
 
-bool is_TRAJECTORY_FILE_CORRECT ();
-
 vector <TRJ> return_TRAJECTORY ();
 
-void CHECK_TRAJECTORY_FILE (const string projectname);
+bool CHECK_TRAJECTORY_FILE (const string projectname);
 
 vector <GDB> APPLY_TRAJECTORY (const vector <GDB>& inGDB);
 

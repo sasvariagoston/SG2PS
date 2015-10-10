@@ -14,23 +14,24 @@ using namespace std;
 
 namespace {
 
-bool M_GUI = false;
-bool M_BTC = false;
+//bool M_GUI = false;
+bool M_STD = false;
 bool M_DBG = false;
 bool M_VER = false;
 bool M_VID = false;
 bool M_TST = false;
 }
 
-bool is_mode_GUI () {
+//bool is_mode_GUI () {
 
-	return M_GUI;
+//	return M_GUI;
+//}
+
+bool is_mode_STD () {
+
+	return M_STD;
 }
 
-bool is_mode_BATCH () {
-
-	return M_BTC;
-}
 
 bool is_mode_DEBUG () {
 
@@ -52,98 +53,56 @@ bool is_mode_GENERATE_TEST_FILES () {
 	return M_TST;
 }
 
-void setup_run_mode (const vector <string>& ARG_V) {
+void init_run_mode () {
 
-	M_GUI = false;
-	M_BTC = false;
+	//M_GUI = false;
+	M_STD = false;
 	M_DBG = false;
 	M_VER = false;
 	M_VID = false;
 	M_TST = false;
+}
+
+void setup_run_mode (const vector <string>&  ARG_V) {
+
+	init_run_mode ();
 
 	string MODE = "";
 
-	const string ARG = capslock (ARG_V.at(0));
+	const string A = capslock (ARG_V.at(0));
 
-	if (is_allowed_debug_mode (ARG)) 	{
+	if (is_allowed_debug_mode (A) && ARG_V.size() == 2) 	{
 
 		M_DBG = true;
 		MODE = "DEBUG";
 	}
-	else if (is_allowed_gui_mode(ARG)) 	{
+	//else if (is_allowed_gui_mode (A)) 	{
 
-		M_GUI = true;
-		MODE = "GUI";
-	}
-	else if (is_allowed_version_id_mode(ARG)) {
+	//	M_GUI = true;
+	//	MODE = "GUI";
+	//}
+	else if (is_allowed_version_id_mode (A)) {
 
 		M_VID = true;
 		MODE = "VERSION ID";
 	}
-	else if (is_allowed_version_mode(ARG)) {
+	else if (is_allowed_version_mode (A)) {
 		M_VER = true;
 		MODE = "VERSION";
 	}
-	else if (is_allowed_test_data_generation_mode(ARG)) {
+	else if (is_allowed_test_data_generation_mode(A) && ARG_V.size() == 2) {
 		M_TST = true;
 		MODE = "TEST FILE GENERATION";
 	}
-	else {
-		M_BTC = true;
-		MODE = "BATCH";
+	else if (ARG_V.size() == 1) {
+
+		M_STD = true;
+		MODE = "STANDARD";
 	}
-
-	if (!M_GUI && !M_BTC &&  !M_DBG && !M_VER && !M_VID && !M_TST) ASSERT_DEAD_END();
-
+	else throw arg_error ();
 	if (!M_VER && !M_VID) cout << "Running 'SG2PS' in '" << MODE << "' mode." << endl;
 
 	return;
-}
-
-size_t return_min_argument_number () {
-
-	if 		(M_GUI) return 1;
-	else if (M_BTC) return 1;
-	else if (M_DBG) return 1;
-	else if (M_VER) return 0;
-	else if (M_VID) return 0;
-	else if (M_TST) return 0;
-	else {
-		ASSERT_DEAD_END();
-		return 999;
-	}
-}
-
-size_t return_max_argument_number () {
-
-	if 		(M_GUI) return 1;
-	else if (M_BTC) return 999;
-	else if (M_DBG) return 999;
-	else if (M_VER) return 999;
-	else if (M_VID) return 999;
-	else if (M_TST) return 999;
-	else {
-		ASSERT_DEAD_END();
-		return 999;
-	}
-}
-
-void CHECK_ARGUMENTS_NUMBER (const vector <string>& ARG_V) {
-
-	const size_t ARG_NUM = ARG_V.size();
-
-	const size_t ARG_MIN = return_min_argument_number();
-	const size_t ARG_MAX = return_max_argument_number();
-
-	if (!(ARG_MIN <= ARG_NUM && ARG_MAX >= ARG_NUM)) throw arg_error ();
-	return;
-}
-
-vector <string> REMOVE_FIRST_ARGUMENT (vector <string> ARG_V) {
-
-	if (is_mode_GUI() || is_mode_DEBUG()) ARG_V.erase(ARG_V.begin());
-
-	return ARG_V;
 }
 
 void MANAGE_RUN_MODE (const vector <string>& ARG_V) {
@@ -151,6 +110,8 @@ void MANAGE_RUN_MODE (const vector <string>& ARG_V) {
 	setup_run_mode (ARG_V);
 
 	if (is_mode_GENERATE_TEST_FILES()) {
+
+		if (ARG_V.size() == 1) throw arg_error ();
 
 		dbg_generate_settings_file_list (ARG_V.at(1));
 		throw exit_requested ();

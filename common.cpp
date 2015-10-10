@@ -47,7 +47,7 @@ bool equals(const string& s, const T& value) {
 
 void print_banner () {
 
-	if (is_mode_DEBUG ()) return;
+	//if (is_mode_DEBUG ()) return;
 
 	writeln("");
 	writeln(" ------------------------------------------------------------------ ");

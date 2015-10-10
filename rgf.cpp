@@ -668,11 +668,11 @@ vector <vector <GDB> > EVALUATE (const vector <vector <GDB> >& inGDB_G) {
 	return P;
 }
 
-void PROCESS_RGF (const string inputfilename) {
+void PROCESS_RGF (const string inputfilename, const bool XY_OK, const bool TRJ_OK) {
 
 	writeln ("");
 	writeln ("===========================");
-	writeln ("6) PROCESSING DATA FILE(S)");
+	writeln ("5) PROCESSING DATA FILE(S)");
 	writeln ("===========================");
 	writeln ("");
 
@@ -683,8 +683,13 @@ void PROCESS_RGF (const string inputfilename) {
 	GENERATE_FOLDER_NAMES (inputfilename);
 
 	vector <GDB> nGDB = competeRGFcontect (inputfilename);
-	if (is_XY_FILE_CORRECT()) nGDB = insert_xy_values (nGDB);
-	if (is_TRAJECTORY_FILE_CORRECT()) nGDB = APPLY_TRAJECTORY (nGDB);
+
+	const bool USE_XY = is_WELLDATA_NO() && XY_OK;
+	const bool USE_TRJ = is_WELLDATA_USE() && TRJ_OK;
+
+	if (USE_XY) 	nGDB = insert_xy_values (nGDB);
+	if (USE_TRJ) 	nGDB = APPLY_TRAJECTORY (nGDB);
+
 	if (!is_mode_DEBUG()) CREATE_PROJECT_FOLDERS (nGDB);
 
 	nGDB = SORT_GDB (nGDB, "LOC_GC_TYPE");
@@ -700,7 +705,7 @@ void PROCESS_RGF (const string inputfilename) {
 	if (!is_mode_DEBUG()) cout << "DATA EVALUATION FROM '" << capslock(inputfilename) << ".RGF' DATABASE FILE" << endl;
 
 	size_t LOOPS_NUMBER = 2;
-	if (is_TRAJECTORY_FILE_CORRECT()) LOOPS_NUMBER = 4;
+	if (USE_TRJ) LOOPS_NUMBER = 4;
 
 	for (size_t i = 0; i < LOOPS_NUMBER; i++) {
 
