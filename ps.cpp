@@ -70,7 +70,7 @@ const string C_RGB_DSH = "6  6";
 
 void PS_stereonet_header (ofstream& o) {
 
-	const string filename = return_ACTUAL_LOCATION() + "_" + return_ACTUAL_DATATYPE() + ".EPS";
+	const string filename = return_ACTUAL_LOCATION() + "_" + return_ACTUAL_DATATYPE() + ".eps";
 
 	o << "%!PS-Adobe-3.0 EPSF-3.0" << '\n';
 	o << "%%BoundingBox:  0 0 1191 842" << '\n';
@@ -605,7 +605,15 @@ void PS_net (ofstream& o) {
 	font_PS(o, "ArialNarrow", 8);
 	text_PS (o, 20.0 * P.A, P.A + 5.0 * P.D, 3, "Plotted by SG2PS - for reference see www.sg2ps.eu webpage.");
 
+	PS_eof (o);
+
 	return;
+}
+
+void PS_eof (ofstream& o) {
+
+	o << "showpage" << '\n';
+	o << "%%EOF" << '\n';
 }
 
 void PS_stressdata (const vector <GDB>& inGDB, ofstream& o, const CENTER& center, const STRESSFIELD& sf) {

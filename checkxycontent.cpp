@@ -175,9 +175,9 @@ vector <GDB> insert_xy_values (const vector <GDB>& inGDB) {
 bool CHECK_XY_FILE (const string projectname) {
 
 	writeln ("");
-	writeln ("===========================");
-	writeln ("4) CHECKING COORDINATE FILE");
-	writeln ("===========================");
+	writeln ("============================");
+	writeln ("4A) CHECKING COORDINATE FILE");
+	writeln ("============================");
 	writeln ("");
 
 	if (is_WELLDATA_USE()) {

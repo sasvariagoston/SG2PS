@@ -25,8 +25,6 @@ void real_main(int argument_number, char *argv[]) {
 
 	MANAGE_RUN_MODE (ARG_V);
 
-	cout << " eee" << endl;
-
 	print_banner ();
 
 	string FILE_TO_EVAL = ARG_V.at(0);

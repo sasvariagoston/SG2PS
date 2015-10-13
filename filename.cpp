@@ -226,7 +226,7 @@ string generate_ACTUAL_PS_NAME () {
 	if (is_GROUPSEPARATION_KMEANS ())		PS_NAME + US + GC.at(1);
 	if (is_GROUPSEPARATION_RUPANG ())		PS_NAME + US + GC.at(2);
 
-	return PS_NAME + ".EPS";
+	return PS_NAME + ".eps";
 }
 
 string generate_ACTUAL_AVERAGE_RGF_NAME () {
@@ -237,7 +237,7 @@ string generate_ACTUAL_AVERAGE_RGF_NAME () {
 
 	if (is_PROCESS_AS_TRAJECTORY()) FN = FN + "_TRAJECTORY_CORRECTED";
 
-	return FN + "_AVERAGE.RGF";
+	return FN + "_AVERAGE.rgf";
 }
 
 string generate_ACTUAL_RGF_NAME () {
@@ -264,7 +264,7 @@ string generate_ACTUAL_RGF_NAME () {
 
 	if (is_PROCESS_AS_TRAJECTORY()) FN = FN + "_TRAJECTORY_CORRECTED";
 
-	return FN + ".RGF";
+	return FN + ".rgf";
 }
 
 string generate_ACTUAL_COMPLETED_RGF_NAME () {
@@ -301,7 +301,7 @@ string generate_ACTUAL_WELL_PS_NAME () {
 	if (is_PROCESS_AS_TILTED()) 	PS_NAME = PS_NAME + "_TILTED";
 	if (is_PROCESS_AS_TRAJECTORY()) PS_NAME = PS_NAME + "_TRAJECTORY_CORRECTED";
 
-	return PS_NAME + ".EPS";
+	return PS_NAME + ".eps";
 }
 
 string generate_ACTUAL_RGF_NAME_FOR_STANDARD () {

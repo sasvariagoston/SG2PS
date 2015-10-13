@@ -62,7 +62,8 @@ const vector<string> allowed_lineation_datatypes(from_array(datatype_lineation_a
 
 const string datatype_plane_allowed [] = {
 		"BEDDING",
-		"BOREHOLE BREAK-OUT"
+		"BOREHOLE BREAK-OUT",
+		"BBO",
 		"CONTACT",
 		"CROSSBEDDING",
 		"FAULT",
@@ -76,7 +77,8 @@ const string datatype_plane_allowed [] = {
 		"S3",
 		"S4",
 		"S5",
-		"STRESS-INDUCED FRACTURE"
+		"SIF",
+		"STRESS-INDUCED FRACTURE",
 		"USERPLANE1",
 		"USERPLANE2",
 		"USERPLANE3",

@@ -79,7 +79,7 @@ vector <PEAK_TO_PLOT> return_FAULTS () {
 }
 void PS_well_header (ofstream& o) {
 
-	const string filename = return_ACTUAL_LOCATION() + "_" + return_ACTUAL_DATATYPE() + "_" + return_ACTUAL_GROUPCODE() + ".EPS";
+	const string filename = return_ACTUAL_LOCATION() + "_" + return_ACTUAL_DATATYPE() + "_" + return_ACTUAL_GROUPCODE() + ".eps";
 
 	o << "%!PS-Adobe-3.0 EPSF-3.0" << '\n';
 	o << "%%BoundingBox:  0 0 842 1191" << '\n';
@@ -1786,6 +1786,8 @@ void WELL_PS (const vector <GDB>& inGDB, const vector <WELL_INTERVAL>& INT, cons
 	X = X + (PL_WDT * 0.5 + PL_GP) * P.A;
 	PS_well_coordinate_axes_FAULTS (OPS, X, LENGTH);
 	plot_well_faults (OPS, X, LENGTH, MIN_VAL, MAX_VAL);
+
+	PS_eof (OPS);
 
 	return;
 }

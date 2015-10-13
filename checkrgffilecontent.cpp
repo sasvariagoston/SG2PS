@@ -60,7 +60,7 @@ bool input_rgf (const string& projectname) {
 
 	try {
 
-		read_in_rgf(projectname+".rgf");
+		read_in_rgf(projectname + ".rgf");
 	}
 	catch (rgf_error& ) {
 

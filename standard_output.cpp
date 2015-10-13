@@ -331,6 +331,8 @@ void dump_RGF_to_file (const vector <GDB>& inGDB, const string FN) {
 	<< "avd.DIP d" << '\t'
 	<< "avS0offset s" << '\t'
 
+	<< "TRAJECTORY.X d" << '\t' << "TRAJECTORY.Y d" << '\t'<< "TRAJECTORY.Z d" << '\t'
+
 	<< "fold_great_circle_N.X d" << '\t'
 	<< "fold_great_circle_N.Y d" << '\t'
 	<< "fold_great_circle_N.Z d" << '\t'
@@ -402,6 +404,8 @@ void dump_RGF_to_file (const vector <GDB>& inGDB, const string FN) {
 		<< dmp_dbl(T.avd.DIPDIR, 8) << '\t'
 		<< dmp_dbl(T.avd.DIP, 8) << '\t'
 		<< T.avS0offset << '\t'
+
+		<< dmp_dbl(T.T.X, 8) << '\t'  << dmp_dbl(T.T.Y, 8) << '\t'   << dmp_dbl(T.T.Z, 8) << '\t'
 
 		<< dmp_dbl(T.fold_great_circle_N.X, 8) << '\t'
 		<< dmp_dbl(T.fold_great_circle_N.Y, 8) << '\t'

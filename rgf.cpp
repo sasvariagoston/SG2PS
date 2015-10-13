@@ -620,7 +620,7 @@ vector <vector <GDB> > EVALUATE (const vector <vector <GDB> >& inGDB_G) {
 	writeln ("");
 	writeln ("-------------------------------------------------------");
 
-	string msg = "- Data evaluation for the";
+	string msg = "- Data evaluation of the";
 
 	if (TLT) msg = msg + " tilted data set ";
 	else msg = msg + " original data set ";
@@ -630,20 +630,35 @@ vector <vector <GDB> > EVALUATE (const vector <vector <GDB> >& inGDB_G) {
 
 	if (!is_mode_DEBUG()) writeln (msg);
 
-	if (TRJ) P = RETILT (P, "TRAJECTORY");
+	//if (TRJ && TLT) dbg_cout_GDB_vector_vector (P);
 
-	if (TLT) {
+	if (TRJ) {
 
-		P = RETILT (P, "BEDDING");
-		P = RETILT (P, "PALEONORTH");
-	}
-
-	if (TRJ || TLT) {
+		P = RETILT (P, "TRAJECTORY");
 
 		P = PREPARE_GDB_VECTOR_FOR_PROCESSING (P, true);
 		P = AVERAGE (P);
 		P = ASSOCIATE_AVERAGE_BEDDING_GROUPS (P);
 	}
+
+	if (TLT) {
+
+		P = RETILT (P, "BEDDING");
+		P = RETILT (P, "PALEONORTH");
+
+		P = PREPARE_GDB_VECTOR_FOR_PROCESSING (P, true);
+		P = AVERAGE (P);
+		P = ASSOCIATE_AVERAGE_BEDDING_GROUPS (P);
+	}
+
+	//if (TRJ || TLT) {
+
+	//	P = PREPARE_GDB_VECTOR_FOR_PROCESSING (P, true);
+	//	P = AVERAGE (P);
+	//	P = ASSOCIATE_AVERAGE_BEDDING_GROUPS (P);
+	//}
+
+	//if (TRJ && TLT) dbg_cout_GDB_vector_vector (P);
 
 	P = PROCESS_GROUPS (P, TLT);
 
@@ -795,7 +810,7 @@ void dbg_cout_GDB_vector (const vector <GDB>& inGDB) {
 	//<< "LOC" << '\t'
 	//<< "LOCX" << '\t'
 	//<< "LOCY" << '\t'
-	<< "FORMATION" << '\t'
+	//<< "FORMATION" << '\t'
 	<< "DATATYPE" << '\t'
 	//<< "DIPDIR" << '\t'
 	//<< "DIP" << '\t'
@@ -829,11 +844,11 @@ void dbg_cout_GDB_vector (const vector <GDB>& inGDB) {
 	//<< "avS0N.X" << '\t' << "avS0N.Y" << '\t'<< "avS0N.Z" << '\t'
 	//<< "T.X" << '\t' << "T.Y" << '\t'<< "T.Z" << '\t'
 
-	//<< "avS0d.DIPDIR" << '\t'
-	//<< "avS0d.DIP" << '\t'
-	//<< "avd.DIPDIR" << '\t'
-	//<< "avd.DIP" << '\t'
-	//<< "avS0offset" << '\t'
+	<< "avS0d.DIPDIR" << '\t'
+	<< "avS0d.DIP" << '\t'
+	<< "avd.DIPDIR" << '\t'
+	<< "avd.DIP" << '\t'
+	<< "avS0offset" << '\t'
 
 
 	//<< "fold_great_circle_N.X" << '\t'
@@ -882,7 +897,7 @@ void dbg_cout_GDB_vector (const vector <GDB>& inGDB) {
 		//<< T.LOC << '\t'
 		//<< T.LOCX << '\t'
 		//<< T.LOCY << '\t'
-		<< T.FORMATION << '\t'
+		//<< T.FORMATION << '\t'
 		<< T.DATATYPE << '\t'
 
 		//<< fixed << setprecision (0)
@@ -922,12 +937,12 @@ void dbg_cout_GDB_vector (const vector <GDB>& inGDB) {
 		//<< T.avS0N.X << '\t' << T.avS0N.Y << '\t'<< T.avS0N.Z << '\t'
 		//<< T.T.X << '\t' << T.T.Y << '\t'<< T.T.Z << '\t'
 
-		//<< fixed << setprecision(1)
-		//<< T.avS0d.DIPDIR << '\t'
-		//<< T.avS0d.DIP << '\t'
-		//<< T.avd.DIPDIR << '\t'
-		//<< T.avd.DIP << '\t'
-		//<< T.avS0offset << '\t'
+		<< fixed << setprecision(1)
+		<< T.avS0d.DIPDIR << '\t'
+		<< T.avS0d.DIP << '\t'
+		<< T.avd.DIPDIR << '\t'
+		<< T.avd.DIP << '\t'
+		<< T.avS0offset << '\t'
 
 		//<< fixed << setprecision(6)
 		//<< T.fold_great_circle_N.X << '\t'

@@ -31,6 +31,7 @@ void PS_FOLD_GREAT_CIRCLE (const vector <GDB>& inGDB, ofstream& o, const CENTER&
 
 void PS_datanumber_averagebedding (const GDB& i, ofstream& o, const size_t datanumber);
 void PS_net (ofstream& o);
+void PS_eof (ofstream& o);
 
 void PS_DRAW_lineation (const GDB& i, ofstream& o, const CENTER& center);
 void PS_DRAW_plane (const GDB i, ofstream& o, const CENTER& center);

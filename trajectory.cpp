@@ -192,9 +192,9 @@ bool trj_plunge () {
 bool CHECK_TRAJECTORY_FILE (const string projectname) {
 
 	writeln ("");
-	writeln ("===========================");
-	writeln ("4) CHECKING TRAJECTORY FILE");
-	writeln ("===========================");
+	writeln ("============================");
+	writeln ("4B) CHECKING TRAJECTORY FILE");
+	writeln ("============================");
 	writeln ("");
 
 	if (!is_WELLDATA_USE()) {
