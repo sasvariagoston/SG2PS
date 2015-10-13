@@ -446,7 +446,7 @@ vector <vector <GDB> > SEPARATE_DATASET (const vector <vector <GDB> >& inGDB_G, 
 vector < vector <GDB> > SEPARATE_DATASET_GROUPS (const vector <GDB>& inGDB) {
 
 	const bool W = is_WELLDATA_USE();
-	const bool F = is_FORMATION_USE();
+	//const bool F = is_FORMATION_USE();
 	const bool G = is_GROUPS_USE();
 
 	vector < vector <GDB> > processGDB_G;
@@ -455,9 +455,9 @@ vector < vector <GDB> > SEPARATE_DATASET_GROUPS (const vector <GDB>& inGDB) {
 
 	processGDB_G = SEPARATE_DATASET (processGDB_G, "LOCATION", "LOCATION");
 
-	if (W && F) 		processGDB_G = SEPARATE_DATASET (processGDB_G, "FORMATION", "DEPTH");
-	else if (!W && F)	processGDB_G = SEPARATE_DATASET (processGDB_G, "FORMATION", "FORMATION");
-	else {};
+	//if (W && F) 		processGDB_G = SEPARATE_DATASET (processGDB_G, "FORMATION", "DEPTH");
+	//else if (!W && F)	processGDB_G = SEPARATE_DATASET (processGDB_G, "FORMATION", "FORMATION");
+	//else {};
 
 	processGDB_G = SEPARATE_DATASET (processGDB_G, "DATATYPE", "DATATYPE");
 
@@ -570,7 +570,7 @@ void cout_method_text (const vector <GDB>& inGDB) {
 	const string FM = inGDB.at(0).FORMATION;
 
 	const bool GROUPS = is_GROUPS_USE();
-	const bool FORMATION = is_FORMATION_USE();
+	//const bool FORMATION = is_FORMATION_USE();
 	const bool CLUSTER = !is_CLUSTERING_NONE();
 	const bool RUP = !is_RUP_CLUSTERING_NONE();
 	const bool IS_STRIAE = is_allowed_striae_datatype (inGDB.at(0).DATATYPE);
@@ -578,7 +578,7 @@ void cout_method_text (const vector <GDB>& inGDB) {
 	string OUT = "  - For '" + LOC + "' location";
 
 	if (GROUPS || CLUSTER || RUP) OUT = OUT + " group, " + GC;
-	else if (FORMATION) OUT = OUT + " formation, " + FM;
+	//else if (FORMATION) OUT = OUT + " formation, " + FM;
 
 	OUT = OUT + ", ";
 

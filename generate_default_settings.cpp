@@ -336,16 +336,16 @@ vector <vector < vector <string> > > RETURN_ALL_SETTINGS () {
 	DEF.push_back(defitem);
 
 	//16
-	pushbach_settings_item (defitem, "FORMATION:", "  - Groups by formation name:");
-	pushbach_settings_option (defitem,
-			"N",
-			"  - DO NOT USE FORMATION NAMES of the input file for grouping.",
-			"    - do not formation names of the input file..............[n]?  ");
-	pushbach_settings_option (defitem,
-			"Y",
-			"  - USE FORMATION NAMES of the input file for grouping.",
-			"    - use formation names of the input file.................[Y],  ");
-	DEF.push_back(defitem);
+	//pushbach_settings_item (defitem, "FORMATION:", "  - Groups by formation name:");
+	//pushbach_settings_option (defitem,
+	//		"N",
+	//		"  - DO NOT USE FORMATION NAMES of the input file for grouping.",
+	//		"    - do not formation names of the input file..............[n]?  ");
+	//pushbach_settings_option (defitem,
+	//		"Y",
+	//		"  - USE FORMATION NAMES of the input file for grouping.",
+	//		"    - use formation names of the input file.................[Y],  ");
+	//DEF.push_back(defitem);
 
 	//17
 	pushbach_settings_item (defitem, "CLUSTERNUMBER:", "  - Groups from k-means clustering:");

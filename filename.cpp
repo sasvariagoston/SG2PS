@@ -290,7 +290,7 @@ string generate_ACTUAL_WELL_PS_NAME () {
 
 	string PS_NAME = WELL_PS_FOLDER + BS + DT + BS + LOC;
 
-	if (is_FORMATION_USE()) PS_NAME = PS_NAME + US + FM;
+	//if (is_FORMATION_USE()) PS_NAME = PS_NAME + US + FM;
 
 	PS_NAME = PS_NAME + US + DT;
 
@@ -315,7 +315,7 @@ string generate_ACTUAL_RGF_NAME_FOR_STANDARD () {
 
 	string PS_NAME = LOC;
 
-	if (is_FORMATION_USE()) PS_NAME = PS_NAME + US + FM;
+	//if (is_FORMATION_USE()) PS_NAME = PS_NAME + US + FM;
 
 	PS_NAME = PS_NAME + US + DT;
 

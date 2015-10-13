@@ -199,7 +199,8 @@ size_t has_relevant_bedding (const size_t i, const vector <vector <GDB> >& inGDB
 
 		bool FIT = EQ_LC && EQ_DT;
 
-		if (is_FORMATION_USE() || is_WELLDATA_USE()) FIT = FIT && EQ_FM;
+		//if (is_FORMATION_USE() || is_WELLDATA_USE()) FIT = FIT && EQ_FM;
+		if (is_WELLDATA_USE()) FIT = FIT && EQ_FM;
 
 		if (is_GROUPS_USE()) FIT = FIT && EQ_GC;
 

@@ -94,8 +94,8 @@ bool INPUTGROUP_THIRD = false;
 bool GROUPS_USE = false;
 bool GROUPS_NONE = false;
 
-bool FORMATION_USE = false;
-bool FORMATION_NONE = false;
+//bool FORMATION_USE = false;
+//bool FORMATION_NONE = false;
 
 bool CLUSTERING_NONE = false;
 bool CLUSTERING_AUTOMATIC = false;
@@ -333,14 +333,14 @@ bool is_GROUPS_NONE () {
 	return GROUPS_NONE;
 }
 
-bool is_FORMATION_USE () {
+//bool is_FORMATION_USE () {
 
-	return FORMATION_USE;
-}
-bool is_FORMATION_NONE () {
+//	return FORMATION_USE;
+//}
+//bool is_FORMATION_NONE () {
 
-	return FORMATION_NONE;
-}
+//	return FORMATION_NONE;
+//}
 
 bool is_CLUSTERING_NONE () {
 
@@ -573,11 +573,11 @@ void INIT_SETTINGS (const vector <vector <string> >& SET) {
 			else if (VAL == "N") GROUPS_NONE = true;
 			else ASSERT_DEAD_END();
 		}
-		else if (KEY == "FORMATION:") {
-			if 		(VAL == "Y") FORMATION_USE = true;
-			else if (VAL == "N") FORMATION_NONE = true;
-			else ASSERT_DEAD_END();
-		}
+		//else if (KEY == "FORMATION:") {
+		//	if 		(VAL == "Y") FORMATION_USE = true;
+		//	else if (VAL == "N") FORMATION_NONE = true;
+		//	else ASSERT_DEAD_END();
+		//}
 		else if (KEY == "CLUSTERNUMBER:") {
 
 			if 		(VAL == "N") CLUSTERING_NONE = true;
