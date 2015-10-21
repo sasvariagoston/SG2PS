@@ -759,10 +759,8 @@ void PS_mohr_circle (const vector <GDB>& inGDB, ofstream& o, const CENTER& mohrc
 
 	if (inGDB.at(0).STV.size() < 1 || inGDB.at(0).SFV.size() < 1) return;
 
-	STRESSTENSOR ST = inGDB.at(0).STV.at (inGDB.at(0).STV.size() - 1);
-	const STRESSFIELD  SF = inGDB.at(0).SFV.at (inGDB.at(0).SFV.size() - 1);
-
-	if (is_INVERSION_TURNER()) ST = invert_stress_tensor (ST);
+	STRESSTENSOR ST 		= inGDB.at(0).STV.at (inGDB.at(0).STV.size() - 1);
+	const STRESSFIELD  SF 	= inGDB.at(0).SFV.at (inGDB.at(0).SFV.size() - 1);
 
 	const double X = 5.0 * P.A;
 	const double fi = SF.stressratio;
@@ -798,6 +796,12 @@ void PS_mohr_circle (const vector <GDB>& inGDB, ofstream& o, const CENTER& mohrc
 		if (inGDB.at(i).RUP > 0.0 && inGDB.at(i).ANG > 0.0) {
 
 			const VCTR stressvector = return_stressvector (ST, inGDB.at(i).N);
+
+			const double STR_MGNT = sqrt (
+					stressvector.X * stressvector.X +
+					stressvector.Y * stressvector.Y +
+					stressvector.Z * stressvector.Z);
+
 			const double stress_magnitude =
 					inGDB.at(i).N.X * stressvector.X +
 					inGDB.at(i).N.Y * stressvector.Y +

@@ -601,7 +601,7 @@ vector <GDB> create_GDB_from_rgf () {
 		}
 		if (is_SCcorrect (row)) 		buffer.LINEATION = "SC";
 
-		if (row.at(PALEONORTH) == "") buffer.PALEON = 0.0;
+		if (row.at(PALEONORTH) == "") buffer.PALEON = NaN();
 		else buffer.PALEON = to_double(row, PALEONORTH);
 
 		buffer.COMMENT = row.at(COMMENT);

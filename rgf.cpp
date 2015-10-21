@@ -333,8 +333,8 @@ vector <GDB> striae_correction (const vector <GDB>& inGDB) {
 		const VCTR SC = outGDB.at(i).SC;
 		const VCTR DC = outGDB.at(i).DC;
 
-		const bool SC_N_has_same_strike = is_in_range(0.9999, 1.0001, fabs (dotproduct (SC, N)));
-		const bool NC_N_has_same_strike = is_in_range(0.9999, 1.0001, fabs (dotproduct (NC, N)));
+		const bool SC_N_has_same_strike = is_in_range (0.99999999, 1.00000001, fabs (dotproduct (SC, N)));
+		const bool NC_N_has_same_strike = is_in_range (0.99999999, 1.00000001, fabs (dotproduct (NC, N)));
 
 		if (LINEATION && !SC_N_has_same_strike && !NC_N_has_same_strike) {
 
@@ -617,9 +617,7 @@ vector <vector <GDB> > EVALUATE (const vector <vector <GDB> >& inGDB_G) {
 	const bool TLT = PROCESS_AS_TILTED;
 	const bool TRJ = PROCESS_AS_TRAJECTORY;
 
-	writeln ("");
-	writeln ("-------------------------------------------------------");
-
+	cout << endl << endl;
 	string msg = "- Data evaluation of the";
 
 	if (TLT) msg = msg + " tilted data set ";
@@ -629,8 +627,6 @@ vector <vector <GDB> > EVALUATE (const vector <vector <GDB> >& inGDB_G) {
 	else msg = msg + "without trajectory correction.";
 
 	if (!is_mode_DEBUG()) writeln (msg);
-
-	//if (TRJ && TLT) dbg_cout_GDB_vector_vector (P);
 
 	if (TRJ) {
 
@@ -650,16 +646,6 @@ vector <vector <GDB> > EVALUATE (const vector <vector <GDB> >& inGDB_G) {
 		P = AVERAGE (P);
 		P = ASSOCIATE_AVERAGE_BEDDING_GROUPS (P);
 	}
-
-	//if (TRJ || TLT) {
-
-	//	P = PREPARE_GDB_VECTOR_FOR_PROCESSING (P, true);
-	//	P = AVERAGE (P);
-	//	P = ASSOCIATE_AVERAGE_BEDDING_GROUPS (P);
-	//}
-
-	//if (TRJ && TLT) dbg_cout_GDB_vector_vector (P);
-
 	P = PROCESS_GROUPS (P, TLT);
 
 	vector <GDB> p = MERGE_GROUPS_TO_GDB (P);
@@ -710,6 +696,7 @@ void PROCESS_RGF (const string inputfilename, const bool XY_OK, const bool TRJ_O
 	nGDB = SORT_GDB (nGDB, "LOC_GC_TYPE");
 	vector < vector <GDB> > nGDB_G = SEPARATE_DATASET_GROUPS (nGDB);
 	nGDB_G = PREPARE_GDB_VECTOR_FOR_PROCESSING (nGDB_G, false);
+
 	nGDB_G = AVERAGE (nGDB_G);
 
 	nGDB_G = ASSOCIATE_AVERAGE_BEDDING_GROUPS (nGDB_G);
@@ -740,7 +727,7 @@ void PROCESS_RGF (const string inputfilename, const bool XY_OK, const bool TRJ_O
 
 		OUTPUT_TO_WELL_PS (MASTER_GDB.at(i));
 	}
-	if (!is_mode_DEBUG()) cout << "EXPORT FROM '" << capslock(inputfilename) << ".RGF' DATABASE FILE" << endl;
+	if (!is_mode_DEBUG()) cout << endl << endl << "EXPORT FROM '" << capslock(inputfilename) << ".RGF' DATABASE FILE" << endl;
 
 	copy_log ();
 }
@@ -790,18 +777,18 @@ void dbg_cout_GDB_vector (const vector <GDB>& inGDB) {
 
 	cout
 	<< "ID" << '\t' << "iID" << '\t'
-	//<< "N.X" << '\t' << "N.Y" << '\t' << "N.Z" << '\t'
+	<< "N.X" << '\t' << "N.Y" << '\t' << "N.Z" << '\t'
 	//<< "D.X" << '\t' << "D.Y" << '\t'<< "D.Z" << '\t'
 	//<< "S.X" << '\t' << "S.Y" << '\t'<< "S.Z" << '\t'
-	//<< "NC.X" << '\t' << "NC.Y" << '\t'<< "NC.Z" << '\t'
-	//<< "DC.X" << '\t' << "DC.Y" << '\t'<< "DC.Z" << '\t'
+	<< "NC.X" << '\t' << "NC.Y" << '\t'<< "NC.Z" << '\t'
+	<< "DC.X" << '\t' << "DC.Y" << '\t'<< "DC.Z" << '\t'
 	//<< "SC.X" << '\t' << "SC.Y" << '\t'<< "SC.Z" << '\t'
 
 	//<< "LPITCH" << '\t'
 	//<< "LPITCHSENSE" << '\t'
 	//<< "PITCHANGLE" << '\t'
 
-	//<< "MISFIT" << '\t'
+	<< "MISFIT" << '\t'
 	//<< "LINEATION" << '\t'
 	//<< "OFFSET" << '\t'
 	//<< "DEPTH" << '\t'
@@ -811,18 +798,18 @@ void dbg_cout_GDB_vector (const vector <GDB>& inGDB) {
 	//<< "LOCX" << '\t'
 	//<< "LOCY" << '\t'
 	//<< "FORMATION" << '\t'
-	<< "DATATYPE" << '\t'
+	//<< "DATATYPE" << '\t'
 	//<< "DIPDIR" << '\t'
 	//<< "DIP" << '\t'
 	//<< "LDIR" << '\t'
 	//<< "LDIP" << '\t'
 
-	//<< "corr.DIPDIR" << '\t'
-	//<< "corr.DIP" << '\t'
-	//<< "corrL.DIPDIR" << '\t'
-	//<< "corrL.DIP" << '\t'
+	<< "corr.DIPDIR" << '\t'
+	<< "corr.DIP" << '\t'
+	<< "corrL.DIPDIR" << '\t'
+	<< "corrL.DIP" << '\t'
 
-	//<< "PALEON" << '\t'
+	<< "PALEON" << '\t'
 	//<< "COMMENT" << '\t'
 	//<< "DATAGROUP" << '\t'
 	//<< "PSCOLOR" << '\t'
@@ -848,7 +835,7 @@ void dbg_cout_GDB_vector (const vector <GDB>& inGDB) {
 	<< "avS0d.DIP" << '\t'
 	<< "avd.DIPDIR" << '\t'
 	<< "avd.DIP" << '\t'
-	<< "avS0offset" << '\t'
+	//<< "avS0offset" << '\t'
 
 
 	//<< "fold_great_circle_N.X" << '\t'
@@ -870,23 +857,23 @@ void dbg_cout_GDB_vector (const vector <GDB>& inGDB) {
 
 		cout
 
-		<< fixed << setprecision(6)
+		<< fixed << setprecision(0)
 		<< T.ID << '\t' << T.iID << '\t'
 
 		<< fixed << setprecision(6)
-		//<< T.N.X << '\t' << T.N.Y << '\t' << T.N.Z << '\t'
+		<< T.N.X << '\t' << T.N.Y << '\t' << T.N.Z << '\t'
 		//<< T.D.X << '\t' << T.D.Y << '\t'<< T.D.Z << '\t'
 		//<< T.S.X << '\t' << T.S.Y << '\t'<< T.S.Z << '\t'
-		//<< T.NC.X << '\t' << T.NC.Y << '\t'<< T.NC.Z << '\t'
-		//<< T.DC.X << '\t' << T.DC.Y << '\t'<< T.DC.Z << '\t'
+		<< T.NC.X << '\t' << T.NC.Y << '\t'<< T.NC.Z << '\t'
+		<< T.DC.X << '\t' << T.DC.Y << '\t'<< T.DC.Z << '\t'
 		//<< T.SC.X << '\t' << T.SC.Y << '\t'<< T.SC.Z << '\t'
 
 		//<< T.LPITCH << '\t'
 		//<< T.LPITCHSENSE << '\t'
 		//<< T.PITCHANGLE << '\t'
 
-		//<< fixed << setprecision(8)
-		//<< T.MISFIT << '\t'
+		<< fixed << setprecision(8)
+		<< T.MISFIT << '\t'
 		//<< T.LINEATION << '\t'
 		//<< T.OFFSET << '\t'
 		//<< T.DEPTH << '\t'
@@ -898,21 +885,21 @@ void dbg_cout_GDB_vector (const vector <GDB>& inGDB) {
 		//<< T.LOCX << '\t'
 		//<< T.LOCY << '\t'
 		//<< T.FORMATION << '\t'
-		<< T.DATATYPE << '\t'
+		//<< T.DATATYPE << '\t'
 
-		//<< fixed << setprecision (0)
+		<< fixed << setprecision (0)
 		//<< T.DIPDIR << '\t'
 		//<< T.DIP << '\t'
 		//<< T.LDIR << '\t'
 		//<< T.LDIP << '\t'
 
-		//<< T.corr.DIPDIR << '\t'
-		//<< T.corr.DIP << '\t'
-		//<< T.corrL.DIPDIR << '\t'
-		//<< T.corrL.DIP << '\t'
+		<< T.corr.DIPDIR << '\t'
+		<< T.corr.DIP << '\t'
+		<< T.corrL.DIPDIR << '\t'
+		<< T.corrL.DIP << '\t'
 
-		//<< fixed << setprecision(0)
-		//<< T.PALEON << '\t'
+		<< fixed << setprecision(0)
+		<< T.PALEON << '\t'
 		//<< T.COMMENT << '\t'
 		//<< T.DATAGROUP << '\t'
 		//<< T.PSCOLOR << '\t'
@@ -937,12 +924,12 @@ void dbg_cout_GDB_vector (const vector <GDB>& inGDB) {
 		//<< T.avS0N.X << '\t' << T.avS0N.Y << '\t'<< T.avS0N.Z << '\t'
 		//<< T.T.X << '\t' << T.T.Y << '\t'<< T.T.Z << '\t'
 
-		<< fixed << setprecision(1)
+		<< fixed << setprecision(6)
 		<< T.avS0d.DIPDIR << '\t'
 		<< T.avS0d.DIP << '\t'
 		<< T.avd.DIPDIR << '\t'
 		<< T.avd.DIP << '\t'
-		<< T.avS0offset << '\t'
+		//<< T.avS0offset << '\t'
 
 		//<< fixed << setprecision(6)
 		//<< T.fold_great_circle_N.X << '\t'

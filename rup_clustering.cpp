@@ -282,11 +282,13 @@ vector <GDB> apply_RUP_ANG_CLUSTERING_result (const vector <GDB>& inGDB) {
 
 		if (!is_mode_DEBUG()) {
 
+			string METHOD = "RUP";
+			if (is_RUP_CLUSTERING_ANG ()) METHOD = "ANG";
+
 			if 		(V.size() == 0) cout << "    - Cannot cluster input data set using RUP / ANG values." << endl;
 			else if (V.size() > 9) 	cout << "    - Clustering result not reliable: more than 9 clusters." << endl;
-			else					cout << "    - Input data set separated into " << V.size() + 1 << " clusters." << endl;
+			else					cout << "    - Input data set separated into " << V.size() + 1 << " clusters using '" << METHOD << "' parameter." << endl;
 		}
-
 		if 		(is_RUP_CLUSTERING_RUP()) 	return associate_GDB_DATA_clusters (inGDB, V, FIELD);
 		else if (is_RUP_CLUSTERING_ANG()) 	return associate_GDB_DATA_clusters (inGDB, V, FIELD);
 		else    		 					return associate_GDB_DATA_clusters (inGDB, V, "");

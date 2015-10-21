@@ -260,7 +260,6 @@ double ATAN (const double& in) {
 	return (out * 180.0) / 3.1415926535;
 }
 
-
 VCTR crossproduct (const VCTR& in1, const VCTR& in2) {
 
 	return declare_vector (
@@ -910,15 +909,23 @@ vector < vector < double > > generate_D (const vector < vector < double > >& EVE
 
 bool check_correct_stressfield (const STRESSFIELD& sf) {
 
-	const bool S1DD = is_in_range (0.0, 360.0, sf.S_1.DIPDIR);
-	const bool S2DD = is_in_range (0.0, 360.0, sf.S_2.DIPDIR);
-	const bool S3DD = is_in_range (0.0, 360.0, sf.S_3.DIPDIR);
+	if (! is_in_range (0.0, 360.0, sf.S_1.DIPDIR)) return false;
+	if (! is_in_range (0.0, 360.0, sf.S_2.DIPDIR)) return false;
+	if (! is_in_range (0.0, 360.0, sf.S_3.DIPDIR)) return false;
 
-	const bool S1D = is_in_range (0.0, 90.0, sf.S_1.DIP);
-	const bool S2D = is_in_range (0.0, 90.0, sf.S_2.DIP);
-	const bool S3D = is_in_range (0.0, 90.0, sf.S_3.DIP);
+	if (! is_in_range (0.0, 90.0, sf.S_1.DIP)) return false;
+	if (! is_in_range (0.0, 90.0, sf.S_2.DIP)) return false;
+	if (! is_in_range (0.0, 90.0, sf.S_3.DIP)) return false;
 
-	return S1DD && S1D && S2DD && S2D &&  S3DD && S3D;
+	const double ANG1 = vector_angle (sf.EIGENVECTOR1, sf.EIGENVECTOR2);
+	const double ANG2 = vector_angle (sf.EIGENVECTOR2, sf.EIGENVECTOR3);
+	const double ANG3 = vector_angle (sf.EIGENVECTOR1, sf.EIGENVECTOR3);
+
+	if (! is_in_range (88.0, 92.0, ANG1)) return false;
+	if (! is_in_range (88.0, 92.0, ANG2)) return false;
+	if (! is_in_range (88.0, 92.0, ANG3)) return false;
+
+	return true;
 }
 
 string generate_stress_colors (const double V) {
@@ -1302,7 +1309,6 @@ vector <double> cubic_solution (const double A, const double B, const double C, 
 		out.push_back(0.0);
 		out.push_back(0.0);
 	}
-
 	else if (H > 0.0) {
 
 		double R = - (G / 2.0) + sqrt (H);
@@ -1325,7 +1331,6 @@ vector <double> cubic_solution (const double A, const double B, const double C, 
 		out.push_back(     (S - U) * (sqrt(3.0) / 2.0)				);
 		out.push_back(	 - (S - U) * (sqrt(3.0) / 2.0)  			);
 	}
-
 	else {
 
 		double I = sqrt(((G * G) / 4.0) - H);
@@ -1353,7 +1358,6 @@ vector <double> cubic_solution (const double A, const double B, const double C, 
 		out.push_back (0.0);
 		out.push_back (0.0);
 	}
-
 	return out;
 }
 
@@ -1403,9 +1407,6 @@ vector <double>  quartic_solution (double A, double B, double C, double D, doubl
 		p = - Z;	p_c =   Y;
 		q = - Z;	q_c = - Y;
 	}
-
-
-
 	else { //if not complex
 
 		if 		(fabs(X.at(0)) > 1E-8 &&  fabs(X.at(1)) > 1E-8) {

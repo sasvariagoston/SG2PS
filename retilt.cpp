@@ -118,6 +118,10 @@ GDB tilt_plane (const GDB& in, const VCTR& AXIS, const double ANGLE) {
 
 GDB tilt_striae (const GDB& in, const VCTR& AXIS, const double ANGLE) {
 
+	vector <GDB> TEMP;
+
+	TEMP.push_back(in);
+
 	const double ANG_IN = fabs (vector_angle (in.N, in.DC));
 
 	GDB OUT = in;
@@ -131,7 +135,6 @@ GDB tilt_striae (const GDB& in, const VCTR& AXIS, const double ANGLE) {
 	OUT.D = unitvector (DXDYDZ_from_NXNYNZ (OUT.N));
 	OUT.S = crossproduct(OUT.N, OUT.D);
 	OUT.corr = dipdir_dip_from_DXDYDZ (OUT.D);
-
 
 	OUT.DC = unitvector (ROTATE (AXIS, in.DC, ANGLE));
 
@@ -148,13 +151,15 @@ GDB tilt_striae (const GDB& in, const VCTR& AXIS, const double ANGLE) {
 
 	const double ANG_OUT = fabs (vector_angle (OUT.N, OUT.DC));
 
-	//if (! is_in_range(ANG_IN, ANG_IN, ANG_OUT)) {
+	TEMP.push_back(OUT);
 
-	//	cout << fixed << setprecision(6) << flush;
-	//	cout << ANG_IN << endl;
-	//	cout << ANG_OUT << endl;
-	//	ASSERT_DEAD_END();
-	//}
+	if (! is_in_range(ANG_IN, ANG_IN, ANG_OUT)) {
+
+		cout << fixed << setprecision(6) << flush;
+		cout << ANG_IN << endl;
+		cout << ANG_OUT << endl;
+		ASSERT_DEAD_END();
+	}
 	if (! is_in_range(089.9999, 090.0001, ANG_OUT)) {
 
 		cout << fixed << setprecision(6) << flush;

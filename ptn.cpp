@@ -59,9 +59,6 @@ vector <GDB> ptn (const vector <GDB>& inGDB) {
 			outGDB.at(i).ptnN = unitvector (crossproduct (outGDB.at(i).ptnP, outGDB.at(i).ptnT));
 		}
 	}
-
-	//dbg_cout_GDB_vector (outGDB);
-
 	return outGDB;
 }
 
@@ -96,8 +93,6 @@ STRESSTENSOR PTN_matrix (const vector <GDB>& inGDB, const string& axis) {
 		st._23 = st._23 + (dotproduct (AX, N, false) * dotproduct (AX, U, false));
 		st._33 = st._33 + (dotproduct (AX, U, false) * dotproduct (AX, U, false));
 	}
-	//cout_dbg_stresstensor(st);
-
 	return st;
 }
 
@@ -132,5 +127,9 @@ STRESSFIELD sf_PTN (const vector <GDB>& inGDB) {
 
 STRESSTENSOR st_PTN (const STRESSFIELD& sf) {
 
-	return stresstensor_from_eigenvalue_eigenvector (sf);
+	const STRESSTENSOR ST = stresstensor_from_eigenvalue_eigenvector (sf);
+
+	//return invert_stress_tensor (ST);
+
+	return ST;
 }

@@ -85,6 +85,7 @@ STRESSFIELD eigenvalue_eigenvector (STRESSTENSOR st) {
 
 	sf.EIGENVECTOR1.Z = 1.0;
 	sf.EIGENVECTOR1.X = ((b1 * c2) - (b2 * c1)) / ((b2 * a1) - (a2 * b1));
+
 	sf.EIGENVECTOR1.Y = - ((a1 * sf.EIGENVECTOR1.X) + c1) / b1;
 	sf.EIGENVECTOR1 = unitvector (sf.EIGENVECTOR1);
 
@@ -92,8 +93,6 @@ STRESSFIELD eigenvalue_eigenvector (STRESSTENSOR st) {
 	if (is_in_range(0.9999, 1.0001, sf.EIGENVECTOR1.Y)) sf.EIGENVECTOR1.Y = 1.0 - 1E-8;
 	if (is_in_range(0.9999, 1.0001, sf.EIGENVECTOR1.Z)) sf.EIGENVECTOR1.Z = 1.0 - 1E-8;
 	sf.EIGENVECTOR1 = unitvector (sf.EIGENVECTOR1);
-
-
 
 	a1 = st._11 - sf.EIGENVALUE.Y;
 	b2 = st._22 - sf.EIGENVALUE.Y;
@@ -118,8 +117,6 @@ STRESSFIELD eigenvalue_eigenvector (STRESSTENSOR st) {
 	if (is_in_range(0.9999, 1.0001, sf.EIGENVECTOR2.Z)) sf.EIGENVECTOR2.Z = 1.0 - 1E-8;
 	sf.EIGENVECTOR2 = unitvector (sf.EIGENVECTOR2);
 
-
-
 	a1 = st._11 - sf.EIGENVALUE.Z;
 	b2 = st._22 - sf.EIGENVALUE.Z;
 
@@ -143,17 +140,21 @@ STRESSTENSOR stresstensor_from_eigenvalue_eigenvector (STRESSFIELD sf) {
 
 	STRESSTENSOR out;
 
-	D.at(0).at(0) = sf.EIGENVECTOR1.X;
-	D.at(0).at(1) = sf.EIGENVECTOR1.Y;
-	D.at(0).at(2) = sf.EIGENVECTOR1.Z;
+	const VCTR E1 = unitvector (sf.EIGENVECTOR1);
+	const VCTR E2 = unitvector (sf.EIGENVECTOR2);
+	const VCTR E3 = unitvector (sf.EIGENVECTOR3);
 
-	D.at(1).at(0) = sf.EIGENVECTOR2.X;
-	D.at(1).at(1) = sf.EIGENVECTOR2.Y;
-	D.at(1).at(2) = sf.EIGENVECTOR2.Z;
+	D.at(0).at(0) = E1.X;
+	D.at(0).at(1) = E1.Y;
+	D.at(0).at(2) = E1.Z;
 
-	D.at(2).at(0) = sf.EIGENVECTOR3.X;
-	D.at(2).at(1) = sf.EIGENVECTOR3.Y;
-	D.at(2).at(2) = sf.EIGENVECTOR3.Z;
+	D.at(1).at(0) = E2.X;
+	D.at(1).at(1) = E2.Y;
+	D.at(1).at(2) = E2.Z;
+
+	D.at(2).at(0) = E3.X;
+	D.at(2).at(1) = E3.Y;
+	D.at(2).at(2) = E3.Z;
 
 
 	T.at(0).at(0) = sf.EIGENVALUE.X;
@@ -168,11 +169,9 @@ STRESSTENSOR stresstensor_from_eigenvalue_eigenvector (STRESSFIELD sf) {
 	T.at(2).at(1) = 0.0;
 	T.at(2).at(2) = sf.EIGENVALUE.Z;
 
-
 	T = mult_mtrx (transpose(D), T);
 
 	T = mult_mtrx (T, D);
-
 
 	out._11 = T.at(0).at(0);
 	out._12 = T.at(0).at(1);
@@ -398,6 +397,7 @@ double return_average_misfit (const STRESSTENSOR& st, const vector <GDB>& inGDB)
 		const VCTR SV = inGDB.at(i).DC;
 
 		const double ang = return_ANG (st, N, SV);
+
 		misfit = misfit + ang;
 	}
 	return misfit / inGDB.size();

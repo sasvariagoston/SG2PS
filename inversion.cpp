@@ -171,17 +171,14 @@ vector <GDB> apply_inversion_result (const vector <GDB>& inGDB, const STRESSTENS
 
 	vector <GDB> outGDB = inGDB;
 
-	const double AV_MISF = return_average_misfit (st, inGDB);
+	const double AV_MISF = return_average_misfit (st, outGDB);
 
 	string METHOD = "ANGELIER";
 	if (is_INVERSION_MOSTAFA()) METHOD = "MOSTAFA";
 
 	outGDB = return_stressvector_estimators (st, outGDB, METHOD);
 
-	for (size_t i = 0; i < inGDB.size(); i++) {
-
-		outGDB.at(i).AV_MISF = AV_MISF;
-	}
+	for (size_t i = 0; i < outGDB.size(); i++) outGDB.at(i).AV_MISF = AV_MISF;
 
 	return outGDB;
 }
@@ -225,7 +222,6 @@ void INVERSION (const vector <GDB>& inGDB) {
 	else if (is_INVERSION_YAMAJI() && IS_STRIAE) {//OK
 		//STV.push_back (st_YAMAJI (inGDB));
 		//SFV has to be coded
-		exit (1);
 	}
 	else if (is_INVERSION_TURNER() && IS_STRIAE) {//OK
 		SFV.push_back (sf_PTN (inGDB));
@@ -237,13 +233,15 @@ void INVERSION (const vector <GDB>& inGDB) {
 	}
 	else ASSERT_DEAD_END();
 
-	const size_t MAX = SFV.size() - 1;
+	for (size_t i = 0; i < SFV.size(); i++) {
 
-	if (MAX > 0) {
+		const bool successfull = check_correct_stressfield (SFV.at(i));
 
-		const bool successfull = check_correct_stressfield (SFV.at(MAX));
+		if (!successfull) {
 
-		if (!successfull) SFV.clear();
+			STV.clear();
+			SFV.clear();
+		}
 	}
 }
 

@@ -445,7 +445,7 @@ vector <vector <GDB> > SEPARATE_DATASET (const vector <vector <GDB> >& inGDB_G, 
 
 vector < vector <GDB> > SEPARATE_DATASET_GROUPS (const vector <GDB>& inGDB) {
 
-	const bool W = is_WELLDATA_USE();
+	//const bool W = is_WELLDATA_USE();
 	//const bool F = is_FORMATION_USE();
 	const bool G = is_GROUPS_USE();
 
@@ -524,8 +524,6 @@ vector <vector <GDB> > PROCESS_GROUPS (const vector <vector <GDB> >& inGDB_G, co
 
 				if (!TILT) cout_method_text (hasoffset_GDB);
 
-				cout_original_tilted_text (TILT);
-
 				if (is_VIRTUAL_USE()) hasoffset_GDB = generate_virtual_striae (hasoffset_GDB);
 
 				INVERSION (hasoffset_GDB);
@@ -539,17 +537,22 @@ vector <vector <GDB> > PROCESS_GROUPS (const vector <vector <GDB> >& inGDB_G, co
 
 				const bool SUCCESSFULL = (STV.size() > 0 && SFV.size() > 0);
 
-				if (SUCCESSFULL && STRIAE_TO_PROCESS) {
+				const bool SUCC_STR = SUCCESSFULL && STRIAE_TO_PROCESS;
+
+				if (SUCC_STR) {
 
 					const size_t MX = STV.size() - 1;
 
 					hasoffset_GDB = apply_inversion_result (hasoffset_GDB, STV.at(MX));
-
-					hasoffset_GDB = apply_RUP_ANG_CLUSTERING_result (hasoffset_GDB);
 				}
-				process_GDB = combine_inversion_for_none_offset (process_GDB, hasoffset_GDB);
+				cout_original_tilted_text (TILT);
 
-				cout_inversion_results (process_GDB, SFV);
+				cout_inversion_results (hasoffset_GDB, SFV);
+				//cout_inversion_results (process_GDB, SFV);
+
+				if (SUCC_STR) hasoffset_GDB = apply_RUP_ANG_CLUSTERING_result (hasoffset_GDB);
+
+				process_GDB = combine_inversion_for_none_offset (process_GDB, hasoffset_GDB);
 			}
 			else cout_less_than_required_text (TILT);
 		}
