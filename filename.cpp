@@ -222,9 +222,9 @@ string generate_ACTUAL_PS_NAME () {
 
 	check_dataseparation_mode ();
 
-	if (is_GROUPSEPARATION_GROUPCODE ())	PS_NAME + US + GC.at(0);
-	if (is_GROUPSEPARATION_KMEANS ())		PS_NAME + US + GC.at(1);
-	if (is_GROUPSEPARATION_RUPANG ())		PS_NAME + US + GC.at(2);
+	if (is_GROUPSEPARATION_GROUPCODE ())	PS_NAME = PS_NAME + US + GC.at(0);
+	if (is_GROUPSEPARATION_KMEANS ())		PS_NAME = PS_NAME + US + GC.at(1);
+	if (is_GROUPSEPARATION_RUPANG ())		PS_NAME = PS_NAME + US + GC.at(2);
 
 	return PS_NAME + ".eps";
 }
@@ -277,7 +277,6 @@ string generate_ACTUAL_COMPLETED_RGF_NAME () {
 
 	return FN + ".rgf";
 }
-
 
 string generate_ACTUAL_WELL_PS_NAME () {
 

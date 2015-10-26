@@ -8,6 +8,7 @@
 #include <iomanip>
 #include <iostream>
 
+#include "allowed_keys.hpp"
 #include "assertions.hpp"
 #include "common.h"
 #include "filename.hpp"
@@ -1420,7 +1421,14 @@ bool is_processable_for_contouring (const vector <GDB>& inGDB) {
 void CONTOURING (const vector <GDB>& inGDB, ofstream& o, const CENTER center, const bool TILT) {
 
 	if (is_CONTOURING_NO()) return;
+
 	if (!is_processable_for_contouring (inGDB)) return;
+
+	const string DT = inGDB.at(0).DATATYPE;
+
+	if (is_allowed_lithology_datatype (DT)) return;
+
+	if (is_CONTOURING_STRIAE_BEARING_BEARING() && !is_allowed_striae_datatype(DT)) return;
 
 	vector <vector <vector <VCTR> > > NET = generate_net (9);
 

@@ -932,7 +932,7 @@ string generate_stress_colors (const double V) {
 
 	double P = 0.0;
 
-	if (is_GRAYSCALE_USE()) return ("0.8, 0.8, 0.8");
+	if (is_GRAYSCALE_USE()) return ("0.8 0.8 0.8");
 
 	if (is_in_range (0.0, 0.5, V)) {
 

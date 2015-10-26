@@ -411,7 +411,7 @@ void PS_border (const vector <GDB>& inGDB, ofstream& o) {
 
 				if (ENOUGH_STRIAE) T = T + ", GROUP '" + GC.at(2) + "' USING RUP CLUSTERING RESULT" ;
 			}
-			else ASSERT_DEAD_END();
+			else {};
 		}
 	}
 	else if (is_GROUPSEPARATION_IGNORE()) {}
@@ -797,11 +797,6 @@ void PS_mohr_circle (const vector <GDB>& inGDB, ofstream& o, const CENTER& mohrc
 
 			const VCTR stressvector = return_stressvector (ST, inGDB.at(i).N);
 
-			const double STR_MGNT = sqrt (
-					stressvector.X * stressvector.X +
-					stressvector.Y * stressvector.Y +
-					stressvector.Z * stressvector.Z);
-
 			const double stress_magnitude =
 					inGDB.at(i).N.X * stressvector.X +
 					inGDB.at(i).N.Y * stressvector.Y +
@@ -1088,12 +1083,11 @@ void PS_plane (const GDB& i, ofstream& o, const double X, const double Y, const 
 		DD = i.corr;
 		N = i.N;
 	}
+	if (is_VIRTUAL_USE()) N = flip_vector(N);
 
-	if (is_N_down(N)) N = flip_vector(N);
+	if (is_HEMISPHERE_UPPER ()) N = flip_vector(N);
 
 	double DIPDIR = DD.DIPDIR;
-
-	if (is_HEMISPHERE_UPPER()) DIPDIR = DIPDIR + 180.0;
 
 	vector <VCTR> PP;
 
@@ -1106,13 +1100,11 @@ void PS_plane (const GDB& i, ofstream& o, const double X, const double Y, const 
 
 	for (size_t j = 0; j < (steps * 2 + 1); j++) {
 
-		PP.push_back (ROTATE (axis, torotate, - (180.0 / (steps * 2)) * j));
+		double ANG = (180.0 / (steps * 2)) * j;
 
-		if (is_HEMISPHERE_UPPER()) {
+		PP.push_back (ROTATE (axis, torotate, -ANG));
 
-			PP.at(j).X = - PP.at(j).X;
-			PP.at(j).Y = - PP.at(j).Y;
-		}
+		if (is_HEMISPHERE_UPPER()) PP.at(j).Z = -PP.at(j).Z;
 
 		if (is_NET_WULFF()) {
 
@@ -1126,12 +1118,20 @@ void PS_plane (const GDB& i, ofstream& o, const double X, const double Y, const 
 		}
 	}
 
-	const double X_A = PP.at (steps).X;
-	const double Y_A = PP.at (steps).Y;
-	const double X_B = PP.at (steps * 2).X;
-	const double Y_B = PP.at (steps * 2).Y;
-	const double X_C = PP.at (0).X;
-	const double Y_C = PP.at (0).Y;
+	double X_A = PP.at (steps).X;
+	double Y_A = PP.at (steps).Y;
+	double X_B = PP.at (steps * 2).X;
+	double Y_B = PP.at (steps * 2).Y;
+	double X_C = PP.at (0).X;
+	double Y_C = PP.at (0).Y;
+
+	if (is_HEMISPHERE_UPPER()) {
+
+		X_B = PP.at (0).X;
+		Y_B = PP.at (0).Y;
+		X_C = PP.at (steps * 2).X;
+		Y_C = PP.at (steps * 2).Y;
+	}
 
 	const double b = sqrt ((X_A - X_C) * (X_A - X_C) + (Y_A - Y_C) * (Y_A - Y_C));
 	const double c = sqrt ((X_C - X_B) * (X_C - X_B) + (Y_C - Y_B) * (Y_C - Y_B)) / 2.0;
@@ -1159,6 +1159,30 @@ void PS_plane (const GDB& i, ofstream& o, const double X, const double Y, const 
 		Y_O = Y_A - r * COS (DIPDIR - 360.0);
 	}
 	else {}
+
+
+	if (is_HEMISPHERE_UPPER()) {
+
+		X_O = X_A + r * SIN (DIPDIR);
+		Y_O = Y_A + r * COS (DIPDIR);
+
+		if (is_in_range (90.0, 180.0, DIPDIR)) {
+
+			X_O = X_A + r * SIN (180.0 - DIPDIR);
+			Y_O = Y_A - r * COS (DIPDIR - 180.0);
+		}
+		else if (is_in_range (180.0, 270.0, DIPDIR)) {
+
+			X_O = X_A - r * SIN (DIPDIR - 180.0);
+			Y_O = Y_A - r * COS (DIPDIR - 180.0);
+		}
+		else if (is_in_range (270.0, 360.0, DIPDIR)) {
+
+			X_O = X_A - r * SIN (360.0 - DIPDIR);
+			Y_O = Y_A + r * COS (DIPDIR - 360.0);
+		}
+		else {}
+	}
 
 	if (is_CHK_PLOT_PLANE()) {
 
@@ -1274,6 +1298,7 @@ void PS_plane (const GDB& i, ofstream& o, const double X, const double Y, const 
 	color_PS (o, CLR);
 	linewidth_PS (o, LWD, 1);
 	newpath_PS (o);
+
 
 	if (is_NET_WULFF()) {
 
