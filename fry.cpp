@@ -137,14 +137,7 @@ STRESSTENSOR st_FRY (const vector <GDB>& inGDB) {
 	st._23 = D.at(second_eigenvalue).at(4);
 	st._13 = D.at(second_eigenvalue).at(5);
 
-	const double misfit1 = return_average_misfit (st, inGDB);
-
-	st = invert_stress_tensor (st);
-
-	const double misfit2 = return_average_misfit (st, inGDB);
-
-	if (misfit1 < misfit2) return invert_stress_tensor (st);
-	return st;
+	return try_stresstensot_or_invert (st, inGDB);
 }
 
 STRESSFIELD sf_FRY (const STRESSTENSOR& st) {

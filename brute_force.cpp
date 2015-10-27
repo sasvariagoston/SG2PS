@@ -412,7 +412,9 @@ STRESSTENSOR st_BRUTEFORCE (const vector <GDB>& inGDB) {
 	double MIN_ANG = BR_FINAL.at(0).ANG;
 	double MIN_PHI = BR_FINAL.at(0).PHI;
 
-	return (return_stresstensor_from_n1_ang_phi (MIN_N1, MIN_ANG, MIN_PHI));
+	const STRESSTENSOR st = return_stresstensor_from_n1_ang_phi (MIN_N1, MIN_ANG, MIN_PHI);
+
+	return try_stresstensot_or_invert (st, inGDB);
 }
 
 STRESSFIELD sf_BRUTEFORCE (STRESSTENSOR& st) {

@@ -125,11 +125,9 @@ STRESSFIELD sf_PTN (const vector <GDB>& inGDB) {
 	return sf;
 }
 
-STRESSTENSOR st_PTN (const STRESSFIELD& sf) {
+STRESSTENSOR st_PTN (const STRESSFIELD& sf, const vector <GDB> inGDB) {
 
-	const STRESSTENSOR ST = stresstensor_from_eigenvalue_eigenvector (sf);
+	const STRESSTENSOR st = stresstensor_from_eigenvalue_eigenvector (sf);
 
-	//return invert_stress_tensor (ST);
-
-	return ST;
+	return try_stresstensot_or_invert (st, inGDB);
 }

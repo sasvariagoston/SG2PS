@@ -107,7 +107,7 @@ STRESSTENSOR st_MICHAEL (const vector <GDB>& inGDB) {
 	st._23 =  X.at(4).at(0);
 	st._33 = - (st._11 + st._22);
 
-	return invert_stress_tensor (st);
+	return try_stresstensot_or_invert (st, inGDB);
 }
 
 STRESSFIELD sf_MICHAEL (const STRESSTENSOR& st) {

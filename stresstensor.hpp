@@ -15,6 +15,7 @@ STRESSTENSOR stresstensor_from_eigenvalue_eigenvector (STRESSFIELD sf);
 STRESSFIELD stress_regime (const STRESSFIELD& in);
 STRESSTENSOR convert_matrix_to_stresstensor (const vector <vector <double> >& IN);
 
+STRESSTENSOR try_stresstensot_or_invert (const STRESSTENSOR& st, const vector <GDB>& inGDB);
 STRESSTENSOR invert_stress_tensor (const STRESSTENSOR& st); //ok
 STRESSTENSOR add_stress_tensor (const STRESSTENSOR& st1, const STRESSTENSOR& st2); //ok
 

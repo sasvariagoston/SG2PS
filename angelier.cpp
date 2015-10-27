@@ -179,7 +179,9 @@ STRESSTENSOR st_ANGELIER (const vector <GDB>& inGDB) {
 
 	ANG_PRM parameters = angelier_parameters (processGDB);
 
-	return compute_angelier_stresstensor (parameters, processGDB);
+	STRESSTENSOR st = compute_angelier_stresstensor (parameters, processGDB);
+
+	return try_stresstensot_or_invert (st, processGDB);
 }
 
 STRESSFIELD sf_ANGELIER (const STRESSTENSOR& st) {

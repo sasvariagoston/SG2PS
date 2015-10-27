@@ -81,12 +81,7 @@ STRESSTENSOR st_SHAN (const vector <GDB>& inGDB) {
 	st._23 = D.at(first_eigenvalue).at(4);
 	st._33 = 0.0 - st._11 - st._22;
 
-	const double misfit1 = return_average_misfit (st, inGDB);
-	st = invert_stress_tensor (st);
-	const double misfit2 = return_average_misfit (st, inGDB);
-
-	if (misfit1 < misfit2) return invert_stress_tensor (st);
-	return st;
+	return try_stresstensot_or_invert (st, inGDB);
 }
 
 STRESSFIELD sf_SHAN (const STRESSTENSOR& st) {

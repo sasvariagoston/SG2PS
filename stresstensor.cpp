@@ -242,6 +242,19 @@ STRESSFIELD stress_regime (const STRESSFIELD& in) {
 	return out;
 }
 
+STRESSTENSOR try_stresstensot_or_invert (const STRESSTENSOR& st, const vector <GDB>& inGDB) {
+
+	const double ANG1 = return_average_misfit (st, inGDB);
+
+	STRESSTENSOR st2 = invert_stress_tensor(st);
+
+	const double ANG2 = return_average_misfit (st2, inGDB);
+
+	if (ANG1 < ANG2) return st;
+
+	return st2;
+}
+
 STRESSTENSOR invert_stress_tensor (const STRESSTENSOR& st) {
 
 	STRESSTENSOR out;

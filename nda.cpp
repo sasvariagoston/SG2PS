@@ -82,7 +82,7 @@ STRESSTENSOR st_NDA (const vector <GDB>& inGDB) {
 		st._23 = st._23 + pN * pU - tN * tU;
 		st._33 = st._33 + pU * pU - tU * tU;
 	}
-	return st;
+	return try_stresstensot_or_invert (st, inGDB);
 }
 
 STRESSFIELD sf_NDA (const STRESSTENSOR& st) {

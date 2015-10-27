@@ -16,6 +16,6 @@ STRESSTENSOR PTN_matrix (const vector <GDB>& inGDB, const string& axis); //ok
 
 STRESSFIELD sf_PTN (const vector <GDB>& inGDB); //ok
 
-STRESSTENSOR st_PTN (const STRESSFIELD& sf); //ok
+STRESSTENSOR st_PTN (const STRESSFIELD& sf, const vector <GDB> inGD); //ok
 
 #endif

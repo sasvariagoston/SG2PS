@@ -225,7 +225,7 @@ void INVERSION (const vector <GDB>& inGDB) {
 	}
 	else if (is_INVERSION_TURNER() && IS_STRIAE) {//OK
 		SFV.push_back (sf_PTN (inGDB));
-		STV.push_back (st_PTN (SFV.at(0)));
+		STV.push_back (st_PTN (SFV.at(0), inGDB));
 	}
 	else if (is_INVERSION_SHAN() && IS_STRIAE) {//OK
 		STV.push_back (st_SHAN(inGDB));
