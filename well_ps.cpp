@@ -563,8 +563,8 @@ void PS_well_coordinate_axes_DIPDIR (ofstream& o, const double X, const double L
 	font_PS(o, "ArialNarrow-Bold", 24);
 	color_PS (o, "0.9 0.9 0.9");
 
-	if (is_DATARULE_GERMAN()) 	text_PS (o, X + (PL_WDT - 3.5) * P.A, P.O1Y + 45.0 * P.D, 3, "DIP DIRECTION");
-	else text_PS (o, X + (PL_WDT - 1.2) * P.A, P.O1Y + 45.0 * P.D, 3, "STRIKE DIRECTION");
+	if (is_DATARULE_GERMAN()) 	text_PS (o, X + (PL_WDT - 5.5) * P.A, P.O1Y + 45.0 * P.D, 3, " DIP DIR");
+	else text_PS (o, X + (PL_WDT - 3.2) * P.A, P.O1Y + 45.0 * P.D, 3, "STRIKE DIR");
 
 	font_PS(o, "ArialNarrow", 12);
 
@@ -1684,7 +1684,12 @@ void PS_well_intervals (const vector <WELL_INTERVAL>& INTERVAL, ofstream& o, con
 		const double Y1 = P.O1Y - LENGTH * ((MAX - MIN_VAL) / (MAX_VAL - MIN_VAL));
 		const double Y2 = P.O1Y - LENGTH * ((MIN - MIN_VAL) / (MAX_VAL - MIN_VAL));
 
-		double CLR_RATIO = 100 * (1.0 * (INTERVAL.at(i).SIZE) - MIN_DATA) / (MAX_DATA - MIN_DATA);
+		double CLR_RATIO = 0.0;
+
+		if (! is_WELL_INTERVAL_DATANUMBER()) {
+
+			CLR_RATIO = 100 * (1.0 * (INTERVAL.at(i).SIZE) - MIN_DATA) / (MAX_DATA - MIN_DATA);
+		}
 
 		if (INTERVAL.at(i).SIZE == 0) CLR_RATIO = 0.0;
 
