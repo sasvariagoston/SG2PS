@@ -1044,50 +1044,32 @@ void PS_lineation (const GDB& i, ofstream& o, const CENTER& center, const STRESS
 
 void PS_plane (const GDB& i, ofstream& o, const double X, const double Y, const double R, const string TYPE) {
 
-	const bool OT = is_allowed_bedding_overturned_sense (i.avS0offset);
-	const bool OTB = is_allowed_bedding_overturned_sense (i.OFFSET);
+	if (!is_NET_SCHMIDT() && ! is_NET_WULFF()) ASSERT_DEAD_END();
+	if (!is_HEMISPHERE_UPPER() && ! is_HEMISPHERE_LOWER()) ASSERT_DEAD_END();
 
 	const bool AV = TYPE == "AV";
 	const bool C = TYPE == "C";
 	const bool FOLD = TYPE == "FOLD";
 
+	const bool OT = is_allowed_bedding_overturned_sense (i.avS0offset);
+	const bool OTB = is_allowed_bedding_overturned_sense (i.OFFSET);
 	const bool AVO = OT && AV;
 
-	size_t 					steps = 1;
-	if (is_NET_SCHMIDT()) 	steps = 60;
+	size_t steps = 1;
+	if (is_NET_SCHMIDT()) steps = 60;
 
-	VCTR N;
-	DIPDIR_DIP DD;
+	DIPDIR_DIP 			DD = i.corr;
+	if (C) 				DD = i.corrL;
+	else if (AV || AVO) DD = i.avS0d;
+	else if (FOLD) 		DD = dipdir_dip_from_NXNYNZ (i.fold_great_circle_N);
+	else {}
 
-	if (C) {
+	const VCTR axis = NXNYNZ_from_dipdir_dip(DD);
 
-		DD = i.corrL;
-		VCTR D = i.DC;
-		if (is_DC_up(D)) D = flip_vector(D);
-		N = NXNYNZ_from_DXDYDZ (D);
-	}
-	else if (AV || AVO) {
-
-		DD = i.avS0d;
-		VCTR D =  i.avS0D;
-		if (is_D_up(D)) D = flip_vector(D);
-		N = NXNYNZ_from_DXDYDZ (D);
-	}
-	else if (FOLD) {
-
-		DD = dipdir_dip_from_NXNYNZ (i.fold_great_circle_N);
-		N = i.fold_great_circle_N;
-	}
-	else {
-
-		DD = i.corr;
-		N = i.N;
-	}
-	if (is_VIRTUAL_USE()) N = flip_vector(N);
-
-	if (is_HEMISPHERE_UPPER ()) N = flip_vector(N);
+	if (is_N_down (axis)) ASSERT_DEAD_END();
 
 	double DIPDIR = DD.DIPDIR;
+	if (is_HEMISPHERE_UPPER ()) DIPDIR = DD.DIPDIR + 180;
 
 	vector <VCTR> PP;
 
@@ -1095,8 +1077,6 @@ void PS_plane (const GDB& i, ofstream& o, const double X, const double Y, const 
 			SIN (DIPDIR - 90.0),
 			COS (DIPDIR - 90.0),
 			0.0);
-
-	const VCTR axis = N;
 
 	for (size_t j = 0; j < (steps * 2 + 1); j++) {
 
@@ -1108,14 +1088,29 @@ void PS_plane (const GDB& i, ofstream& o, const double X, const double Y, const 
 
 		if (is_NET_WULFF()) {
 
-			PP.at(j).X = (PP.at(j).X / (1.00 - PP.at(j).Z)) * R + X;
-			PP.at(j).Y = (PP.at(j).Y / (1.00 - PP.at(j).Z)) * R + Y;
+			PP.at(j).X = (PP.at(j).X / (1.00 - PP.at(j).Z));
+			PP.at(j).Y = (PP.at(j).Y / (1.00 - PP.at(j).Z));
 		}
 		else {
 
-			PP.at(j).X = (PP.at(j).X / sqrt(1.00 - PP.at(j).Z)) * R + X;
-			PP.at(j).Y = (PP.at(j).Y / sqrt(1.00 - PP.at(j).Z)) * R + Y;
+			PP.at(j).X = (PP.at(j).X / sqrt(1.00 - PP.at(j).Z));
+			PP.at(j).Y = (PP.at(j).Y / sqrt(1.00 - PP.at(j).Z));
 		}
+		PP.at(j).Z = 0.0;
+	}
+	const VCTR FST = PP.at(0);
+	const VCTR LST = PP.at(steps * 2);
+
+	if (!is_in_range(FST.X - 0.0001, FST.X + 0.0001, - LST.X)) ASSERT_DEAD_END();
+	if (!is_in_range(FST.Y - 0.0001, FST.Y + 0.0001, - LST.Y)) ASSERT_DEAD_END();
+
+	if (!is_in_range(0.9999, 1.0001, vectorlength (FST))) ASSERT_DEAD_END();
+	if (!is_in_range(0.9999, 1.0001, vectorlength (LST))) ASSERT_DEAD_END();
+
+	for (size_t j = 0; j < PP.size(); j++) {
+
+		PP.at(j).X = PP.at(j).X * R + X;
+		PP.at(j).Y = PP.at(j).Y * R + Y;
 	}
 
 	double X_A = PP.at (steps).X;
@@ -1125,14 +1120,6 @@ void PS_plane (const GDB& i, ofstream& o, const double X, const double Y, const 
 	double X_C = PP.at (0).X;
 	double Y_C = PP.at (0).Y;
 
-	if (is_HEMISPHERE_UPPER()) {
-
-		X_B = PP.at (0).X;
-		Y_B = PP.at (0).Y;
-		X_C = PP.at (steps * 2).X;
-		Y_C = PP.at (steps * 2).Y;
-	}
-
 	const double b = sqrt ((X_A - X_C) * (X_A - X_C) + (Y_A - Y_C) * (Y_A - Y_C));
 	const double c = sqrt ((X_C - X_B) * (X_C - X_B) + (Y_C - Y_B) * (Y_C - Y_B)) / 2.0;
 
@@ -1140,8 +1127,12 @@ void PS_plane (const GDB& i, ofstream& o, const double X, const double Y, const 
 
 	const double r =  c / SIN (alfa);
 
-	double X_O = X_A - r * SIN (DIPDIR);
-	double Y_O = Y_A - r * COS (DIPDIR);
+
+	double X_O = NaN ();
+	double Y_O = NaN ();
+
+	X_O = X_A - r * SIN (DIPDIR);
+	Y_O = Y_A - r * COS (DIPDIR);
 
 	if (is_in_range (90.0, 180.0, DIPDIR)) {
 
@@ -1160,29 +1151,30 @@ void PS_plane (const GDB& i, ofstream& o, const double X, const double Y, const 
 	}
 	else {}
 
+	const double D_AO = sqrt ((X_A - X_O) * (X_A - X_O) + (Y_A - Y_O) * (Y_A - Y_O));
+	const double D_BO = sqrt ((X_B - X_O) * (X_B - X_O) + (Y_B - Y_O) * (Y_B - Y_O));
+	const double D_CO = sqrt ((X_C - X_O) * (X_C - X_O) + (Y_C - Y_O) * (Y_C - Y_O));
 
-	if (is_HEMISPHERE_UPPER()) {
+	if (is_NET_SCHMIDT()) {
 
-		X_O = X_A + r * SIN (DIPDIR);
-		Y_O = Y_A + r * COS (DIPDIR);
-
-		if (is_in_range (90.0, 180.0, DIPDIR)) {
-
-			X_O = X_A + r * SIN (180.0 - DIPDIR);
-			Y_O = Y_A - r * COS (DIPDIR - 180.0);
-		}
-		else if (is_in_range (180.0, 270.0, DIPDIR)) {
-
-			X_O = X_A - r * SIN (DIPDIR - 180.0);
-			Y_O = Y_A - r * COS (DIPDIR - 180.0);
-		}
-		else if (is_in_range (270.0, 360.0, DIPDIR)) {
-
-			X_O = X_A - r * SIN (360.0 - DIPDIR);
-			Y_O = Y_A + r * COS (DIPDIR - 360.0);
-		}
-		else {}
+		if (! is_in_range(D_AO - 0.01*D_AO, D_AO + 0.01*D_AO, r)) ASSERT_DEAD_END();
+		if (! is_in_range(D_BO - 0.01*D_BO, D_BO + 0.01*D_BO, D_CO)) ASSERT_DEAD_END();
 	}
+	else {
+
+		if (! is_in_range(D_AO - 0.01*D_AO, D_AO + 0.01*D_AO, r)) ASSERT_DEAD_END();
+		if (! is_in_range(D_BO - 0.01*D_BO, D_BO + 0.01*D_BO, r)) ASSERT_DEAD_END();
+		if (! is_in_range(D_CO - 0.01*D_CO, D_CO + 0.01*D_CO, r)) ASSERT_DEAD_END();
+	}
+
+	if (!is_in_range(X-R-1, X+R+1, X_A)) ASSERT_DEAD_END();
+	if (!is_in_range(Y-R-1, Y+R+1, Y_A)) ASSERT_DEAD_END();
+
+	if (!is_in_range(X-R-1, X+R+1, X_B)) ASSERT_DEAD_END();
+	if (!is_in_range(Y-R-1, Y+R+1, Y_B)) ASSERT_DEAD_END();
+
+	if (!is_in_range(X-R-1, X+R+1, X_C)) ASSERT_DEAD_END();
+	if (!is_in_range(Y-R-1, Y+R+1, Y_C)) ASSERT_DEAD_END();
 
 	if (is_CHK_PLOT_PLANE()) {
 
@@ -1211,7 +1203,6 @@ void PS_plane (const GDB& i, ofstream& o, const double X, const double Y, const 
 			exit (77);
 		}
 	}
-
 	string CLR;
 	string DSH;
 	double LWD;
@@ -1324,9 +1315,9 @@ void PS_plane (const GDB& i, ofstream& o, const double X, const double Y, const 
 	}
 	setdash_PS (o, DSH);
 	stroke_PS(o);
-
 	setdash_PS (o, "   ");
 }
+
 
 void PS_polepoint (const GDB& i, ofstream& o, const double X, const double Y, const double R, const string TYPE) {
 
@@ -2615,7 +2606,18 @@ void setdash_PS (ofstream& o, const string DASH) {
 
 void OUTPUT_TO_PS (const vector <vector <GDB> >& in_GDB_G, const vector <vector <GDB> >& t_GDB_G) {
 
-	if (in_GDB_G.size() != t_GDB_G.size()) ASSERT_DEAD_END();
+	if (in_GDB_G.size() != t_GDB_G.size()) {
+
+		cout << endl << endl;
+
+		cout << "    The size of your measured database is different from the one " << endl;
+		cout << "    corrected with the average bedding, so cannot plot at the moment." << endl;
+		cout << "    The problem could be a result of the applied clustering method." << endl;
+
+		cout << endl << endl;
+
+		return;
+	}
 
 	for (size_t i = 0; i < in_GDB_G.size(); i++) {
 
