@@ -56,6 +56,16 @@ void throw_std_logic_error(const std::string& message);
 	} \
 }
 
+#define ASSERT_NE(val_1, val_2) { \
+    if (val_1==val_2) { \
+        std::ostringstream os; \
+        os << #val_1 << " != " << #val_2 << " failed: "; \
+        os << val_1 << " == " << val_2 << '\n'; \
+        os << "In \'" << FUNCTION_NAME << "\' at "<< __FILE__ << ':' << __LINE__ ; \
+        throw_std_logic_error(os.str()); \
+    } \
+}
+
 #define ASSERT_GE(val_1, val_2) { \
 	if (val_1 < val_2) { \
 		std::ostringstream os; \
@@ -119,6 +129,27 @@ void print_values(std::ostream& os, const T (&array)[n]) {
     if (count!=1) { \
         std::ostringstream os; \
         os << "Expected exactly 1 true value but got " << count <<  " in \'" \
+           << FUNCTION_NAME << "\' at "<< __FILE__ << ':' << __LINE__ << '\n'; \
+        os << "Arguments were: " << #__VA_ARGS__ << '\n' ; \
+        os << "Their values:   " ; \
+        print_values(os, arr); \
+        throw_std_logic_error(os.str()); \
+    } \
+}
+
+template <size_t n>
+bool has_nan_or_inf(const double (&array)[n]) {
+    for (size_t i=0; i<n; ++i)
+        if (!isfinite(array[i]))
+            return true;
+    return false;
+}
+
+#define ASSERT_FINITE(...) { \
+    double arr[] = { __VA_ARGS__ } ; \
+    if (has_nan_or_inf(arr)) { \
+        std::ostringstream os; \
+        os << "NaN or infinity found in \'" \
            << FUNCTION_NAME << "\' at "<< __FILE__ << ':' << __LINE__ << '\n'; \
         os << "Arguments were: " << #__VA_ARGS__ << '\n' ; \
         os << "Their values:   " ; \

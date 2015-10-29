@@ -993,7 +993,10 @@ void rescale_peaks () {
 
 	for (size_t i = 0; i < PEAK.size(); i++) if (PEAK.at(i).COUNT > MAX) MAX = PEAK.at(i).COUNT;
 
-	for (size_t i = 0; i < PEAK.size(); i++) PEAK.at(i).COUNT = PEAK.at(i).COUNT / MAX;
+    if (MAX > 0) {
+        for (size_t i = 0; i < PEAK.size(); i++)
+            PEAK.at(i).COUNT = PEAK.at(i).COUNT / MAX;
+    }
 
 	return;
 }
@@ -1067,7 +1070,8 @@ void plot_well_faults (ofstream& o, const double X, const double LENGTH, const d
 	for (size_t i = 0; i < FAULTS.size(); i++) {
 
 		const double DEPTH = FAULTS.at(i).DEPTH;
-		const double VALUE =(FAULTS.at(i).COUNT / MAX) * (FAULTS.at(i).COUNT / MAX);
+		const double count = FAULTS.at(i).COUNT;
+		const double VALUE =(count / MAX) * (count / MAX);
 
 		const double ACT_data_X = X + (PL_WDT * P.A * VALUE);
 		const double ACT_data_Y = P.O1Y - (LENGTH * ((DEPTH - MIN_VAL) / (MAX_VAL - MIN_VAL)));
@@ -1608,6 +1612,11 @@ void PS_well_intervals_error (const vector <WELL_INTERVAL>& INTERVAL, ofstream& 
 		if (SD < MIN_ERROR) MIN_ERROR = SD;
 	}
 
+    if (!INTERVAL.empty()) {
+        ASSERT_LE(MIN_ERROR, MAX_ERROR);
+        ASSERT_NE(MIN_ERROR, 999.0);
+    }
+
 	for (size_t i = 0; i < INTERVAL.size(); i++) {
 
 		const WELL_INTERVAL I = INTERVAL.at(i);
@@ -1621,12 +1630,18 @@ void PS_well_intervals_error (const vector <WELL_INTERVAL>& INTERVAL, ofstream& 
 		const double COUNT = string_to_double (size_t_to_string (i));
 		const double END = string_to_double (size_t_to_string (INTERVAL.size()));
 
+        ASSERT_NE(END, 0.0);
+
 		const double WIDTH = (PL_WDT * P.A) / END;
 
 		const double X1 = X + PL_WDT * P.A * (COUNT / END);
 
+        ASSERT_NE(MAX_VAL, MIN_VAL);
+
 		const double Y1 = P.O1Y - LENGTH * ((MAX - MIN_VAL) / (MAX_VAL - MIN_VAL));
 		const double Y2 = P.O1Y - LENGTH * ((MIN - MIN_VAL) / (MAX_VAL - MIN_VAL));
+
+        ASSERT_NE(MAX_ERROR, MIN_ERROR);
 
 		double CLR_RATIO = 100 * (1.0 * (SD - MIN_ERROR)) / (MAX_ERROR - MIN_ERROR);
 
@@ -1667,6 +1682,11 @@ void PS_well_intervals (const vector <WELL_INTERVAL>& INTERVAL, ofstream& o, con
 		if (INTERVAL.at(i).SIZE < MIN_DATA) MIN_DATA = INTERVAL.at(i).SIZE;
 	}
 
+    if (!INTERVAL.empty()) {
+        ASSERT_LE(MIN_DATA, MAX_DATA);
+        ASSERT_NE(MIN_DATA, 999);
+    }
+
 	for (size_t i = 0; i < INTERVAL.size(); i++) {
 
 		newpath_PS(o);
@@ -1677,9 +1697,13 @@ void PS_well_intervals (const vector <WELL_INTERVAL>& INTERVAL, ofstream& o, con
 		const double COUNT = string_to_double (size_t_to_string (i));
 		const double END = string_to_double (size_t_to_string (INTERVAL.size()));
 
+		ASSERT_NE(END, 0.0);
+
 		const double WIDTH = (PL_WDT * P.A) / END;
 
 		const double X1 = X + PL_WDT * P.A * (COUNT / END);
+
+        ASSERT_NE(MAX_VAL, MIN_VAL);
 
 		const double Y1 = P.O1Y - LENGTH * ((MAX - MIN_VAL) / (MAX_VAL - MIN_VAL));
 		const double Y2 = P.O1Y - LENGTH * ((MIN - MIN_VAL) / (MAX_VAL - MIN_VAL));
@@ -1688,6 +1712,7 @@ void PS_well_intervals (const vector <WELL_INTERVAL>& INTERVAL, ofstream& o, con
 
 		if (! is_WELL_INTERVAL_DATANUMBER()) {
 
+	        ASSERT_NE(MAX_DATA, MIN_DATA);
 			CLR_RATIO = 100 * (1.0 * (INTERVAL.at(i).SIZE) - MIN_DATA) / (MAX_DATA - MIN_DATA);
 		}
 

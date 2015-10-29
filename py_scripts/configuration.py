@@ -66,5 +66,5 @@ TO_TYPE = { 's' : str,
             'd' : float } # NaN should be represented by the string NaN
 
 # Thresholds in floating point comparison
-REL_TOL = 1.0e-5
-ABS_TOL = 1.0e-5
+REL_TOL = 1.0e-4
+ABS_TOL = 1.0e-4

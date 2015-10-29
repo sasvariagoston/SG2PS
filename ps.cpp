@@ -2134,7 +2134,7 @@ void PS_SYMBOLS_STRIAE (ofstream& o) {
 
 	linewidth_PS (o, 0.7, 1);
 	if (is_GRAYSCALE_USE()) color_PS (o, "0.0 0.0 0.0");
-	else color_PS (o, "0.0 0.0 5.0");
+	else color_PS (o, "0.0 0.0 1.0");
 
 	if (I) {
 
@@ -2505,14 +2505,28 @@ void newpath_PS (ofstream& o) {
 	o << " newpath" << '\n';
 }
 
-void color_PS (ofstream& o, const string& RGB) {
+bool is_valid_color(const string& s) {
+    stringstream ss(s);
+    double r=-1, g=-1, b=-1;
+    string rest;
+    ss >> r >> g >> b >> rest;
+    if (r < 0 || r > 1 || g < 0 || g > 1 || b < 0 || b > 1)
+        return false;
+    double colors[] = {r, g, b};
+    if (has_nan_or_inf(colors))
+        return false;
+    return rest.empty();
+}
 
+void color_PS (ofstream& o, const string& RGB) {
+    ASSERT2(is_valid_color(RGB), RGB);
 	o << " " << RGB << " setrgbcolor" << '\n';
 }
 
 void text_PS (ofstream& o, const double X, const double Y, const int decimals, const string text) {
 
 	o << fixed << setprecision (decimals) << flush;
+    ASSERT_FINITE(X, Y);
 	o << " " << X << " " << Y << " moveto (" << text << ") show" << '\n';
 }
 
@@ -2524,42 +2538,49 @@ void text_PS (ofstream& o, const string text) {
 void moveto_PS (ofstream& o, const double X, const double Y, const int decimals) {
 
 	o << fixed << setprecision (decimals) << flush;
+	ASSERT_FINITE(X, Y);
 	o << " " << X << " " << Y << " moveto" << '\n';
 }
 
 void curveto_PS (ofstream& o, const double AX, const double AY, const double BX, const double BY, const double CX, const double CY, const int decimals) {
 
 	o << fixed << setprecision (decimals) << flush;
+	ASSERT_FINITE(AX, AY, BX, BY, CX, CY);
 	o << " " << AX << " " << AY << " " << BX << " " << BY << " " << CX << " " << CY << " curveto" << '\n';
 }
 
 void lineto_PS (ofstream& o, const double X, const double Y, const int decimals) {
 
 	o << fixed << setprecision (decimals) << flush;
+	ASSERT_FINITE(X, Y);
 	o << " " << X << " " << Y << " lineto" << '\n';
 }
 
 void rlineto_PS (ofstream& o, const double X, const double Y, const int decimals) {
 
 	o << fixed << setprecision (decimals) << flush;
+    ASSERT_FINITE(X, Y);
 	o << " " << X << " " << Y << " rlineto" << '\n';
 }
 
 void translate_PS (ofstream& o, const double X, const double Y, const int decimals) {
 
 	o << fixed << setprecision (decimals) << flush;
+    ASSERT_FINITE(X, Y);
 	o << " " << X << " " << Y << " translate" << '\n';
 }
 
 void rotate_PS (ofstream& o, const double ANG, const int decimals) {
 
 	o << fixed << setprecision (decimals) << flush;
+    ASSERT_FINITE(ANG);
 	o << " " << ANG << " rotate" << '\n';
 }
 
 void linewidth_PS (ofstream& o, const double LW, const int decimals) {
 
 	o << fixed << setprecision (decimals) << flush;
+    ASSERT_FINITE(LW);
 	o << "  " << LW << " setlinewidth" << '\n';
 }
 
@@ -2581,6 +2602,7 @@ void font_PS (ofstream& o, const string& font, const size_t size) {
 void arc_PS (ofstream& o, const double X, const double Y, const double R, const double ANG_STR, const double ANG_END, const int decimals) {
 
 	o << fixed << setprecision (decimals) << flush;
+	ASSERT_FINITE(X, Y, R, ANG_STR, ANG_END);
 	o << " " << X << " " << Y << " " << R << " " << ANG_STR << " " << ANG_END << " arc" << '\n';
 }
 
