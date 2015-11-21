@@ -11,7 +11,7 @@
 
 using namespace std;
 
-inline double NaN() { return numeric_limits<double>::quiet_NaN(); }
+inline double NaN() { return numeric_limits<double>::signaling_NaN(); }
 
 struct VCTR {
 
@@ -122,6 +122,8 @@ struct PAPER {
 
 struct CENTER {
 
+    CENTER() { X = Y = radius = NaN(); }
+
 	double X, Y, radius;
 };
 
@@ -166,17 +168,23 @@ struct ANG_PRM {
 
 struct DENSITY {
 
+    DENSITY() { percentage = NaN(); }
+
 	DIPDIR_DIP direction;
 	double percentage;
 };
 
 struct XY {
 
+    XY() { X = Y = NaN(); }
+
 	double X;
 	double Y;
 };
 
 struct RUP_table {
+
+    RUP_table() { k = v = delta = C = NaN(); clusternumber = numeric_limits<size_t>::max(); }
 
 	size_t clusternumber;
 	double k;
@@ -187,6 +195,8 @@ struct RUP_table {
 
 struct HISTOGRAM {
 
+    HISTOGRAM() { BIN_MIN = NaN(); COUNT = numeric_limits<int>::min(); }
+
 	double BIN_MIN;
 	int COUNT;
 	string GC;
@@ -194,12 +204,16 @@ struct HISTOGRAM {
 
 struct VALLEY {
 
+    VALLEY() { BIN_CENTER = NaN(); BIN_ID=numeric_limits<size_t>::max(); }
+
 	size_t BIN_ID;
 	double BIN_CENTER;
 	string DIR;
 };
 
 struct line_RUP_ANG {
+
+    line_RUP_ANG() { L_STR=L_END=NaN(); COUNT=numeric_limits<size_t>::max(); }
 
 	double L_STR;
 	double L_END;
@@ -209,6 +223,8 @@ struct line_RUP_ANG {
 
 struct BRDR {
 
+    BRDR() { border=NaN(); COUNT=numeric_limits<size_t>::max(); }
+
 	double border;
 	string ID;
 	size_t COUNT;
@@ -216,6 +232,8 @@ struct BRDR {
 
 
 struct TRIANGLE {
+
+    TRIANGLE() { GROUP=COUNT=numeric_limits<size_t>::max(); }
 
 	size_t GROUP;
 	VCTR A;
@@ -225,6 +243,8 @@ struct TRIANGLE {
 };
 
 struct GRID_CENTER {
+
+    GRID_CENTER() { COUNT=numeric_limits<size_t>::max(); }
 
 	VCTR CENTER;
 	size_t COUNT;
@@ -243,6 +263,8 @@ struct LINE {
 };
 
 struct BRUTEFORCE_RESULT {
+
+    BRUTEFORCE_RESULT() { ANG=PHI=MISFIT=NaN(); }
 
 	VCTR NRM;
 	double ANG;
@@ -288,6 +310,8 @@ struct WELL_FREQUENCY {
 
 struct WELL_INTERVAL {
 
+    WELL_INTERVAL() {MIN=MAX=DEPTH=INT_AV_DD_STDEV=INT_AV_D_STDEV=D_DERIV=DD_DERIV=NaN(); SIZE=numeric_limits<size_t>::max();}
+
 	double MIN;
 	double MAX;
 
@@ -307,12 +331,16 @@ struct WELL_INTERVAL {
 
 struct TRJ {
 
+    TRJ() { DEPTH = X_AZIMUTH = Y_PLUNGE = NaN(); }
+
 	double DEPTH;
 	double X_AZIMUTH;
 	double Y_PLUNGE;
 };
 
 struct PEAK_TO_PLOT {
+
+    PEAK_TO_PLOT() { DEPTH = VALUE = COUNT = NaN(); }
 
 	double DEPTH;
 	double VALUE;

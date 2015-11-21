@@ -9,7 +9,7 @@
 //#include <iostream>
 
 #include "angelier.h"
-//#include "assertions.hpp"
+#include "assertions.hpp"
 #include "allowed_keys.hpp"
 #include "brute_force.hpp"
 #include "bingham.h"
@@ -64,6 +64,12 @@ bool check_dataset_geometry_homogenity (const vector <GDB>& inGDB) {
 	vector <GDB> TEST = inGDB;
 	const size_t SIZE = TEST.size() - 1;
 
+	// FIXME Wrap this FINITE check together with the stable_sort in a function
+	//       and put it into data_sort
+	for (size_t i=0; i<TEST.size(); ++i) {
+	    const GDB& e = TEST.at(i);
+	    ASSERT_FINITE(e.corr.DIP, e.corr.DIPDIR, e.corrL.DIP, e.corrL.DIPDIR);
+	}
 	stable_sort (TEST.begin(), TEST.end(), bycorrDIPDIRcorrDIPcorrLDIPDIRcorrLDIP);
 
 	const bool STRIAE = 	is_allowed_striae_datatype(TEST.at(0).DATATYPE);
@@ -84,6 +90,8 @@ bool check_dataset_geometry_homogenity (const vector <GDB>& inGDB) {
 	const double minLD = TEST.at(0).corrL.DIP;
 	const double maxLD = TEST.at(SIZE).corrL.DIP;
 	const double var4 = fabs(maxLD - minLD);
+
+	ASSERT_FINITE(var1, var2, var3, var4);
 
 	if (SC || STRIAE) return (var1 > 0.1 || var2 > 0.1 || var3 > 0.1 || var4 > 0.1);
 	else return (var1 > 0.1 || var2 > 0.1);
@@ -111,8 +119,20 @@ vector <GDB> return_GDB_with_no_homogeneous_data (const vector <GDB>& inGDB) {
 	const bool STRIAE = 	(is_allowed_striae_datatype(processGDB.at(0).DATATYPE));
 	const bool SC = 		(is_allowed_SC_datatype(processGDB.at(0).DATATYPE));
 
-	if (SC || STRIAE)	stable_sort (processGDB.begin(), processGDB.end(), bycorrDIPDIRcorrDIPcorrLDIPDIRcorrLDIP);
-	else 				stable_sort (processGDB.begin(), processGDB.end(), bycorrDIPDIRcorrDIP);
+	if (SC || STRIAE) {
+	    for (size_t i=0; i<processGDB.size(); ++i) {
+	        const GDB& e = processGDB.at(i);
+	        ASSERT_FINITE(e.corr.DIP, e.corr.DIPDIR, e.corrL.DIP, e.corrL.DIPDIR);
+	    }
+	    stable_sort (processGDB.begin(), processGDB.end(), bycorrDIPDIRcorrDIPcorrLDIPDIRcorrLDIP);
+	}
+	else {
+        for (size_t i=0; i<processGDB.size(); ++i) {
+            const GDB& e = processGDB.at(i);
+            ASSERT_FINITE(e.corr.DIP, e.corr.DIPDIR);
+        }
+	    stable_sort (processGDB.begin(), processGDB.end(), bycorrDIPDIRcorrDIP);
+	}
 
 	for (size_t i = 0; i < processGDB.size() - 1; i++) {
 

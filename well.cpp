@@ -177,6 +177,8 @@ double record_derivate (const bool DIPDIR, const WELL_INTERVAL& ACT, const WELL_
 	}
 	else OUT = fabs ((NXT.INT_AV_DD.DIP - ACT.INT_AV_DD.DIP) / (NXT.DEPTH - ACT.DEPTH));
 
+    ASSERT_FINITE(OUT);
+
 	return OUT;
 }
 

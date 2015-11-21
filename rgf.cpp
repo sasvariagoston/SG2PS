@@ -113,6 +113,8 @@ vector <GDB> fix_360_0 (const vector <GDB>& inGDB) {
 		const double DD = inGDB.at(i).corr.DIPDIR;
 		const double D  = inGDB.at(i).corr.DIP;
 
+		ASSERT_FINITE(DD, D);
+
 		if (DD == 360.0) outGDB.at(i).corr.DIPDIR = 360.0 - SN;
 		if (DD ==   0.0) outGDB.at(i).corr.DIPDIR = SN;
 

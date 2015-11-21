@@ -1040,6 +1040,8 @@ CENTR_VECT unitvector (CENTR_VECT in) {
 
 VCTR declare_vector (const double a, const double b, const double c) {
 
+    ASSERT_FINITE(a, b, c);
+
 	VCTR o;
 
 	o.X = a;
@@ -1050,6 +1052,8 @@ VCTR declare_vector (const double a, const double b, const double c) {
 }
 
 CENTR_VECT declare_vector (const double a, const double b, const double c, const double d, const double e, const double f) {
+
+    ASSERT_FINITE(a, b, c, d, e, f);
 
 	CENTR_VECT o;
 
@@ -1674,7 +1678,7 @@ string version_id() {
 }
 
 bool is_in_range (const double range_min, const double range_max, const double in) {
-
+    ASSERT_FINITE(in);
 	double SN = 10e-8;
 
 	return (range_min - SN <= in && in <= range_max + SN);

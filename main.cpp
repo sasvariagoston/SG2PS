@@ -10,9 +10,12 @@
 
 using namespace std;
 
+void enable_fpe();
 void real_main(int argc, char *argv[]);
 
 int main (int argc, char *argv[]) {
+
+    enable_fpe(); // does nothing if ENABLE_FPE is not defined
 
     try {
         real_main(argc, argv);
