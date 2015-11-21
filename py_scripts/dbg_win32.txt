@@ -1,3 +1,4 @@
+
 Start the MinGW Shell
 
 You can paste stuff into the shell with Shift + Insert
@@ -5,6 +6,16 @@ You can paste stuff into the shell with Shift + Insert
 Put Python on the path, if necessary (does python --version work?):
 
 export PATH=/c/Python27:/c/Python27/Scripts:$PATH
+
+If built from the Eclipse IDE, just issue
+ 
+  sg2ps_runner.py
+
+from the py_scripts directory.
+
+--------------------------------------------------------------
+
+If that did not work, then:
 
 Apparently, we have to put gdb on the path too:
 
