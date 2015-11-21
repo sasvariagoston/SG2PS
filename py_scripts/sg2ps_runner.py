@@ -12,8 +12,9 @@ from shutil import rmtree, copy
 
 # A hackish way to import the configuration
 sys.path.append(dirname(__file__))
-from configuration import RGF_FOLDER, INPUT_EXT, ETALON_DIR, TOCOMP_DIR, \
-                          EXTENSION, SG2PS_EXE, FLAG, TESTSET, IGNORE, LOG_EXT
+from configuration import RUN_IN_DEBUGGER, RGF_FOLDER, INPUT_EXT, ETALON_DIR, \
+                          TOCOMP_DIR, EXTENSION, SG2PS_EXE, FLAG, TESTSET, \
+                          IGNORE, LOG_EXT
 from csv_test import main as csvtest_main
 
 def main():
@@ -55,10 +56,9 @@ def main():
     # Run the sg2ps executable on the projects in TOCOMP_DIR
     # and check if each project generates at least one CSV file
     previous_csv_files = set()
-    for f in projects:
-        cmd = [SG2PS_EXE, FLAG, f]
-        print('Executing command: {} {} {}'.format(*cmd))
-        with open(join(TOCOMP_DIR, f+LOG_EXT), 'w') as logfile:
+    for project_name in projects:
+        cmd = build_command(project_name)
+        with open(join(TOCOMP_DIR, project_name+LOG_EXT), 'w') as logfile:
             ret = call(cmd, cwd=TOCOMP_DIR, stdout=logfile)
             # FIXME Simply log and ignore all errors? Otherwise test failures
             #       cannot be handled, which return non-zero return codes.
@@ -95,6 +95,19 @@ def collect_project_names(to_cp):
     #
     projects.difference_update(IGNORE)
     return sorted(projects)
+
+
+def build_command(project_name):
+    cmd = [SG2PS_EXE, FLAG, project_name]
+    if RUN_IN_DEBUGGER:
+        cmd = ['gdb', '--batch', '--command=stacktrace.gdb', '--args'] + cmd
+    #
+    print('Command:', end=' ')
+    for elem in cmd:
+        print(elem, end=' ')
+    print()
+    #
+    return cmd
 
 
 def get_new_csv_files(directory, previous_files):

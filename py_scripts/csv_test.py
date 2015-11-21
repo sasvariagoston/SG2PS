@@ -21,9 +21,10 @@ from configuration import ETALON_DIR, TOCOMP_DIR, EXTENSION, SPREADSHEETS_DIR, \
 
 #-------------------------------------------------------------------------------
 
-errors = { }
+_errors = { }
 
 def main(extra_msg = ''):
+    _errors.clear()
     setup_spreadsheets_dir()
     passed = [ fname for fname in files_to_check() if check(fname) ]
     show_summary(passed, extra_msg)
@@ -92,8 +93,8 @@ def check(filename):
     return True
 
 def log_error(filename, msg):
-    assert filename not in errors, (filename, errors[filename])
-    errors[filename] = msg
+    assert filename not in _errors, (filename, _errors[filename])
+    _errors[filename] = msg
 
 def get_content(directory, filename, kind):
     header, lines = read_csv( join(directory,filename) )
@@ -235,13 +236,12 @@ def compare_floats(e, t):
         return diff < ABS_TOL or diff < REL_TOL*abs(e)
 
 def show_summary(passed, extra_msg):
-    header = create_header(extra_msg)
+    header = create_header(passed, extra_msg)
     print()
-    print('===================================================================')
     print(header)
     if passed:
         print('Passed: {} files'.format(len(passed)))
-    if errors:
+    if _errors:
         log = create_error_log()
         print(log)
         write_errors(header, log)
@@ -257,8 +257,13 @@ def show_summary(passed, extra_msg):
     elif IGNORE:
         print('WARNING: There were ignored files!')
 
-def create_header(extra_msg):
+def create_header(passed, extra_msg):
     with closing(StringIO()) as out:
+        out.write('Passed:\n')
+        for p in passed:
+            out.write(p)
+            out.write('\n')
+        out.write('=========================================================\n')
         if extra_msg:
             out.write( extra_msg + '\n' )
         out.write('Etalon directory: "{}"\n'.format(ETALON_DIR))
@@ -268,7 +273,7 @@ def create_header(extra_msg):
 def create_error_log():
     with closing(StringIO()) as out:
         out.write('There were errors:\n')
-        for fname, msg in sorted( errors.iteritems() ):
+        for fname, msg in sorted(_errors.iteritems()):
             out.write('  {} {}\n'.format(fname,msg))
         return out.getvalue()      
 

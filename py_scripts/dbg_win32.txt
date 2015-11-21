@@ -1,0 +1,28 @@
+Start the MinGW Shell
+
+You can paste stuff into the shell with Shift + Insert
+
+Put Python on the path, if necessary (does python --version work?):
+
+export PATH=/c/Python27:/c/Python27/Scripts:$PATH
+
+Apparently, we have to put gdb on the path too:
+
+export PATH=$PATH:/c/MinGW/bin/
+
+cd into the source directory of sg2ps, where the cpp files are
+
+Then compile:
+g++ -O0 -ggdb3 -DDONT_CATCH *.cpp -o sg2ps.exe 
+
+Move the sg2ps.exe into the Debug subdirectory
+
+mv sg2ps.exe  ./Debug/
+
+cd into the py_scripts
+
+cd py_scripts/
+
+Start the etalon tests:
+
+./sg2ps_runner.py
