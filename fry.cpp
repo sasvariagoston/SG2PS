@@ -86,7 +86,7 @@ vector <double> hyperplane_from_GDB (const GDB& inGDB)  {
 	const VCTR n = inGDB.N;
 	const VCTR b = inGDB.DC;
 
-	const VCTR t = unitvector (crossproduct (b, n));
+	const VCTR t = unitvector (crossproduct (b, n), true);
 
 	o.U = - n.X * t.X;
 	o.V = - n.Y * t.Y;

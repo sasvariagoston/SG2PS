@@ -87,12 +87,12 @@ STRESSFIELD eigenvalue_eigenvector (STRESSTENSOR st) {
 	sf.EIGENVECTOR1.X = ((b1 * c2) - (b2 * c1)) / ((b2 * a1) - (a2 * b1));
 
 	sf.EIGENVECTOR1.Y = - ((a1 * sf.EIGENVECTOR1.X) + c1) / b1;
-	sf.EIGENVECTOR1 = unitvector (sf.EIGENVECTOR1);
+	sf.EIGENVECTOR1 = unitvector (sf.EIGENVECTOR1, true);
 
 	if (is_in_range(0.9999, 1.0001, sf.EIGENVECTOR1.X)) sf.EIGENVECTOR1.X = 1.0 - 1E-8;
 	if (is_in_range(0.9999, 1.0001, sf.EIGENVECTOR1.Y)) sf.EIGENVECTOR1.Y = 1.0 - 1E-8;
 	if (is_in_range(0.9999, 1.0001, sf.EIGENVECTOR1.Z)) sf.EIGENVECTOR1.Z = 1.0 - 1E-8;
-	sf.EIGENVECTOR1 = unitvector (sf.EIGENVECTOR1);
+	sf.EIGENVECTOR1 = unitvector (sf.EIGENVECTOR1, true);
 
 	a1 = st._11 - sf.EIGENVALUE.Y;
 	b2 = st._22 - sf.EIGENVALUE.Y;
@@ -110,12 +110,12 @@ STRESSFIELD eigenvalue_eigenvector (STRESSTENSOR st) {
 
 	ASSERT2(fabs(b1)>1.0e-20, "Computing eigenvector, b1 = "<< b1);
 
-	sf.EIGENVECTOR2 = unitvector (sf.EIGENVECTOR2);
+	sf.EIGENVECTOR2 = unitvector (sf.EIGENVECTOR2, true);
 
 	if (is_in_range(0.9999, 1.0001, sf.EIGENVECTOR2.X)) sf.EIGENVECTOR2.X = 1.0 - 1E-8;
 	if (is_in_range(0.9999, 1.0001, sf.EIGENVECTOR2.Y)) sf.EIGENVECTOR2.Y = 1.0 - 1E-8;
 	if (is_in_range(0.9999, 1.0001, sf.EIGENVECTOR2.Z)) sf.EIGENVECTOR2.Z = 1.0 - 1E-8;
-	sf.EIGENVECTOR2 = unitvector (sf.EIGENVECTOR2);
+	sf.EIGENVECTOR2 = unitvector (sf.EIGENVECTOR2, true);
 
 	a1 = st._11 - sf.EIGENVALUE.Z;
 	b2 = st._22 - sf.EIGENVALUE.Z;
@@ -123,12 +123,12 @@ STRESSFIELD eigenvalue_eigenvector (STRESSTENSOR st) {
 	sf.EIGENVECTOR3.Z = 1.0;
 	sf.EIGENVECTOR3.X = ((b1 * c2) - (b2 * c1)) / ((b2 * a1) - (a2 * b1));
 	sf.EIGENVECTOR3.Y = - ((a1 * sf.EIGENVECTOR3.X) + c1) / b1;
-	sf.EIGENVECTOR3 = unitvector (sf.EIGENVECTOR3);
+	sf.EIGENVECTOR3 = unitvector (sf.EIGENVECTOR3, true);
 
 	if (is_in_range(0.9999, 1.0001, sf.EIGENVECTOR3.X)) sf.EIGENVECTOR3.X = 1.0 - 1E-8;
 	if (is_in_range(0.9999, 1.0001, sf.EIGENVECTOR3.X)) sf.EIGENVECTOR3.Y = 1.0 - 1E-8;
 	if (is_in_range(0.9999, 1.0001, sf.EIGENVECTOR3.X)) sf.EIGENVECTOR3.Z = 1.0 - 1E-8;
-	sf.EIGENVECTOR3 = unitvector (sf.EIGENVECTOR3);
+	sf.EIGENVECTOR3 = unitvector (sf.EIGENVECTOR3, true);
 
 	return sf;
 }
@@ -140,9 +140,9 @@ STRESSTENSOR stresstensor_from_eigenvalue_eigenvector (STRESSFIELD sf) {
 
 	STRESSTENSOR out;
 
-	const VCTR E1 = unitvector (sf.EIGENVECTOR1);
-	const VCTR E2 = unitvector (sf.EIGENVECTOR2);
-	const VCTR E3 = unitvector (sf.EIGENVECTOR3);
+	const VCTR E1 = unitvector (sf.EIGENVECTOR1, true);
+	const VCTR E2 = unitvector (sf.EIGENVECTOR2, true);
+	const VCTR E3 = unitvector (sf.EIGENVECTOR3, true);
 
 	D.at(0).at(0) = E1.X;
 	D.at(0).at(1) = E1.Y;
@@ -329,12 +329,16 @@ STRESSFIELD correct_SF_to_fit_N (const STRESSFIELD& in) {
 
 VCTR return_stressvector (const STRESSTENSOR& st, const VCTR& N) {
 
-	const VCTR out = declare_vector (
+	VCTR OUT = declare_vector (
 			(st._11 * N.X + st._12 * N.Y + st._13 * N.Z),
 			(st._12 * N.X + st._22 * N.Y + st._23 * N.Z),
 			(st._13 * N.X + st._23 * N.Y + st._33 * N.Z));
 
-	return flip_vector (out);
+	OUT = flip_vector (OUT);
+
+	ASSERT_FINITE (OUT.X, OUT.Y, OUT.Z);
+
+	return OUT;
 }
 
 VCTR return_normalstress (const STRESSTENSOR& st, const VCTR& N) {
@@ -343,7 +347,11 @@ VCTR return_normalstress (const STRESSTENSOR& st, const VCTR& N) {
 
 	const double stress = (N.X * stressvector.X) + (N.Y * stressvector.Y) + (N.Z * stressvector.Z);
 
-	return (declare_vector (N.X * stress, N.Y * stress, N.Z * stress));
+	VCTR OUT = declare_vector (N.X * stress, N.Y * stress, N.Z * stress);
+
+	ASSERT_FINITE (OUT.X, OUT.Y, OUT.Z);
+
+	return OUT;
 }
 
 VCTR return_shearstress (const STRESSTENSOR& st, const VCTR& N) {
@@ -357,25 +365,27 @@ VCTR return_shearstress (const STRESSTENSOR& st, const VCTR& N) {
 			stressvector.Y - normalstress.Y,
 			stressvector.Z - normalstress.Z));
 }
-
+/*
 VCTR return_upsilon (const STRESSTENSOR& st, const VCTR& N, const VCTR& SV, const VCTR& UPSILON, const double& lambda, const string& method) {
 
 	const VCTR shearstress = return_shearstress (st, N);
 
-	if (method == "ANGELIER")
+	if (method == "ANGELIER") {
 
 		return declare_vector(
 				(SV.X * lambda) - shearstress.X,
 				(SV.Y * lambda) - shearstress.Y,
 				(SV.Z * lambda) - shearstress.Z);
-	else
+	}
+	else {
 
 		return declare_vector(
 				(UPSILON.X * lambda) - shearstress.X,
 				(UPSILON.Y * lambda) - shearstress.Y,
 				(UPSILON.Z * lambda) - shearstress.Z);
+	}
 }
-
+*/
 double return_ANG (const STRESSTENSOR& st, const VCTR& N, const VCTR& SV) {
 
 	const VCTR shearstress = return_shearstress (st, N);
@@ -425,14 +435,11 @@ vector <GDB> return_stressvector_estimators (const STRESSTENSOR& st, const vecto
 		VCTR N = inGDB.at(i).N;
 		VCTR SV = inGDB.at(i).DC;
 
-		VCTR UPSILON = 	inGDB.at(i).UPSILON;
 		double lambda = inGDB.at(i).lambda;
 
 		outGDB.at(i).SHEAR_S  = return_shearstress  (st, N);
 
 		outGDB.at(i).NORMAL_S = return_normalstress (st, N);
-
-		outGDB.at(i).UPSILON  = return_upsilon (st, N, SV, UPSILON, lambda , method);
 
 		outGDB.at(i).ANG  = return_ANG (st, N, SV);
 

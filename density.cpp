@@ -153,7 +153,7 @@ vector < vector <GRID_CENTER> > generate_empty_binary_rect_grid (const size_t ce
 			buf.COUNT = 0;
 			buf.CENTER.X = NaN();
 			buf.CENTER.Y = NaN();
-			buf.CENTER.Z = NaN();
+			//buf.CENTER.Z = NaN();
 			buf_row.push_back(buf);
 		}
 
@@ -545,8 +545,8 @@ vector <LINE> manage_points_outside (const vector <LINE>& L) {
 
 		LINE ACT_L = L.at(i);
 
-		bool A_IN = is_point_in_circle(ACT_L.A);
-		bool B_IN = is_point_in_circle(ACT_L.B);
+		bool A_IN = is_point_in_circle (ACT_L.A);
+		bool B_IN = is_point_in_circle (ACT_L.B);
 
 		bool IN  = (A_IN && B_IN);
 		bool CRS = (A_IN || B_IN);
@@ -559,13 +559,13 @@ vector <LINE> manage_points_outside (const vector <LINE>& L) {
 
 			if  (A_IN) {
 
-				VCTR NEW = interpolate_between_points (ACT_L.A, ACT_L.B);
+				XY NEW = interpolate_between_points (ACT_L.A, ACT_L.B);
 				ACT_L.B = NEW;
 				OUT.push_back (ACT_L);
 			}
 			else if (B_IN) {
 
-				VCTR NEW = interpolate_between_points (ACT_L.A, ACT_L.B);
+				XY NEW = interpolate_between_points (ACT_L.A, ACT_L.B);
 				ACT_L.A = NEW;
 				OUT.push_back (ACT_L);
 			}
@@ -595,7 +595,6 @@ vector <LINE> generate_raw_lines (const vector <vector <GRID_CENTER> >& m_sq, co
 
 				buf = return_line_from_m_sq_number (m_sq, rect_grid, j, i, isoline);
 			}
-
 			buf = manage_points_outside (buf);
 
 			out.insert(out.end(), buf.begin(), buf.end());
@@ -665,11 +664,11 @@ vector <vector <LINE> > connect_vectors (vector <vector <LINE> >& LV) {
 				size_t J_SIZE = LV.at(j).size();
 				size_t K_SIZE = LV.at(k).size();
 
-				VCTR J_FRST = LV.at(j).at(0).A;
-				VCTR K_FRST = LV.at(k).at(0).A;
+				XY J_FRST = LV.at(j).at(0).A;
+				XY K_FRST = LV.at(k).at(0).A;
 
-				VCTR J_LAST = LV.at(j).at(J_SIZE - 1).B;
-				VCTR K_LAST = LV.at(k).at(K_SIZE - 1).B;
+				XY J_LAST = LV.at(j).at(J_SIZE - 1).B;
+				XY K_LAST = LV.at(k).at(K_SIZE - 1).B;
 
 				bool HAS_VALUE = (
 						(J_FRST.X < 900.0) &&
@@ -739,9 +738,9 @@ vector <vector <LINE> > eliminate_empty_short_records (vector <vector <LINE> >& 
 	return OUT;
 }
 
-vector < vector <VCTR> > eliminate_short_distances (const vector < vector <VCTR> >& BZ) {
+vector < vector <XY> > eliminate_short_distances (const vector < vector <XY> >& BZ) {
 
-	vector < vector <VCTR> > out;
+	vector < vector <XY> > out;
 
 	for (size_t i = 0; i < BZ.size(); i++) {
 
@@ -749,8 +748,8 @@ vector < vector <VCTR> > eliminate_short_distances (const vector < vector <VCTR>
 
 		for (size_t j = 1; j < BZ.at(i).size(); j++) {
 
-			VCTR ACT = BZ.at(i).at(j);
-			VCTR PRW = BZ.at(i).at(j - 1);
+			XY ACT = BZ.at(i).at(j);
+			XY PRW = BZ.at(i).at(j - 1);
 
 			double D = sqrt(((ACT.X - PRW.X) * (ACT.X - PRW.X)) + ((ACT.Y - PRW.Y) * (ACT.Y - PRW.Y)));
 
@@ -758,7 +757,7 @@ vector < vector <VCTR> > eliminate_short_distances (const vector < vector <VCTR>
 		}
 		if (DST.size() + 1 != BZ.at(i).size()) ASSERT_DEAD_END ();
 
-		vector <VCTR> buf;
+		vector <XY> buf;
 
 		for (size_t j = 0; j < BZ.at(i).size(); j++) {
 
@@ -777,40 +776,42 @@ vector < vector <VCTR> > eliminate_short_distances (const vector < vector <VCTR>
 	return out;
 }
 
-vector < vector <VCTR> > generate_bezier_points (const vector <vector <LINE> >& LV) {
+vector < vector <XY> > generate_bezier_points (const vector <vector <LINE> >& LV) {
 
-	vector < vector <VCTR> > out;
+	vector < vector <XY> > out;
 
 	for (size_t i = 0; i < LV.size(); i++) {
 
-		vector <VCTR> row_buf;
+		vector <XY> row_buf;
 
 		for (size_t j = 0; j < LV.at(i).size(); j++) {
 
-			row_buf.push_back(LV.at(i).at(j).A);
+			row_buf.push_back (LV.at(i).at(j).A);
 
-			if (j == LV.at(i).size() - 1) row_buf.push_back(LV.at(i).at(j).B);
+			if (j == LV.at(i).size() - 1) row_buf.push_back (LV.at(i).at(j).B);
 		}
 
-		out.push_back(row_buf);
+		out.push_back (row_buf);
 	}
 	return out;
 }
 
-bool is_point_in_circle (const VCTR& in) {
+bool is_point_in_circle (const XY& in) {
 
 	return (sqrt((in.X * in.X) + (in.Y * in.Y)) < 1.0);
 }
 
-VCTR interpolate_between_points (const VCTR& inA, const VCTR& inB) {
+XY interpolate_between_points (const XY& inA, const XY& inB) {
+
+	XY OUT;
 
 	bool is_A_in = is_point_in_circle(inA);
 	bool is_B_in = is_point_in_circle(inB);
 
 	if (!(is_A_in || is_B_in)) ASSERT_DEAD_END();
 
-	bool CLIN_X = is_in_range(inA.X, inA.X, inB.X);
-	bool CLIN_Y = is_in_range(inA.Y, inA.Y, inB.Y);
+	bool CLIN_X = is_in_range (inA.X, inA.X, inB.X);
+	bool CLIN_Y = is_in_range (inA.Y, inA.Y, inB.Y);
 
 	if (CLIN_X || CLIN_Y) {
 
@@ -819,16 +820,30 @@ VCTR interpolate_between_points (const VCTR& inA, const VCTR& inB) {
 			double Y = sqrt (1.0 - (inA.X * inA.X));
 			bool BTW = (is_in_range(inA.Y, inB.Y, Y) || is_in_range(inA.Y, inB.Y, Y));
 
-			if (BTW) 	return declare_vector(inA.X,  Y, NaN());
-			else 		return declare_vector(inA.X, -Y, NaN());
+			OUT.X = inA.X;
+
+			if (BTW) OUT.Y =  Y;
+			else     OUT.Y = -Y;
+
+			return OUT;
+
+			//if (BTW) 	return {inA.X,  Y}; //declare_vector(inA.X,  Y, NaN());
+			//else 		return declare_vector(inA.X, -Y, NaN());
 		}
 		else {
 
 			double X = sqrt (1.0 - (inA.Y * inA.Y));
 			bool BTW = (is_in_range(inA.X, inB.X, X) || is_in_range(inA.X, inB.X, X));
 
-			if (BTW) 	return declare_vector( X, inA.Y, NaN());
-			else 		return declare_vector(-X, inA.Y, NaN());
+			OUT.Y = inA.Y;
+
+			if (BTW) OUT.X =  X;
+			else 	 OUT.X = -X;
+
+			return OUT;
+
+			//if (BTW) 	return declare_vector( X, inA.Y, NaN());
+			//else 		return declare_vector(-X, inA.Y, NaN());
 		}
 	}
 	double X = 0.0;
@@ -871,34 +886,39 @@ VCTR interpolate_between_points (const VCTR& inA, const VCTR& inB) {
 
 	ASSERT(!isnan(Y));
 
-	return declare_vector(X, Y, NaN());
+	OUT.X = X;
+	OUT.Y = Y;
+
+	return OUT;
+
+	//return declare_vector(X, Y, NaN());
 }
 
-VCTR generate_new_start (const VCTR& A) {
+XY generate_new_start (const XY& A) {
 
 	double length = sqrt((A.X * A.X ) +	(A.Y * A.Y));
 
-	VCTR out;
+	XY out;
 
 	out.X = A.X / length;
 	out.Y = A.Y / length;
-	out.Z = NaN();
+	//out.Z = NaN();
 
 	return out;
 }
 
-bool is_closed_line (const VCTR& min_A, const VCTR& max_B) {
+bool is_closed_line (const XY& min_A, const XY& max_B) {
 
-	return (is_in_range(min_A.X, min_A.X, max_B.X) && is_in_range(min_A.Y, min_A.Y, max_B.Y));
+	return (is_in_range (min_A.X, min_A.X, max_B.X) && is_in_range (min_A.Y, min_A.Y, max_B.Y));
 }
 
-vector <VCTR> flip_BZ_line (const vector <VCTR>& BZ) {
+vector <XY> flip_BZ_line (const vector <XY>& BZ) {
 
-	vector <VCTR> out = BZ;
+	vector <XY> out = BZ;
 
 	for (size_t i = 0; i < BZ.size(); i++) {
 
-		VCTR buf;
+		XY buf;
 
 		buf.X = BZ.at(i).X;
 		buf.Y = BZ.at(i).Y;
@@ -908,20 +928,20 @@ vector <VCTR> flip_BZ_line (const vector <VCTR>& BZ) {
 	return out;
 }
 
-vector < vector <VCTR> > extrapolate_to_circle (const vector < vector <VCTR> >& inBZ) {
+vector < vector <XY> > extrapolate_to_circle (const vector < vector <XY> >& inBZ) {
 
-	vector < vector <VCTR> > OUT = inBZ;
+	vector < vector <XY> > OUT = inBZ;
 
 	for (size_t i = 0; i < inBZ.size(); i++) {
 
 		size_t MAX = inBZ.at(i).size();
 
-		VCTR FIRST = inBZ.at(i).at(0);
-		VCTR LAST  = inBZ.at(i).at(MAX - 1);
+		XY FIRST = inBZ.at(i).at(0);
+		XY LAST  = inBZ.at(i).at(MAX - 1);
 
 		bool CLOSED = is_closed_line (FIRST, LAST);
-		bool FIRST_IN = is_point_in_circle(FIRST);
-		bool  LAST_IN = is_point_in_circle(LAST);
+		bool FIRST_IN = is_point_in_circle (FIRST);
+		bool  LAST_IN = is_point_in_circle (LAST);
 
 		if (!CLOSED) {
 
@@ -943,7 +963,7 @@ vector < vector <VCTR> > extrapolate_to_circle (const vector < vector <VCTR> >& 
 	return OUT;
 }
 
-bool is_line_CCW (const vector <VCTR>& I) {
+bool is_line_CCW (const vector <XY>& I) {
 
 	double A = polygon_area (I);
 
@@ -951,9 +971,9 @@ bool is_line_CCW (const vector <VCTR>& I) {
 	else return false;
 }
 
-vector <VCTR> flip_line (const vector <VCTR>& I) {
+vector <XY> flip_line (const vector <XY>& I) {
 
-	vector <VCTR> OUT = I;
+	vector <XY> OUT = I;
 
 	const size_t SIZE = I.size();
 
@@ -962,13 +982,13 @@ vector <VCTR> flip_line (const vector <VCTR>& I) {
 	return OUT;
 }
 
-vector <VCTR> flip_curve_to_CCW (const vector <VCTR>& BZ) {
+vector <XY> flip_curve_to_CCW (const vector <XY>& BZ) {
 
 	if (!is_line_CCW (BZ)) return flip_line(BZ);
 	else return BZ;
 }
 
-vector <BEZIER> generate_final_bezier (const vector < VCTR>& inBZ) {
+vector <BEZIER> generate_final_bezier (const vector <XY>& inBZ) {
 
 	vector <BEZIER> OUT;
 
@@ -979,70 +999,70 @@ vector <BEZIER> generate_final_bezier (const vector < VCTR>& inBZ) {
 		bool is_FIRST = (j == 1);
 		bool is_LAST  = (j == inBZ.size() - 2);
 
-		VCTR PRW = inBZ.at(j - 1);
-		VCTR ACT = inBZ.at(j - 0);
-		VCTR NXT = inBZ.at(j + 1);
+		XY PRW = inBZ.at(j - 1);
+		XY ACT = inBZ.at(j - 0);
+		XY NXT = inBZ.at(j + 1);
 
 		if (is_FIRST) {
 
 			buf.A.X = PRW.X;
 			buf.A.Y = PRW.Y;
-			buf.A.Z = NaN();
+			//buf.A.Z = NaN();
 
 			buf.B.X = (PRW.X + ACT.X) / 2.0;
 			buf.B.Y = (PRW.Y + ACT.Y) / 2.0;
-			buf.B.Z = NaN();
+			//buf.B.Z = NaN();
 
 			buf.C.X = (3.0 * ACT.X + NXT.X) / 4.0;
 			buf.C.Y = (3.0 * ACT.Y + NXT.Y) / 4.0;
-			buf.C.Z = NaN();
+			//buf.C.Z = NaN();
 
 			buf.D.X = (NXT.X + ACT.X) / 2.0;
 			buf.D.Y = (NXT.Y + ACT.Y) / 2.0;
-			buf.D.Z = NaN();
+			//buf.D.Z = NaN();
 		}
 		else if (is_LAST) {
 
 			buf.A.X = (PRW.X + ACT.X) / 2.0;
 			buf.A.Y = (PRW.Y + ACT.Y) / 2.0;
-			buf.A.Z = NaN();
+			//buf.A.Z = NaN();
 
 			buf.B.X = (PRW.X + 2.0 * ACT.X) / 3.0;
 			buf.B.Y = (PRW.Y + 2.0 * ACT.Y) / 3.0;
-			buf.B.Z = NaN();
+			//buf.B.Z = NaN();
 
 			buf.C.X = (ACT.X + NXT.X) / 2.0;
 			buf.C.Y = (ACT.Y + NXT.Y) / 2.0;
-			buf.C.Z = NaN();
+			//buf.C.Z = NaN();
 
 			buf.D.X = NXT.X;
 			buf.D.Y = NXT.Y;
-			buf.D.Z = NaN();
+			//buf.D.Z = NaN();
 		}
 		else {
 
 			buf.A.X = (PRW.X + ACT.X) / 2.0;
 			buf.A.Y = (PRW.Y + ACT.Y) / 2.0;
-			buf.A.Z = NaN();
+			//buf.A.Z = NaN();
 
 			buf.B.X = (PRW.X + 3.0 * ACT.X) / 4.0;
 			buf.B.Y = (PRW.Y + 3.0 * ACT.Y) / 4.0;
-			buf.B.Z = NaN();
+			//buf.B.Z = NaN();
 
 			buf.C.X = (3.0 * ACT.X + NXT.X) / 4.0;
 			buf.C.Y = (3.0 * ACT.Y + NXT.Y) / 4.0;
-			buf.C.Z = NaN();
+			//buf.C.Z = NaN();
 
 			buf.D.X = (NXT.X + ACT.X) / 2.0;
 			buf.D.Y = (NXT.Y + ACT.Y) / 2.0;
-			buf.D.Z = NaN();
+			//buf.D.Z = NaN();
 		}
 		OUT.push_back(buf);
 	}
 	return OUT;
 }
 
-double return_t (const VCTR& C, const VCTR& B, const VCTR& P) {
+double return_t (const XY& C, const XY& B, const XY& P) {
 
 	double X21 = C.X - B.X;
 	double Y21 = C.Y - B.Y;
@@ -1054,7 +1074,7 @@ double return_t (const VCTR& C, const VCTR& B, const VCTR& P) {
 	return t;
 }
 
-double return_distance_from_side (const VCTR& C, const VCTR& B, const VCTR& P) {
+double return_distance_from_side (const XY& C, const XY& B, const XY& P) {
 
 	double X21 = C.X - B.X;
 	double Y21 = C.Y - B.Y;
@@ -1068,7 +1088,7 @@ double return_distance_from_side (const VCTR& C, const VCTR& B, const VCTR& P) {
 	return sqrt (d);
 }
 
-double return_distance_from_point (const VCTR& A, const VCTR& P) {
+double return_distance_from_point (const XY& A, const XY& P) {
 
 	double X1P = A.X - P.X;
 	double Y1P = A.Y - P.Y;
@@ -1078,27 +1098,27 @@ double return_distance_from_point (const VCTR& A, const VCTR& P) {
 	return sqrt(d);
 }
 
-double return_triangle_area (const VCTR& A, const VCTR& B, const VCTR& C) {
+double return_triangle_area (const XY& A, const XY& B, const XY& C) {
 
-	vector <VCTR> t;
+	vector <XY> t;
 
 	t.push_back(A);
 	t.push_back(B);
 	t.push_back(C);
 
-	return polygon_area(t);
+	return polygon_area (t);
 }
 
-bool is_point_inside_curve (const vector <VCTR>& I, const GRID_CENTER& GP) {
+bool is_point_inside_curve (const vector <XY>& I, const GRID_CENTER& GP) {
 
-	vector <VCTR> temp = I;
+	vector <XY> temp = I;
 
 	size_t MAX = temp.size();
 
-	VCTR FRST = temp.at(0);
-	VCTR LAST = temp.at(MAX - 1);
+	XY FRST = temp.at(0);
+	XY LAST = temp.at(MAX - 1);
 
-	bool CLOSED = is_closed_line(FRST, LAST);
+	bool CLOSED = is_closed_line (FRST, LAST);
 
 	if (!CLOSED) temp.push_back(temp.at(0));
 	temp.push_back(temp.at(1));
@@ -1110,15 +1130,15 @@ bool is_point_inside_curve (const vector <VCTR>& I, const GRID_CENTER& GP) {
 
 	MAX = temp.size();
 
-	const VCTR P = GP.CENTER;
+	const XY P = GP.CENTER;
 
-	VCTR sA, sB, sC, vA, vB, vC;
+	XY sA, sB, sC, vA, vB, vC;
 
 	for (size_t i = 1; i < temp.size() - 1; i++) {
 
-		VCTR act_C = temp.at(i - 1);
-		VCTR act_B = temp.at(i);
-		VCTR act_A = temp.at(i + 1);
+		XY act_C = temp.at(i - 1);
+		XY act_B = temp.at(i);
+		XY act_A = temp.at(i + 1);
 
 		double t = return_t (act_C, act_B, P);
 
@@ -1177,7 +1197,7 @@ bool is_point_inside_curve (const vector <VCTR>& I, const GRID_CENTER& GP) {
 	}
 }
 
-bool curve_contains_peak (const vector <VCTR>& I, const vector < vector <GRID_CENTER> >& RECT_GRID, const double& CONTOUR) {
+bool curve_contains_peak (const vector <XY>& I, const vector < vector <GRID_CENTER> >& RECT_GRID, const double& CONTOUR) {
 
 	for (size_t i = 0; i < RECT_GRID.size(); i++) {
 		for (size_t j = 0; j < RECT_GRID.at(i).size(); j++) {
@@ -1190,14 +1210,14 @@ bool curve_contains_peak (const vector <VCTR>& I, const vector < vector <GRID_CE
 	return false;
 }
 
-double polygon_area (const vector <VCTR>& I) {
+double polygon_area (const vector <XY>& I) {
 
-	vector <VCTR> t = I;
+	vector <XY> t = I;
 
 	double A = 0;
 
-	VCTR FRST = t.at(0);
-	VCTR LAST = t.at(t.size() - 1);
+	XY FRST = t.at(0);
+	XY LAST = t.at(t.size() - 1);
 
 	bool CLOSED = is_closed_line(FRST, LAST);
 
@@ -1205,8 +1225,8 @@ double polygon_area (const vector <VCTR>& I) {
 
 	for (size_t i = 0; i < t.size() - 1; i++) {
 
-		VCTR ACT = t.at(i);
-		VCTR NXT = t.at(i + 1);
+		XY ACT = t.at(i);
+		XY NXT = t.at(i + 1);
 
 		double area = ((ACT.X * NXT.Y) - (ACT.Y * NXT.X)) / 2.0;
 
@@ -1215,7 +1235,7 @@ double polygon_area (const vector <VCTR>& I) {
 	return A;
 }
 
-bool is_line_close_unitcircle (const vector <VCTR>& I, const double CELL) {
+bool is_line_close_unitcircle (const vector <XY>& I, const double CELL) {
 
 	size_t CLOSE_COUNTER = 0;
 
@@ -1228,17 +1248,17 @@ bool is_line_close_unitcircle (const vector <VCTR>& I, const double CELL) {
 	return ((CLOSE_COUNTER / I.size()) > 0.6);
 }
 
-vector <VCTR> close_contourline (const vector <VCTR>& I, const double START_ANGLE, const double END_ANGLE, const double CELL, const bool CHECK_DISTANCE) {
+vector <XY> close_contourline (const vector <XY>& I, const double START_ANGLE, const double END_ANGLE, const double CELL, const bool CHECK_DISTANCE) {
 
-	vector <VCTR> NEW;
-	vector <VCTR> OUT = I;
+	vector <XY> NEW;
+	vector <XY> OUT = I;
 
-	ASSERT2(is_line_CCW(I), "CCW line is expected in 'close_contourline' function");
+	ASSERT2 (is_line_CCW(I), "CCW line is expected in 'close_contourline' function");
 	//ASSERT2(! (is_in_range(START_ANGLE, END_ANGLE, END_ANGLE)), "open line expected in 'close_contourline' function");
 
 	bool START_LESS_THAN_END = (START_ANGLE < END_ANGLE);
 
-	VCTR END;
+	XY END;
 	double step = 0.0;
 
 	if (START_LESS_THAN_END) {
@@ -1251,7 +1271,11 @@ vector <VCTR> close_contourline (const vector <VCTR>& I, const double START_ANGL
 	}
 
 	step = step / 100.0;
-	END.Z = 0.0;
+
+	VCTR END_V;
+	END_V.X = END.X;
+	END_V.Y = END.Y;
+	END_V.Z = 0.0;
 
 	double RATIO = 1.0;
 
@@ -1261,17 +1285,22 @@ vector <VCTR> close_contourline (const vector <VCTR>& I, const double START_ANGL
 
 	for (size_t i = 1; i < 100; i++) {
 
-		VCTR t = ROTATE (AXIS, END, step * i);
+		VCTR t = ROTATE (AXIS, END_V, step * i);
 
 		t.X = t.X * RATIO;
 		t.Y = t.Y * RATIO;
 
-		NEW.push_back(t);
+		XY buf;
+
+		buf.X = t.X;
+		buf.Y = t.Y;
+
+		NEW.push_back (buf);
 	}
 
 	if (START_LESS_THAN_END) {
 
-		OUT = flip_BZ_line(OUT);
+		OUT = flip_BZ_line (OUT);
 
 		OUT.insert(OUT.end(), NEW.begin(), NEW.end());
 
@@ -1282,12 +1311,12 @@ vector <VCTR> close_contourline (const vector <VCTR>& I, const double START_ANGL
 	return OUT;
 }
 
-void contourline_to_ps (ofstream& o, const CENTER& center, const vector <VCTR>& BZ, const double& FRST_ANGLE, const double& LAST_ANGLE, const double& CONTOUR, const double& C_MN, const double& C_MX) {
+void contourline_to_ps (ofstream& o, const CENTER& center, const vector <XY>& BZ, const double& FRST_ANGLE, const double& LAST_ANGLE, const double& CONTOUR, const double& C_MN, const double& C_MX) {
 
 	o << "%% contourline_to_ps" << endl;
 
-	VCTR FRST_PNT = BZ.at(0);
-	VCTR LAST_PNT = BZ.at(BZ.size() - 1);
+	XY FRST_PNT = BZ.at(0);
+	XY LAST_PNT = BZ.at(BZ.size() - 1);
 
 	bool CLOSED = is_closed_line(FRST_PNT, LAST_PNT);
 
@@ -1349,29 +1378,32 @@ void contourline_to_ps (ofstream& o, const CENTER& center, const vector <VCTR>& 
 
 }
 
-void output_contourline (ofstream& o, const CENTER& center, vector <vector <VCTR> >& BZ,  vector < vector <GRID_CENTER> >& RECT_GRID, const double& CONTOUR, const double C_MN, const double C_MX, const double& MAX) {
+void output_contourline (ofstream& o, const CENTER& center, vector <vector <XY> >& BZ,  vector < vector <GRID_CENTER> >& RECT_GRID, const double& CONTOUR, const double C_MN, const double C_MX, const double& MAX) {
 
 	double CELL = return_grid_size(RECT_GRID);
 
 	for (size_t i = 0; i < BZ.size(); i++) {
 
-		vector <VCTR> A =  BZ.at(i);
+		vector <XY> A =  BZ.at(i);
 
-		VCTR FRST_PNT = A.at(0);
-		VCTR LAST_PNT = A.at(A.size() - 1);
+		XY F = A.at(0);
+		XY L = A.at(A.size() - 1);
 
-		FRST_PNT.Z = 0.0;
-		LAST_PNT.Z = 0.0;
+		//FRST_PNT.Z = 0.0;
+		//LAST_PNT.Z = 0.0;
 
-		if (!is_closed_line (FRST_PNT, LAST_PNT)) {
+		if (!is_closed_line (F, L)) {
 
-			double FRST_ANGLE = dipdir_dip_from_DXDYDZ(FRST_PNT).DIPDIR;
-			double LAST_ANGLE = dipdir_dip_from_DXDYDZ(LAST_PNT).DIPDIR;
+			const VCTR FRST_PNT = declare_vector(F.X, F.Y, 0.0);
+			const VCTR LAST_PNT = declare_vector(L.X, L.Y, 0.0);
+
+			double FRST_ANGLE = dipdir_dip_from_DXDYDZ (FRST_PNT).DIPDIR;
+			double LAST_ANGLE = dipdir_dip_from_DXDYDZ (LAST_PNT).DIPDIR;
 
 			A = flip_curve_to_CCW (A);
 
-			vector <VCTR> A1 = close_contourline (A, FRST_ANGLE, LAST_ANGLE, CELL, true);
-			vector <VCTR> A2 = close_contourline (A, LAST_ANGLE, FRST_ANGLE, CELL, true);
+			vector <XY> A1 = close_contourline (A, FRST_ANGLE, LAST_ANGLE, CELL, true);
+			vector <XY> A2 = close_contourline (A, LAST_ANGLE, FRST_ANGLE, CELL, true);
 
 			bool A1_HAS_PEAK = curve_contains_peak (A1, RECT_GRID, CONTOUR * MAX);
 			bool A2_HAS_PEAK = curve_contains_peak (A2, RECT_GRID, CONTOUR * MAX);
@@ -1488,7 +1520,7 @@ void CONTOURING (const vector <GDB>& inGDB, ofstream& o, const CENTER center, co
 
 		LINE_VCTR = eliminate_empty_short_records (LINE_VCTR);
 
-		vector < vector <VCTR> > BZ = generate_bezier_points (LINE_VCTR);
+		vector < vector <XY> > BZ = generate_bezier_points (LINE_VCTR);
 
 		BZ = extrapolate_to_circle (BZ);
 
@@ -1498,7 +1530,7 @@ void CONTOURING (const vector <GDB>& inGDB, ofstream& o, const CENTER center, co
 	}
 }
 
-void dbg_cout_NET (const vector <vector <vector <VCTR> > >& NET) {
+void dbg_cout_NET (const vector <vector <vector <XY> > >& NET) {
 
 	cout << "**** DEBUGGING KAALSBEEK NET FOR CONTOURING ****" << endl;
 	cout << fixed << setprecision (6) << endl;
@@ -1509,8 +1541,8 @@ void dbg_cout_NET (const vector <vector <vector <VCTR> > >& NET) {
 
 				cout
 				<< NET.at(i).at(j).at(k).X << '\t'
-				<< NET.at(i).at(j).at(k).Y << '\t'
-				<< NET.at(i).at(j).at(k).Z << endl;
+				<< NET.at(i).at(j).at(k).Y << endl;//'\t'
+				//<< NET.at(i).at(j).at(k).Z << endl;
 			}
 		}
 	}
@@ -1572,7 +1604,7 @@ void dbg_cout_triangle_center (const vector <GRID_CENTER>& TRI_CENTER) {
 		cout
 		<< TRI_CENTER.at(i).CENTER.X << '\t'
 		<< TRI_CENTER.at(i).CENTER.Y << '\t'
-		<< TRI_CENTER.at(i).CENTER.Z << '\t'
+		//<< TRI_CENTER.at(i).CENTER.Z << '\t'
 		<< TRI_CENTER.at(i).COUNT << endl;
 	}
 	cout << "**** END DEBUGGING TRIANGULAR GRID CENTERS ****" << endl;
@@ -1640,7 +1672,7 @@ void dbg_cout_line_vctr (const vector <vector <LINE> >& LV) {
 	}
 }
 
-void dbg_bezier_points (const vector <VCTR>& BZ) {
+void dbg_bezier_points (const vector <XY>& BZ) {
 
 	cout << "**** BEZIER POINTS FOR CONTOURING ****" << endl;
 

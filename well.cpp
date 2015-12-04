@@ -69,16 +69,7 @@ vector <GDB> filter_too_small_distances (const vector <GDB>& IN) {
 
 			OUT.push_back (ACT);
 
-			if (LAST) {
-
-				OUT.push_back (NXT);
-				//cout << "Last element: " << NXT.ID << ", counter: " << i << endl;
-			}
-		}
-		else {
-
-			//cout << "This will be filtered: " << ACT.ID << flush;
-			//cout << ", and this will survive: " << NXT.ID << endl;
+			if (LAST) OUT.push_back (NXT);
 		}
 	}
 	return OUT;
@@ -136,9 +127,6 @@ vector <WELL_FREQUENCY> FREQUENCY (const vector <GDB>& inGDB) {
 		OUT.at(i).FREQ = OUT.at(i).FREQ / MAX_FREQ;
 		FREQ_v2.push_back (OUT.at(i).FREQ);
 	}
-
-	//if (is_CHK_WELL()) dump_FREQ_PRM_to_file (ID_v, INT_v, DIP_v, FREQ_v, FREQ_v2, MAX_FREQ_v);
-
 	double MAX_DERIV = 0.0;
 
 	for (size_t i = 0; i < OUT.size() - 1; i++) {
@@ -253,8 +241,6 @@ vector <GDB> return_GDB_for_data_interval (const vector <GDB>& inGDB, const doub
 
 		if (is_in_range (MIN, MAX, D)) 	OUT.push_back(inGDB.at(i));
 	}
-
-	//if size == 1?
 	return OUT;
 }
 
@@ -295,8 +281,8 @@ double stdev_for_interval (const vector <GDB>& inGDB, const bool DIPDIR, const s
 			D2.DIPDIR = avDD.DIPDIR;
 			D2.DIP = DD.DIP;
 		}
-		const VCTR T1 = unitvector (DXDYDZ_from_dipdir_dip (D1));
-		const VCTR T2 = unitvector (DXDYDZ_from_dipdir_dip (D2));
+		const VCTR T1 = unitvector (DXDYDZ_from_dipdir_dip (D1), true);
+		const VCTR T2 = unitvector (DXDYDZ_from_dipdir_dip (D2), true);
 
 		double ANG = vector_angle (T1, T2);
 
@@ -311,9 +297,6 @@ double stdev_for_interval (const vector <GDB>& inGDB, const bool DIPDIR, const s
 
 		MSFT.push_back (ANG * ANG);
 	}
-	////if (is_CHK_WELL()) dump_STDEV_to_file (RUN, DIPDIR, ID_v, D1_v, D2_v, T1_v, T2_v, ANG_v, MSFT_v);
-	////DEBUGGED, OK
-
 	return sqrt (average (MSFT));
 }
 
@@ -388,11 +371,7 @@ vector <WELL_INTERVAL> WELL_AVERAGE_M (const vector <GDB>& p_GDB) {
 
 		size_t RUN = string_to_size_t (double_to_string(i, 0));
 
-		if (PROCESSABLE) {
-
-			//dbg_cout_GDB_vector(temp);
-			buf = interval_average (temp, RUN);//ok
-		}
+		if (PROCESSABLE) buf = interval_average (temp, RUN);
 		else {
 
 			buf.INT_AV_DD.DIPDIR = NaN();
@@ -404,10 +383,7 @@ vector <WELL_INTERVAL> WELL_AVERAGE_M (const vector <GDB>& p_GDB) {
 		buf.MIN = MIN;
 		buf.MAX = MAX;
 
-		OUT.push_back (buf);
-
-		////if (is_CHK_WELL()) dump_INTMINMAX_to_file (RUN, temp.size(), MIN, MAX);
-		////DEBUGGED, OK
+		if (buf.SIZE > 0) OUT.push_back (buf);
 	}
 	return OUT;
 }
@@ -443,9 +419,6 @@ vector <WELL_INTERVAL> WELL_AVERAGE_D (const vector <GDB>& p_GDB) {
 		if (temp.size() == 0) ASSERT_DEAD_END();
 
 		OUT.push_back (wbuf);
-
-		////if (is_CHK_WELL()) dump_INTMINMAX_to_file (i, temp.size(), MIN, MAX);
-		////DEBUGGED, OK
 	}
 	return OUT;
 }
@@ -465,15 +438,6 @@ void PROCESS_WELL_GROUPS (const vector <vector <GDB> >& inGDB_G) {
 		setup_ACTUAL_DATATYPE (inGDB_G.at(i).at(0).DATATYPE);
 		setup_ACTUAL_FORMATION(inGDB_G.at(i).at(0).FORMATION);
 		setup_ACTUAL_GROUPCODE(inGDB_G.at(i).at(0).GC);
-
-		//dbg_cout_GDB_vector(inGDB_G.at(i));
-
-		//cout << " ------------------------- " << endl;
-		//cout << inGDB_G.at(i).at(0).LOC << endl;
-		//cout << inGDB_G.at(i).at(0).DATATYPE << endl;
-		//cout << inGDB_G.at(i).at(0).FORMATION << endl;
-		//cout << inGDB_G.at(i).at(0).GC << endl;
-		//cout << " ------------------------- " << endl << endl;
 
 		vector <WELL_INTERVAL> INTERVAL_buf;
 		vector <WELL_FREQUENCY> FREQUENCY_buf;
@@ -508,9 +472,10 @@ void PROCESS_WELL_GROUPS (const vector <vector <GDB> >& inGDB_G) {
 			INTERVAL_buf = FIRST_DERIVATE (INTERVAL_buf);
 
 			FREQUENCY_buf = FREQUENCY (p_GDB);
+
+			W_INTERVAL.push_back (INTERVAL_buf);
+			W_FREQUENCY.push_back (FREQUENCY_buf);
 		}
-		W_INTERVAL.push_back (INTERVAL_buf);
-		W_FREQUENCY.push_back (FREQUENCY_buf);
 	}
 	if (is_CHK_WELL()) STANDARD_OUTPUT_WELL_GROUPS ();
 

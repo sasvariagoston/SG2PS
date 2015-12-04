@@ -31,15 +31,15 @@ double string_to_double(const string& s); // throws logic_error
 int string_to_int(const string& s); // throws logic_error
 size_t string_to_size_t (const string& s);
 
+double deg_to_rad (const double alpha);
+double rad_to_deg (const double alpha);
+
 double SIN  (const double& in);
 double COS 	(const double& in);
 double ASIN (const double& in);
 double ACOS (const double& in);
-double ACOS_NUM (const double& in);
 double TAN (const double& in);
 double ATAN (const double& in);
-
-double rounding (double in);
 
 VCTR  crossproduct (const VCTR& in1, const VCTR& in2);
 double dotproduct (const VCTR& in1, const VCTR& in2, const bool& normalisation=false);
@@ -90,7 +90,7 @@ string generate_stress_colors (const double V);
 double vector_angle (const VCTR& A, const VCTR& B);
 double vectorlength (const VCTR& in);
 
-VCTR unitvector (const VCTR& in);
+VCTR unitvector (const VCTR& in, const bool CHECK);
 CENTR_VECT unitvector (CENTR_VECT in);
 vector <double> unitvector (vector <double>& in);
 

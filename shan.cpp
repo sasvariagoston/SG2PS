@@ -33,7 +33,7 @@ vector < vector <double> > shan_matrix_from_GDB (const GDB& inGDB)  {
 	const VCTR n = inGDB.N;
 	const VCTR s = inGDB.DC;
 
-	const VCTR t = unitvector (crossproduct (s, n));
+	const VCTR t = unitvector (crossproduct (s, n), true);
 
 	o.at(0) = n.X * t.X - n.Z * t.Z;
 	o.at(1) = n.Y * t.Y - n.Z * t.Z;

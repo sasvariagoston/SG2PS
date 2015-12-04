@@ -110,16 +110,21 @@ vector <GDB> fix_360_0 (const vector <GDB>& inGDB) {
 
 	for (size_t i = 0; i < inGDB.size(); i++) {
 
-		const double DD = inGDB.at(i).corr.DIPDIR;
-		const double D  = inGDB.at(i).corr.DIP;
+		const bool LITHOLOGY = is_allowed_lithology_datatype (inGDB.at(i).DATATYPE);
 
-		ASSERT_FINITE(DD, D);
+		if (! LITHOLOGY) {
 
-		if (DD == 360.0) outGDB.at(i).corr.DIPDIR = 360.0 - SN;
-		if (DD ==   0.0) outGDB.at(i).corr.DIPDIR = SN;
+			const double DD = inGDB.at(i).corr.DIPDIR;
+			const double D  = inGDB.at(i).corr.DIP;
 
-		if (D == 90.0) outGDB.at(i).corr.DIP = 90.0 - SN;
-		if (D ==  0.0) outGDB.at(i).corr.DIP = SN;
+			ASSERT_FINITE(DD, D);
+
+			if (DD == 360.0) outGDB.at(i).corr.DIPDIR = 360.0 - SN;
+			if (DD ==   0.0) outGDB.at(i).corr.DIPDIR = SN;
+
+			if (D == 90.0) outGDB.at(i).corr.DIP = 90.0 - SN;
+			if (D ==  0.0) outGDB.at(i).corr.DIP = SN;
+		}
 	}
 	return outGDB;
 }
@@ -220,7 +225,7 @@ GDB generate_NCDCSC_PITCH (const GDB& inGDB) {
 
 	for (size_t i = 0; i < GDV.size(); i++) if (PITCH == GDV.at(i)) GEOD_DIR = GDA.at(i);
 
-	const VCTR GEODETIC = unitvector (declare_vector(SIN (GEOD_DIR), COS (GEOD_DIR), 0.0));
+	const VCTR GEODETIC = unitvector (declare_vector(SIN (GEOD_DIR), COS (GEOD_DIR), 0.0), true);
 
 	const double ANGLE = outGDB.LPITCH;
 
@@ -288,9 +293,9 @@ vector <GDB> manipulate_N (const vector <GDB>& inGDB) {
 
 		if (!LITHOLOGY) {
 
-			outGDB.at(i).N = unitvector (outGDB.at(i).N);
+			outGDB.at(i).N = unitvector (outGDB.at(i).N, true);
 
-			if (SC || STRIAE) outGDB.at(i).NC = unitvector (outGDB.at(i).NC);
+			if (SC || STRIAE) outGDB.at(i).NC = unitvector (outGDB.at(i).NC, true);
 		}
 	}
 	return outGDB;
@@ -371,7 +376,7 @@ VCTR striae_DIP_correction (const GDB& in) {
 
 	VCTR STR = crossproduct (PROC.SC, PROC.N);
 
-	STR = unitvector(STR);
+	STR = unitvector (STR, true);
 
 	if (STR.Z < 0.0) return STR;
 	return flip_vector(STR);
@@ -389,7 +394,7 @@ VCTR striae_DIPDIR_correction (const GDB& in) {
 
 	VCTR STR = crossproduct (in.N, in.NC);
 
-	STR = unitvector(STR);
+	STR = unitvector (STR, true);
 
 	if (STR.Z < 0.0) return STR;
 	return flip_vector(STR);
@@ -568,6 +573,29 @@ vector <vector <GDB> > clustering_GBD (const vector <vector <GDB> >& inGDB_G) {
 	return outGDB_G;
 }
 
+void check_RGF_for_NAN_INF (const vector <GDB>& IN) {
+
+	const bool SC = is_allowed_SC_datatype(IN.at(0).DATATYPE);
+	const bool STRIAE = is_allowed_SC_datatype(IN.at(0).DATATYPE);
+
+	const bool LITH = is_allowed_lithology_datatype(IN.at(0).DATATYPE);
+
+	for (size_t i = 0; i < IN.size(); i++) {
+
+		const GDB& t = IN.at(i);
+
+		if (SC || STRIAE) {
+
+			ASSERT_FINITE (t.corr.DIP, t.corr.DIPDIR, t.corrL.DIP, t.corrL.DIPDIR)
+		}
+		else if (! LITH) {
+
+			ASSERT_FINITE (t.corr.DIP, t.corr.DIPDIR)
+		}
+		else {};
+	}
+}
+
 vector <GDB>  PREPARE_GDB_FOR_PROCESSING (const vector <GDB>& inGDB, const bool TILT) {
 
 	vector <GDB> outGDB = inGDB;
@@ -635,17 +663,22 @@ vector <vector <GDB> > EVALUATE (const vector <vector <GDB> >& inGDB_G) {
 		P = RETILT (P, "TRAJECTORY");
 
 		P = PREPARE_GDB_VECTOR_FOR_PROCESSING (P, true);
+
 		P = AVERAGE (P);
+
 		P = ASSOCIATE_AVERAGE_BEDDING_GROUPS (P);
 	}
 
 	if (TLT) {
 
 		P = RETILT (P, "BEDDING");
+
 		P = RETILT (P, "PALEONORTH");
 
 		P = PREPARE_GDB_VECTOR_FOR_PROCESSING (P, true);
+
 		P = AVERAGE (P);
+
 		P = ASSOCIATE_AVERAGE_BEDDING_GROUPS (P);
 	}
 	P = PROCESS_GROUPS (P, TLT);
@@ -941,7 +974,6 @@ void dbg_cout_GDB_vector (const vector <GDB>& inGDB) {
 		//<< fixed << setprecision(6)
 		//<< T.SHEAR_S.X << '\t' << T.SHEAR_S.Y << '\t'<< T.SHEAR_S.Z << '\t'
 		//<< T.NORMAL_S.X << '\t' << T.NORMAL_S.Y << '\t'<< T.NORMAL_S.Z << '\t'
-		//<< T.UPSILON.X << '\t' << T.UPSILON.Y << '\t'<< T.UPSILON.Z << '\t'
 
 		//<< T.lambda << '\t'
 		//<< T.ANG << '\t'

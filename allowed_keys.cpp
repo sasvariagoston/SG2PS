@@ -234,9 +234,6 @@ const string test_data_generation_mode_allowed [] = {
 };
 const vector<string> allowed_test_data_generation_mode(from_array(test_data_generation_mode_allowed));
 
-
-
-
 }
 
 const string pscolor_rgb_allowed [] = {
@@ -367,7 +364,7 @@ bool is_allowed_coordinate(const string& coordinate){
 	return (is_double (coordinate));
 }
 
-bool is_allowed_lithology_datatype(const string& datatype) {
+bool is_allowed_lithology_datatype (const string& datatype) {
 
 	return (contains(allowed_lithology_datatypes, datatype));
 }

@@ -98,7 +98,7 @@ vector <GRID_CENTER> generate_triangle_center (const vector <TRIANGLE>& net) {
 
 		buf.CENTER.X = (net.at(i).A.X + net.at(i).B.X + net.at(i).C.X) / 3.0;
 		buf.CENTER.Y = (net.at(i).A.Y + net.at(i).B.Y + net.at(i).C.Y) / 3.0;
-		buf.CENTER.Z = (net.at(i).A.Z + net.at(i).B.Z + net.at(i).C.Z) / 3.0;
+		//buf.CENTER.Z = (net.at(i).A.Z + net.at(i).B.Z + net.at(i).C.Z) / 3.0;
 
 		buf.COUNT = net.at(i).COUNT;
 

@@ -21,11 +21,11 @@ VCTR return_tilting_axis (const GDB& in, const string METHOD) {
 	const bool P = METHOD == "PALEONORTH";
 	const bool T = METHOD == "TRAJECTORY";
 
-	if (P) return unitvector (declare_vector (0.0, 0.0, -1.0));
+	if (P) return unitvector (declare_vector (0.0, 0.0, -1.0), true);
 	else if (B) return unitvector (declare_vector (
 			SIN (in.avS0d.DIPDIR + 90.0),
 			COS (in.avS0d.DIPDIR + 90.0),
-			0.0));
+			0.0), true);
 	else if (T) {
 
 		const DIPDIR_DIP DDD = dipdir_dip_from_NXNYNZ(in.T);
@@ -33,7 +33,7 @@ VCTR return_tilting_axis (const GDB& in, const string METHOD) {
 		return unitvector (declare_vector (
 				SIN (DDD.DIPDIR + 90.0),
 				COS (DDD.DIPDIR + 90.0),
-				0.0));
+				0.0), true);
 	}
 	else {
 
@@ -79,11 +79,11 @@ GDB tilt_lineation (const GDB& in, const VCTR& AXIS, const double ANGLE) {
 
 	GDB OUT = in;
 
-	OUT.D = unitvector (ROTATE (AXIS, in.D, ANGLE));
+	OUT.D = ROTATE (AXIS, in.D, ANGLE);
 
 	if (is_D_up (OUT.D)) OUT.D = flip_vector (OUT.D);
 
-	OUT.N = unitvector (NXNYNZ_from_DXDYDZ (OUT.D));
+	OUT.N = unitvector (NXNYNZ_from_DXDYDZ (OUT.D), true);
 	OUT.S = crossproduct (OUT.N, OUT.D);
 	OUT.corr = dipdir_dip_from_DXDYDZ (OUT.D);
 
@@ -96,7 +96,7 @@ GDB tilt_plane (const GDB& in, const VCTR& AXIS, const double ANGLE) {
 
 	const bool B = is_allowed_handle_as_bedding(in.DATATYPE);
 
-	OUT.N = unitvector (ROTATE (AXIS, in.N, ANGLE));
+	OUT.N = ROTATE (AXIS, in.N, ANGLE);
 
 	bool O = is_N_down (OUT.N);
 
@@ -109,7 +109,7 @@ GDB tilt_plane (const GDB& in, const VCTR& AXIS, const double ANGLE) {
 
 		if (O) OUT.N = flip_vector(OUT.N);
 	}
-	OUT.D = unitvector (DXDYDZ_from_NXNYNZ (OUT.N));
+	OUT.D = unitvector (DXDYDZ_from_NXNYNZ (OUT.N), true);
 	OUT.S = crossproduct(OUT.N, OUT.D);
 	OUT.corr = dipdir_dip_from_DXDYDZ (OUT.D);
 
@@ -126,23 +126,23 @@ GDB tilt_striae (const GDB& in, const VCTR& AXIS, const double ANGLE) {
 
 	GDB OUT = in;
 
-	OUT.N = unitvector (ROTATE (AXIS, in.N, ANGLE));
+	OUT.N = ROTATE (AXIS, in.N, ANGLE);
 
 	const bool O = is_N_down(OUT.N);
 
 	if (O) OUT.N = flip_vector(OUT.N);
 
-	OUT.D = unitvector (DXDYDZ_from_NXNYNZ (OUT.N));
+	OUT.D = unitvector (DXDYDZ_from_NXNYNZ (OUT.N), true);
 	OUT.S = crossproduct(OUT.N, OUT.D);
 	OUT.corr = dipdir_dip_from_DXDYDZ (OUT.D);
 
-	OUT.DC = unitvector (ROTATE (AXIS, in.DC, ANGLE));
+	OUT.DC = ROTATE (AXIS, in.DC, ANGLE);
 
 	if (O) OUT.DC  = flip_vector(OUT.DC);
 
 	const bool UP = is_DC_up(OUT.DC);
 
-	OUT.NC = unitvector (NXNYNZ_from_DXDYDZ (OUT.DC));
+	OUT.NC = unitvector (NXNYNZ_from_DXDYDZ (OUT.DC), true);
 
 	OUT.SC = crossproduct(OUT.NC, OUT.DC);
 
@@ -185,13 +185,13 @@ GDB tilt_SC (const GDB& in, const VCTR& AXIS, const double ANGLE) {
 
 	OUT = tilt_plane (OUT, AXIS, ANGLE);
 
-	OUT.NC = unitvector (ROTATE (AXIS, OUT.NC, ANGLE));
+	OUT.NC = ROTATE (AXIS, OUT.NC, ANGLE);
 
 	const bool O = is_N_down (OUT.NC);
 
 	if (O) OUT.NC = flip_vector(OUT.NC);
 
-	OUT.DC = unitvector (DXDYDZ_from_NXNYNZ (OUT.NC));
+	OUT.DC = unitvector (DXDYDZ_from_NXNYNZ (OUT.NC), true);
 
 	OUT.SC = crossproduct(OUT.NC, OUT.DC);
 
@@ -206,7 +206,21 @@ GDB tilt_SC (const GDB& in, const VCTR& AXIS, const double ANGLE) {
 
 GDB TILT_DATA (const GDB& in, const string METHOD) {
 
-	if (is_allowed_lithology_datatype (in.DATATYPE)) return in;
+	const bool LITH = is_allowed_lithology_datatype (in.DATATYPE);
+
+	const bool NO_AV_BED = (
+			isnan (in.avS0d.DIP) &&
+			isnan (in.avS0d.DIPDIR) &&
+			isnan (in.avS0D.X) &&
+			isnan (in.avS0D.Y) &&
+			isnan (in.avS0D.Z) &&
+			isnan (in.avS0N.X) &&
+			isnan (in.avS0N.Y) &&
+			isnan (in.avS0N.Z));
+
+	const bool NO_NORTH = isnan (in.PALEON) ;
+
+	if (LITH) return in;
 
 	const bool B = METHOD == "BEDDING";
 	const bool P = METHOD == "PALEONORTH";
@@ -214,9 +228,16 @@ GDB TILT_DATA (const GDB& in, const string METHOD) {
 
 	if (!B && !P && !T) ASSERT_DEAD_END();
 
+	if (NO_AV_BED && B) return in;
+
+	if (NO_NORTH && P) return in;
+
 	if (B) {
+
 		const bool DD =	is_allowed_DIR (in.avS0d.DIPDIR);
+
 		const bool D = is_allowed_DIP (in.avS0d.DIP);
+
 		const bool L = is_allowed_lithology_datatype (in.DATATYPE);
 
 		if (!DD || !D || L) return in;

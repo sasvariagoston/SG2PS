@@ -339,7 +339,6 @@ void dump_RGF_to_file (const vector <GDB>& inGDB, const string FN) {
 
 	<< "SHEAR_S.X d" << '\t'  << "SHEAR_S.Y d"  << '\t'<< "SHEAR_S.Z d" << '\t'
 	<< "NORMAL_S.X d" << '\t' << "NORMAL_S.Y d" << '\t'<< "NORMAL_S.Z d" << '\t'
-	<< "UPSILON.X d" << '\t'  << "UPSILON.Y d"  << '\t'<< "UPSILON.Z d" << '\t'
 
 	<< "lambda d" << '\t'
 	<< "ANG d" << '\t'
@@ -413,7 +412,6 @@ void dump_RGF_to_file (const vector <GDB>& inGDB, const string FN) {
 
 		<< dmp_dbl(T.SHEAR_S.X, 8) << '\t'  << dmp_dbl(T.SHEAR_S.Y, 8)  << '\t'<< dmp_dbl(T.SHEAR_S.Z, 8) << '\t'
 		<< dmp_dbl(T.NORMAL_S.X, 8) << '\t' << dmp_dbl(T.NORMAL_S.Y, 8) << '\t'<< dmp_dbl(T.NORMAL_S.Z, 8) << '\t'
-		<< dmp_dbl(T.UPSILON.X, 8) << '\t'  << dmp_dbl(T.UPSILON.Y, 8)  << '\t'<< dmp_dbl(T.UPSILON.Z, 8) << '\t'
 
 		<< dmp_dbl(T.lambda, 8) << '\t'
 		<< dmp_dbl(T.ANG, 8) << '\t'
@@ -473,7 +471,7 @@ void dump_RECT_GRID_to_file (const vector <vector <GRID_CENTER> >& IN, const str
 	ofstream o((FN + "_RECT_GRID.csv").c_str());
 
 	o
-	<< "CENTER.X d" << '\t' << "CENTER.Y d" << '\t' << "CENTER.Z d" << '\t'
+	<< "CENTER.X d" << '\t' << "CENTER.Y d" << '\t'
 	<< "COUNT i" << endl;
 
 	for (size_t i = 0; i < IN.size(); i++) {
@@ -482,7 +480,10 @@ void dump_RECT_GRID_to_file (const vector <vector <GRID_CENTER> >& IN, const str
 			const GRID_CENTER I = IN.at(i).at(j);
 
 			o
-			<< dmp_dbl(I.CENTER.X, 8) << '\t' << dmp_dbl(I.CENTER.Y, 8) << '\t' << dmp_dbl(I.CENTER.Z, 8) << '\t'
+			//<< dmp_dbl(I.CENTER.X, 8) << '\t' << dmp_dbl(I.CENTER.Y, 8) << '\t' << dmp_dbl(I.CENTER.Z, 8) << '\t'
+
+			<< dmp_dbl(I.CENTER.X, 8) << '\t'
+			<< dmp_dbl(I.CENTER.Y, 8) << '\t'
 			<< I.COUNT << endl;
 		}
 	}

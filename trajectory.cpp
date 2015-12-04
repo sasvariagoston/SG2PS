@@ -282,7 +282,7 @@ void generate_trajectory_normal_XYZ () {
 
 		buf.DEPTH = ACT_DEPTH;
 
-		buf.N = unitvector (declare_vector (NXT_X-ACT_X, NXT_Y-ACT_Y, NXT_DEPTH-ACT_DEPTH));
+		buf.N = unitvector (declare_vector (NXT_X-ACT_X, NXT_Y-ACT_Y, NXT_DEPTH-ACT_DEPTH), true);
 
 		if (is_N_down (buf.N)) ASSERT_DEAD_END();
 

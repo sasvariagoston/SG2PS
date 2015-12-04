@@ -135,8 +135,8 @@ void copy_original_files () {
 
 	back_up_file (".rgf", project_name, new_path, SHOULD_EXIST);
 
-	back_up_file (".set", project_name, new_path); // TODO In batch and debug mode, failures were ignored
-	                                              // TODO In batch mode, shouldn't it dump a set file?
+	back_up_file (".set", project_name, new_path);
+
 	back_up_file (".xy", project_name, new_path);
 
 	back_up_file (".trj", project_name, new_path);
@@ -216,6 +216,13 @@ void output_rgf_header (ofstream& o, const bool AVERAGE) {
 
 void output_rgf_record (const GDB& i, ofstream& o, const bool AVERAGE) {
 
+	const bool is_STRIAE = is_allowed_striae_datatype(i.DATATYPE);
+	const bool is_SC = is_allowed_SC_datatype(i.DATATYPE);
+
+	const bool is_LITHOLOGY = is_allowed_lithology_datatype(i.DATATYPE);
+	const bool is_BEDDING = is_allowed_foldsurface_processing(i.DATATYPE);
+
+
 	o
 	<< i.ID << '\t'
 	<< i.GC << '\t'
@@ -229,11 +236,17 @@ void output_rgf_record (const GDB& i, ofstream& o, const bool AVERAGE) {
 
 	if (AVERAGE) {
 
-		if (!is_allowed_DIR (i.avd.DIPDIR)) o << "" << '\t';
-		else o << i.avd.DIPDIR << '\t';
+		if (!is_LITHOLOGY && !is_SC && !is_STRIAE && is_allowed_DIR (i.corr.DIPDIR)) o << i.corr.DIPDIR << '\t';
+		else o << "" << '\t';
 
-		if (!is_allowed_DIP(i.avd.DIP)) o << "" << '\t';
-		else o << i.avd.DIP << '\t';
+		if (!is_LITHOLOGY && !is_SC && !is_STRIAE && is_allowed_DIP (i.corr.DIP)) o << i.corr.DIP << '\t';
+		else o << "" << '\t';
+
+		//if (!is_allowed_DIR (i.avd.DIPDIR)) o << "" << '\t';
+		//else o << i.avd.DIPDIR << '\t';
+
+		//if (!is_allowed_DIP(i.avd.DIP)) o << "" << '\t';
+		//else o << i.avd.DIP << '\t';
 
 		o << "" << '\t';
 		o << "" << '\t';
@@ -244,25 +257,21 @@ void output_rgf_record (const GDB& i, ofstream& o, const bool AVERAGE) {
 
 		o << fixed << setprecision (1);
 
-		if (!is_allowed_DIR(i.corr.DIPDIR) || i.DATATYPE == "LITHOLOGY") o << "" << '\t';
-		else {
+		if (!is_LITHOLOGY && is_allowed_DIP (i.corr.DIP)){
 
 			if (is_DATARULE_RIGHT_HAND_RULE() ) o << german_to_right_hand_rule (i.corr.DIPDIR) << '\t';
 			else o << i.corr.DIPDIR << '\t';
 		}
+		else o << "" << '\t';
 
-		if (!is_allowed_DIP(i.corr.DIP) || i.DATATYPE == "LITHOLOGY") o << "" << '\t';
-		else o << fixed << setprecision (1) << i.corr.DIP << '\t';
+		if (!is_LITHOLOGY && is_allowed_DIP (i.corr.DIP)) o << i.corr.DIP << '\t';
+		else o << "" << '\t';
 
+		if ((is_SC || is_STRIAE) && is_allowed_DIR(i.corrL.DIPDIR)) o << i.corrL.DIPDIR << '\t';
+		else o << "" << '\t';
 
-		if (!is_allowed_DIR(i.corrL.DIPDIR)) o << "" << '\t';
-		else o << i.corrL.DIPDIR << '\t';
-
-		if (!is_allowed_DIP(i.corrL.DIP)) o << "" << '\t';
-		else o << i.corrL.DIP << '\t';
-
-		const bool is_STRIAE = 	is_allowed_striae_datatype(i.DATATYPE);
-		const bool is_BEDDING = 	is_allowed_foldsurface_processing(i.DATATYPE);
+		if ((is_SC || is_STRIAE) && is_allowed_DIP(i.corrL.DIP)) o << i.corrL.DIP << '\t';
+		else o << "" << '\t';
 
 		if (is_STRIAE || is_BEDDING) {
 
@@ -548,7 +557,6 @@ vector <vector <GDB> > PROCESS_GROUPS (const vector <vector <GDB> >& inGDB_G, co
 				cout_original_tilted_text (TILT);
 
 				cout_inversion_results (hasoffset_GDB, SFV);
-				//cout_inversion_results (process_GDB, SFV);
 
 				if (SUCC_STR) hasoffset_GDB = apply_RUP_ANG_CLUSTERING_result (hasoffset_GDB);
 

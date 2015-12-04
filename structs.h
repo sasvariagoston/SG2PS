@@ -94,7 +94,7 @@ struct GDB  {
 
 	double lambda;
 
-	VCTR SHEAR_S, NORMAL_S, UPSILON;
+	VCTR SHEAR_S, NORMAL_S;//, UPSILON;
 
 	double ANG, RUP;
 	double AV_MISF;
@@ -246,7 +246,7 @@ struct GRID_CENTER {
 
     GRID_CENTER() { COUNT=numeric_limits<size_t>::max(); }
 
-	VCTR CENTER;
+	XY CENTER;
 	size_t COUNT;
 };
 
@@ -258,8 +258,11 @@ struct GRID_CENTER {
 
 struct LINE {
 
-	VCTR A;
-	VCTR B;
+	//VCTR A;
+	//VCTR B;
+
+	XY A;
+	XY B;
 };
 
 struct BRUTEFORCE_RESULT {
@@ -274,10 +277,10 @@ struct BRUTEFORCE_RESULT {
 
 struct BEZIER {
 
-	VCTR A;
-	VCTR B;
-	VCTR C;
-	VCTR D;
+	XY A;
+	XY B;
+	XY C;
+	XY D;
 };
 /*
 struct WELL_AVERAGE {

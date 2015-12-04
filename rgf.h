@@ -46,6 +46,8 @@ vector <vector <GDB> > clustering_GBD (const vector <vector <GDB> >& inGDB_G);
 
 void fold_from_planes (vector <GDB> inGDB, ofstream& o, CENTER center);
 
+void check_RGF_for_NAN_INF (const vector <GDB>& IN);
+
 vector <GDB>  PREPARE_GDB_FOR_PROCESSING (const vector <GDB>& inGDB, const bool TILT);
 vector < vector <GDB> >  PREPARE_GDB_VECTOR_FOR_PROCESSING (const vector < vector <GDB> >& inGDB_G, const bool TILT);
 

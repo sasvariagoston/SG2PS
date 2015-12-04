@@ -292,39 +292,6 @@ void PS_stereonet_header (ofstream& o) {
 	RGB_CLR.clear();
 	GRY_CLR.clear();
 
-	//-----KEEP HERE---------------
-	/*
-	TITLE.push_back("/p_axis {");
-	RGB_CLR.push_back("1.0 0.0 0.0");
-	GRY_CLR.push_back("0.0 0.0 0.0");
-
-	TITLE.push_back("/t_axis {");
-	RGB_CLR.push_back("0.0 0.0 1.0");
-	GRY_CLR.push_back("0.33 0.33 0.33");
-
-	TITLE.push_back("/n_axis {");
-	RGB_CLR.push_back("0.0 1.0 0.0");
-	GRY_CLR.push_back("0.66 0.66 0.66");
-
-
-	for (size_t i = 0; i < TITLE.size(); i++) {
-
-		text_PS (o, TITLE.at(i));
-		newpath_PS (o);
-		moveto_PS (o, -1.0,  -1.0, 3);
-		rlineto_PS (o, 0.0, 2.0, 3);
-		rlineto_PS (o, 2.0, 0.0, 3);
-		rlineto_PS (o, 0.0, -2.0, 3);
-		closepath_PS (o);
-		linewidth_PS (o, 0.5, 1);
-		if (is_GRAYSCALE_USE()) color_PS (o, GRY_CLR.at(i));
-		else color_PS (o, RGB_CLR.at(i));
-		fill_PS (o);
-		stroke_PS (o);
-		text_PS (o, "} def");
-
-	}
-	 */
 	return;
 }
 
@@ -517,14 +484,20 @@ void PS_net (ofstream& o) {
 	else if (is_CONTOURING_STRIAE_BEARING_BEARING())C = "Contouring striae / lineations bearings";
 	else {};
 
-	vector <VCTR> V;
+	vector <XY> V;
 
-	V.push_back (declare_vector (P.O1X, P.O1Y, NaN()));
-	V.push_back (declare_vector (P.O2X, P.O2Y, NaN()));
-	V.push_back (declare_vector (P.O3X, P.O3Y, NaN()));
-	V.push_back (declare_vector (P.O4X, P.O4Y, NaN()));
-	V.push_back (declare_vector (P.O5X, P.O5Y, NaN()));
-	V.push_back (declare_vector (P.O6X, P.O6Y, NaN()));
+	vector <double> X {P.O1X, P.O2X, P.O3X, P.O4X, P.O5X, P.O6X};
+	vector <double> Y {P.O1Y, P.O2Y, P.O3Y, P.O4Y, P.O5Y, P.O6Y};
+
+	for (size_t i = 0; i < X.size(); i++) {
+
+		XY buf;
+
+		buf.X = X.at(i);
+		buf.Y = Y.at(i);
+
+		V.push_back (buf);
+	}
 
 	color_PS (o, "0.0 0.0 0.0");
 
@@ -890,8 +863,6 @@ void PS_stress_state (ofstream& o, const CENTER& center, const STRESSFIELD& sf) 
 }
 
 void PS_folddata (GDB in, ofstream& o, CENTER center) {
-
-	//cout << "PS_folddata" << endl;
 
 	font_PS(o, "ArialNarrow-Bold", 8);
 
@@ -1334,7 +1305,7 @@ void PS_polepoint (const GDB& i, ofstream& o, const double X, const double Y, co
 	if (FL) 			O = i.fold_great_circle_N;
 	else if (AV || AVO) O = NXNYNZ_from_DXDYDZ (i.avS0D);
 	else if (C) 		O = i.NC;
-	else if (ID) 		O = unitvector (i.SHEAR_S);
+	else if (ID) 		O = unitvector (i.SHEAR_S, true);
 	else 				O = i.N;
 
 	if (is_N_down (O)) O = flip_vector(O);
@@ -1527,7 +1498,9 @@ void PS_datanumber_averagebedding (const GDB& i, ofstream& o, const size_t datan
 
 	const PAPER P = RETURN_PAPER();
 
-	const bool HAS_BEDDING = (is_allowed_DIR (i.avS0d.DIPDIR) && is_allowed_DIP (i.avS0d.DIP));
+	const bool HAS_BEDDING = (!isnan (i.avS0d.DIP) && !isnan (i.avS0d.DIPDIR));
+
+	//const bool HAS_BEDDING = (is_allowed_DIR (i.avS0d.DIPDIR) && is_allowed_DIP (i.avS0d.DIP));
 
 	if (HAS_BEDDING) {
 
@@ -1644,6 +1617,7 @@ void PS_GDB (const vector <GDB>& inGDB, ofstream& o, bool TILT) {
 		mohrcenter.X = P.O8X;
 		mohrcenter.Y = P.O8Y;
 	}
+
 	CONTOURING (inGDB, o, center, TILT);
 
 	PS_draw_rose_DIPDIR_DIP (inGDB, o, rosecenter, "DIPDIR", TILT);

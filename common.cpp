@@ -173,26 +173,36 @@ size_t string_to_size_t (const string& s) {
 	return to_type <size_t> (s);
 }
 
+double deg_to_rad (const double alpha) {
+
+    return (alpha * 3.1415926535) / 180.0;
+}
+
+double rad_to_deg (const double alpha) {
+
+    return (alpha * 180.0) / 3.1415926535;
+}
+
 double SIN (const double& in) {
 
-	double out = in;
+	double out = deg_to_rad (in);
 
-	out = (out * 3.1415926535) / 180.0;
+	out = sin (out);
 
 	ASSERT(!isnan(out));
 
-	return sin(out);
+	return out;
 }
 
 double COS (const double& in) {
 
-	double out = in;
+	double out = deg_to_rad (in);
 
-	out = (out * 3.1415926535) / 180.0;
+	out = cos (out);
 
-	ASSERT(!isnan(out));
+	ASSERT (!isnan(out));
 
-	return cos(out);
+	return out;
 }
 
 double ASIN (const double& in) {
@@ -202,11 +212,11 @@ double ASIN (const double& in) {
 	if (out >= 1.0)  out =   (1.0 - 10e-8);
 	if (out <= -1.0) out = - (1.0 - 10e-8);
 
-	out = asin(out);
+	out = asin (out);
 
 	ASSERT(!isnan(out));
 
-	return (out * 180.0) / 3.1415926535;
+	return rad_to_deg (out);
 }
 
 double ACOS (const double& in) {
@@ -220,28 +230,12 @@ double ACOS (const double& in) {
 
 	ASSERT(!isnan(out));
 
-	return (out * 180.0) / 3.1415926535;
-}
-
-double ACOS_NUM (const double& in) {
-
-	double out = in;
-
-	if (out >= 1.0)  out =   (1.0 - 10e-8);
-	if (out <= -1.0) out = - (1.0 - 10e-8);
-
-	out = (3.1415926535 / 2.0) - in + ((0.5 * in * in * in) / 3.0) + ((0.375 * in * in * in * in * in) / 5.0);
-
-	ASSERT(!isnan(out));
-
-	return (out * 180.0) / 3.1415926535;
+	return rad_to_deg (out);
 }
 
 double TAN (const double& in) {
 
-	double out = in;
-
-	out = (out * 3.1415926535) / 180.0;
+	double out = deg_to_rad (in);
 
 	out = tan (out);
 
@@ -257,7 +251,7 @@ double ATAN (const double& in) {
 
 	ASSERT(!isnan(out));
 
-	return (out * 180.0) / 3.1415926535;
+	return rad_to_deg (out);
 }
 
 VCTR crossproduct (const VCTR& in1, const VCTR& in2) {
@@ -272,15 +266,17 @@ VCTR crossproduct (const VCTR& in1, const VCTR& in2) {
 
 double dotproduct (const VCTR& in1, const VCTR& in2, const bool& normalisation) {
 
-	double l_in1 = sqrt((in1.X * in1.X) + (in1.Y * in1.Y) + (in1.Z * in1.Z));
-	double l_in2 = sqrt((in2.X * in2.X) + (in2.Y * in2.Y) + (in2.Z * in2.Z));
-
 	double out = in1.X * in2.X + in1.Y * in2.Y + in1.Z * in2.Z;
 
-	if (normalisation) out = out / (l_in1 * l_in2);
+	if (normalisation) {
 
-	ASSERT(!isnan(out));
+		double l_in1 = sqrt((in1.X * in1.X) + (in1.Y * in1.Y) + (in1.Z * in1.Z));
+		double l_in2 = sqrt((in2.X * in2.X) + (in2.Y * in2.Y) + (in2.Z * in2.Z));
 
+		out = out / (l_in1 * l_in2);
+
+		ASSERT(!isnan(out));
+	}
 	return out;
 }
 
@@ -988,30 +984,35 @@ double vectorlength (const VCTR& in) {
 	return sqrt(in.X * in.X + in.Y * in.Y + in.Z * in.Z);
 }
 
-VCTR unitvector (const VCTR& in) {
+VCTR unitvector (const VCTR& in, const bool CHECK) {
 
-	if (isnan(in.X)||isnan(in.Y)||isnan(in.Z)) {
+	if (CHECK) {
 
-		writeln("");
-
-		ASSERT2(false,"NaN detected, [X, Y, Z] = [ "<<in.X<<", "<<in.Y<<", "<<in.Z<<"]");
+		if (isnan(in.X)||isnan(in.Y)||isnan(in.Z)) ASSERT2(false,"NaN detected, [X, Y, Z] = [ "<<in.X<<", "<<in.Y<<", "<<in.Z<<"]");
 	}
 
 	VCTR OUT;
 
-	double vectorlength = sqrt(in.X * in.X + in.Y * in.Y + in.Z * in.Z);
+	double vectorlength;
 
-	if ((vectorlength > 10e-20) && (vectorlength < 1.0e+300)) {
+	if (CHECK) vectorlength = sqrt(in.X * in.X + in.Y * in.Y + in.Z * in.Z);
+	else vectorlength = sqrt(in.X * in.X + in.Y * in.Y + in.Z * in.Z + 1.0e-6);
+
+	if (CHECK) {
+
+		if ((vectorlength > 10e-20) && (vectorlength < 1.0e+300)) {
+
+			OUT.X = (in.X / vectorlength);
+			OUT.Y = (in.Y / vectorlength);
+			OUT.Z = (in.Z / vectorlength);
+		}
+		else ASSERT2(false,"Problem with vector length, [X, Y, Z] = [ "<<OUT.X<<", "<<OUT.Y<<", "<<OUT.Z<<"]");
+	}
+	else {
 
 		OUT.X = (in.X / vectorlength);
 		OUT.Y = (in.Y / vectorlength);
 		OUT.Z = (in.Z / vectorlength);
-	}
-	else {
-
-		writeln("");
-
-		ASSERT2(false,"Problem with vector length, [X, Y, Z] = [ "<<OUT.X<<", "<<OUT.Y<<", "<<OUT.Z<<"]");
 	}
 	return OUT;
 }
@@ -1104,7 +1105,7 @@ DIPDIR_DIP dipdir_dip_from_DXDYDZ (const VCTR& i) {
 
 	DIPDIR_DIP actual;
 
-	VCTR out = unitvector (i);
+	VCTR out = unitvector (i, true);
 
 	actual.DIP = fabs(ACOS(out.Z) - 90.0);
 
@@ -1121,7 +1122,7 @@ DIPDIR_DIP dipdir_dip_from_DXDYDZ (const VCTR& i) {
 
 DIPDIR_DIP dipdir_dip_from_NXNYNZ (const VCTR& i) {
 
-	VCTR out = unitvector (i);
+	VCTR out = unitvector (i, true);
 
 	DIPDIR_DIP actual;
 
@@ -1142,25 +1143,31 @@ DIPDIR_DIP dipdir_dip_from_NXNYNZ (const VCTR& i) {
 VCTR ROTATE (const VCTR& ax, const VCTR& torotate, const double& A) {
 
 	VCTR result;
-	VCTR A_1, A_2, A_3;
 
-	A_1.X =      COS(A)         + (1.0 -  COS(A)) * ax.X * ax.X;
-	A_1.Y = (1.0-COS(A)) * ax.Y * ax.X - (SIN(A))        * ax.Z;
-	A_1.Z = (1.0-COS(A)) * ax.Z * ax.X + (SIN(A))        * ax.Y;
+	const double COS_A = COS (A);
+	const double MIN_COS_A = 1.0 - COS (A);
+	const double SIN_A = SIN (A);
 
-	A_2.X = (1.0-COS(A)) * ax.Y * ax.X + (SIN(A))        * ax.Z;
-	A_2.Y =      COS(A)         + (1.0 -  COS(A)) * ax.Y * ax.Y;
-	A_2.Z = (1.0-COS(A)) * ax.Y * ax.Z - (SIN(A))        * ax.X;
+	VCTR A_1;
+	A_1.X = COS_A + MIN_COS_A * ax.X * ax.X;
+	A_1.Y = MIN_COS_A * ax.Y * ax.X - SIN_A * ax.Z;
+	A_1.Z = MIN_COS_A * ax.Z * ax.X + SIN_A * ax.Y;
 
-	A_3.X = (1.0-COS(A)) * ax.Z * ax.X - (SIN(A))        * ax.Y;
-	A_3.Y = (1.0-COS(A)) * ax.Y * ax.Z + (SIN(A))        * ax.X;
-	A_3.Z =      COS(A)         + (1.0 -  COS(A)) * ax.Z * ax.Z;
+	VCTR A_2;
+	A_2.X = MIN_COS_A * ax.Y * ax.X + SIN_A * ax.Z;
+	A_2.Y = COS_A + MIN_COS_A * ax.Y * ax.Y;
+	A_2.Z = MIN_COS_A * ax.Y * ax.Z - SIN_A * ax.X;
+
+	VCTR A_3;
+	A_3.X = MIN_COS_A * ax.Z * ax.X - SIN_A * ax.Y;
+	A_3.Y = MIN_COS_A * ax.Y * ax.Z + SIN_A * ax.X;
+	A_3.Z = COS_A + MIN_COS_A * ax.Z * ax.Z;
 
 	result.X = dotproduct (torotate, A_1, false);
 	result.Y = dotproduct (torotate, A_2, false);
 	result.Z = dotproduct (torotate, A_3, false);
 
-	return unitvector (result);
+	return unitvector (result, true);
 }
 
 bool existence (const string& expression, const vector<GDB>& inGDB) { // TODO contains? contains datatype?
@@ -1246,7 +1253,7 @@ VCTR VCTR_average (const vector <VCTR>& IN) {
 		Y.push_back (IN.at(i).Y);
 		Z.push_back (IN.at(i).Z);
 	}
-	return unitvector (declare_vector (average(X), average(Y), average(Z)));
+	return unitvector (declare_vector (average(X), average(Y), average(Z)), true);
 }
 
 double median (const vector <double>& IN) {
@@ -1678,7 +1685,9 @@ string version_id() {
 }
 
 bool is_in_range (const double range_min, const double range_max, const double in) {
-    ASSERT_FINITE(in);
+
+	ASSERT_FINITE (in);
+
 	double SN = 10e-8;
 
 	return (range_min - SN <= in && in <= range_max + SN);
@@ -1686,15 +1695,21 @@ bool is_in_range (const double range_min, const double range_max, const double i
 
 bool is_in_range_exactly (const double range_min, const double range_max, const double in) {
 
+	ASSERT_FINITE (in);
+
 	return (range_min  < in && in < range_max);
 }
 
 bool is_in_range_UP_EQ (const double range_min, const double range_max, const double in) {
 
+	ASSERT_FINITE (in);
+
 	return (range_min  <= in && in < range_max);
 }
 
 bool is_in_range_LW_EQ (const double range_min, const double range_max, const double in) {
+
+	ASSERT_FINITE (in);
 
 	return (range_min  < in && in <= range_max);
 }

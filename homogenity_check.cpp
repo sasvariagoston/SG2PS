@@ -6,7 +6,7 @@
 #include <cmath>
 //#include <iomanip>
 //#include <fstream>
-//#include <iostream>
+#include <iostream>
 
 #include "angelier.h"
 #include "assertions.hpp"
@@ -22,7 +22,7 @@
 #include "nda.h"
 //#include "ps.h"
 #include "ptn.h"
-//#include "rgf.h"
+#include "rgf.h"
 //#include "rup_clustering.hpp"
 #include "settings.hpp"
 #include "shan.h"
@@ -61,19 +61,18 @@ bool check_dataset_offset_homogenity (const vector <GDB>& inGDB) {
 
 bool check_dataset_geometry_homogenity (const vector <GDB>& inGDB) {
 
+	if (is_allowed_lithology_datatype (inGDB.at(0).DATATYPE)) return true;
+
 	vector <GDB> TEST = inGDB;
 	const size_t SIZE = TEST.size() - 1;
 
-	// FIXME Wrap this FINITE check together with the stable_sort in a function
-	//       and put it into data_sort
-	for (size_t i=0; i<TEST.size(); ++i) {
-	    const GDB& e = TEST.at(i);
-	    ASSERT_FINITE(e.corr.DIP, e.corr.DIPDIR, e.corrL.DIP, e.corrL.DIPDIR);
-	}
-	stable_sort (TEST.begin(), TEST.end(), bycorrDIPDIRcorrDIPcorrLDIPDIRcorrLDIP);
-
 	const bool STRIAE = 	is_allowed_striae_datatype(TEST.at(0).DATATYPE);
 	const bool SC = 		is_allowed_SC_datatype(TEST.at(0).DATATYPE);
+
+	if (STRIAE || SC) stable_sort (TEST.begin(), TEST.end(), bycorrDIPDIRcorrDIPcorrLDIPDIRcorrLDIP);
+	else stable_sort (TEST.begin(), TEST.end(), bycorrDIPDIRcorrDIP);
+
+	check_RGF_for_NAN_INF (TEST);
 
 	const double minDD = TEST.at(0).corr.DIPDIR;
 	const double maxDD = TEST.at(SIZE).corr.DIPDIR;
@@ -83,18 +82,23 @@ bool check_dataset_geometry_homogenity (const vector <GDB>& inGDB) {
 	const double maxD = TEST.at(SIZE).corr.DIP;
 	const double var2 = fabs(maxD - minD);
 
-	const double minLDD = TEST.at(0).corrL.DIPDIR;
-	const double maxLDD = TEST.at(SIZE).corrL.DIPDIR;
-	const double var3 = fabs(maxLDD - minLDD);
+	if (STRIAE || SC) {
 
-	const double minLD = TEST.at(0).corrL.DIP;
-	const double maxLD = TEST.at(SIZE).corrL.DIP;
-	const double var4 = fabs(maxLD - minLD);
+		const double minLDD = TEST.at(0).corrL.DIPDIR;
+		const double maxLDD = TEST.at(SIZE).corrL.DIPDIR;
+		const double var3 = fabs(maxLDD - minLDD);
 
-	ASSERT_FINITE(var1, var2, var3, var4);
+		const double minLD = TEST.at(0).corrL.DIP;
+		const double maxLD = TEST.at(SIZE).corrL.DIP;
+		const double var4 = fabs(maxLD - minLD);
 
-	if (SC || STRIAE) return (var1 > 0.1 || var2 > 0.1 || var3 > 0.1 || var4 > 0.1);
-	else return (var1 > 0.1 || var2 > 0.1);
+		ASSERT_FINITE (var1, var2, var3, var4);
+
+		return (var1 > 0.1 || var2 > 0.1 || var3 > 0.1 || var4 > 0.1);
+	}
+	ASSERT_FINITE (var1, var2);
+
+	return (var1 > 0.1 || var2 > 0.1);
 }
 
 bool check_dataset_homogenity (const vector <GDB>& inGDB) {
@@ -119,20 +123,11 @@ vector <GDB> return_GDB_with_no_homogeneous_data (const vector <GDB>& inGDB) {
 	const bool STRIAE = 	(is_allowed_striae_datatype(processGDB.at(0).DATATYPE));
 	const bool SC = 		(is_allowed_SC_datatype(processGDB.at(0).DATATYPE));
 
-	if (SC || STRIAE) {
-	    for (size_t i=0; i<processGDB.size(); ++i) {
-	        const GDB& e = processGDB.at(i);
-	        ASSERT_FINITE(e.corr.DIP, e.corr.DIPDIR, e.corrL.DIP, e.corrL.DIPDIR);
-	    }
-	    stable_sort (processGDB.begin(), processGDB.end(), bycorrDIPDIRcorrDIPcorrLDIPDIRcorrLDIP);
-	}
-	else {
-        for (size_t i=0; i<processGDB.size(); ++i) {
-            const GDB& e = processGDB.at(i);
-            ASSERT_FINITE(e.corr.DIP, e.corr.DIPDIR);
-        }
-	    stable_sort (processGDB.begin(), processGDB.end(), bycorrDIPDIRcorrDIP);
-	}
+	check_RGF_for_NAN_INF (processGDB);
+
+	if (SC || STRIAE) stable_sort (processGDB.begin(), processGDB.end(), bycorrDIPDIRcorrDIPcorrLDIPDIRcorrLDIP);
+
+	else stable_sort (processGDB.begin(), processGDB.end(), bycorrDIPDIRcorrDIP);
 
 	for (size_t i = 0; i < processGDB.size() - 1; i++) {
 

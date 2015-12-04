@@ -49,14 +49,14 @@ vector <GDB> ptn (const vector <GDB>& inGDB) {
 			outGDB.at(i).ptnT = unitvector(declare_vector (
 					q * inGDB.at(i).N.X + r * inGDB.at(i).DC.X,
 					q * inGDB.at(i).N.Y + r * inGDB.at(i).DC.Y,
-					q * inGDB.at(i).N.Z + r * inGDB.at(i).DC.Z));
+					q * inGDB.at(i).N.Z + r * inGDB.at(i).DC.Z), true);
 
 			outGDB.at(i).ptnP = unitvector (declare_vector (
 					q * inGDB.at(i).DC.X - r * inGDB.at(i).N.X,
 					q * inGDB.at(i).DC.Y - r * inGDB.at(i).N.Y,
-					q * inGDB.at(i).DC.Z - r * inGDB.at(i).N.Z));
+					q * inGDB.at(i).DC.Z - r * inGDB.at(i).N.Z), true);
 
-			outGDB.at(i).ptnN = unitvector (crossproduct (outGDB.at(i).ptnP, outGDB.at(i).ptnT));
+			outGDB.at(i).ptnN = unitvector (crossproduct (outGDB.at(i).ptnP, outGDB.at(i).ptnT), true);
 		}
 	}
 	return outGDB;

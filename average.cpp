@@ -58,7 +58,7 @@ VCTR process_for_average_MT2 (const vector <GDB>& inGDB) {
 
 	for (size_t i = 0; i < inGDB.size(); i++) N.push_back(inGDB.at(i).N);
 
-	return unitvector (VCTR_average(N));
+	return unitvector (VCTR_average(N), true);
 }
 
 VCTR process_for_average_EQ2 (const vector <GDB>& inGDB) {
@@ -74,7 +74,7 @@ VCTR process_for_average_EQ2 (const vector <GDB>& inGDB) {
 			is_in_range(N1.Z, N1.Z, -N2.Z);
 
 	if (is_SYMMETRICAL) return  flip_vector (inGDB.at(0).D);
-	else return unitvector(declare_vector (N1.X + N2.X, N1.Y + N2.Y, N1.Z + N2.Z));
+	else return unitvector(declare_vector (N1.X + N2.X, N1.Y + N2.Y, N1.Z + N2.Z), true);
 }
 
 VCTR process_for_average_EQ1 (const vector <GDB>& inGDB) {
@@ -118,7 +118,7 @@ vector <GDB> DATATYPE_AVERAGE (const vector <GDB>& inGDB) {
 
 	if (!PROCESSABE) return outGDB;
 
-	const VCTR AV_N = unitvector (calculate_data_average_vector (outGDB));
+	const VCTR AV_N = unitvector (calculate_data_average_vector (outGDB), true);
 
 	const bool O = is_N_down (AV_N);
 
@@ -126,7 +126,7 @@ vector <GDB> DATATYPE_AVERAGE (const vector <GDB>& inGDB) {
 
 	if (O && !B) ASSERT_DEAD_END();
 
-	VCTR AV_D = unitvector(DXDYDZ_from_NXNYNZ (AV_N));
+	VCTR AV_D = unitvector(DXDYDZ_from_NXNYNZ (AV_N), true);
 	if (O) AV_D = flip_vector(AV_D);
 
 	outGDB = apply_data_average_vector (outGDB, AV_D);

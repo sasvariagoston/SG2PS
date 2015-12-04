@@ -28,7 +28,7 @@ STRESSFIELD correct_SF_to_fit_N (const STRESSFIELD& in); //ok
 VCTR return_stressvector (const STRESSTENSOR& st, const VCTR& N); //ok
 VCTR return_normalstress (const STRESSTENSOR& st, const VCTR& N); //ok
 VCTR return_shearstress (const STRESSTENSOR& st, const VCTR& N); //ok
-VCTR return_upsilon (const STRESSTENSOR& st, const VCTR& N, const VCTR& SV, const VCTR& UPSILON, const double& lambda, const string& method);
+//VCTR return_upsilon (const STRESSTENSOR& st, const VCTR& N, const VCTR& SV, const VCTR& UPSILON, const double& lambda, const string& method);
 
 double return_ANG (const STRESSTENSOR& st, const VCTR& N, const VCTR& SV);
 double return_RUP (const STRESSTENSOR& st, const VCTR& N, const VCTR& SV, const double& lambda);

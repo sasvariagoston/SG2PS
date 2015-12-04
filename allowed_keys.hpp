@@ -24,7 +24,7 @@ vector <string> allowed_colorcode_empty_vector ();
 
 bool is_allowed_coordinate(const string& coordinate);
 
-bool is_allowed_lithology_datatype(const string& datatype);
+bool is_allowed_lithology_datatype (const string& datatype);
 
 bool is_allowed_lineation_datatype(const string& datatype);
 vector <string> allowed_lineation_datatype_vector ();
