@@ -1498,7 +1498,7 @@ void PS_datanumber_averagebedding (const GDB& i, ofstream& o, const size_t datan
 
 	const PAPER P = RETURN_PAPER();
 
-	const bool HAS_BEDDING = (!isnan (i.avS0d.DIP) && !isnan (i.avS0d.DIPDIR));
+	const bool HAS_BEDDING = (!is_nan(i.avS0d.DIP) && !is_nan(i.avS0d.DIPDIR));
 
 	//const bool HAS_BEDDING = (is_allowed_DIR (i.avS0d.DIPDIR) && is_allowed_DIP (i.avS0d.DIP));
 

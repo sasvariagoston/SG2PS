@@ -209,16 +209,16 @@ GDB TILT_DATA (const GDB& in, const string METHOD) {
 	const bool LITH = is_allowed_lithology_datatype (in.DATATYPE);
 
 	const bool NO_AV_BED = (
-			isnan (in.avS0d.DIP) &&
-			isnan (in.avS0d.DIPDIR) &&
-			isnan (in.avS0D.X) &&
-			isnan (in.avS0D.Y) &&
-			isnan (in.avS0D.Z) &&
-			isnan (in.avS0N.X) &&
-			isnan (in.avS0N.Y) &&
-			isnan (in.avS0N.Z));
+			is_nan (in.avS0d.DIP) &&
+			is_nan (in.avS0d.DIPDIR) &&
+			is_nan (in.avS0D.X) &&
+			is_nan (in.avS0D.Y) &&
+			is_nan (in.avS0D.Z) &&
+			is_nan (in.avS0N.X) &&
+			is_nan (in.avS0N.Y) &&
+			is_nan (in.avS0N.Z));
 
-	const bool NO_NORTH = isnan (in.PALEON) ;
+	const bool NO_NORTH = is_nan (in.PALEON) ;
 
 	if (LITH) return in;
 

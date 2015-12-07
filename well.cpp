@@ -201,16 +201,16 @@ vector <WELL_INTERVAL> FIRST_DERIVATE (const vector <WELL_INTERVAL>& IN) {
 
 	for (size_t i = 0; i < OUT.size(); i++) {
 
-		if (!isnan(OUT.at(i).DD_DERIV)) OUT.at(i).DD_DERIV = OUT.at(i).DD_DERIV / MAX_DERIVATE;
+		if (!is_nan(OUT.at(i).DD_DERIV)) OUT.at(i).DD_DERIV = OUT.at(i).DD_DERIV / MAX_DERIVATE;
 
-		if (!isnan(OUT.at(i).D_DERIV)) OUT.at(i).D_DERIV = OUT.at(i).D_DERIV / MAX_DERIVATE;
+		if (!is_nan(OUT.at(i).D_DERIV)) OUT.at(i).D_DERIV = OUT.at(i).D_DERIV / MAX_DERIVATE;
 	}
 
 	for (size_t i = 1; i < OUT.size() ; i++) {
 
-		if (isnan(OUT.at(i).DD_DERIV)) OUT.at(i).DD_DERIV = OUT.at(i - 1).DD_DERIV;
+		if (is_nan(OUT.at(i).DD_DERIV)) OUT.at(i).DD_DERIV = OUT.at(i - 1).DD_DERIV;
 
-		if (isnan(OUT.at(i).D_DERIV)) OUT.at(i).D_DERIV = OUT.at(i - 1).D_DERIV;
+		if (is_nan(OUT.at(i).D_DERIV)) OUT.at(i).D_DERIV = OUT.at(i - 1).D_DERIV;
 
 	}
 	return OUT;

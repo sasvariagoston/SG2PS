@@ -11,6 +11,10 @@
 #include <stdexcept>
 //#include <time.h>
 
+#if __linux__
+#include <fenv.h>
+#endif
+
 #include "allowed_keys.hpp"
 #include "array_to_vector.hpp"
 #include "assertions.hpp"
@@ -118,9 +122,9 @@ const string double_to_string(const double in, const int precision) {
 	return os.str();
 }
 
-const string dmp_dbl (const double in, const int precision) {
+const string dmp_dbl (double in, int precision) {
 
-	if (isnan(in)) return "NAN";
+	if (is_nan(in)) return "NAN";
 
 	ostringstream os;
 	os << fixed << setprecision (precision) << in << flush;
@@ -189,7 +193,7 @@ double SIN (const double& in) {
 
 	out = sin (out);
 
-	ASSERT(!isnan(out));
+	ASSERT_FINITE(out);
 
 	return out;
 }
@@ -200,7 +204,7 @@ double COS (const double& in) {
 
 	out = cos (out);
 
-	ASSERT (!isnan(out));
+	ASSERT_FINITE(out);
 
 	return out;
 }
@@ -214,7 +218,7 @@ double ASIN (const double& in) {
 
 	out = asin (out);
 
-	ASSERT(!isnan(out));
+	ASSERT_FINITE(out);
 
 	return rad_to_deg (out);
 }
@@ -228,7 +232,7 @@ double ACOS (const double& in) {
 
 	out = acos(out);
 
-	ASSERT(!isnan(out));
+	ASSERT_FINITE(out);
 
 	return rad_to_deg (out);
 }
@@ -239,7 +243,7 @@ double TAN (const double& in) {
 
 	out = tan (out);
 
-	ASSERT(!isnan(out));
+	ASSERT_FINITE(out);
 
 	return out;
 }
@@ -249,10 +253,23 @@ double ATAN (const double& in) {
 
 	out = atan(out);
 
-	ASSERT(!isnan(out));
+	ASSERT_FINITE(out);
 
 	return rad_to_deg (out);
 }
+
+// FIXME Clean up this messy implementation!
+bool is_nan(double d) {
+#if __linux__ && defined ENABLE_FPE
+    fedisableexcept(FE_ALL_EXCEPT);
+#endif
+    bool result = std::isnan(d);
+#if __linux__ && defined ENABLE_FPE
+    feenableexcept(FE_ALL_EXCEPT & ~FE_INEXACT);
+#endif
+    return result;
+}
+
 
 VCTR crossproduct (const VCTR& in1, const VCTR& in2) {
 
@@ -275,7 +292,7 @@ double dotproduct (const VCTR& in1, const VCTR& in2, const bool& normalisation) 
 
 		out = out / (l_in1 * l_in2);
 
-		ASSERT(!isnan(out));
+		ASSERT_FINITE(out);
 	}
 	return out;
 }
@@ -453,7 +470,7 @@ double teta (const vector <vector <double> >& in, const size_t m, const size_t n
 
 	double ret = atan(teta) / 2.0;
 
-	ASSERT(!isnan(ret));
+	ASSERT_FINITE(ret);
 
 	return ret;
 }
@@ -987,8 +1004,7 @@ double vectorlength (const VCTR& in) {
 VCTR unitvector (const VCTR& in, const bool CHECK) {
 
 	if (CHECK) {
-
-		if (isnan(in.X)||isnan(in.Y)||isnan(in.Z)) ASSERT2(false,"NaN detected, [X, Y, Z] = [ "<<in.X<<", "<<in.Y<<", "<<in.Z<<"]");
+	    ASSERT_FINITE(in.X, in.Y, in.Z);
 	}
 
 	VCTR OUT;
@@ -1353,7 +1369,7 @@ vector <double> cubic_solution (const double A, const double B, const double C, 
 
 		double K = acos(-(G / (2.0 * I)));
 
-		ASSERT(!isnan(K));
+		ASSERT_FINITE(K);
 
 		double L = -J;
 

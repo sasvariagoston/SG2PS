@@ -149,7 +149,7 @@ STRESSTENSOR compute_angelier_stresstensor (const ANG_PRM& p, const vector <GDB>
 
 		const double psi = 2.0 * atan (quartic_roots_for_psi.at(i));
 
-		ASSERT(!isnan(psi));
+		ASSERT_FINITE(psi);
 
 		const double alpha = (d_1 * cos (psi) + d_i_1 * sin (psi) + d_ii_1) / d_0;
 		const double gamma = (d_2 * cos (psi) + d_i_2 * sin (psi) + d_ii_2) / d_0;

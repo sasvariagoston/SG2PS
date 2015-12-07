@@ -149,4 +149,6 @@ void writeln (const string MSG);
 #define isnan _isnan
 #endif
 
+bool is_nan(double d);
+
 #endif

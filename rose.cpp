@@ -282,8 +282,13 @@ void PS_draw_rose_DIPDIR_DIP (vector <GDB> inGDB, ofstream& o, CENTER center, co
 
 	for (size_t i = 0; i < N.size(); i++) {
 
+	    ASSERT_NE(MX.LIN_NUM, 0.0);
+	    ASSERT_NE(MX.PLN_NUM, 0.0);
+
 		N.at(i).LIN_NUM = N.at(i).LIN_NUM / MX.LIN_NUM;
 		N.at(i).PLN_NUM = N.at(i).PLN_NUM / MX.PLN_NUM;
+
+        ASSERT_FINITE(N.at(i).LIN_NUM, N.at(i).PLN_NUM);
 
 		if (DD) 	PS_draw_rose_DATATYPE (inGDB, o, center, N.at(i), (i*S) / 10.0, false);
 		else if (D)	PS_draw_rose_DATATYPE (inGDB, o, center, N.at(i), (i*S) / 10.0, true);

@@ -4,6 +4,7 @@
 #ifndef ASSERTIONS_HPP
 #define ASSERTIONS_HPP
 
+#include <cmath>
 #include <sstream>
 #include <vector>
 
@@ -140,7 +141,7 @@ void print_values(std::ostream& os, const T (&array)[n]) {
 template <size_t n>
 bool has_nan_or_inf(const double (&array)[n]) {
     for (size_t i=0; i<n; ++i)
-        if (!isfinite(array[i]))
+        if (!std::isfinite(array[i]))
             return true;
     return false;
 }

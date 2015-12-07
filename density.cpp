@@ -207,6 +207,9 @@ vector < vector <GRID_CENTER> > generate_marching_squares (const vector < vector
 			size_t C_CNT = bin_grid.at(j + 0).at(i + 1).COUNT;
 			size_t D_CNT = bin_grid.at(j + 0).at(i + 0).COUNT;
 
+			ASSERT_FINITE(AX, BX, CX, DX);
+			ASSERT_FINITE(AY, BY, CY, DY);
+
 			m_sq.at(j).at(i).CENTER.X = (AX + BX + CX + DX) / 4.0;
 			m_sq.at(j).at(i).CENTER.Y = (AY + BY + CY + DY) / 4.0;
 
@@ -850,6 +853,9 @@ XY interpolate_between_points (const XY& inA, const XY& inB) {
 	double Y = 0.0;
 
 	double m = (inA.Y - inB.Y) / (inA.X - inB.X);
+
+	ASSERT_FINITE(m);
+
 	double b = inA.Y - m * inA.X;
 
 	double A = 1.0 + (m * m);
@@ -861,8 +867,7 @@ XY interpolate_between_points (const XY& inA, const XY& inB) {
 	double X1 = QUAD_SOL.at(0);
 	double X2 = QUAD_SOL.at(1);
 
-	ASSERT(!isnan(X1));
-	ASSERT(!isnan(X2));
+	ASSERT_FINITE(X1, X2);
 
 	bool X1_FIT = false;
 	bool X2_FIT = false;
@@ -884,7 +889,7 @@ XY interpolate_between_points (const XY& inA, const XY& inB) {
 
 	Y = m * X + b;
 
-	ASSERT(!isnan(Y));
+	ASSERT_FINITE(Y);
 
 	OUT.X = X;
 	OUT.Y = Y;
