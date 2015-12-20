@@ -52,8 +52,6 @@ vector <vector <WELL_FREQUENCY> > RETURN_FREQUENCY () {
 
 vector <GDB> filter_too_small_distances (const vector <GDB>& IN) {
 
-	//cout << "IN.size(): " << IN.size() << endl;
-
 	vector <GDB> OUT;
 
 	for (size_t i = 0; i < IN.size() - 1; i++) {
@@ -84,7 +82,7 @@ vector <WELL_FREQUENCY> FREQUENCY (const vector <GDB>& inGDB) {
 
 	process_GDB = filter_too_small_distances (process_GDB);
 
-    ASSERT(!process_GDB.empty());
+    ASSERT (!process_GDB.empty());
 
 	process_GDB = SORT_GDB (process_GDB, "DEPTH");
 
@@ -144,9 +142,10 @@ vector <WELL_FREQUENCY> FREQUENCY (const vector <GDB>& inGDB) {
 	for (size_t i = 0; i < OUT.size() - 1; i++) {
 
 		OUT.at(i).DERIV = OUT.at(i).DERIV / MAX_DERIV;
+
+		ASSERT_FINITE (OUT.at(i).DERIV);
 	}
-	OUT.at(OUT.size() - 1).DERIV = NaN();
-	OUT.at(OUT.size() - 1).DERIV_DEPTH = NaN();
+	OUT.erase (OUT.end() - 1, OUT.end());
 
 	return OUT;
 }
@@ -165,14 +164,14 @@ double record_derivate (const bool DIPDIR, const WELL_INTERVAL& ACT, const WELL_
 	}
 	else OUT = fabs ((NXT.INT_AV_DD.DIP - ACT.INT_AV_DD.DIP) / (NXT.DEPTH - ACT.DEPTH));
 
-    ASSERT_FINITE(OUT);
+	ASSERT_FINITE (OUT);
 
 	return OUT;
 }
 
 vector <WELL_INTERVAL> FIRST_DERIVATE (const vector <WELL_INTERVAL>& IN) {
 
-	vector <WELL_INTERVAL> OUT = IN;
+	vector <WELL_INTERVAL> OUT;
 
 	double MAX_DERIVATE = 0.0;
 
@@ -183,10 +182,9 @@ vector <WELL_INTERVAL> FIRST_DERIVATE (const vector <WELL_INTERVAL>& IN) {
 
 		const bool PROCESSABLE = fabs (ACT.DEPTH - NXT.DEPTH) > 10e-2;
 
-		OUT.at(i).DD_DERIV = 0.0;
-		OUT.at(i).D_DERIV = 0.0;
-
 		if (PROCESSABLE) {
+
+			WELL_INTERVAL buf = IN.at(i);
 
 			const double DD_DRV = record_derivate (true, ACT, NXT);
 			const double D_DRV = record_derivate (false, ACT, NXT);
@@ -194,29 +192,37 @@ vector <WELL_INTERVAL> FIRST_DERIVATE (const vector <WELL_INTERVAL>& IN) {
 			if (DD_DRV > MAX_DERIVATE) MAX_DERIVATE = DD_DRV;
 			if (D_DRV > MAX_DERIVATE) MAX_DERIVATE = D_DRV;
 
-			OUT.at(i).DD_DERIV = DD_DRV;
-			OUT.at(i).D_DERIV = D_DRV;
+			ASSERT_FINITE (MAX_DERIVATE);
+			ASSERT (MAX_DERIVATE > 0);
+
+			buf.DD_DERIV = DD_DRV;
+			buf.D_DERIV = D_DRV;
+
+			ASSERT_FINITE (buf.DD_DERIV, buf.D_DERIV);
+
+			OUT.push_back (buf);
 		}
 	}
 
 	for (size_t i = 0; i < OUT.size(); i++) {
 
-		if (!is_nan(OUT.at(i).DD_DERIV)) OUT.at(i).DD_DERIV = OUT.at(i).DD_DERIV / MAX_DERIVATE;
 
-		if (!is_nan(OUT.at(i).D_DERIV)) OUT.at(i).D_DERIV = OUT.at(i).D_DERIV / MAX_DERIVATE;
+		OUT.at(i).DD_DERIV = OUT.at(i).DD_DERIV / MAX_DERIVATE;
+		OUT.at(i).D_DERIV  = OUT.at(i).D_DERIV  / MAX_DERIVATE;
+
+		ASSERT_FINITE (OUT.at(i).DD_DERIV, OUT.at(i).D_DERIV);
 	}
+	ASSERT (OUT.size() <= IN.size());
 
-	for (size_t i = 1; i < OUT.size() ; i++) {
-
-		if (is_nan(OUT.at(i).DD_DERIV)) OUT.at(i).DD_DERIV = OUT.at(i - 1).DD_DERIV;
-
-		if (is_nan(OUT.at(i).D_DERIV)) OUT.at(i).D_DERIV = OUT.at(i - 1).D_DERIV;
-
-	}
 	return OUT;
 }
 
 double calculate_interval_depth (const vector <GDB>& inGDB) {
+
+	const bool A = is_WELL_INTERVAL_MIDDLE_AVERAGE ();
+	const bool M = is_WELL_INTERVAL_MIDDLE_MEDIAN ();
+
+	ASSERT (A || M);
 
 	vector <GDB> process_GDB = SORT_GDB (inGDB, "DEPTH");
 
@@ -224,11 +230,8 @@ double calculate_interval_depth (const vector <GDB>& inGDB) {
 
 	for (size_t i = 0; i < process_GDB.size(); i++) D.push_back (process_GDB.at(i).DEPTH);
 
-	if 		(is_WELL_INTERVAL_MIDDLE_AVERAGE()) return average(D);
-	else if (is_WELL_INTERVAL_MIDDLE_MEDIAN()) 	return median(D);
-	else ASSERT_DEAD_END();
-
-	return NaN();
+	if (A) return average(D);
+	else   return median(D);
 }
 
 vector <GDB> return_GDB_for_data_interval (const vector <GDB>& inGDB, const double MIN, const double MAX) {
@@ -246,7 +249,7 @@ vector <GDB> return_GDB_for_data_interval (const vector <GDB>& inGDB, const doub
 
 double stdev_for_interval (const vector <GDB>& inGDB, const bool DIPDIR, const size_t RUN) {
 
-	if (inGDB.size() == 0) ASSERT_DEAD_END();
+	ASSERT (inGDB.size() != 0);
 	if (inGDB.size() == 1) return 0.0;
 
 	const DIPDIR_DIP avDD = inGDB.at(0).avd;
@@ -304,7 +307,7 @@ WELL_INTERVAL interval_average (const vector <GDB>& inGDB, const size_t RUN) {
 
 	WELL_INTERVAL OUT;
 
-	ASSERT(!inGDB.empty());
+	ASSERT (!inGDB.empty());
 
 	OUT.DEPTH = calculate_interval_depth (inGDB);//ok
 
@@ -346,7 +349,7 @@ vector <WELL_INTERVAL> WELL_AVERAGE_M (const vector <GDB>& p_GDB) {
 
 	vector <WELL_INTERVAL> OUT;
 
-	ASSERT(!p_GDB.empty());
+	ASSERT (!p_GDB.empty());
 
 	const double IVL = is_WELL_INTERVAL_LENGTH();//ok
 
@@ -372,13 +375,7 @@ vector <WELL_INTERVAL> WELL_AVERAGE_M (const vector <GDB>& p_GDB) {
 		size_t RUN = string_to_size_t (double_to_string(i, 0));
 
 		if (PROCESSABLE) buf = interval_average (temp, RUN);
-		else {
 
-			buf.INT_AV_DD.DIPDIR = NaN();
-			buf.INT_AV_DD.DIP = NaN();
-			buf.INT_AV_DD_STDEV = NaN();
-			buf.INT_AV_D_STDEV = NaN();
-		}
 		buf.SIZE = temp.size();
 		buf.MIN = MIN;
 		buf.MAX = MAX;
@@ -392,7 +389,7 @@ vector <WELL_INTERVAL> WELL_AVERAGE_D (const vector <GDB>& p_GDB) {
 
 	vector <WELL_INTERVAL> OUT;
 
-	ASSERT(!p_GDB.empty());
+	ASSERT (!p_GDB.empty());
 
 	const double IVL = is_WELL_INTERVAL_LENGTH();
 	const size_t S = p_GDB.size();
@@ -432,7 +429,7 @@ void PROCESS_WELL_GROUPS (const vector <vector <GDB> >& inGDB_G) {
 
 	for (size_t i = 0; i < inGDB_G.size(); i++) {
 
-		ASSERT(!inGDB_G.at(i).empty());
+		ASSERT (!inGDB_G.at(i).empty());
 
 		setup_ACTUAL_LOCATION (inGDB_G.at(i).at(0).LOC);
 		setup_ACTUAL_DATATYPE (inGDB_G.at(i).at(0).DATATYPE);
@@ -447,6 +444,9 @@ void PROCESS_WELL_GROUPS (const vector <vector <GDB> >& inGDB_G) {
 
 		const bool is_M = is_WELL_INTERVAL_METER();
 		const bool is_D = is_WELL_INTERVAL_DATANUMBER();
+
+		ASSERT (is_M || is_D);
+
 		const size_t S = p_GDB.size();
 
 		const double MIN_DEPTH = p_GDB.at(0).DEPTH;
@@ -458,9 +458,8 @@ void PROCESS_WELL_GROUPS (const vector <vector <GDB> >& inGDB_G) {
 
 		bool PROCESSABLE = false;
 
-		if 		(is_M) 	PROCESSABLE = (MAX_DEPTH - MIN_DEPTH) > IVL;
-		else if (is_D)	PROCESSABLE = (S >= I);
-		else ASSERT_DEAD_END();
+		if (is_M) PROCESSABLE = (MAX_DEPTH - MIN_DEPTH) > IVL;
+		else 	  PROCESSABLE = (S >= I);
 
 		if (p_GDB.size() <= 2) PROCESSABLE = false;
 

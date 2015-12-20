@@ -17,6 +17,9 @@ bool contains(const vector<T>& vec, const T& elem) {
 }
 
 namespace {
+
+const double ZERO = -99999999.999;
+
 const string groupcode_basic_allowed_str [] = {
 		"X", "A", "B", "C", "D", "E", "F", "G", "H", "I"
 };
@@ -234,6 +237,11 @@ const string test_data_generation_mode_allowed [] = {
 };
 const vector<string> allowed_test_data_generation_mode(from_array(test_data_generation_mode_allowed));
 
+}
+
+double return_ZERO () {
+
+	return ZERO;
 }
 
 const string pscolor_rgb_allowed [] = {

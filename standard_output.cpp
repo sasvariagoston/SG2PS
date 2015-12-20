@@ -495,9 +495,9 @@ void dump_TRI_GRID_to_file (const vector <TRIANGLE>& T, const string FN) {
 
 	o
 	<< "GROUP i" << '\t'
-	<< "CENTER.A.X d" << '\t' << "CENTER.A.Y d" << '\t' << "CENTER.A.Z d" << '\t'
-	<< "CENTER.B.X d" << '\t' << "CENTER.B.Y d" << '\t' << "CENTER.B.Z d" << '\t'
-	<< "CENTER.C.X d" << '\t' << "CENTER.C.Y d" << '\t' << "CENTER.C.Z d" << '\t'
+	<< "CENTER.A.X d" << '\t' << "CENTER.A.Y d" << '\t'
+	<< "CENTER.B.X d" << '\t' << "CENTER.B.Y d" << '\t'
+	<< "CENTER.C.X d" << '\t' << "CENTER.C.Y d" << '\t'
 	<< "COUNT i" << endl;
 
 	for (size_t i = 0; i < T.size(); i++) {
@@ -506,9 +506,9 @@ void dump_TRI_GRID_to_file (const vector <TRIANGLE>& T, const string FN) {
 
 		o
 		<< I.GROUP << '\t'
-		<< dmp_dbl(I.A.X, 8) << '\t' << dmp_dbl(I.A.Y, 8) << '\t' << dmp_dbl(I.A.Z, 8) << '\t'
-		<< dmp_dbl(I.B.X, 8) << '\t' << dmp_dbl(I.B.Y, 8) << '\t' << dmp_dbl(I.B.Z, 8) << '\t'
-		<< dmp_dbl(I.C.X, 8) << '\t' << dmp_dbl(I.C.Y, 8) << '\t' << dmp_dbl(I.C.Z, 8) << '\t'
+		<< dmp_dbl(I.A.X, 8) << '\t' << dmp_dbl(I.A.Y, 8) << '\t'
+		<< dmp_dbl(I.B.X, 8) << '\t' << dmp_dbl(I.B.Y, 8) << '\t'
+		<< dmp_dbl(I.C.X, 8) << '\t' << dmp_dbl(I.C.Y, 8) << '\t'
 		<< I.COUNT << endl;
 	}
 }
@@ -762,14 +762,16 @@ void dump_PEAK_to_file (ofstream& o, const bool PEAK) {
 
 	o << "DEPTH d" << '\t' << "VALUE d" << '\t' << "COUNT d"<< endl;
 
-		for (size_t i = 0; i < P.size(); i++) {
+	for (size_t i = 0; i < P.size(); i++) {
 
-			o
-			<< dmp_dbl (P.at(i).DEPTH, 8) << '\t'
-			<< dmp_dbl (P.at(i).VALUE, 8) << '\t'
-			<< dmp_dbl (P.at(i).COUNT, 8) << endl;
-		}
-		return;
+		ASSERT (PEAK || is_nan (P.at(i).VALUE));
+
+		o
+		<< dmp_dbl (P.at(i).DEPTH, 8) << '\t'
+		<< dmp_dbl (P.at(i).VALUE, 8) << '\t'
+		<< dmp_dbl (P.at(i).COUNT, 8) << endl;
+	}
+	return;
 }
 
 void STANDARD_OUTPUT_PEAKS (const string METHOD) {

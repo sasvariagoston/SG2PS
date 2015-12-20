@@ -206,6 +206,20 @@ void PS_draw_rose_DATATYPE (const vector <GDB>& inGBD, ofstream& o, const CENTER
 
 void PS_draw_rose_DIPDIR_DIP (vector <GDB> inGDB, ofstream& o, CENTER center, const string MODE, const bool TILT) {
 
+	ASSERT2 (inGDB.size() > 0, "Empty GDB in 'PS_draw_rose_DIPDIR_DIP' function.");
+
+	const bool LT = is_allowed_lithology_datatype(inGDB.at(0).DATATYPE);
+	const bool PL = is_allowed_plane_datatype(inGDB.at(0).DATATYPE);
+	const bool LN = is_allowed_lineation_datatype(inGDB.at(0).DATATYPE);
+	const bool SC = is_allowed_SC_datatype(inGDB.at(0).DATATYPE);
+	const bool ST = is_allowed_striae_datatype(inGDB.at(0).DATATYPE);
+
+	const bool PR_L = LN || SC || ST;
+	const bool PR_P = PL || SC || ST;
+
+	ASSERT2 (PR_L || PR_P, "Neither plane nor lineation, nor SC nor striae data processed in 'PS_draw_rose_DIPDIR_DIP' function.");
+	ASSERT2 (!LT, "Lithology data processed in 'PS_draw_rose_DIPDIR_DIP' function.");
+
 	vector <ROSENUMBER> N;
 	ROSENUMBER MX;
 
@@ -253,15 +267,15 @@ void PS_draw_rose_DIPDIR_DIP (vector <GDB> inGDB, ofstream& o, CENTER center, co
 
 			ROSENUMBER TEMP;
 
-			TEMP.LIN_NUM = T1.LIN_NUM + T2.LIN_NUM;
-			TEMP.PLN_NUM = T1.PLN_NUM + T2.PLN_NUM;
+			if (PR_L) TEMP.LIN_NUM = T1.LIN_NUM + T2.LIN_NUM;
+			if (PR_P) TEMP.PLN_NUM = T1.PLN_NUM + T2.PLN_NUM;
 
 			N.push_back(TEMP);
 		}
 		else ASSERT_DEAD_END();
 
-		if (N.at(i).LIN_NUM > MX.LIN_NUM) MX.LIN_NUM = N.at(i).LIN_NUM;
-		if (N.at(i).PLN_NUM > MX.PLN_NUM) MX.PLN_NUM = N.at(i).PLN_NUM;
+		if (N.at(i).LIN_NUM > MX.LIN_NUM && PR_L) MX.LIN_NUM = N.at(i).LIN_NUM;
+		if (N.at(i).PLN_NUM > MX.PLN_NUM && PR_P) MX.PLN_NUM = N.at(i).PLN_NUM;
 	}
 
 	if (is_mode_DEBUG() && is_CHK_ROSE()) {
@@ -282,13 +296,23 @@ void PS_draw_rose_DIPDIR_DIP (vector <GDB> inGDB, ofstream& o, CENTER center, co
 
 	for (size_t i = 0; i < N.size(); i++) {
 
-	    ASSERT_NE(MX.LIN_NUM, 0.0);
-	    ASSERT_NE(MX.PLN_NUM, 0.0);
+	    if (PR_L) {
 
-		N.at(i).LIN_NUM = N.at(i).LIN_NUM / MX.LIN_NUM;
-		N.at(i).PLN_NUM = N.at(i).PLN_NUM / MX.PLN_NUM;
+	    	ASSERT_NE (MX.LIN_NUM, 0.0);
 
-        ASSERT_FINITE(N.at(i).LIN_NUM, N.at(i).PLN_NUM);
+	    	N.at(i).LIN_NUM = N.at(i).LIN_NUM / MX.LIN_NUM;
+
+	    	ASSERT_FINITE(N.at(i).LIN_NUM);
+	    }
+
+	    if (PR_P) {
+
+	    	ASSERT_NE (MX.PLN_NUM, 0.0);
+
+	    	N.at(i).PLN_NUM = N.at(i).PLN_NUM / MX.PLN_NUM;
+
+	    	ASSERT_FINITE(N.at(i).PLN_NUM);
+	    }
 
 		if (DD) 	PS_draw_rose_DATATYPE (inGDB, o, center, N.at(i), (i*S) / 10.0, false);
 		else if (D)	PS_draw_rose_DATATYPE (inGDB, o, center, N.at(i), (i*S) / 10.0, true);

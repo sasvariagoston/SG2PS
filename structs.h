@@ -48,7 +48,7 @@ struct GDB  {
 
 	GDB() { LOCX=LOCY=DIPDIR=DIP=LDIR=LDIP=PALEON=LPITCH=DEPTH=PITCHANGLE=MISFIT=lambda=ANG=RUP=AV_MISF=NaN();
 			iID=numeric_limits<int>::min();
-			//UPWARD=false UP=false;
+			HAS_BEDDING = 2;
 		   }
 
 	string ID;
@@ -85,6 +85,8 @@ struct GDB  {
 
 	VCTR ptnP, ptnT, ptnN;
 	VCTR avD, avS0D, avS0N;
+
+	size_t HAS_BEDDING;
 
 	double MISFIT;
 

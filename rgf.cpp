@@ -103,7 +103,16 @@ double german_to_right_hand_rule (const double corrDIPDIR) {
 	if ((corrDIPDIR > 90.0) && (corrDIPDIR <= 360.0)) 	return corrDIPDIR - 90.0;
 	else 												return corrDIPDIR + 270.0;
 }
+/*
+bool has_bedding (const vector <vector <GDB> >& inGDB) {
 
+	for (size_t i = 0; i < inGDB.size(); i++) {
+
+		if (is_allowed_handle_as_bedding (inGDB.at(i).at(0).DATATYPE)) return true;
+	}
+	return false;
+}
+*/
 vector <GDB> fix_360_0 (const vector <GDB>& inGDB) {
 
 	vector <GDB> outGDB = inGDB;
@@ -216,7 +225,7 @@ GDB generate_NCDCSC_PITCH (const GDB& inGDB) {
 	GDB outGDB = inGDB;
 
 	const string PITCH = outGDB.LPITCHSENSE;
-	double GEOD_DIR = NaN();
+	double GEOD_DIR;
 
 	const vector <string> GDV = allowed_geodetic_vector();
 	const vector <double> GDA = geodetic_angle_vector();
@@ -658,38 +667,74 @@ vector <vector <GDB> > EVALUATE (const vector <vector <GDB> >& inGDB_G) {
 
 	if (!is_mode_DEBUG()) writeln (msg);
 
+	//cout << "a1" << endl;
+
 	if (TRJ) {
+
+		//cout << "a2" << endl;
 
 		P = RETILT (P, "TRAJECTORY");
 
+		//cout << "a3" << endl;
+
 		P = PREPARE_GDB_VECTOR_FOR_PROCESSING (P, true);
+
+	//	cout << "a4" << endl;
 
 		P = AVERAGE (P);
 
+		//cout << "a5" << endl;
+
 		P = ASSOCIATE_AVERAGE_BEDDING_GROUPS (P);
+
+		//cout << "a6" << endl;
 	}
+
+	//cout << "a7" << endl;
 
 	if (TLT) {
 
+		//cout << "a8" << endl;
+
 		P = RETILT (P, "BEDDING");
+
+		//cout << "a9" << endl;
 
 		P = RETILT (P, "PALEONORTH");
 
+		//cout << "a10" << endl;
+
 		P = PREPARE_GDB_VECTOR_FOR_PROCESSING (P, true);
+
+		//cout << "a11" << endl;
 
 		P = AVERAGE (P);
 
+		//cout << "a12" << endl;
+
 		P = ASSOCIATE_AVERAGE_BEDDING_GROUPS (P);
+
+		//cout << "a13" << endl;
 	}
 	P = PROCESS_GROUPS (P, TLT);
 
+	//cout << "a14" << endl;
+
 	vector <GDB> p = MERGE_GROUPS_TO_GDB (P);
+
+	//cout << "a15" << endl;
 
 	p = GENERATE_PS_CODE (p);
 
+	//cout << "a16" << endl;
+
 	p = SORT_GDB (p, "IID");
 
+	//cout << "a17" << endl;
+
 	P = SEPARATE_DATASET_GROUPS (p);
+
+	//cout << "a18" << endl;
 
 	if (is_GROUPSEPARATION_IGNORE()) {}
 	else if (is_GROUPSEPARATION_GROUPCODE()) 	P = SEPARATE_DATASET (P, "GROUPS", "GROUPCODE");//ez nem kell az alapfugvenybe!
@@ -735,6 +780,7 @@ void PROCESS_RGF (const string inputfilename, const bool XY_OK, const bool TRJ_O
 	nGDB_G = AVERAGE (nGDB_G);
 
 	nGDB_G = ASSOCIATE_AVERAGE_BEDDING_GROUPS (nGDB_G);
+
 	nGDB_G = clustering_GBD (nGDB_G);
 	nGDB = MERGE_GROUPS_TO_GDB (nGDB_G);
 	nGDB_G = SEPARATE_DATASET_GROUPS (nGDB);
@@ -812,37 +858,37 @@ void dbg_cout_GDB_vector (const vector <GDB>& inGDB) {
 
 	cout
 	<< "ID" << '\t' << "iID" << '\t'
-	<< "N.X" << '\t' << "N.Y" << '\t' << "N.Z" << '\t'
+	//<< "N.X" << '\t' << "N.Y" << '\t' << "N.Z" << '\t'
 	//<< "D.X" << '\t' << "D.Y" << '\t'<< "D.Z" << '\t'
 	//<< "S.X" << '\t' << "S.Y" << '\t'<< "S.Z" << '\t'
-	<< "NC.X" << '\t' << "NC.Y" << '\t'<< "NC.Z" << '\t'
-	<< "DC.X" << '\t' << "DC.Y" << '\t'<< "DC.Z" << '\t'
+	//<< "NC.X" << '\t' << "NC.Y" << '\t'<< "NC.Z" << '\t'
+	//<< "DC.X" << '\t' << "DC.Y" << '\t'<< "DC.Z" << '\t'
 	//<< "SC.X" << '\t' << "SC.Y" << '\t'<< "SC.Z" << '\t'
 
 	//<< "LPITCH" << '\t'
 	//<< "LPITCHSENSE" << '\t'
 	//<< "PITCHANGLE" << '\t'
 
-	<< "MISFIT" << '\t'
+	//<< "MISFIT" << '\t'
 	//<< "LINEATION" << '\t'
 	//<< "OFFSET" << '\t'
 	//<< "DEPTH" << '\t'
-	//<< "GC" << '\t'
+	<< "GC" << '\t'
 	//<< "COLOR" << '\t'
 	//<< "LOC" << '\t'
 	//<< "LOCX" << '\t'
 	//<< "LOCY" << '\t'
 	//<< "FORMATION" << '\t'
-	//<< "DATATYPE" << '\t'
+	<< "DATATYPE" << '\t'
 	//<< "DIPDIR" << '\t'
 	//<< "DIP" << '\t'
 	//<< "LDIR" << '\t'
 	//<< "LDIP" << '\t'
 
-	<< "corr.DIPDIR" << '\t'
-	<< "corr.DIP" << '\t'
-	<< "corrL.DIPDIR" << '\t'
-	<< "corrL.DIP" << '\t'
+	//<< "corr.DIPDIR" << '\t'
+	//<< "corr.DIP" << '\t'
+	//<< "corrL.DIPDIR" << '\t'
+	//<< "corrL.DIP" << '\t'
 
 	<< "PALEON" << '\t'
 	//<< "COMMENT" << '\t'
@@ -868,8 +914,8 @@ void dbg_cout_GDB_vector (const vector <GDB>& inGDB) {
 
 	<< "avS0d.DIPDIR" << '\t'
 	<< "avS0d.DIP" << '\t'
-	<< "avd.DIPDIR" << '\t'
-	<< "avd.DIP" << '\t'
+	//<< "avd.DIPDIR" << '\t'
+	//<< "avd.DIP" << '\t'
 	//<< "avS0offset" << '\t'
 
 
@@ -896,11 +942,11 @@ void dbg_cout_GDB_vector (const vector <GDB>& inGDB) {
 		<< T.ID << '\t' << T.iID << '\t'
 
 		<< fixed << setprecision(6)
-		<< T.N.X << '\t' << T.N.Y << '\t' << T.N.Z << '\t'
+		//<< T.N.X << '\t' << T.N.Y << '\t' << T.N.Z << '\t'
 		//<< T.D.X << '\t' << T.D.Y << '\t'<< T.D.Z << '\t'
 		//<< T.S.X << '\t' << T.S.Y << '\t'<< T.S.Z << '\t'
-		<< T.NC.X << '\t' << T.NC.Y << '\t'<< T.NC.Z << '\t'
-		<< T.DC.X << '\t' << T.DC.Y << '\t'<< T.DC.Z << '\t'
+		//<< T.NC.X << '\t' << T.NC.Y << '\t'<< T.NC.Z << '\t'
+		//<< T.DC.X << '\t' << T.DC.Y << '\t'<< T.DC.Z << '\t'
 		//<< T.SC.X << '\t' << T.SC.Y << '\t'<< T.SC.Z << '\t'
 
 		//<< T.LPITCH << '\t'
@@ -908,19 +954,19 @@ void dbg_cout_GDB_vector (const vector <GDB>& inGDB) {
 		//<< T.PITCHANGLE << '\t'
 
 		<< fixed << setprecision(8)
-		<< T.MISFIT << '\t'
+		//<< T.MISFIT << '\t'
 		//<< T.LINEATION << '\t'
 		//<< T.OFFSET << '\t'
 		//<< T.DEPTH << '\t'
 
 		<< fixed << setprecision(0)
-		//<< T.GC << '\t'
+		<< T.GC << '\t'
 		//<< T.COLOR << '\t'
 		//<< T.LOC << '\t'
 		//<< T.LOCX << '\t'
 		//<< T.LOCY << '\t'
 		//<< T.FORMATION << '\t'
-		//<< T.DATATYPE << '\t'
+		<< T.DATATYPE << '\t'
 
 		<< fixed << setprecision (0)
 		//<< T.DIPDIR << '\t'
@@ -928,10 +974,10 @@ void dbg_cout_GDB_vector (const vector <GDB>& inGDB) {
 		//<< T.LDIR << '\t'
 		//<< T.LDIP << '\t'
 
-		<< T.corr.DIPDIR << '\t'
-		<< T.corr.DIP << '\t'
-		<< T.corrL.DIPDIR << '\t'
-		<< T.corrL.DIP << '\t'
+		//<< T.corr.DIPDIR << '\t'
+		//<< T.corr.DIP << '\t'
+		//<< T.corrL.DIPDIR << '\t'
+		//<< T.corrL.DIP << '\t'
 
 		<< fixed << setprecision(0)
 		<< T.PALEON << '\t'
@@ -962,8 +1008,8 @@ void dbg_cout_GDB_vector (const vector <GDB>& inGDB) {
 		<< fixed << setprecision(6)
 		<< T.avS0d.DIPDIR << '\t'
 		<< T.avS0d.DIP << '\t'
-		<< T.avd.DIPDIR << '\t'
-		<< T.avd.DIP << '\t'
+		//<< T.avd.DIPDIR << '\t'
+		//<< T.avd.DIP << '\t'
 		//<< T.avS0offset << '\t'
 
 		//<< fixed << setprecision(6)

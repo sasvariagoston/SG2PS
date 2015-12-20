@@ -37,24 +37,24 @@ vector <BRDR> sort_by_border (const vector <BRDR>& in) {
 
 double return_datamin (const vector <GDB>& inGDB, const string field) {
 
+	ASSERT (field == "RUP" || field == "ANG");
+
 	const vector <GDB> outGDB = SORT_GDB (inGDB, field);
 
 	if (field == "RUP") return outGDB.at(0).RUP;
-	else if (field == "ANG") return outGDB.at(0).ANG;
-	else ASSERT_DEAD_END();
 
-	return NaN();
+	return outGDB.at(0).ANG;
 }
 
 double return_datamax (const vector <GDB>& inGDB, const string field) {
 
+	ASSERT (field == "RUP" || field == "ANG");
+
 	const vector <GDB> outGDB = SORT_GDB (inGDB, field);
 
 	if (field == "RUP") return outGDB.at(inGDB.size() - 1).RUP;
-	else if (field == "ANG") return outGDB.at(inGDB.size() - 1).ANG;
-	else ASSERT_DEAD_END();
 
-	return NaN();
+	return outGDB.at(inGDB.size() - 1).ANG;
 }
 
 size_t return_count_max (const vector <GDB>& inGDB, const string method, const size_t bin_number) {

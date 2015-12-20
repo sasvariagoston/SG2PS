@@ -298,7 +298,7 @@ void PS_rainbow (ofstream& o, const PAPER& P, const double X1, const double Y1, 
 	const bool BSZ = MODE == "BINSIZE";
 	const bool ERR = MODE == "ERROR";
 
-	if (!BSZ && !ERR) ASSERT_DEAD_END();
+	ASSERT (BSZ || ERR);
 
 	linewidth_PS(o, 1, 1);
 
@@ -886,8 +886,10 @@ double RETURN_VALUE_AVERAGE (vector <PEAK_TO_PLOT> IN) {
 
 	vector <double> FOR_AVERAGE;
 
-	for (size_t i = 0; i < IN.size(); i++) FOR_AVERAGE.push_back(IN.at(i).VALUE);
+	for (size_t i = 0; i < IN.size(); i++) {
 
+		FOR_AVERAGE.push_back(IN.at(i).VALUE);
+	}
 	return average (FOR_AVERAGE);
 
 }
@@ -895,7 +897,10 @@ double RETURN_DEPTH_AVERAGE (vector <PEAK_TO_PLOT> IN) {
 
 	vector <double> FOR_AVERAGE;
 
-	for (size_t i = 0; i < IN.size(); i++) FOR_AVERAGE.push_back(IN.at(i).DEPTH);
+	for (size_t i = 0; i < IN.size(); i++) {
+
+		FOR_AVERAGE.push_back(IN.at(i).DEPTH);
+	}
 
 	return average (FOR_AVERAGE);
 }
@@ -931,7 +936,6 @@ vector <PEAK_TO_PLOT> generate_flattened_curve (const size_t bin) {
 		}
 		buf.DEPTH = average(DEPTH_FOR_AVERAGE);
 		buf.VALUE = average(VALUE_FOR_AVERAGE);
-		buf.COUNT = NaN();
 
 		OUT.push_back (buf);
 	}
@@ -949,6 +953,7 @@ void count_real_peaks (const vector <PEAK_TO_PLOT>& FL_PK, const string METHOD) 
 		for (size_t i = 1; i < PEAK.size() - 1; i++) {
 
 			const bool LAST = i == PEAK.size() - 2;
+
 
 			const bool RANGE_OK_LAST = LAST && is_in_range_LW_EQ (FL_PK.at(j).DEPTH, FL_PK.at(j+1).DEPTH, PEAK.at(i).DEPTH);
 			const bool RANGE_OK_OTHR = !LAST && is_in_range_UP_EQ (FL_PK.at(j).DEPTH, FL_PK.at(j+1).DEPTH, PEAK.at(i).DEPTH);
@@ -1065,7 +1070,10 @@ void plot_well_faults (ofstream& o, const double X, const double LENGTH, const d
 	color_PS (o, "0.00 0.00 0.00");
 	linewidth_PS (o, 2, 1);
 
-	for (size_t i = 0; i < FAULTS.size(); i++) if (FAULTS.at(i).COUNT > MAX) MAX = FAULTS.at(i).COUNT;
+	for (size_t i = 0; i < FAULTS.size(); i++) {
+
+		if (FAULTS.at(i).COUNT > MAX) MAX = FAULTS.at(i).COUNT;
+	}
 
 	for (size_t i = 0; i < FAULTS.size(); i++) {
 
@@ -1091,7 +1099,9 @@ void plot_well_frequency_derivate (const vector <WELL_FREQUENCY> IN, ofstream& o
 	vector <double> DEPTH;
 	vector <double> VALUE;
 
-	for (size_t i = 0; i < IN.size() - 1; i++) {
+	//for (size_t i = 0; i < IN.size() - 1; i++) {
+
+	for (size_t i = 0; i < IN.size(); i++) {
 
 		DEPTH.push_back (IN.at(i).DERIV_DEPTH);
 		VALUE.push_back (IN.at(i).DERIV);
@@ -1571,7 +1581,7 @@ void plot_well_measurements (const vector <GDB>& inGDB, ofstream& o, const doubl
 
 		if (O && !B) ASSERT_DEAD_END();
 
-		double DATA = NaN();
+		double DATA;
 
 		if (DIPDIR) DATA = inGDB.at(i).corr.DIPDIR;
 		else {
@@ -1597,8 +1607,6 @@ void plot_well_measurements (const vector <GDB>& inGDB, ofstream& o, const doubl
 void PS_well_intervals_error (const vector <WELL_INTERVAL>& INTERVAL, ofstream& o, const double X, const double LENGTH, const double MIN_VAL, const double MAX_VAL, const bool DIPDIR) {
 
 	const PAPER P = RETURN_PAPER();
-
-	//has bugs while generating colour code
 
 	double  MIN_ERROR = 999.0;
 	double  MAX_ERROR = 0.0;
@@ -1743,7 +1751,6 @@ void INIT_FAULT_POSITIONS (const double MIN_VAL, const double MAX_VAL) {
 		PEAK_TO_PLOT buf;
 
 		buf.DEPTH = i + (0.5);
-		buf.VALUE = NaN();
 		buf.COUNT = 0;
 
 		FAULTS.push_back (buf);

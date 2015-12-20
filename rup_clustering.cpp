@@ -220,11 +220,13 @@ vector <GDB> associate_GDB_DATA_clusters (const vector <GDB>& inGDB, const vecto
 
 			for (size_t i = 0; i < V.size(); i++) {
 
-				double ACT = NaN();
+				double ACT;
 
 				if (is_ANG && is_RUP_CLUSTERING_ANG()) 		ACT = outGDB.at(j).ANG;
 				else if (is_RUP && is_RUP_CLUSTERING_RUP()) ACT = outGDB.at(j).RUP;
 				else ASSERT_DEAD_END();
+
+				ASSERT_FINITE (ACT);
 
 				if (ACT < V.at(0).BIN_CENTER) {
 					outGDB.at(j).GC.at(2) = GC.at(1).at(0);

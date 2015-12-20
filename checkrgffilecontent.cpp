@@ -500,19 +500,6 @@ vector <GDB> create_GDB_from_rgf () {
 	for (size_t i = 0; i < rgf_to_check.size(); ++i) {
 
 		GDB buffer;
-		// TODO Should be moved to ctor   -------------------------------------
-		buffer.DIPDIR = NaN();
-		buffer.DIP = NaN();
-		buffer.LDIR = NaN();
-		buffer.LDIP = NaN();
-
-		buffer.corr.DIPDIR = NaN();
-		buffer.corr.DIP = NaN();
-		buffer.corrL.DIPDIR = NaN();
-		buffer.corrL.DIP = NaN();
-		buffer.DEPTH = NaN();
-
-		buffer.LPITCH = NaN();
 
 		buffer.OFFSET = 		"NONE";
 		buffer.LINEATION =		"NONE";
@@ -601,7 +588,7 @@ vector <GDB> create_GDB_from_rgf () {
 		}
 		if (is_SCcorrect (row)) 		buffer.LINEATION = "SC";
 
-		if (row.at(PALEONORTH) == "") buffer.PALEON = NaN();
+		if (row.at(PALEONORTH) == "") buffer.PALEON = return_ZERO();
 		else buffer.PALEON = to_double(row, PALEONORTH);
 
 		buffer.COMMENT = row.at(COMMENT);

@@ -21,12 +21,14 @@ VCTR return_tilting_axis (const GDB& in, const string METHOD) {
 	const bool P = METHOD == "PALEONORTH";
 	const bool T = METHOD == "TRAJECTORY";
 
+	ASSERT (B || P || T);
+
 	if (P) return unitvector (declare_vector (0.0, 0.0, -1.0), true);
 	else if (B) return unitvector (declare_vector (
 			SIN (in.avS0d.DIPDIR + 90.0),
 			COS (in.avS0d.DIPDIR + 90.0),
 			0.0), true);
-	else if (T) {
+	else {
 
 		const DIPDIR_DIP DDD = dipdir_dip_from_NXNYNZ(in.T);
 
@@ -34,11 +36,6 @@ VCTR return_tilting_axis (const GDB& in, const string METHOD) {
 				SIN (DDD.DIPDIR + 90.0),
 				COS (DDD.DIPDIR + 90.0),
 				0.0), true);
-	}
-	else {
-
-		ASSERT_DEAD_END();
-		return declare_vector (NaN(), NaN(), NaN());
 	}
 }
 
@@ -48,30 +45,23 @@ double return_tilting_angle (const GDB& in, const string METHOD) {
 	const bool P = METHOD == "PALEONORTH";
 	const bool T = METHOD == "TRAJECTORY";
 
+	ASSERT (B || P || T);
+
 	if (P) return (- in.PALEON);
 	else if (B) {
 
-		if (in.avS0d.DIP <= 90.0 ) return in.avS0d.DIP;
-		else {
+		ASSERT (in.avS0d.DIP <= 90.0);
 
-			ASSERT_DEAD_END();
-			return NaN ();
-		}
+		return in.avS0d.DIP;
+
 	}
-	else if (T) {
+	else {
 
 		const DIPDIR_DIP DDD = dipdir_dip_from_NXNYNZ(in.T);
 
-		if (DDD.DIP <= 90.0 ) return -(90.0 - DDD.DIP);
-		else {
+		ASSERT (DDD.DIP <= 90.0);
 
-			ASSERT_DEAD_END();
-			return NaN ();
-		}
-	}
-	else {
-		ASSERT_DEAD_END();
-		return NaN();
+		return -(90.0 - DDD.DIP);
 	}
 }
 
@@ -208,17 +198,7 @@ GDB TILT_DATA (const GDB& in, const string METHOD) {
 
 	const bool LITH = is_allowed_lithology_datatype (in.DATATYPE);
 
-	const bool NO_AV_BED = (
-			is_nan (in.avS0d.DIP) &&
-			is_nan (in.avS0d.DIPDIR) &&
-			is_nan (in.avS0D.X) &&
-			is_nan (in.avS0D.Y) &&
-			is_nan (in.avS0D.Z) &&
-			is_nan (in.avS0N.X) &&
-			is_nan (in.avS0N.Y) &&
-			is_nan (in.avS0N.Z));
-
-	const bool NO_NORTH = is_nan (in.PALEON) ;
+	const bool NO_NORTH = (in.PALEON < -1000) ;
 
 	if (LITH) return in;
 
@@ -226,9 +206,11 @@ GDB TILT_DATA (const GDB& in, const string METHOD) {
 	const bool P = METHOD == "PALEONORTH";
 	const bool T = METHOD == "TRAJECTORY";
 
-	if (!B && !P && !T) ASSERT_DEAD_END();
+	ASSERT (B || P || T);
 
-	if (NO_AV_BED && B) return in;
+	ASSERT (in.HAS_BEDDING == 0 || in.HAS_BEDDING == 1 );
+
+	if (in.HAS_BEDDING == 0 && B) return in;
 
 	if (NO_NORTH && P) return in;
 
@@ -283,6 +265,7 @@ vector < vector <GDB> > RETILT (const vector < vector <GDB> >& inGDB, const stri
 	vector < vector <GDB> > outGDB = inGDB;
 
 	for (size_t i = 0; i < outGDB.size(); i++) {
+
 		for (size_t j = 0; j < outGDB.at(i).size(); j++) {
 
 			outGDB.at(i).at(j) = TILT_DATA (outGDB.at(i).at(j), METHOD);

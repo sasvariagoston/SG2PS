@@ -27,7 +27,8 @@ vector <GDB> DATATYPE_AVERAGE (const vector <GDB>& inGDB);
 
 VCTR return_group_bedding_vector (const vector <GDB>& inGDB_G);
 vector <GDB> apply_group_bedding_vector (const vector <GDB>& inGDB_G, const VCTR AV_D);
-size_t has_relevant_bedding (const vector <GDB>& inGDB, const vector <vector <GDB> >& inGDB_G);
+size_t has_relevant_bedding (const size_t i, const vector <vector <GDB> >& inGDB_G);
+vector <GDB> change_has_bedding (const vector <GDB>& inGDB, const size_t FLAG);
 vector <vector <GDB> > ASSOCIATE_AVERAGE_BEDDING_GROUPS (const vector <vector <GDB> >& inGDB_G);
 vector < vector <GDB> > AVERAGE (const vector < vector <GDB> >& inGDB_G);
 

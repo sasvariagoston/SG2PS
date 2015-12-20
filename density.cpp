@@ -151,9 +151,6 @@ vector < vector <GRID_CENTER> > generate_empty_binary_rect_grid (const size_t ce
 
 			GRID_CENTER  buf;
 			buf.COUNT = 0;
-			buf.CENTER.X = NaN();
-			buf.CENTER.Y = NaN();
-			//buf.CENTER.Z = NaN();
 			buf_row.push_back(buf);
 		}
 
@@ -177,6 +174,10 @@ vector < vector <GRID_CENTER> > generate_binary_rect_grid (const vector < vector
 
 			if (ACT_CNT > COUNT) 	bin_grid.at(j).at(i).COUNT = 1;
 			else 					bin_grid.at(j).at(i).COUNT = 0;
+
+			bin_grid.at(j).at(i).CENTER = rect_grid.at(j).at(i).CENTER;
+
+			ASSERT_FINITE (bin_grid.at(j).at(i).COUNT);
 		}
 	}
 	return bin_grid;
@@ -207,8 +208,8 @@ vector < vector <GRID_CENTER> > generate_marching_squares (const vector < vector
 			size_t C_CNT = bin_grid.at(j + 0).at(i + 1).COUNT;
 			size_t D_CNT = bin_grid.at(j + 0).at(i + 0).COUNT;
 
-			ASSERT_FINITE(AX, BX, CX, DX);
-			ASSERT_FINITE(AY, BY, CY, DY);
+			ASSERT_FINITE (AX, BX, CX, DX);
+			ASSERT_FINITE (AY, BY, CY, DY);
 
 			m_sq.at(j).at(i).CENTER.X = (AX + BX + CX + DX) / 4.0;
 			m_sq.at(j).at(i).CENTER.Y = (AY + BY + CY + DY) / 4.0;
@@ -829,9 +830,6 @@ XY interpolate_between_points (const XY& inA, const XY& inB) {
 			else     OUT.Y = -Y;
 
 			return OUT;
-
-			//if (BTW) 	return {inA.X,  Y}; //declare_vector(inA.X,  Y, NaN());
-			//else 		return declare_vector(inA.X, -Y, NaN());
 		}
 		else {
 
@@ -844,9 +842,6 @@ XY interpolate_between_points (const XY& inA, const XY& inB) {
 			else 	 OUT.X = -X;
 
 			return OUT;
-
-			//if (BTW) 	return declare_vector( X, inA.Y, NaN());
-			//else 		return declare_vector(-X, inA.Y, NaN());
 		}
 	}
 	double X = 0.0;
@@ -895,8 +890,6 @@ XY interpolate_between_points (const XY& inA, const XY& inB) {
 	OUT.Y = Y;
 
 	return OUT;
-
-	//return declare_vector(X, Y, NaN());
 }
 
 XY generate_new_start (const XY& A) {
@@ -907,7 +900,6 @@ XY generate_new_start (const XY& A) {
 
 	out.X = A.X / length;
 	out.Y = A.Y / length;
-	//out.Z = NaN();
 
 	return out;
 }
@@ -1012,55 +1004,43 @@ vector <BEZIER> generate_final_bezier (const vector <XY>& inBZ) {
 
 			buf.A.X = PRW.X;
 			buf.A.Y = PRW.Y;
-			//buf.A.Z = NaN();
 
 			buf.B.X = (PRW.X + ACT.X) / 2.0;
 			buf.B.Y = (PRW.Y + ACT.Y) / 2.0;
-			//buf.B.Z = NaN();
 
 			buf.C.X = (3.0 * ACT.X + NXT.X) / 4.0;
 			buf.C.Y = (3.0 * ACT.Y + NXT.Y) / 4.0;
-			//buf.C.Z = NaN();
 
 			buf.D.X = (NXT.X + ACT.X) / 2.0;
 			buf.D.Y = (NXT.Y + ACT.Y) / 2.0;
-			//buf.D.Z = NaN();
 		}
 		else if (is_LAST) {
 
 			buf.A.X = (PRW.X + ACT.X) / 2.0;
 			buf.A.Y = (PRW.Y + ACT.Y) / 2.0;
-			//buf.A.Z = NaN();
 
 			buf.B.X = (PRW.X + 2.0 * ACT.X) / 3.0;
 			buf.B.Y = (PRW.Y + 2.0 * ACT.Y) / 3.0;
-			//buf.B.Z = NaN();
 
 			buf.C.X = (ACT.X + NXT.X) / 2.0;
 			buf.C.Y = (ACT.Y + NXT.Y) / 2.0;
-			//buf.C.Z = NaN();
 
 			buf.D.X = NXT.X;
 			buf.D.Y = NXT.Y;
-			//buf.D.Z = NaN();
 		}
 		else {
 
 			buf.A.X = (PRW.X + ACT.X) / 2.0;
 			buf.A.Y = (PRW.Y + ACT.Y) / 2.0;
-			//buf.A.Z = NaN();
 
 			buf.B.X = (PRW.X + 3.0 * ACT.X) / 4.0;
 			buf.B.Y = (PRW.Y + 3.0 * ACT.Y) / 4.0;
-			//buf.B.Z = NaN();
 
 			buf.C.X = (3.0 * ACT.X + NXT.X) / 4.0;
 			buf.C.Y = (3.0 * ACT.Y + NXT.Y) / 4.0;
-			//buf.C.Z = NaN();
 
 			buf.D.X = (NXT.X + ACT.X) / 2.0;
 			buf.D.Y = (NXT.Y + ACT.Y) / 2.0;
-			//buf.D.Z = NaN();
 		}
 		OUT.push_back(buf);
 	}

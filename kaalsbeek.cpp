@@ -629,9 +629,12 @@ void dbg_test_triangle_points_direction (const VCTR& A, const VCTR& B, const VCT
 	T.B = B;
 	T.C = C;
 
-	VCTR pole = declare_vector(-2.0, -2.0, NaN());
+	VCTR POLE;
 
-	ASSERT2(!is_data_in_triangle(T, pole), msg);
+	POLE.X = -2.0;
+	POLE.Y = -2.0;
+
+	ASSERT2(!is_data_in_triangle(T, POLE), msg);
 
 	return;
 }

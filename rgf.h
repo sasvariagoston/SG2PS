@@ -20,6 +20,8 @@ vector <GDB> competeRGFcontect (const string projectname);
 double right_hand_rule_to_german (const double corrDIPDIR);
 double german_to_right_hand_rule (const double corrDIPDIR);
 
+//bool has_bedding (const vector <vector <GDB> >& inGDB);
+
 vector <GDB> fix_360_0 (const vector <GDB>& inGDB);
 vector <GDB> generate_NDS_vectors (const vector <GDB>& inGDB);
 vector <GDB> generate_NCDCSC_vectors (const vector <GDB>& inGDB);

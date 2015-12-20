@@ -84,13 +84,16 @@ VCTR process_for_average_EQ1 (const vector <GDB>& inGDB) {
 
 VCTR calculate_data_average_vector (const vector <GDB>& to_process) {
 
-	if 		(is_processable_for_average_MT2 (to_process)) return process_for_average_MT2 (to_process);
-	else if (is_processable_for_average_EQ2 (to_process)) return process_for_average_EQ2 (to_process);
-	else if (is_processable_for_average_EQ1 (to_process)) return process_for_average_EQ1 (to_process);
-	else if (is_processable_for_average_HMG (to_process)) return process_for_average_EQ1 (to_process);
-	else ASSERT_DEAD_END();
+	const bool MT2 = is_processable_for_average_MT2 (to_process);
+	const bool EQ2 = is_processable_for_average_EQ2 (to_process);
+	const bool EQ1 = is_processable_for_average_EQ1 (to_process);
+	const bool HMG = is_processable_for_average_HMG (to_process);
 
-	return declare_vector(NaN(), NaN(), NaN());
+	ASSERT (MT2 || EQ2 || EQ1 || HMG);
+
+	if 		(MT2) 	return process_for_average_MT2 (to_process);
+	else if (EQ2) 	return process_for_average_EQ2 (to_process);
+	else 			return process_for_average_EQ1 (to_process);
 }
 
 vector <GDB> apply_data_average_vector (const vector <GDB>& to_process, const VCTR& AV_D) {
@@ -144,7 +147,9 @@ VCTR return_group_bedding_vector (const vector <GDB>& inGDB) {
 	}
 	ASSERT_DEAD_END();
 
-	return declare_vector(NaN(), NaN(), NaN());
+	const VCTR dummy;
+
+	return dummy;
 }
 
 vector <GDB> apply_group_bedding_vector (const vector <GDB>& inGDB_G, const VCTR AV_D) {
@@ -208,9 +213,20 @@ size_t has_relevant_bedding (const size_t i, const vector <vector <GDB> >& inGDB
 	}
 	if (EQ.size() == 0) return 99999;
 
-	if (EQ.size() > 1) ASSERT_DEAD_END();
+	ASSERT (EQ.size() == 1);
 
 	return EQ.at(0);
+}
+
+vector <GDB> change_has_bedding (const vector <GDB>& inGDB, const size_t FLAG) {
+
+	vector <GDB> outGDB = inGDB;
+
+	for (size_t i = 0; i < outGDB.size(); i++) {
+
+		outGDB.at(i).HAS_BEDDING = FLAG;
+	}
+	return outGDB;
 }
 
 vector <vector <GDB> > ASSOCIATE_AVERAGE_BEDDING_GROUPS (const vector <vector <GDB> >& inGDB_G) {
@@ -230,7 +246,13 @@ vector <vector <GDB> > ASSOCIATE_AVERAGE_BEDDING_GROUPS (const vector <vector <G
 				const VCTR AV_D = return_group_bedding_vector (outGDB_G.at(r));
 
 				outGDB_G.at(i) = apply_group_bedding_vector(outGDB_G.at(i), AV_D);
+
+				outGDB_G.at(i) = change_has_bedding (outGDB_G.at(i), 1);
 			}
+		}
+		else {
+
+			outGDB_G.at(i) = change_has_bedding (outGDB_G.at(i), 0);
 		}
 	}
 	return outGDB_G;

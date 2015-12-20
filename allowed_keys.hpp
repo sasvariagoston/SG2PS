@@ -9,6 +9,8 @@
 
 using namespace std;
 
+double return_ZERO ();
+
 bool is_allowed_basic_groupcode_str (const string& groupcode);
 vector <string> allowed_basic_groupcode_str_vector ();
 bool is_allowed_groupcode_empty (const string& groupcode);

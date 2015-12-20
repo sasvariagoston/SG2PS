@@ -11,17 +11,17 @@
 #include "allowed_keys.hpp"
 #include "assertions.hpp"
 #include "color_management.hpp"
+#include "common.h"
 #include "data_io.h"
 #include "density.h"
 #include "filename.hpp"
 #include "homogenity_check.hpp"
 #include "kaalsbeek.hpp"
-#include "ps.h"
-#include "rgf.h"
-#include "common.h"
 #include "paper.hpp"
 #include "platform_dep.hpp"
 #include "ps_RUP_ANG.hpp"
+#include "ps.h"
+#include "rgf.h"
 #include "rose.h"
 #include "run_mode.h"
 #include "rup_clustering.hpp"
@@ -1098,33 +1098,31 @@ void PS_plane (const GDB& i, ofstream& o, const double X, const double Y, const 
 
 	const double r =  c / SIN (alfa);
 
+	XY O;
 
-	double X_O = NaN ();
-	double Y_O = NaN ();
-
-	X_O = X_A - r * SIN (DIPDIR);
-	Y_O = Y_A - r * COS (DIPDIR);
+	O.X = X_A - r * SIN (DIPDIR);
+	O.Y = Y_A - r * COS (DIPDIR);
 
 	if (is_in_range (90.0, 180.0, DIPDIR)) {
 
-		X_O = X_A - r * SIN (180.0 - DIPDIR);
-		Y_O = Y_A + r * COS (DIPDIR - 180.0);
+		O.X = X_A - r * SIN (180.0 - DIPDIR);
+		O.Y = Y_A + r * COS (DIPDIR - 180.0);
 	}
 	else if (is_in_range (180.0, 270.0, DIPDIR)) {
 
-		X_O = X_A + r * SIN (DIPDIR - 180.0);
-		Y_O = Y_A + r * COS (DIPDIR - 180.0);
+		O.X = X_A + r * SIN (DIPDIR - 180.0);
+		O.Y = Y_A + r * COS (DIPDIR - 180.0);
 	}
 	else if (is_in_range (270.0, 360.0, DIPDIR)) {
 
-		X_O = X_A + r * SIN (360.0 - DIPDIR);
-		Y_O = Y_A - r * COS (DIPDIR - 360.0);
+		O.X = X_A + r * SIN (360.0 - DIPDIR);
+		O.Y = Y_A - r * COS (DIPDIR - 360.0);
 	}
 	else {}
 
-	const double D_AO = sqrt ((X_A - X_O) * (X_A - X_O) + (Y_A - Y_O) * (Y_A - Y_O));
-	const double D_BO = sqrt ((X_B - X_O) * (X_B - X_O) + (Y_B - Y_O) * (Y_B - Y_O));
-	const double D_CO = sqrt ((X_C - X_O) * (X_C - X_O) + (Y_C - Y_O) * (Y_C - Y_O));
+	const double D_AO = sqrt ((X_A - O.X) * (X_A - O.X) + (Y_A - O.Y) * (Y_A - O.Y));
+	const double D_BO = sqrt ((X_B - O.X) * (X_B - O.X) + (Y_B - O.Y) * (Y_B - O.Y));
+	const double D_CO = sqrt ((X_C - O.X) * (X_C - O.X) + (Y_C - O.Y) * (Y_C - O.Y));
 
 	if (is_NET_SCHMIDT()) {
 
@@ -1266,14 +1264,14 @@ void PS_plane (const GDB& i, ofstream& o, const double X, const double Y, const 
 
 		double BA = 0.0;
 
-		if 	    ((X_B > X_O) && (Y_B > Y_O)) 	BA =         ASIN((Y_B - Y_O) / r);
-		else if ((X_B < X_O) && (Y_B > Y_O)) 	BA = 180.0 - ASIN((Y_B - Y_O) / r);
-		else if ((X_B < X_O) && (Y_B < Y_O)) 	BA = 180.0 + ASIN((Y_O - Y_B) / r);
-		else 									BA = 360.0 - ASIN((Y_O - Y_B) / r);
+		if 	    ((X_B > O.X) && (Y_B > O.Y)) 	BA =         ASIN((Y_B - O.Y) / r);
+		else if ((X_B < O.X) && (Y_B > O.Y)) 	BA = 180.0 - ASIN((Y_B - O.Y) / r);
+		else if ((X_B < O.X) && (Y_B < O.Y)) 	BA = 180.0 + ASIN((O.Y - Y_B) / r);
+		else 									BA = 360.0 - ASIN((O.Y - Y_B) / r);
 
 		double EA = BA + (2.0 * alfa);
 
-		arc_PS (o, X_O, Y_O, r, BA, EA, 3);
+		arc_PS (o, O.X, O.Y, r, BA, EA, 3);
 	}
 	else {
 
@@ -1379,7 +1377,6 @@ void PS_polepoint (const GDB& i, ofstream& o, const double X, const double Y, co
 
 void PS_striaearrow (const GDB& i, ofstream& o, const CENTER& center) {
 
-	double ANGLE = NaN();
 	string TEXT = "";
 
 	VCTR DATA;// = i.DC;
@@ -1438,6 +1435,8 @@ void PS_striaearrow (const GDB& i, ofstream& o, const CENTER& center) {
 
 	if (!NONE && !NORMAL && !REVERSE && !SINISTRAL && !DEXTRAL) ASSERT_DEAD_END();
 
+	double ANGLE;
+
 	if (is_PLOT_HOEPPENER() && !NONE) {
 
 		ANGLE = - i.corrL.DIPDIR;
@@ -1472,6 +1471,8 @@ void PS_striaearrow (const GDB& i, ofstream& o, const CENTER& center) {
 		else {}
 	}
 
+	ASSERT_FINITE (ANGLE);
+
 	translate_PS (o, X, Y, 3);
 	rotate_PS (o, ANGLE, 1);
 	text_PS (o, TEXT);
@@ -1498,7 +1499,9 @@ void PS_datanumber_averagebedding (const GDB& i, ofstream& o, const size_t datan
 
 	const PAPER P = RETURN_PAPER();
 
-	const bool HAS_BEDDING = (!is_nan(i.avS0d.DIP) && !is_nan(i.avS0d.DIPDIR));
+	ASSERT (i.HAS_BEDDING == 1 || i.HAS_BEDDING == 0);
+
+	const bool HAS_BEDDING = i.HAS_BEDDING == 1;
 
 	//const bool HAS_BEDDING = (is_allowed_DIR (i.avS0d.DIPDIR) && is_allowed_DIP (i.avS0d.DIP));
 
@@ -1952,7 +1955,7 @@ void PS_SYMBOL_draw_plane (ofstream& o, const double X, const double Y, const st
 
 	string PS_COLOR = "";
 	string DASH = "   ";
-	double LINEWIDTH = NaN();
+	double LINEWIDTH = -1.0;
 
 	if (!GROUP && !AV && !AV_O && !O && !FOLD && !SC) ASSERT_DEAD_END();
 
@@ -2037,6 +2040,8 @@ void PS_SYMBOL_draw_plane (ofstream& o, const double X, const double Y, const st
 		}
 	}
 	else {}
+
+	ASSERT (LINEWIDTH > 0.0);
 
 	color_PS (o, PS_COLOR);
 	linewidth_PS (o, LINEWIDTH, 1);
@@ -2614,7 +2619,6 @@ void OUTPUT_TO_PS (const vector <vector <GDB> >& in_GDB_G, const vector <vector 
 
 		return;
 	}
-
 	for (size_t i = 0; i < in_GDB_G.size(); i++) {
 
 		setup_ACTUAL_DATATYPE 	(in_GDB_G.at(i).at(0).DATATYPE);

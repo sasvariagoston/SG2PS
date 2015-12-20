@@ -435,13 +435,13 @@ vector <vector <GDB> > SEPARATE (const vector <GDB> & inGDB, const string METHOD
 
 vector <vector <GDB> > SEPARATE_DATASET (const vector <vector <GDB> >& inGDB_G, const string METHOD, const string SORT) {
 
-	if (inGDB_G.size() == 0) ASSERT_DEAD_END();
+	ASSERT (inGDB_G.size() > 0);
 
 	vector <vector <GDB> > OUT;
 
 	for (size_t i = 0; i < inGDB_G.size(); i++) {
 
-		if (inGDB_G.at(i).size() == 0) ASSERT_DEAD_END();
+		ASSERT (inGDB_G.at(i).size() > 0);
 
 		const vector <GDB> processGDB = SORT_GDB (inGDB_G.at(i), SORT);
 
