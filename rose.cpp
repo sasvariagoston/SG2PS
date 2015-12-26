@@ -274,6 +274,8 @@ void PS_draw_rose_DIPDIR_DIP (vector <GDB> inGDB, ofstream& o, CENTER center, co
 		}
 		else ASSERT_DEAD_END();
 
+		ASSERT_FINITE(N.at(i).LIN_NUM, MX.LIN_NUM);
+
 		if (N.at(i).LIN_NUM > MX.LIN_NUM && PR_L) MX.LIN_NUM = N.at(i).LIN_NUM;
 		if (N.at(i).PLN_NUM > MX.PLN_NUM && PR_P) MX.PLN_NUM = N.at(i).PLN_NUM;
 	}

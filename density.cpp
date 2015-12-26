@@ -177,7 +177,6 @@ vector < vector <GRID_CENTER> > generate_binary_rect_grid (const vector < vector
 
 			bin_grid.at(j).at(i).CENTER = rect_grid.at(j).at(i).CENTER;
 
-			ASSERT_FINITE (bin_grid.at(j).at(i).COUNT);
 		}
 	}
 	return bin_grid;

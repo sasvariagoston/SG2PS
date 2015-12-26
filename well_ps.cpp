@@ -981,9 +981,13 @@ void count_real_peaks (const vector <PEAK_TO_PLOT>& FL_PK, const string METHOD) 
 
 				if (NXT_D <= ACT_D) ASSERT_DEAD_END();
 
+				ASSERT_NE(PEAK_D, ACT_D);
+
 				const double M = (NXT_D - ACT_D) / (PEAK_D - ACT_D);
 
 				const double P = ((NXT_V - ACT_V) / M) + ACT_V;
+
+                ASSERT_FINITE(M, P);
 
 				if ((MAX && PEAK_V > P) || (MIN && PEAK_V < P)) PEAK.at(i).COUNT = PEAK.at(i).COUNT + 1;
 			}
