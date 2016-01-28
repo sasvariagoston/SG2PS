@@ -1,6 +1,7 @@
-// Copyright (C) 2012-2015, Ágoston Sasvári
+// Copyright (C) 2012-2016, Ágoston Sasvári
 // All rights reserved.
 // This code is published under the GNU Lesser General Public License.
+
 #include <algorithm>
 #include <iomanip>
 #include <iostream>
@@ -19,13 +20,7 @@
 #include "standard_output.hpp"
 #include "valley_method.hpp"
 
-
 using namespace std;
-
-//namespace {
-
-//	const double SN = 10e-8;
-//}
 
 vector <double> GDB_to_table (const vector <GDB>& inGDB, const string field) {
 
@@ -33,15 +28,18 @@ vector <double> GDB_to_table (const vector <GDB>& inGDB, const string field) {
 
 	vector <GDB> outGDB = inGDB;
 
-	if		(field == "ANG") outGDB = SORT_GDB (inGDB, "ANG");
-	else if	(field == "RUP") outGDB = SORT_GDB (inGDB, "RUP");
-	else ASSERT_DEAD_END();
+	const bool RUP = field == "RUP";
+	const bool ANG = field == "ANG";
+
+	ASSERT_EXACTLY_ONE_TRUE (RUP, ANG);
+
+	if (ANG)	outGDB = SORT_GDB (inGDB, "ANG");
+	else 		outGDB = SORT_GDB (inGDB, "RUP");
 
 	for (size_t i = 0; i < inGDB.size(); i++) {
 
-		if 		(field == "ANG") OUT.push_back (outGDB.at(i).ANG);
-		else if (field == "RUP") OUT.push_back (outGDB.at(i).RUP);
-		else ASSERT_DEAD_END();
+		if (ANG)OUT.push_back (outGDB.at(i).ANG);
+		else 	OUT.push_back (outGDB.at(i).RUP);
 	}
 	return OUT;
 }
@@ -91,10 +89,8 @@ RUP_table return_cost_function_member (const vector <double>& in, const size_t b
 
 	out.k = cml_mean / out.clusternumber;
 
-
 	range_min = in.at(0);
 	range_max = in.at(0) + out.delta;
-
 
 	for (size_t i = 0; i < out.clusternumber; i++) {
 
@@ -222,9 +218,10 @@ vector <GDB> associate_GDB_DATA_clusters (const vector <GDB>& inGDB, const vecto
 
 				double ACT;
 
-				if (is_ANG && is_RUP_CLUSTERING_ANG()) 		ACT = outGDB.at(j).ANG;
-				else if (is_RUP && is_RUP_CLUSTERING_RUP()) ACT = outGDB.at(j).RUP;
-				else ASSERT_DEAD_END();
+				ASSERT_EXACTLY_ONE_TRUE (is_ANG && is_RUP_CLUSTERING_ANG(), is_RUP && is_RUP_CLUSTERING_RUP());
+
+				if (is_ANG && is_RUP_CLUSTERING_ANG()) 	ACT = outGDB.at(j).ANG;
+				else 									ACT = outGDB.at(j).RUP;
 
 				ASSERT_FINITE (ACT);
 
@@ -246,7 +243,7 @@ vector <GDB> associate_GDB_DATA_clusters (const vector <GDB>& inGDB, const vecto
 
 vector <GDB> apply_RUP_ANG_CLUSTERING_result (const vector <GDB>& inGDB) {
 
-	if (! is_allowed_striae_datatype (inGDB.at(0).DATATYPE)) ASSERT_DEAD_END();
+	ASSERT (is_allowed_striae_datatype (inGDB.at(0).DATATYPE));
 
 	string FIELD = "";
 

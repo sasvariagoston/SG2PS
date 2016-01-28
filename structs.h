@@ -1,4 +1,4 @@
-// Copyright (C) 2012-2015, Ágoston Sasvári
+// Copyright (C) 2012-2016, Ágoston Sasvári
 // All rights reserved.
 // This code is published under the GNU Lesser General Public License.
 
@@ -96,7 +96,7 @@ struct GDB  {
 
 	double lambda;
 
-	VCTR SHEAR_S, NORMAL_S;//, UPSILON;
+	VCTR SHEAR_S, NORMAL_S;
 
 	double ANG, RUP;
 	double AV_MISF;
@@ -284,23 +284,6 @@ struct BEZIER {
 	XY C;
 	XY D;
 };
-/*
-struct WELL_AVERAGE {
-
-	double DEPTH;
-	VCTR D;
-	DIPDIR_DIP DD;
-	double MISFIT;
-};
-*/
-
-/*
-struct WELL_DERIVATE {
-
-	double DEPTH;
-	double DERIV;
-};
-*/
 
 struct WELL_FREQUENCY {
 

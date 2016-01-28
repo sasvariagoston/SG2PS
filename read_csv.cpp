@@ -1,6 +1,7 @@
-// Copyright (C) 2012-2015, Ali Baharev
+// Copyright (C) 2012-2016, Ali Baharev
 // All rights reserved.
 // This code is published under the GNU Lesser General Public License.
+
 #include <fstream>
 #include <sstream>
 #include "read_csv.hpp"
@@ -23,7 +24,6 @@ void push_to_table(str_table& table, const string& line) {
 
 		row.push_back(cell);
 	}
-
 	table.push_back(row);
 }
 
@@ -49,10 +49,8 @@ size_t read_csv(const string& file_name, str_table& table) {
 
 		    line.erase(len-1);
 		}
-
 		push_to_table(table, line+'\t'); // so that we don't loose trailing tabs
 
 	}
-
 	return lines_read;
 }

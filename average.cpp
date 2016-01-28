@@ -1,4 +1,4 @@
-// Copyright (C) 2012- 2015 Ágoston Sasvári
+// Copyright (C) 2012- 2016 Ágoston Sasvári
 // All rights reserved.
 // This code is published under the GNU Lesser General Public License.
 
@@ -117,7 +117,7 @@ vector <GDB> DATATYPE_AVERAGE (const vector <GDB>& inGDB) {
 
 	vector <GDB> outGDB = inGDB;
 
-	const bool PROCESSABE = is_datatype_processable_for_average (outGDB.at(0).DATATYPE);//ok
+	const bool PROCESSABE = is_datatype_processable_for_average (outGDB.at(0).DATATYPE);
 
 	if (!PROCESSABE) return outGDB;
 
@@ -127,7 +127,7 @@ vector <GDB> DATATYPE_AVERAGE (const vector <GDB>& inGDB) {
 
 	const bool B = is_allowed_handle_as_bedding (outGDB.at(0).DATATYPE);
 
-	if (O && !B) ASSERT_DEAD_END();
+	ASSERT (!(O && !B));
 
 	VCTR AV_D = unitvector(DXDYDZ_from_NXNYNZ (AV_N), true);
 	if (O) AV_D = flip_vector(AV_D);
@@ -204,7 +204,6 @@ size_t has_relevant_bedding (const size_t i, const vector <vector <GDB> >& inGDB
 
 		bool FIT = EQ_LC && EQ_DT;
 
-		//if (is_FORMATION_USE() || is_WELLDATA_USE()) FIT = FIT && EQ_FM;
 		if (is_WELLDATA_USE()) FIT = FIT && EQ_FM;
 
 		if (is_GROUPS_USE()) FIT = FIT && EQ_GC;

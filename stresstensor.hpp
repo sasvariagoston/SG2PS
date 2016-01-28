@@ -1,4 +1,4 @@
-// Copyright (C) 2012-2015, Ágoston Sasvári
+// Copyright (C) 2012-2016, Ágoston Sasvári
 // All rights reserved.
 // This code is published under the GNU Lesser General Public License.
 
@@ -16,19 +16,18 @@ STRESSFIELD stress_regime (const STRESSFIELD& in);
 STRESSTENSOR convert_matrix_to_stresstensor (const vector <vector <double> >& IN);
 
 STRESSTENSOR try_stresstensot_or_invert (const STRESSTENSOR& st, const vector <GDB>& inGDB);
-STRESSTENSOR invert_stress_tensor (const STRESSTENSOR& st); //ok
-STRESSTENSOR add_stress_tensor (const STRESSTENSOR& st1, const STRESSTENSOR& st2); //ok
+STRESSTENSOR invert_stress_tensor (const STRESSTENSOR& st);
+STRESSTENSOR add_stress_tensor (const STRESSTENSOR& st1, const STRESSTENSOR& st2);
 
-STRESSFIELD computestressfield_NXNYNZ (const STRESSFIELD& in); //ok
-STRESSFIELD computestressfield_DXDYDZ (const STRESSFIELD& in); //ok
+STRESSFIELD computestressfield_NXNYNZ (const STRESSFIELD& in);
+STRESSFIELD computestressfield_DXDYDZ (const STRESSFIELD& in);
 
-STRESSFIELD correct_SF_to_fit_D (const STRESSFIELD& in); //ok
-STRESSFIELD correct_SF_to_fit_N (const STRESSFIELD& in); //ok
+STRESSFIELD correct_SF_to_fit_D (const STRESSFIELD& in);
+STRESSFIELD correct_SF_to_fit_N (const STRESSFIELD& in);
 
-VCTR return_stressvector (const STRESSTENSOR& st, const VCTR& N); //ok
-VCTR return_normalstress (const STRESSTENSOR& st, const VCTR& N); //ok
-VCTR return_shearstress (const STRESSTENSOR& st, const VCTR& N); //ok
-//VCTR return_upsilon (const STRESSTENSOR& st, const VCTR& N, const VCTR& SV, const VCTR& UPSILON, const double& lambda, const string& method);
+VCTR return_stressvector (const STRESSTENSOR& st, const VCTR& N);
+VCTR return_normalstress (const STRESSTENSOR& st, const VCTR& N);
+VCTR return_shearstress (const STRESSTENSOR& st, const VCTR& N);
 
 double return_ANG (const STRESSTENSOR& st, const VCTR& N, const VCTR& SV);
 double return_RUP (const STRESSTENSOR& st, const VCTR& N, const VCTR& SV, const double& lambda);

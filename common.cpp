@@ -1,4 +1,4 @@
-// Copyright (C) 2012-2015, Ágoston Sasvári
+// Copyright (C) 2012-2016, Ágoston Sasvári
 // All rights reserved.
 // This code is published under the GNU Lesser General Public License.
 
@@ -51,8 +51,6 @@ bool equals(const string& s, const T& value) {
 
 void print_banner () {
 
-	//if (is_mode_DEBUG ()) return;
-
 	writeln("");
 	writeln(" ------------------------------------------------------------------ ");
 	writeln("|                                                                  |");
@@ -61,7 +59,7 @@ void print_banner () {
 	writeln("|                                                                  |");
 	writeln("|                       Data processing software                   |");
 	writeln("|                                                                  |");
-	writeln("|            Copyright (C) 2012-2015, Agoston Sasvari.             |");
+	writeln("|            Copyright (C) 2012-2016, Agoston Sasvari.             |");
 	writeln("|                        All rights reserved.                      |");
 	writeln("|             This a free software, license: GNU LGPL.             |");
 	writeln("|                                                                  |");
@@ -77,6 +75,29 @@ void print_banner () {
 	writeln("");
 
 	return;
+}
+
+void progress_bar (const size_t WIDTH, const double STATUS, const double MAX) {
+
+	const double PROGRESS = STATUS / MAX;
+
+	const double DONE_D = WIDTH * PROGRESS;
+
+	const size_t DONE = string_to_size_t (double_to_string (DONE_D, 0));
+
+	const size_t LEFT = WIDTH - DONE;
+
+	cout << '\r' << flush;
+
+	cout << "[" << flush;
+
+	for (size_t i = 0; i < DONE; i++) cout << "-" << flush;
+
+	for (size_t i = 0; i < LEFT; i++) cout << " " << flush;
+
+	cout << "]" << flush;
+
+	cout << setfill (' ') << setw (4) << setprecision (0) << PROGRESS * 100 << "%" << flush;
 }
 
 string capslock (string input) {
@@ -256,6 +277,15 @@ double ATAN (const double& in) {
 	ASSERT_FINITE(out);
 
 	return rad_to_deg (out);
+}
+
+double factorial (size_t n) {
+
+	ASSERT (n < 168);
+
+	if (n == 0)	return 1;
+
+	return n * factorial (n - 1);
 }
 
 // FIXME Clean up this messy implementation!
@@ -1221,7 +1251,8 @@ double average (const vector <double>& IN) {
 
 	const size_t S = IN.size();
 
-	if (S < 1) ASSERT_DEAD_END();
+	ASSERT_GE (S, 1);
+	//if (S < 1) ASSERT_DEAD_END();
 
 	double CNT = 0.0;
 
@@ -1248,7 +1279,7 @@ double stdev (const vector <double>& IN) {
 
 		double SD = (IN.at(i) - AV) * (IN.at(i) - AV);
 
-		if (SD < 0.0) ASSERT_DEAD_END();
+		ASSERT_GE (SD, 0.0);
 
 		OUT = OUT + SD;
 	}
@@ -1261,7 +1292,7 @@ VCTR VCTR_average (const vector <VCTR>& IN) {
 
 	const size_t S = IN.size();
 
-	if (S < 1) ASSERT_DEAD_END();
+	ASSERT_GE (S,  1);
 
 	for (size_t i = 0; i < S; i++) {
 

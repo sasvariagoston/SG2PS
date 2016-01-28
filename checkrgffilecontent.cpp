@@ -1,4 +1,4 @@
-// Copyright (C) 2012-2015, Ágoston Sasvári
+// Copyright (C) 2012-2016, Ágoston Sasvári
 // All rights reserved.
 // This code is published under the GNU Lesser General Public License.
 
@@ -405,7 +405,6 @@ bool is_OTHERcorrect (const vector <string>& in) {
 	return (
 			!is_allowed_SC_datatype(in.at(DATATYPE)) &&
 			!is_allowed_striae_datatype(in.at(DATATYPE)) &&
-			//!(in.at(DATATYPE) == "BEDDING") &&
 			!is_allowed_handle_as_bedding (in.at(DATATYPE)) &&
 			in.at(LDIR) == "" &&
 			in.at(LDIP) == "" &&
@@ -416,7 +415,6 @@ bool is_OTHERcorrect (const vector <string>& in) {
 bool is_BEDDINGcorrect (const vector <string>& in) {
 
 	return (
-			//(in.at(DATATYPE) == "BEDDING") &&
 			is_allowed_handle_as_bedding (in.at(DATATYPE)) &&
 			is_allowed_dir (in.at(DIR)) &&
 			is_allowed_dip (in.at(DIP)) &&
@@ -468,7 +466,6 @@ bool error_cout (const vector <string>& bad_records, const string recordtype) {
 
 		return true;
 	}
-
 	else {
 
 		if (!is_mode_DEBUG()) cout << "    - ERROR: incorrect " << recordtype << "(s) in the following record(s):  " << flush;
@@ -606,7 +603,7 @@ vector <GDB> create_GDB_from_rgf () {
 
 void CHECK_RGF (const string projectname) {
 
-	if (!is_mode_STD() && !is_mode_DEBUG()) ASSERT_DEAD_END();
+	ASSERT_EXACTLY_ONE_TRUE(is_mode_STD(), is_mode_DEBUG());
 
 	const string RFN = capslock (projectname);
 	const string rfn = projectname ;
@@ -619,10 +616,10 @@ void CHECK_RGF (const string projectname) {
 
 	writeln (" - CHECKING " + RFN + ".RGF INPUT DATA FILE");
 
-	if (is_RGF_CORRECT (rfn)) writeln (" - " + RFN + ".RGF INPUT DATA FILE IS CORRECT.");
+	if (is_RGF_CORRECT (rfn)) {
 
-
-
+		writeln (" - " + RFN + ".RGF INPUT DATA FILE IS CORRECT.");
+	}
 	else {
 
 		writeln ("");
@@ -759,10 +756,7 @@ void build_column_map() {
 
 		size_t index = find_index(reserved_column_names(), to_uppercase(col_name));
 
-		if (index==NOT_FOUND) {
-
-			// That's OK
-		}
+		if (index==NOT_FOUND) {}
 		else if (contains(index_map, index)) {
 
 			duplicates.push_back(index);
@@ -788,13 +782,8 @@ void convert_row(const vector<string>& orig_row) {
 
 		size_t index = cell_index(i);
 
-		if (index==NOT_FOUND) {
-			// That is OK, ignored column
-		}
-		else {
-			row.at(index) = to_uppercase( orig_row.at(i) );
-			//row.at(index) = orig_row.at(i); // useful for testing
-		}
+		if (index==NOT_FOUND) {}
+		else row.at(index) = to_uppercase( orig_row.at(i) );
 	}
 
 	rgf_to_check.push_back(row);

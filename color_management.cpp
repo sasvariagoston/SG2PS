@@ -1,4 +1,4 @@
-// Copyright (C) 2012-2015, Ágoston Sasvári
+// Copyright (C) 2012-2016, Ágoston Sasvári
 // All rights reserved.
 // This code is published under the GNU Lesser General Public License.
 
@@ -32,7 +32,7 @@ using namespace std;
 
 vector <vector <GDB> > associate_empty_clustercode (const vector <vector <GDB> >& inGDB_G, const size_t WHICH) {
 
-	if (WHICH != 2 && WHICH != 3) ASSERT_DEAD_END();
+	ASSERT_EXACTLY_ONE_TRUE (WHICH == 2, WHICH == 3);
 
 	vector <vector <GDB> > outGDB_G = inGDB_G;
 
@@ -41,7 +41,7 @@ vector <vector <GDB> > associate_empty_clustercode (const vector <vector <GDB> >
 
 			const string GC = outGDB_G.at(i).at(j).GC;
 
-			if (GC.size() != 1 && GC.size() != 2) ASSERT_DEAD_END();
+			ASSERT_EXACTLY_ONE_TRUE (GC.size() == 1, GC.size() == 2);
 
 			outGDB_G.at(i).at(j).GC = GC + 'X';
 		}
@@ -69,16 +69,17 @@ vector <GDB> attach_k_means_group_codes (const vector <size_t>& which_group, con
 
 string generate_PSCOLOR_from_GC (const string GC) {
 
-	if (is_allowed_groupcode_empty(GC)) ASSERT_DEAD_END();
-	if (!is_allowed_basic_groupcode_str(GC)) ASSERT_DEAD_END();
+	ASSERT (!is_allowed_groupcode_empty(GC));
+	ASSERT (is_allowed_basic_groupcode_str(GC));
 
 	const vector <string> GC_STR_V = allowed_basic_groupcode_str_vector();
 
 	vector <string> PS_CLR_V;
 
-	if (is_GRAYSCALE_USE()) 		PS_CLR_V = allowed_pscolor_gray_vector();
-	else if (is_GRAYSCALE_NONE())	PS_CLR_V = allowed_pscolor_rgb_vector();
-	else ASSERT_DEAD_END();
+	ASSERT_EXACTLY_ONE_TRUE (is_GRAYSCALE_USE(), is_GRAYSCALE_NONE());
+
+	if (is_GRAYSCALE_USE())	PS_CLR_V = allowed_pscolor_gray_vector();
+	else 					PS_CLR_V = allowed_pscolor_rgb_vector();
 
 	for (size_t i = 0; i < GC_STR_V.size(); i++) {
 
@@ -93,16 +94,18 @@ string generate_PSCOLOR_from_COLOR (const string CLR) {
 	bool IS_ALW_CC_STR = is_allowed_colorcode_str(CLR);
 	bool IS_ALW_CC_NUM = is_allowed_colorcode_num(CLR);
 	bool IS_ALW_CC_EPY = is_allowed_colorcode_empty(CLR);
-	if (!IS_ALW_CC_STR && ! IS_ALW_CC_NUM && !IS_ALW_CC_EPY) ASSERT_DEAD_END();
+
+	ASSERT_EXACTLY_ONE_TRUE (IS_ALW_CC_STR, IS_ALW_CC_NUM, IS_ALW_CC_EPY);
 
 	vector <string> CLR_STR_V = allowed_colorcode_str_vector();
 	vector <string> CLR_NUM_V = allowed_colorcode_num_vector();
 
 	vector <string> PS_CLR_V;
 
-	if (is_GRAYSCALE_USE()) 		PS_CLR_V = allowed_pscolor_gray_vector();
-	else if (is_GRAYSCALE_NONE())	PS_CLR_V = allowed_pscolor_rgb_vector();
-	else ASSERT_DEAD_END();
+	ASSERT_EXACTLY_ONE_TRUE (is_GRAYSCALE_USE(), is_GRAYSCALE_NONE());
+
+	if (is_GRAYSCALE_USE()) PS_CLR_V = allowed_pscolor_gray_vector();
+	else 					PS_CLR_V = allowed_pscolor_rgb_vector();
 
 	if (IS_ALW_CC_EPY) return PS_CLR_V.at(0);
 
@@ -122,8 +125,7 @@ string generate_DASH (const string CODE) {
 	const bool KMEANS = is_COLOURING_KMEANS();
 	const bool RUP = is_COLOURING_RUPANG ();
 	const bool IGNORE = is_COLOURING_IGNORE ();
-
-	if (!COLOR && !GROUPS && !KMEANS && !RUP && !IGNORE) ASSERT_DEAD_END();
+	ASSERT_EXACTLY_ONE_TRUE (COLOR, GROUPS, KMEANS, RUP, IGNORE);
 
 	const vector <string> GROUPCODE_STR_V = allowed_basic_groupcode_str_vector();
 	const vector <string> COLORNUM_STR_V = allowed_colorcode_num_vector();
@@ -151,8 +153,7 @@ string generate_DASH (const string CODE) {
 		}
 		ASSERT_DEAD_END();
 	}
-	else if (IGNORE) {}
-	else ASSERT_DEAD_END();
+	else {}
 
 	return DSH_V.at(0);
 }
@@ -170,6 +171,8 @@ vector <GDB> GENERATE_PS_CODE (const vector <GDB>& inGDB) {
 		bool COLOURING_GROUPCODE = is_COLOURING_GROUPCODE ();
 		bool COLOURING_KMEANS = is_COLOURING_KMEANS();
 		bool COLOURING_RUPANG = is_COLOURING_RUPANG();
+
+		ASSERT_EXACTLY_ONE_TRUE (COLOURING_IGNORE, COLOURING_COLORCODE, COLOURING_GROUPCODE, COLOURING_KMEANS, COLOURING_RUPANG);
 
 		const string DT = outGDB.at(i).DATATYPE;
 
@@ -199,12 +202,11 @@ vector <GDB> GENERATE_PS_CODE (const vector <GDB>& inGDB) {
 			USE_THIS = outGDB.at(i).GC.at(2);
 			outGDB.at(i).PSCOLOR = generate_PSCOLOR_from_GC (USE_THIS);//ok
 		}
-		else if (COLOURING_IGNORE) {
+		else {
 
 			vector <string> PS_COL_V = allowed_pscolor_rgb_vector();
 			outGDB.at(i).PSCOLOR = PS_COL_V.at(0);
 		}
-		else ASSERT_DEAD_END();
 
 		if (OVERTURNED_NOT_BEDDING) outGDB.at(i).DASHED = "6 6";
 		else outGDB.at(i).DASHED = generate_DASH (USE_THIS);

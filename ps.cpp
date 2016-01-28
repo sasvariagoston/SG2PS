@@ -1,4 +1,4 @@
-// Copyright (C) 2012-2015, Ágoston Sasvári
+// Copyright (C) 2012-2016, Ágoston Sasvári
 // All rights reserved.
 // This code is published under the GNU Lesser General Public License.
 
@@ -155,7 +155,7 @@ void PS_stereonet_header (ofstream& o) {
 		rlineto_PS (o, -4.0,  4.0, 3);
 		rlineto_PS (o, -4.0, -4.0, 3);
 		closepath_PS (o);
-		if (!ITER) color_PS (o, "1.0 1.0 1.0"); //ok
+		if (!ITER) color_PS (o, "1.0 1.0 1.0");
 		linewidth_PS (o, 1.0, 1);
 		if (!ITER) stroke_PS (o);
 		if (i == 0 || i == 2 || i== 4) {
@@ -313,23 +313,23 @@ void PS_border (const vector <GDB>& inGDB, ofstream& o) {
 	const bool by_KMEANS = is_GROUPSEPARATION_KMEANS ();
 	const bool by_RUPANG = is_GROUPSEPARATION_RUPANG ();
 	const bool IGNORE = is_GROUPSEPARATION_IGNORE ();
+	ASSERT_EXACTLY_ONE_TRUE (by_GROUPCODE, by_KMEANS, by_RUPANG, IGNORE);
+
 
 	const bool color_by_COLORCODE = is_COLOURING_COLORCODE();
 	const bool color_by_GROUPCODE = is_COLOURING_GROUPCODE();
 	const bool color_by_KMEANS = is_COLOURING_KMEANS ();
 	const bool color_by_RUPANG = is_COLOURING_RUPANG ();
 	const bool color_IGNORE = is_COLOURING_IGNORE ();
+	ASSERT_EXACTLY_ONE_TRUE (color_by_COLORCODE, color_by_GROUPCODE, color_by_KMEANS, color_by_RUPANG, color_IGNORE);
 
 	const bool exists_GROUPCODE = inGDB.at(0).GC.at(0) != 'X';
 	const bool exists_KMEANS = inGDB.at(0).GC.at(1) != 'X';
 	const bool exists_RUPANG = inGDB.at(0).GC.at(2) != 'X';
 
-	if (!by_GROUPCODE && !by_KMEANS && !by_RUPANG && !IGNORE) ASSERT_DEAD_END();
-	if (!color_by_COLORCODE && !color_by_GROUPCODE && !color_by_KMEANS && !color_by_RUPANG && !color_IGNORE) ASSERT_DEAD_END();
-
-	if (by_GROUPCODE && GC.size() < 1) ASSERT_DEAD_END();
-	if (by_KMEANS && GC.size() < 2) ASSERT_DEAD_END();
-	if (by_RUPANG && GC.size() < 3) ASSERT_DEAD_END();
+	ASSERT (!(by_GROUPCODE && GC.size() < 1));
+	ASSERT (!(by_KMEANS && GC.size()    < 2));
+	ASSERT (!(by_RUPANG && GC.size()    < 3));
 
 	newpath_PS(o);
 
@@ -381,8 +381,7 @@ void PS_border (const vector <GDB>& inGDB, ofstream& o) {
 			else {};
 		}
 	}
-	else if (is_GROUPSEPARATION_IGNORE()) {}
-	else ASSERT_DEAD_END();
+	else {}
 
 	if (color_by_COLORCODE) {
 
@@ -407,8 +406,7 @@ void PS_border (const vector <GDB>& inGDB, ofstream& o) {
 			T = T + ", COLOURED USING 'RUP' CLUSTER CODE";
 		}
 	}
-	else if (color_IGNORE) {}
-	else ASSERT_DEAD_END();
+	else {}
 
 	text_PS (o, P.A - P.B + P.D * 20.0, P.Y - P.A - P.D * 5.5, 3, T);
 
@@ -622,12 +620,13 @@ void PS_stressdata (const vector <GDB>& inGDB, ofstream& o, const CENTER& center
 	stress_DIPDIR.push_back (double_to_string (sf.S_2.DIPDIR, 0));
 	stress_DIPDIR.push_back (double_to_string (sf.S_3.DIPDIR, 0));
 
+	ASSERT (!(stress_DIPDIR.size() > 3));
+
 	for (size_t i = 0; i < stress_DIPDIR.size(); i++) {
 
 		if 		(stress_DIPDIR.at(i).size() == 3) {}
 		else if (stress_DIPDIR.at(i).size() == 2) stress_DIPDIR.at(i) = "0" + stress_DIPDIR.at(i);
-		else if (stress_DIPDIR.at(i).size() == 1) stress_DIPDIR.at(i) = "00" + stress_DIPDIR.at(i);
-		else ASSERT_DEAD_END();
+		else 									  stress_DIPDIR.at(i) = "00" + stress_DIPDIR.at(i);
 	}
 
 	vector <string> stress_DIP;
@@ -636,11 +635,11 @@ void PS_stressdata (const vector <GDB>& inGDB, ofstream& o, const CENTER& center
 	stress_DIP.push_back (double_to_string (sf.S_2.DIP, 0));
 	stress_DIP.push_back (double_to_string (sf.S_3.DIP, 0));
 
+	ASSERT (stress_DIP.size() > 2);
+
 	for (size_t i = 0; i < stress_DIP.size(); i++) {
 
-		if 		(stress_DIP.at(i).size() == 2) {}
-		else if (stress_DIP.at(i).size() == 1) stress_DIP.at(i) = "0" + stress_DIP.at(i);
-		else ASSERT_DEAD_END();
+		if (stress_DIP.at(i).size() == 1) stress_DIP.at(i) = "0" + stress_DIP.at(i);
 	}
 
 	string stress_NAME = "S";
@@ -728,7 +727,7 @@ void PS_mohr_circle (const vector <GDB>& inGDB, ofstream& o, const CENTER& mohrc
 
 	const PAPER P = RETURN_PAPER();
 
-	if (!is_allowed_striae_datatype (inGDB.at(0).DATATYPE)) ASSERT_DEAD_END();
+	ASSERT (is_allowed_striae_datatype (inGDB.at(0).DATATYPE));
 
 	if (inGDB.at(0).STV.size() < 1 || inGDB.at(0).SFV.size() < 1) return;
 
@@ -814,15 +813,15 @@ void PS_RUP_ANG_distribution (const vector <GDB>& inGDB, ofstream& o, const CENT
 
 	const bool RUP = method == "RUP";
 	const bool ANG = method == "ANG";
-	if (!RUP && !ANG) ASSERT_DEAD_END();
+
+	ASSERT_EXACTLY_ONE_TRUE (RUP, ANG);
 
 	if (RUP && !is_INVERSION_ANGELIER() && !is_INVERSION_MOSTAFA() && !is_INVERSION_SHAN() && !is_INVERSION_FRY()) return;
 
 	vector <VALLEY> V;
 
-	if 		(ANG) V = return_valleygraph_for_dataset (inGDB, "ANG");
-	else if (RUP) V = return_valleygraph_for_dataset (inGDB, "RUP");
-	else ASSERT_DEAD_END();
+	if (ANG) V = return_valleygraph_for_dataset (inGDB, "ANG");
+	else 		 return_valleygraph_for_dataset (inGDB, "RUP");
 
 	if (V.size() == 1 && V.at(0).BIN_ID == 999 && V.at(0).DIR == "X") return;
 
@@ -932,15 +931,8 @@ void PS_lineation (const GDB& i, ofstream& o, const CENTER& center, const STRESS
 		L = i.D;
 		OTHER = true;
 	}
+	ASSERT (!(is_D_up (L)));
 
-	if (is_D_up (L)) {
-
-		cout << fixed << setprecision(6) << endl;
-		cout << L.X << "  -  " << L.Y << "  -  " << L.Z << endl;
-
-		ASSERT_DEAD_END();
-		L = flip_vector(L);
-	}
 	double X = 0.0;
 	double Y = 0.0;
 
@@ -1005,8 +997,6 @@ void PS_lineation (const GDB& i, ofstream& o, const CENTER& center, const STRESS
 		moveto_PS (o, 0.0, 0.0, 3);
 		lineto_PS (o, 10.0, 10.0, 3);
 		stroke_PS (o);
-		//moveto_PS (o, 10.0, 10.0, 3);
-		//text_PS (o, i.ID);
 		text_PS(o, 10.0, 10.0, 3, i.ID);
 		text_PS (o, "%%--------1");
 		translate_PS (o, -X, -Y, 3);
@@ -1015,8 +1005,8 @@ void PS_lineation (const GDB& i, ofstream& o, const CENTER& center, const STRESS
 
 void PS_plane (const GDB& i, ofstream& o, const double X, const double Y, const double R, const string TYPE) {
 
-	if (!is_NET_SCHMIDT() && ! is_NET_WULFF()) ASSERT_DEAD_END();
-	if (!is_HEMISPHERE_UPPER() && ! is_HEMISPHERE_LOWER()) ASSERT_DEAD_END();
+	ASSERT_EXACTLY_ONE_TRUE (is_NET_SCHMIDT(), is_NET_WULFF());
+	ASSERT_EXACTLY_ONE_TRUE (is_HEMISPHERE_UPPER(), is_HEMISPHERE_LOWER());
 
 	const bool AV = TYPE == "AV";
 	const bool C = TYPE == "C";
@@ -1037,7 +1027,7 @@ void PS_plane (const GDB& i, ofstream& o, const double X, const double Y, const 
 
 	const VCTR axis = NXNYNZ_from_dipdir_dip(DD);
 
-	if (is_N_down (axis)) ASSERT_DEAD_END();
+	ASSERT (!(is_N_down (axis)));
 
 	double DIPDIR = DD.DIPDIR;
 	if (is_HEMISPHERE_UPPER ()) DIPDIR = DD.DIPDIR + 180;
@@ -1072,11 +1062,11 @@ void PS_plane (const GDB& i, ofstream& o, const double X, const double Y, const 
 	const VCTR FST = PP.at(0);
 	const VCTR LST = PP.at(steps * 2);
 
-	if (!is_in_range(FST.X - 0.0001, FST.X + 0.0001, - LST.X)) ASSERT_DEAD_END();
-	if (!is_in_range(FST.Y - 0.0001, FST.Y + 0.0001, - LST.Y)) ASSERT_DEAD_END();
+	ASSERT (is_in_range (FST.X - 0.0001, FST.X + 0.0001, - LST.X));
+	ASSERT (is_in_range (FST.Y - 0.0001, FST.Y + 0.0001, - LST.Y));
 
-	if (!is_in_range(0.9999, 1.0001, vectorlength (FST))) ASSERT_DEAD_END();
-	if (!is_in_range(0.9999, 1.0001, vectorlength (LST))) ASSERT_DEAD_END();
+	ASSERT (is_in_range (0.9999, 1.0001, vectorlength (FST)));
+	ASSERT (is_in_range (0.9999, 1.0001, vectorlength (LST)));
 
 	for (size_t j = 0; j < PP.size(); j++) {
 
@@ -1126,24 +1116,24 @@ void PS_plane (const GDB& i, ofstream& o, const double X, const double Y, const 
 
 	if (is_NET_SCHMIDT()) {
 
-		if (! is_in_range(D_AO - 0.01*D_AO, D_AO + 0.01*D_AO, r)) ASSERT_DEAD_END();
-		if (! is_in_range(D_BO - 0.01*D_BO, D_BO + 0.01*D_BO, D_CO)) ASSERT_DEAD_END();
+		ASSERT (is_in_range(D_AO - 0.01*D_AO, D_AO + 0.01*D_AO, r));
+		ASSERT (is_in_range(D_BO - 0.01*D_BO, D_BO + 0.01*D_BO, D_CO));
 	}
 	else {
 
-		if (! is_in_range(D_AO - 0.01*D_AO, D_AO + 0.01*D_AO, r)) ASSERT_DEAD_END();
-		if (! is_in_range(D_BO - 0.01*D_BO, D_BO + 0.01*D_BO, r)) ASSERT_DEAD_END();
-		if (! is_in_range(D_CO - 0.01*D_CO, D_CO + 0.01*D_CO, r)) ASSERT_DEAD_END();
+		ASSERT (is_in_range(D_AO - 0.01*D_AO, D_AO + 0.01*D_AO, r));
+		ASSERT (is_in_range(D_BO - 0.01*D_BO, D_BO + 0.01*D_BO, r));
+		ASSERT (is_in_range(D_CO - 0.01*D_CO, D_CO + 0.01*D_CO, r));
 	}
 
-	if (!is_in_range(X-R-1, X+R+1, X_A)) ASSERT_DEAD_END();
-	if (!is_in_range(Y-R-1, Y+R+1, Y_A)) ASSERT_DEAD_END();
+	ASSERT (is_in_range(X-R-1, X+R+1, X_A));
+	ASSERT (is_in_range(Y-R-1, Y+R+1, Y_A));
 
-	if (!is_in_range(X-R-1, X+R+1, X_B)) ASSERT_DEAD_END();
-	if (!is_in_range(Y-R-1, Y+R+1, Y_B)) ASSERT_DEAD_END();
+	ASSERT (is_in_range(X-R-1, X+R+1, X_B));
+	ASSERT (is_in_range(Y-R-1, Y+R+1, Y_B));
 
-	if (!is_in_range(X-R-1, X+R+1, X_C)) ASSERT_DEAD_END();
-	if (!is_in_range(Y-R-1, Y+R+1, Y_C)) ASSERT_DEAD_END();
+	ASSERT (is_in_range(X-R-1, X+R+1, X_C));
+	ASSERT (is_in_range(Y-R-1, Y+R+1, Y_C));
 
 	if (is_CHK_PLOT_PLANE()) {
 
@@ -1379,7 +1369,7 @@ void PS_striaearrow (const GDB& i, ofstream& o, const CENTER& center) {
 
 	string TEXT = "";
 
-	VCTR DATA;// = i.DC;
+	VCTR DATA;
 
 	if (is_PLOT_HOEPPENER()) {
 
@@ -1432,8 +1422,7 @@ void PS_striaearrow (const GDB& i, ofstream& o, const CENTER& center) {
 	const bool REVERSE = is_allowed_striae_inverse_sense(i.OFFSET);
 	const bool SINISTRAL = is_allowed_striae_sinistral_sense(i.OFFSET);
 	const bool DEXTRAL = is_allowed_striae_dextral_sense(i.OFFSET);
-
-	if (!NONE && !NORMAL && !REVERSE && !SINISTRAL && !DEXTRAL) ASSERT_DEAD_END();
+	ASSERT_EXACTLY_ONE_TRUE (NONE, NORMAL, REVERSE, SINISTRAL, DEXTRAL);
 
 	double ANGLE;
 
@@ -1470,7 +1459,6 @@ void PS_striaearrow (const GDB& i, ofstream& o, const CENTER& center) {
 		}
 		else {}
 	}
-
 	ASSERT_FINITE (ANGLE);
 
 	translate_PS (o, X, Y, 3);
@@ -1502,8 +1490,6 @@ void PS_datanumber_averagebedding (const GDB& i, ofstream& o, const size_t datan
 	ASSERT (i.HAS_BEDDING == 1 || i.HAS_BEDDING == 0);
 
 	const bool HAS_BEDDING = i.HAS_BEDDING == 1;
-
-	//const bool HAS_BEDDING = (is_allowed_DIR (i.avS0d.DIPDIR) && is_allowed_DIP (i.avS0d.DIP));
 
 	if (HAS_BEDDING) {
 
@@ -1579,11 +1565,13 @@ void PS_GDB_DATA (const vector <GDB>& inGDB, ofstream& o, const CENTER& center) 
 
 		const string DG = inGDB.at(i).DATAGROUP;
 
+		ASSERT_EXACTLY_ONE_TRUE (is_allowed_lineation_datatype (DG), is_allowed_plane_datatype (DG), is_allowed_striae_datatype(DG), is_allowed_SC_datatype (DG));
+
 		if (is_allowed_lineation_datatype (DG)) 	PS_DRAW_lineation (inGDB.at(i), o, center);
 		else if (is_allowed_plane_datatype (DG)) 	PS_DRAW_plane (inGDB.at(i), o, center);
 		else if (is_allowed_striae_datatype(DG)) 	PS_DRAW_striae (inGDB.at(i), o, center);
 		else if (is_allowed_SC_datatype (DG)) 		PS_DRAW_sc (inGDB.at(i), o, center);
-		else ASSERT_DEAD_END();
+		else 										PS_DRAW_sc (inGDB.at(i), o, center);
 	}
 	return;
 }
@@ -1845,6 +1833,8 @@ void PS_INVERSION_RESULTS (const vector <GDB>& inGDB, ofstream& o, const CENTER&
 
 	PS_stressdata (inGDB, o, center, SFV.at(SFV.size() - 1));
 
+	ASSERT_EXACTLY_ONE_TRUE (STRIAE && !no_INVERSION, FRACTURE && !no_BINGHAM);
+
 	if (STRIAE && !no_INVERSION) {
 
 		PS_stressarrows (o, center, SFV.at(SFV.size() - 1));
@@ -1860,11 +1850,7 @@ void PS_INVERSION_RESULTS (const vector <GDB>& inGDB, ofstream& o, const CENTER&
 
 		PS_stress_axes (inGDB, o, center);
 	}
-	else if (FRACTURE && !no_BINGHAM) {
-
-		PS_stress_axes (inGDB, o, center);
-	}
-	else ASSERT_DEAD_END();
+	else PS_stress_axes (inGDB, o, center);
 }
 
 void PS_stress_axes (const vector <GDB>& inGDB, ofstream& o, const CENTER& center) {
@@ -1873,7 +1859,7 @@ void PS_stress_axes (const vector <GDB>& inGDB, ofstream& o, const CENTER& cente
 
 	vector <STRESSFIELD> SF;
 
-	if (inGDB.size() < 1) ASSERT_DEAD_END();
+	ASSERT_GE (inGDB.size(), 1);
 
 	const size_t SFV_size = inGDB.at(0).SFV.size();
 	const bool STRIAE = is_allowed_striae_datatype(inGDB.at(0).DATATYPE);
@@ -1957,7 +1943,7 @@ void PS_SYMBOL_draw_plane (ofstream& o, const double X, const double Y, const st
 	string DASH = "   ";
 	double LINEWIDTH = -1.0;
 
-	if (!GROUP && !AV && !AV_O && !O && !FOLD && !SC) ASSERT_DEAD_END();
+	ASSERT_EXACTLY_ONE_TRUE (GROUP, AV, AV_O, O, FOLD, SC);
 
 	newpath_PS (o);
 
@@ -1972,8 +1958,8 @@ void PS_SYMBOL_draw_plane (ofstream& o, const double X, const double Y, const st
 
 	if (GROUP) {
 
-		PS_COLOR = generate_PSCOLOR_from_GC (TYPE); //itt x is lehet
-		if (is_GRAYSCALE_USE()) DASH = generate_DASH (TYPE); //itt x is lehet
+		PS_COLOR = generate_PSCOLOR_from_GC (TYPE);
+		if (is_GRAYSCALE_USE()) DASH = generate_DASH (TYPE);
 		LINEWIDTH = 1.0;
 	}
 	else if (AV) {
@@ -2324,7 +2310,7 @@ void PS_SYMBOLS_ROSE (const vector <GDB>& inGDB, ofstream& o) {
 	else if (STRIAE) outtext1 = "Plane dip direction";
 	else 			 outtext1 = "Plane dip direction";
 
-	translate_PS (o, P.S1X + 4.9 * P.A, P.S1Y - 2.955 * P.A, 3);//ok
+	translate_PS (o, P.S1X + 4.9 * P.A, P.S1Y - 2.955 * P.A, 3);
 	rotate_PS (o, -30, 1);
 
 	linewidth_PS (o, 0.7, 1);
@@ -2347,7 +2333,7 @@ void PS_SYMBOLS_ROSE (const vector <GDB>& inGDB, ofstream& o) {
 	stroke_PS (o);
 
 	rotate_PS (o, 30.0, 1);
-	translate_PS (o, - (P.S1X + 4.9 * P.A), - (P.S1Y - 2.955 * P.A), 3);//ok
+	translate_PS (o, - (P.S1X + 4.9 * P.A), - (P.S1Y - 2.955 * P.A), 3);
 	color_PS (o, "0.0 0.0 0.0");
 	text_PS (o, P.S1X + 5.0 * P.A, P.S1Y - 3.655 * P.A, 3, outtext1);
 
@@ -2426,6 +2412,7 @@ void PS_STEREONET_SYMBOLS (const vector <GDB>& inGDB, ofstream& o) {
 	const bool PLANE = is_allowed_plane_datatype (DATAGROUP);
 	const bool SC = is_allowed_SC_datatype (DATAGROUP);
 	const bool STRIAE = is_allowed_striae_datatype (DATAGROUP);
+	ASSERT_EXACTLY_ONE_TRUE (LINEATION, PLANE, SC, STRIAE);
 
 	PS_SYMBOLS_border (o);
 	PS_SYMBOLS_LABEL (o);
@@ -2465,7 +2452,7 @@ void PS_STEREONET_SYMBOLS (const vector <GDB>& inGDB, ofstream& o) {
 		text_PS(o, P.S1X + 0.1 * P.A, P.S1Y - 0.3 * P.A, 3, "SCHISTOSITY, CLEAVEGE");
 		PS_SYMBOLS_PLANE (DATATYPE, o);
 	}
-	else if (STRIAE) {
+	else {
 
 		text_PS (o, P.S1X + 0.1 * P.A, P.S1Y - 0.3 * P.A, 3, "FAULT AND STRIAE DATA");
 		PS_SYMBOLS_PLANE (DATATYPE, o);
@@ -2476,7 +2463,6 @@ void PS_STEREONET_SYMBOLS (const vector <GDB>& inGDB, ofstream& o) {
 
 		PS_SYMBOLS_INVERSION (o);
 	}
-	else ASSERT_DEAD_END();
 }
 
 void newpath_PS (ofstream& o) {

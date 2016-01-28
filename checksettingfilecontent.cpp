@@ -1,4 +1,4 @@
-// Copyright (C) 2012-2015, Ágoston Sasvári
+// Copyright (C) 2012-2016, Ágoston Sasvári
 // All rights reserved.
 // This code is published under the GNU Lesser General Public License.
 
@@ -230,8 +230,7 @@ void WRITE_SET_FILE (const vector <vector <string> >& SET, const string projectn
 
 void CHECK_SETTINGS (const string projectname) {
 
-	if (!is_mode_STD() && !is_mode_DEBUG()) ASSERT_DEAD_END();
-	//if (!is_mode_GUI() && !is_mode_BATCH() && !is_mode_DEBUG()) ASSERT_DEAD_END();
+	ASSERT_EXACTLY_ONE_TRUE (is_mode_STD(), is_mode_DEBUG());
 
 	const string SFN = capslock (projectname + ".set");
 	const string sfn = projectname + ".set";

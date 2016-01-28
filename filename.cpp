@@ -1,4 +1,4 @@
-// Copyright (C) 2012-2015, Ágoston Sasvári
+// Copyright (C) 2012-2016, Ágoston Sasvári
 // All rights reserved.
 // This code is published under the GNU Lesser General Public License.
 
@@ -205,7 +205,7 @@ void check_dataseparation_mode () {
 	const bool by_KMEANS = is_GROUPSEPARATION_KMEANS ();
 	const bool by_RUPANG = is_GROUPSEPARATION_RUPANG ();
 
-	if (!IGNORE && !by_GROUPCODE && !by_KMEANS && !by_RUPANG) ASSERT_DEAD_END() ;
+	ASSERT_EXACTLY_ONE_TRUE (IGNORE, by_GROUPCODE, by_KMEANS, by_RUPANG);
 }
 
 string generate_ACTUAL_PS_NAME () {
@@ -252,9 +252,9 @@ string generate_ACTUAL_RGF_NAME () {
 
 	string FN = RGF_FOLDER + BS + DT + BS + LOC + US + DT;
 
-	if (is_GROUPSEPARATION_GROUPCODE () && GC.size() < 1) ASSERT_DEAD_END();
-	if (is_GROUPSEPARATION_KMEANS () 	&& GC.size() < 2) ASSERT_DEAD_END();
-	if (is_GROUPSEPARATION_RUPANG () 	&& GC.size() < 3) ASSERT_DEAD_END();
+	ASSERT (!(is_GROUPSEPARATION_GROUPCODE ()	&& GC.size() < 1));
+	ASSERT (!(is_GROUPSEPARATION_KMEANS () 		&& GC.size() < 2));
+	ASSERT (!(is_GROUPSEPARATION_RUPANG () 		&& GC.size() < 3));
 
 	if (is_GROUPSEPARATION_GROUPCODE ()) 	FN = FN + US + GC.at(0);
 	if (is_GROUPSEPARATION_KMEANS ()) 		FN = FN + US + GC.at(1);
@@ -289,8 +289,6 @@ string generate_ACTUAL_WELL_PS_NAME () {
 
 	string PS_NAME = WELL_PS_FOLDER + BS + DT + BS + LOC;
 
-	//if (is_FORMATION_USE()) PS_NAME = PS_NAME + US + FM;
-
 	PS_NAME = PS_NAME + US + DT;
 
 	if (is_GROUPSEPARATION_GROUPCODE ())	PS_NAME = PS_NAME + US + GC.at(0);
@@ -313,8 +311,6 @@ string generate_ACTUAL_RGF_NAME_FOR_STANDARD () {
 	const string GC = return_ACTUAL_GROUPCODE ();
 
 	string PS_NAME = LOC;
-
-	//if (is_FORMATION_USE()) PS_NAME = PS_NAME + US + FM;
 
 	PS_NAME = PS_NAME + US + DT;
 

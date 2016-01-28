@@ -1,4 +1,4 @@
-// Copyright (C) 2012-2015, Ágoston Sasvári
+// Copyright (C) 2012-2016, Ágoston Sasvári
 // All rights reserved.
 // This code is published under the GNU Lesser General Public License.
 
@@ -143,27 +143,12 @@ GDB tilt_striae (const GDB& in, const VCTR& AXIS, const double ANGLE) {
 
 	TEMP.push_back(OUT);
 
-	if (! is_in_range(ANG_IN, ANG_IN, ANG_OUT)) {
+	ASSERT (is_in_range(ANG_IN, ANG_IN, ANG_OUT));
 
-		cout << fixed << setprecision(6) << flush;
-		cout << ANG_IN << endl;
-		cout << ANG_OUT << endl;
-		ASSERT_DEAD_END();
-	}
-	if (! is_in_range(089.9999, 090.0001, ANG_OUT)) {
+	ASSERT (is_in_range(089.9999, 090.0001, ANG_OUT));
 
-		cout << fixed << setprecision(6) << flush;
-		cout << ANG_IN << endl;
-		cout << ANG_OUT << endl;
-		ASSERT_DEAD_END();
-	}
-	if (! is_in_range(089.9999, 090.0001, ANG_IN)) {
+	ASSERT (is_in_range(089.9999, 090.0001, ANG_IN));
 
-		cout << fixed << setprecision(6) << flush;
-		cout << ANG_IN << endl;
-		cout << ANG_OUT << endl;
-		ASSERT_DEAD_END();
-	}
 	return OUT;
 }
 
@@ -189,7 +174,7 @@ GDB tilt_SC (const GDB& in, const VCTR& AXIS, const double ANGLE) {
 
 	const double ANG_OUT = fabs (vector_angle (OUT.N, OUT.NC));
 
-	if (! is_in_range(ANG_IN, ANG_IN, ANG_OUT)) ASSERT_DEAD_END();
+	ASSERT (is_in_range(ANG_IN, ANG_IN, ANG_OUT));
 
 	return OUT;
 }
@@ -243,6 +228,8 @@ GDB TILT_DATA (const GDB& in, const string METHOD) {
 	const bool IS_SC = is_allowed_SC_datatype (in.DATATYPE);
 	const bool IS_ST = is_allowed_striae_datatype (in.DATATYPE);
 
+	ASSERT_EXACTLY_ONE_TRUE (IS_PL, IS_LN, IS_SC, IS_ST);
+
 	const bool O = is_allowed_bedding_overturned_sense (in.avS0offset);
 
 	double ANGLE = return_tilting_angle (in, METHOD);
@@ -254,8 +241,7 @@ GDB TILT_DATA (const GDB& in, const string METHOD) {
 	if (IS_LN) 			return tilt_lineation (in, AXIS, ANGLE);
 	else if (IS_PL) 	return tilt_plane (in, AXIS, ANGLE);
 	else if (IS_ST) 	return tilt_striae (in, AXIS, ANGLE);
-	else if (IS_SC)   	return tilt_SC (in, AXIS, ANGLE);
-	else ASSERT_DEAD_END();
+	else 			  	return tilt_SC (in, AXIS, ANGLE);
 
 	return in;
 }

@@ -1,4 +1,4 @@
-// Copyright (C) 2012-2015, Ágoston Sasvári
+// Copyright (C) 2012-2016, Ágoston Sasvári
 // All rights reserved.
 // This code is published under the GNU Lesser General Public License.
 
@@ -48,24 +48,24 @@ void dump_SF_to_file (const vector <STRESSFIELD>& SF, const string FN);
 void dump_RECT_GRID_to_file (const vector <vector <GRID_CENTER> >& IN, const string FN);
 void dump_TRI_GRID_to_file (const vector <TRIANGLE>& T, const string FN);
 
-void dump_DISTANCE_MATRIX_to_file (const vector <vector <double> >& DM, const string FN);//ok
-void dump_WHICH_GROUP_to_file (const vector <size_t>& WG, const string FN);//ok
-void dump_HISTOGRAM_to_file (const vector <HISTOGRAM>& H, const string FN);			// NOT OK
-void dump_VALLEY_to_file (const vector <VALLEY>& V, const string FN);				// NOT OK
-void dump_ROSENUMBER_to_file (const vector <ROSENUMBER>& R, const string FN);//ok
+void dump_DISTANCE_MATRIX_to_file (const vector <vector <double> >& DM, const string FN);
+void dump_WHICH_GROUP_to_file (const vector <size_t>& WG, const string FN);
+void dump_HISTOGRAM_to_file (const vector <HISTOGRAM>& H, const string FN);
+void dump_VALLEY_to_file (const vector <VALLEY>& V, const string FN);
+void dump_ROSENUMBER_to_file (const vector <ROSENUMBER>& R, const string FN);
 
-void dump_INTERVAL_to_file (ofstream& o);//ok
-void standard_output_INTERVAL ();//ok
+void dump_INTERVAL_to_file (ofstream& o);
+void standard_output_INTERVAL ();
 void dump_FREQUENCY_to_file (ofstream& o);
-void standard_output_FREQUENCY ();//ok
-void STANDARD_OUTPUT_WELL_GROUPS ();//ok
+void standard_output_FREQUENCY ();
+void STANDARD_OUTPUT_WELL_GROUPS ();
 
-void dump_CURVE_to_file (const vector <double>& DEPTH, const vector <double>& VALUE, ofstream& o); //ok
-void STANDARD_OUTPUT_WELL_PS (const vector <double>& DEPTH, const vector <double>& VALUE, const bool DIPDIR, const string TYPE); //ok
+void dump_CURVE_to_file (const vector <double>& DEPTH, const vector <double>& VALUE, ofstream& o);
+void STANDARD_OUTPUT_WELL_PS (const vector <double>& DEPTH, const vector <double>& VALUE, const bool DIPDIR, const string TYPE);
 
 void dump_PEAK_to_file (ofstream& o, const bool PEAK);
-void STANDARD_OUTPUT_PEAKS (const string METHOD);//ok
-void STANDARD_OUTPUT_FAULTS (const string METHOD);//ok
+void STANDARD_OUTPUT_PEAKS (const string METHOD);
+void STANDARD_OUTPUT_FAULTS (const string METHOD);
 
 void dump_INTMINMAX_to_file (const size_t RUN, const size_t SIZE, const double MIN_DEPTH, const double MAX_DEPTH);
 void dump_STDEV_to_file (const size_t& RUN, const bool DIPDIR, const vector <string> ID_v, const vector <DIPDIR_DIP>& D1_v, const vector <DIPDIR_DIP>& D2_v, const vector <VCTR>& T1_v, const vector <VCTR>& T2_v, const vector <double>& ANG_v, const vector <double>& MSFT_v);

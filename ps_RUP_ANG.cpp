@@ -1,4 +1,4 @@
-// Copyright (C) 2012-2015, Ágoston Sasvári
+// Copyright (C) 2012-2016, Ágoston Sasvári
 // All rights reserved.
 // This code is published under the GNU Lesser General Public License.
 
@@ -108,7 +108,7 @@ void ps_draw_histogram_bars (const vector <GDB>& inGDB, const vector <line_RUP_A
 	const bool RUP_display = (method == "RUP");
 	const bool ANG_display = (method == "ANG");
 
-	if (!RUP_display && !ANG_display) ASSERT_DEAD_END();
+	ASSERT_EXACTLY_ONE_TRUE (RUP_display, ANG_display);
 
 	const bool BW1 = ((!is_RUP_CLUSTERING_RUP() && !is_RUP_CLUSTERING_ANG()) || (is_RUP_CLUSTERING_RUP() && ANG_display) || (is_RUP_CLUSTERING_ANG() && RUP_display));
 	const bool BW2 = !is_COLOURING_RUPANG();
@@ -129,7 +129,6 @@ void ps_draw_histogram_bars (const vector <GDB>& inGDB, const vector <line_RUP_A
 
 		if (RUP_display)	X = center.X + P.R + 2.0 * P.B + linewidth / 2.0;
 		else 				X = center.X + P.R + 4.0 * P.B + linewidth / 2.0;
-
 
 		Y1 = center.Y - P.R + 2.0 * P.R * (L_R_A.at(j).L_STR / DATA_max);
 		Y2 = center.Y - P.R + 2.0 * P.R * (L_R_A.at(j).L_END / DATA_max);
@@ -173,6 +172,8 @@ void ps_percentage (ofstream& o, const CENTER& center, const PAPER& P, const str
 
 	const bool RUP = METHOD == "RUP";
 	const bool ANG = METHOD == "ANG";
+
+	ASSERT_EXACTLY_ONE_TRUE (RUP, ANG);
 
 	if (!RUP && !ANG) ASSERT_DEAD_END();
 
@@ -221,7 +222,7 @@ void ps_percentage_max (ofstream& o, const CENTER& center, const PAPER& P, const
 	const bool RUP = METHOD == "RUP";
 	const bool ANG = METHOD == "ANG";
 
-	if (!RUP && !ANG) ASSERT_DEAD_END();
+	ASSERT_EXACTLY_ONE_TRUE (RUP, ANG);
 
 	if (RUP) {
 

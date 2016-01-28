@@ -1,4 +1,4 @@
-// Copyright (C) 2012-2015, Ágoston Sasvári
+// Copyright (C) 2012-2016, Ágoston Sasvári
 // All rights reserved.
 // This code is published under the GNU Lesser General Public License.
 
@@ -10,12 +10,12 @@
 
 using namespace std;
 
-vector <GDB> ptn (const vector <GDB>& inGDB); //ok
+vector <GDB> ptn (const vector <GDB>& inGDB);
 
-STRESSTENSOR PTN_matrix (const vector <GDB>& inGDB, const string& axis); //ok
+STRESSTENSOR PTN_matrix (const vector <GDB>& inGDB, const string& axis);
 
-STRESSFIELD sf_PTN (const vector <GDB>& inGDB); //ok
+STRESSFIELD sf_PTN (const vector <GDB>& inGDB);
 
-STRESSTENSOR st_PTN (const STRESSFIELD& sf, const vector <GDB> inGD); //ok
+STRESSTENSOR st_PTN (const STRESSFIELD& sf, const vector <GDB> inGD);
 
 #endif

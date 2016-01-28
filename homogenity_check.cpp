@@ -1,4 +1,4 @@
-// Copyright (C) 2012-2015, Ágoston Sasvári
+// Copyright (C) 2012-2016, Ágoston Sasvári
 // All rights reserved.
 // This code is published under the GNU Lesser General Public License.
 
@@ -107,8 +107,8 @@ bool check_dataset_homogenity (const vector <GDB>& inGDB) {
 	const bool SC = 		(is_allowed_SC_datatype(inGDB.at(0).DATATYPE));
 	const bool BEDDING = 	is_allowed_handle_as_bedding (inGDB.at(0).DATATYPE);
 
-	const bool OFFSET = 	check_dataset_offset_homogenity (inGDB);//ok
-	const bool GEOMETRY = 	check_dataset_geometry_homogenity (inGDB);//ok
+	const bool OFFSET = 	check_dataset_offset_homogenity (inGDB);
+	const bool GEOMETRY = 	check_dataset_geometry_homogenity (inGDB);
 
 	if (SC || STRIAE ) return (GEOMETRY || OFFSET);
 	else if (BEDDING) return (GEOMETRY || !OFFSET);

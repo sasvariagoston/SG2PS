@@ -1,4 +1,4 @@
-// Copyright (C) 2012-2015, Ágoston Sasvári
+// Copyright (C) 2012-2016, Ágoston Sasvári
 // All rights reserved.
 // This code is published under the GNU Lesser General Public License.
 
@@ -13,9 +13,7 @@
 #include "filename.hpp"
 #include "inversion.h"
 #include "rgf.h"
-//#include "rose.h"
 #include "run_mode.h"
-//#include "ps.h"
 #include "rup_clustering.hpp"
 #include "settings.hpp"
 #include "standard_output.hpp"
@@ -708,9 +706,6 @@ void standard_output_FREQUENCY () {
 }
 
 void STANDARD_OUTPUT_WELL_GROUPS () {
-
-	//const bool TLT = is_PROCESS_AS_TILTED();
-	//const bool TRJ = is_PROCESS_AS_TRAJECTORY();
 
 	standard_output_INTERVAL ();
 	standard_output_FREQUENCY ();

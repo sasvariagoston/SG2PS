@@ -1,6 +1,7 @@
-// Copyright (C) 2012-2015, Ágoston Sasvári
+// Copyright (C) 2012-2016, Ágoston Sasvári
 // All rights reserved.
 // This code is published under the GNU Lesser General Public License.
+
 #include <fstream>
 #include <iomanip>
 #include <iostream>
@@ -39,12 +40,12 @@ vector <WELL_TOPS> WTP;
 vector <PEAK_TO_PLOT> PEAK;
 vector <PEAK_TO_PLOT> FAULTS;
 
-const double PL_WDT = 3.7;//was 4.0
+const double PL_WDT = 3.7;
 
-const double PL_GP = 0.35;//was 0.9
-const double PL_AX_GP = 0.1;//was 0.2
+const double PL_GP = 0.35;
+const double PL_AX_GP = 0.1;
 
-const double PL_LF = -2.7;//was -2.5
+const double PL_LF = -2.7;
 
 const string STD_CLR = "0.80 0.80 0.80";
 const string AVR_CLR = "0.00 0.00 0.00";
@@ -64,6 +65,8 @@ const VCTR GRN = declare_vector (0.25, 0.75, 0.25);
 const VCTR LRD = declare_vector (1.00, 0.50, 0.50);
 const VCTR LYL = declare_vector (1.00, 1.00, 0.50);
 const VCTR LGN = declare_vector (0.50, 1.00, 0.50);
+
+const double SN = 1e-8;
 }
 
 using namespace std;
@@ -173,12 +176,9 @@ void PS_well_border (ofstream& o) {
 	//const bool exists_KMEANS = 	GC.at(1) != 'X';
 	const bool exists_RUPANG = 		GC.at(2) != 'X';
 
-	//if (!by_GROUPCODE && !by_KMEANS && !by_RUPANG && !IGNORE) ASSERT_DEAD_END();
-	//if (!color_by_COLORCODE && !color_by_GROUPCODE && !color_by_KMEANS && !color_by_RUPANG && !color_IGNORE) ASSERT_DEAD_END();
+	ASSERT_AT_LEAST_ONE_FALSE (by_GROUPCODE, (GC.size() < 1));
 
-	if (by_GROUPCODE && GC.size() < 1) ASSERT_DEAD_END();
-	//if (by_KMEANS && GC.size() < 2) ASSERT_DEAD_END();
-	if (by_RUPANG && GC.size() < 3) ASSERT_DEAD_END();
+	ASSERT_AT_LEAST_ONE_FALSE (by_RUPANG, (GC.size() < 3));
 
 	newpath_PS(o);
 
@@ -198,7 +198,6 @@ void PS_well_border (ofstream& o) {
 	string T = DT + " FROM LOCATION " + LOC;
 
 	if (asked_KMEANS) T = T + " - K-MEANS CLUSTERING USED";
-
 
 	if (by_GROUPCODE) 	T =  T + ", GROUP '" + GC.at(0) + "' USING ORIGINAL GROUPCODE" ;
 	else if (is_GROUPSEPARATION_IGNORE()) {}
@@ -232,8 +231,7 @@ void PS_well_border (ofstream& o) {
 	if 		(!TLT && !TRJ)	T = T + " - ORIGINAL DATA SET";
 	else if ( TLT && !TRJ) 	T = T + " - BEDDING/PALEO NORTH CORRECTED DATA SET";
 	else if ( TLT &&  TRJ) 	T = T + " - BEDDING/PALEO NORTH AND TRAJECTORY CORRECTED DATA SET";
-	else if (!TLT &&  TRJ)	T = T + " - TRAJECTORY CORRECTED DATA SET";
-	else ASSERT_DEAD_END();
+	else 					T = T + " - TRAJECTORY CORRECTED DATA SET";
 
 	text_PS (o, P.A - P.B + P.D * 20.0, P.Y - P.A - P.D * 5.5, 3, T);
 
@@ -861,15 +859,16 @@ void PS_derivate_DIPDIR_DIP (ofstream& o, const double X) {
 
 void SETUP_PEAK (const vector <double>& DEPTH, const vector <double>& VALUE) {
 
-	if (DEPTH.size() != VALUE.size()) ASSERT_DEAD_END();
+	ASSERT_EQ (DEPTH.size(), VALUE.size());
 
-	if (DEPTH.size() < 1 || VALUE.size() < 1) ASSERT_DEAD_END();
+	ASSERT_GE (DEPTH.size(), 1);
+	ASSERT_GE (VALUE.size(), 1);
 
 	PEAK.clear();
 
 	for (size_t i = 0; i < DEPTH.size(); i++) {
 
-		if (i < DEPTH.size() - 1 && DEPTH.at(i) > DEPTH.at(i+1)) ASSERT_DEAD_END();
+		ASSERT (!(i < DEPTH.size() - 1 && DEPTH.at(i) > DEPTH.at(i+1)));
 
 		PEAK_TO_PLOT buf;
 
@@ -901,7 +900,6 @@ double RETURN_DEPTH_AVERAGE (vector <PEAK_TO_PLOT> IN) {
 
 		FOR_AVERAGE.push_back(IN.at(i).DEPTH);
 	}
-
 	return average (FOR_AVERAGE);
 }
 
@@ -954,7 +952,6 @@ void count_real_peaks (const vector <PEAK_TO_PLOT>& FL_PK, const string METHOD) 
 
 			const bool LAST = i == PEAK.size() - 2;
 
-
 			const bool RANGE_OK_LAST = LAST && is_in_range_LW_EQ (FL_PK.at(j).DEPTH, FL_PK.at(j+1).DEPTH, PEAK.at(i).DEPTH);
 			const bool RANGE_OK_OTHR = !LAST && is_in_range_UP_EQ (FL_PK.at(j).DEPTH, FL_PK.at(j+1).DEPTH, PEAK.at(i).DEPTH);
 
@@ -973,21 +970,23 @@ void count_real_peaks (const vector <PEAK_TO_PLOT>& FL_PK, const string METHOD) 
 
 				const double ACT_D = FL_PK.at(j).DEPTH;
 				const double NXT_D = FL_PK.at(j+1).DEPTH;
-				const double PEAK_D = PEAK.at(i).DEPTH;
+				double PEAK_D = PEAK.at(i).DEPTH;
+
+				if (is_in_range (ACT_D, ACT_D, PEAK_D)) PEAK_D = PEAK_D + SN;
 
 				const double ACT_V = FL_PK.at(j).VALUE;
 				const double NXT_V = FL_PK.at(j+1).VALUE;
 				const double PEAK_V = PEAK.at(i).VALUE;
 
-				if (NXT_D <= ACT_D) ASSERT_DEAD_END();
+				ASSERT_LT (ACT_D, NXT_D);
 
-				ASSERT_NE(PEAK_D, ACT_D);
+				ASSERT_NE (PEAK_D, ACT_D);
 
 				const double M = (NXT_D - ACT_D) / (PEAK_D - ACT_D);
 
 				const double P = ((NXT_V - ACT_V) / M) + ACT_V;
 
-                ASSERT_FINITE(M, P);
+                ASSERT_FINITE (M, P);
 
 				if ((MAX && PEAK_V > P) || (MIN && PEAK_V < P)) PEAK.at(i).COUNT = PEAK.at(i).COUNT + 1;
 			}
@@ -1006,7 +1005,6 @@ void rescale_peaks () {
         for (size_t i = 0; i < PEAK.size(); i++)
             PEAK.at(i).COUNT = PEAK.at(i).COUNT / MAX;
     }
-
 	return;
 }
 
@@ -1050,6 +1048,7 @@ void PEAK_IDENTIFICATION (const vector <double>& DEPTH, const vector <double>& V
 
 		count_real_peaks (FL_PK, METHOD);
 	}
+
 	rescale_peaks ();
 
 	if (is_CHK_WELL()) STANDARD_OUTPUT_PEAKS (METHOD);
@@ -1102,8 +1101,6 @@ void plot_well_frequency_derivate (const vector <WELL_FREQUENCY> IN, ofstream& o
 
 	vector <double> DEPTH;
 	vector <double> VALUE;
-
-	//for (size_t i = 0; i < IN.size() - 1; i++) {
 
 	for (size_t i = 0; i < IN.size(); i++) {
 
@@ -1190,7 +1187,7 @@ vector <XY> cutting_points (const vector <XY>& IN) {
 
 vector <XY> generate_xy_vector (const vector <double>& VALUE, const vector <double>& DEPTH, const bool DIPDIR) {
 
-	if (DEPTH.size() != VALUE.size()) ASSERT_DEAD_END();
+	ASSERT_EQ (DEPTH.size(), VALUE.size());
 
 	vector <XY> OUT;
 
@@ -1237,7 +1234,7 @@ vector <vector <XY> >  generate_xy_vector_vector (const vector <XY>& IN) {
 
 		const bool CUT = (ACT_VAL < -900.0 && NXT_VAL > 900.0) || (ACT_VAL > 900.0 && NXT_VAL < -900.0);
 
-		if ((ACT_VAL > 900.0 && NXT_VAL > 900.0) || (ACT_VAL < -900.0 && NXT_VAL < -900.0)) ASSERT_DEAD_END();
+		ASSERT (!((ACT_VAL > 900.0 && NXT_VAL > 900.0) || (ACT_VAL < -900.0 && NXT_VAL < -900.0)));
 
 		if (CUT) {
 
@@ -1268,9 +1265,11 @@ vector <vector <XY> > tidy_xy_vector_vector (vector <vector <XY> >& IN) {
 		const bool FST_OK = (FST < -900 || FST > 900);
 		const bool LST_OK = (LST < -900 || LST > 900);
 
-		if (i > 0 && i < OUT.size() - 1 && !(FST_OK && LST_OK)) ASSERT_DEAD_END();
-		if (i == 0  && FST_OK) ASSERT_DEAD_END();
-		if (i == OUT.size() && LST_OK) ASSERT_DEAD_END();
+		ASSERT_AT_LEAST_ONE_FALSE ((i > 0), (i < OUT.size() - 1), !(FST_OK && LST_OK));
+
+		ASSERT_AT_LEAST_ONE_FALSE ((i == 0),  FST_OK);
+
+		ASSERT_AT_LEAST_ONE_FALSE ((i == OUT.size()), LST_OK);
 
 		for (size_t j = 0; j < OUT.at(i).size(); j++) {
 
@@ -1305,7 +1304,8 @@ void plot_curve (const vector <double> DEPTH, const vector <double> VALUE, ofstr
 
 	const PAPER P = RETURN_PAPER();
 
-	if (DEPTH.size() != VALUE.size()) ASSERT_DEAD_END();
+	ASSERT_EQ (DEPTH.size(), VALUE.size());
+
 	if (DEPTH.size() < 1) return;
 
 	vector <double> ACT_X;
@@ -1359,8 +1359,9 @@ void plot_curve (const vector <double> DEPTH, const vector <double> VALUE, ofstr
 		NXT_X.push_back (NXT_data_X);
 		NXT_Y.push_back (NXT_data_Y);
 	}
-
-	if (!(ACT_X.size() == ACT_Y.size() && ACT_Y.size() == NXT_X.size() &&  NXT_X.size() == NXT_Y.size())) ASSERT_DEAD_END();
+	ASSERT_EQ (ACT_X.size(), ACT_Y.size());
+	ASSERT_EQ (ACT_Y.size(), NXT_X.size());
+	ASSERT_EQ (NXT_X.size(), NXT_Y.size());
 
 	newpath_PS(o);
 	color_PS (o, CRV_CLR);
@@ -1421,7 +1422,8 @@ void plot_peaks (ofstream& o, const double X, const double LENGTH, const double 
 		ACT_Y.push_back (ACT_data_Y);
 	}
 
-	if (!(ACT_X.size() == ACT_Y.size() && ACT_Y.size() == PEAK.size())) ASSERT_DEAD_END();
+	ASSERT_EQ (ACT_X.size(), ACT_Y.size());
+	ASSERT_EQ (ACT_Y.size(), PEAK.size());
 
 	linewidth_PS(o, LW, 0);
 
@@ -1539,6 +1541,7 @@ void plot_well_curve (const vector <WELL_INTERVAL>& IN, ofstream& o, const doubl
 			}
 		}
 	}
+
 	if 		(TYPE == "DERIVATE") 	PEAK_IDENTIFICATION (DEPTH, VALUE, "MAX");
 	else if (TYPE == "AVERAGE") 	PEAK_IDENTIFICATION (DEPTH, VALUE, "MINMAX");
 	else 							PEAK_IDENTIFICATION (DEPTH, VALUE, "NONE");
@@ -1583,7 +1586,7 @@ void plot_well_measurements (const vector <GDB>& inGDB, ofstream& o, const doubl
 
 		const bool O = is_allowed_bedding_overturned_sense(inGDB.at(i).OFFSET);
 
-		if (O && !B) ASSERT_DEAD_END();
+		ASSERT (!(O && !B));
 
 		double DATA;
 
@@ -1642,18 +1645,18 @@ void PS_well_intervals_error (const vector <WELL_INTERVAL>& INTERVAL, ofstream& 
 		const double COUNT = string_to_double (size_t_to_string (i));
 		const double END = string_to_double (size_t_to_string (INTERVAL.size()));
 
-        ASSERT_NE(END, 0.0);
+        ASSERT_NE (END, 0.0);
 
 		const double WIDTH = (PL_WDT * P.A) / END;
 
 		const double X1 = X + PL_WDT * P.A * (COUNT / END);
 
-        ASSERT_NE(MAX_VAL, MIN_VAL);
+        ASSERT_NE (MAX_VAL, MIN_VAL);
 
 		const double Y1 = P.O1Y - LENGTH * ((MAX - MIN_VAL) / (MAX_VAL - MIN_VAL));
 		const double Y2 = P.O1Y - LENGTH * ((MIN - MIN_VAL) / (MAX_VAL - MIN_VAL));
 
-        ASSERT_NE(MAX_ERROR, MIN_ERROR);
+        ASSERT_NE (MAX_ERROR, MIN_ERROR);
 
 		double CLR_RATIO = 100 * (1.0 * (SD - MIN_ERROR)) / (MAX_ERROR - MIN_ERROR);
 
@@ -1840,8 +1843,8 @@ void OUTPUT_TO_WELL_PS (const vector <vector <GDB> >& GDB_G) {
 	const vector <vector <WELL_INTERVAL> > INTERVAL = RETURN_INTERVAL ();
 	const vector <vector <WELL_FREQUENCY> > FREQUENCY = RETURN_FREQUENCY ();
 
-	if (INTERVAL.size() != GDB_G.size()) ASSERT_DEAD_END();
-	if (FREQUENCY.size() != GDB_G.size()) ASSERT_DEAD_END();
+	ASSERT_EQ (INTERVAL.size(), GDB_G.size());
+	ASSERT_EQ (FREQUENCY.size(), GDB_G.size());
 
 	return_records_with_formation_names (GDB_G);
 
@@ -1860,6 +1863,7 @@ void OUTPUT_TO_WELL_PS (const vector <vector <GDB> >& GDB_G) {
 		const bool LIN = is_allowed_lineation_datatype (DT);
 
 		const bool PROCESS_AS_WELL = PLN || LIN;
+
 
 		if (PROCESS_AS_WELL) {
 

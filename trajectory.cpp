@@ -1,4 +1,4 @@
-// Copyright (C) 2012-2015, Ágoston Sasvári
+// Copyright (C) 2012-2016, Ágoston Sasvári
 // All rights reserved.
 // This code is published under the GNU Lesser General Public License.
 
@@ -25,7 +25,6 @@ struct TRJ_N {
 
 namespace {
 
-//bool TRAJECTORY_FILE_CORRECT = false;
 bool TRAJECTORY_ZXY = false;
 bool TRAJECTORY_DAP = false;
 
@@ -284,7 +283,8 @@ void generate_trajectory_normal_XYZ () {
 
 		buf.N = unitvector (declare_vector (NXT_X-ACT_X, NXT_Y-ACT_Y, NXT_DEPTH-ACT_DEPTH), true);
 
-		if (is_N_down (buf.N)) ASSERT_DEAD_END();
+		ASSERT (!is_N_down (buf.N));
+		//if (is_N_down (buf.N)) ASSERT_DEAD_END();
 
 		TRAJECTORY_N.push_back (buf);
 	}
@@ -310,7 +310,7 @@ void generate_trajectory_normal_DAP () {
 		buf.DEPTH = (NXT_DEPTH + ACT_DEPTH) / 2.0;
 		buf.N = NXNYNZ_from_dipdir_dip (DD);
 
-		if (is_N_down (buf.N)) ASSERT_DEAD_END();
+		ASSERT (!is_N_down (buf.N));
 
 		TRAJECTORY_N.push_back (buf);
 	}
@@ -318,9 +318,10 @@ void generate_trajectory_normal_DAP () {
 
 void generate_trajectory_normal () {
 
+	ASSERT_EXACTLY_ONE_TRUE (TRAJECTORY_ZXY, TRAJECTORY_DAP);
+
 	if (TRAJECTORY_ZXY) generate_trajectory_normal_XYZ ();
-	else if (TRAJECTORY_DAP)generate_trajectory_normal_DAP ();
-	else ASSERT_DEAD_END();
+	else 				generate_trajectory_normal_DAP ();
 
 	add_record_zero_max ();
 
@@ -340,7 +341,6 @@ void PROCESSING_TRAJECTORY () {
 
 	return;
 }
-
 
 vector <GDB> APPLY_TRAJECTORY (const vector <GDB>& inGDB) {
 
@@ -375,7 +375,7 @@ vector <GDB> APPLY_TRAJECTORY (const vector <GDB>& inGDB) {
 	}
 	cout << "  - Trajectory correction was applied for "<<counter<<" records of "<<outGDB.size()<<"."<<endl;
 
-	if (counter > outGDB.size()) ASSERT_DEAD_END();
+	ASSERT_LE (counter, outGDB.size());
 
 	return outGDB;
 }

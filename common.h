@@ -1,4 +1,4 @@
-// Copyright (C) 2012-2015, Ágoston Sasvári
+// Copyright (C) 2012-2016, Ágoston Sasvári
 // All rights reserved.
 // This code is published under the GNU Lesser General Public License.
 
@@ -12,6 +12,8 @@
 using namespace std;
 
 void print_banner () ;
+
+void progress_bar (const size_t WIDTH, const double STATUS, const double MAX);
 
 string capslock (string input);
 
@@ -40,6 +42,8 @@ double ASIN (const double& in);
 double ACOS (const double& in);
 double TAN (const double& in);
 double ATAN (const double& in);
+
+double factorial (size_t n);
 
 VCTR  crossproduct (const VCTR& in1, const VCTR& in2);
 double dotproduct (const VCTR& in1, const VCTR& in2, const bool& normalisation=false);

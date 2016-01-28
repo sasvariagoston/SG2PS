@@ -1,4 +1,4 @@
-// Copyright (C) 2012-2015, Ágoston Sasvári
+// Copyright (C) 2012-2016, Ágoston Sasvári
 // All rights reserved.
 // This code is published under the GNU Lesser General Public License.
 
@@ -33,9 +33,6 @@ bool is_CONTOURING_DIPDIR_BEARING ();
 bool is_CONTOURING_STRIKEDIR_BEARING ();
 bool is_CONTOURING_PLANE_NORMAL_BEARING ();
 bool is_CONTOURING_STRIAE_BEARING_BEARING ();
-
-//bool is_AVCALC_OUTCROP ();
-//bool is_AVCALC_OUTCROP_GROUP ();
 
 bool is_TILTING_BEDDING_PALEONORTH ();
 bool is_TILTING_BEDDING ();

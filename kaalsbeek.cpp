@@ -1,4 +1,4 @@
-// Copyright (C) 2012-2015, Ágoston Sasvári
+// Copyright (C) 2012-2016, Ágoston Sasvári
 // All rights reserved.
 // This code is published under the GNU Lesser General Public License.
 
@@ -98,7 +98,6 @@ vector <GRID_CENTER> generate_triangle_center (const vector <TRIANGLE>& net) {
 
 		buf.CENTER.X = (net.at(i).A.X + net.at(i).B.X + net.at(i).C.X) / 3.0;
 		buf.CENTER.Y = (net.at(i).A.Y + net.at(i).B.Y + net.at(i).C.Y) / 3.0;
-		//buf.CENTER.Z = (net.at(i).A.Z + net.at(i).B.Z + net.at(i).C.Z) / 3.0;
 
 		buf.COUNT = net.at(i).COUNT;
 
@@ -165,8 +164,7 @@ vector <TRIANGLE> generate_triangle_offnet(const vector <vector <vector <VCTR> >
 
 		out.push_back(buf);
 	}
-
-	return out; // OK
+	return out;
 }
 
 //7
@@ -201,7 +199,7 @@ vector <TRIANGLE> generate_triangle_offnet_between_segments (const vector <vecto
 
 	out.push_back(buf);
 
-	return out; // OK
+	return out;
 }
 
 vector <TRIANGLE> generate_triangle_in_arc (const vector <vector <vector <VCTR> > >& net, const size_t SEG_CNT, const size_t ARC_CNT) {
@@ -225,8 +223,7 @@ vector <TRIANGLE> generate_triangle_in_arc (const vector <vector <vector <VCTR> 
 
 		out.push_back(buf);
 	}
-
-	return out; //OK
+	return out;
 }
 
 vector <TRIANGLE> generate_triangle_in_arc_II (const vector <vector <vector <VCTR> > >& net, const size_t SEG_CNT, const size_t ARC_CNT) {
@@ -250,8 +247,7 @@ vector <TRIANGLE> generate_triangle_in_arc_II (const vector <vector <vector <VCT
 
 		out.push_back(buf);
 	}
-
-	return out; // OK
+	return out;
 }
 
 vector <TRIANGLE> generate_triangle_between_arcs (const vector <vector <vector <VCTR> > >& net, const size_t SEG_CNT, const size_t ARC_CNT) {
@@ -299,7 +295,7 @@ vector <TRIANGLE> generate_triangle_between_arcs (const vector <vector <vector <
 
 	out.push_back(buf);
 
-	return out; // OK
+	return out;
 }
 
 vector <TRIANGLE> generate_central_triangles (const vector <vector <vector <VCTR> > >& net, const size_t SEG_CNT) {
@@ -333,7 +329,7 @@ vector <TRIANGLE> generate_central_triangles (const vector <vector <vector <VCTR
 
 	out.push_back(buf);
 
-	return out; // OK
+	return out;
 }
 
 vector <TRIANGLE> generate_triangle_in_segment (const vector <vector <vector <VCTR> > >& net, const size_t SEG_CNT) {
@@ -355,7 +351,6 @@ vector <TRIANGLE> generate_triangle_in_segment (const vector <vector <vector <VC
 		buf = generate_triangle_between_arcs (net, SEG_CNT, arc_cnt);// 3+4
 		out = merge_triangle(out, buf);
 	}
-
 	return out;
 }
 
@@ -382,7 +377,6 @@ vector <TRIANGLE> generate_triangle (const  vector <vector <vector <VCTR> > >& n
 		buf =  generate_triangle_offnet_between_segments (net, seg_cnt);
 		out = merge_triangle(out, buf);
 	}
-
 	return out;
 }
 
@@ -434,7 +428,6 @@ vector <TRIANGLE> convert_S_W_net (vector <TRIANGLE>& in) {
 			}
 		}
 	}
-
 	return in;
 }
 
@@ -503,7 +496,6 @@ vector <TRIANGLE> increase_triange_density (const vector <TRIANGLE>& in) {
 		);
 		out.push_back(buf);
 	}
-
 	return out;
 }
 
@@ -544,7 +536,6 @@ vector <TRIANGLE> add_external_to_internal (vector <TRIANGLE>& innet, const TRIA
 
 		if (is_neighbouring_internal_triange (innet.at(i), offnet)) innet.at(i).COUNT++;
 	}
-
 	return innet;
 }
 
@@ -558,6 +549,8 @@ vector <TRIANGLE> return_count_in_net (const vector <GDB>& inGDB, vector <TRIANG
 		bool STRIKE = is_CONTOURING_STRIKEDIR_BEARING();
 		bool NORMAL = is_CONTOURING_PLANE_NORMAL_BEARING();
 		bool STRIAE = is_CONTOURING_STRIAE_BEARING_BEARING();
+
+		ASSERT_EXACTLY_ONE_TRUE (DIPDIR, STRIKE, NORMAL, STRIAE);
 
 		for (size_t j = 0; j < inGDB.size(); j++) {
 
@@ -587,13 +580,11 @@ vector <TRIANGLE> return_count_in_net (const vector <GDB>& inGDB, vector <TRIANG
 
 				TO_PROCESS = DXDYDZ_from_dipdir_dip(DD);
 			}
-			else if (STRIAE) {
+			else {
 
 				if (is_allowed_striae_datatype(inGDB.at(j).DATATYPE)) TO_PROCESS = inGDB.at(j).DC;
 				else TO_PROCESS = inGDB.at(j).D;
 			}
-			else ASSERT_DEAD_END();
-
 
 			if (is_data_in_triangle(innet.at(i), TO_PROCESS)) {
 
@@ -601,7 +592,6 @@ vector <TRIANGLE> return_count_in_net (const vector <GDB>& inGDB, vector <TRIANG
 				else innet = add_external_to_internal (innet, innet.at(i));
 			}
 		}
-
 		innet.at(i).COUNT = counter;
 	}
 	return innet;
@@ -616,6 +606,7 @@ void dbg_cout_triangle (const string method, const VCTR& A, const VCTR& B, const
 	<< A.X << '\t' << A.Y << '\t'
 	<< B.X << '\t' << B.Y << '\t'
 	<< C.X << '\t' << C.Y << '\t'
+
 	<< SC1 << AC1 << PC1 << '\t'
 	<< SC2 << AC2 << PC2 << '\t'
 	<< SC3 << AC3 << PC3 << endl;

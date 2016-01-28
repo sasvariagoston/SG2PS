@@ -1,4 +1,4 @@
-// Copyright (C) 2012-2015, Ágoston Sasvári
+// Copyright (C) 2012-2016, Ágoston Sasvári
 // All rights reserved.
 // This code is published under the GNU Lesser General Public License.
 
@@ -74,16 +74,19 @@ vector <GDB> competeRGFcontect (const string projectname) {
 
 		const string GC = outGDB.at(i).GC;
 
+		ASSERT_EXACTLY_ONE_TRUE (GC.size() == 0, GC.size() == 1, GC.size() == 3);
+
 		if (GC.size() == 0) outGDB.at(i).GC = "X";
 		else if (GC.size() == 1) {}
-		else if (GC.size() == 3) {
+		//else if (GC.size() == 3) {
+		else {
 
 			if (is_INPUTGROUP_FIRST()) 			outGDB.at(i).GC = char_to_string(GC.at(0));
 			else if (is_INPUTGROUP_SECOND()) 	outGDB.at(i).GC = char_to_string(GC.at(1));
 			else if (is_INPUTGROUP_THIRD()) 	outGDB.at(i).GC = char_to_string(GC.at(2));
 			else outGDB.at(i).GC = "X";
 		}
-		else ASSERT_DEAD_END();
+		//else ASSERT_DEAD_END();
 
 		if (is_DATARULE_RIGHT_HAND_RULE()) outGDB.at(i).corr.DIPDIR = right_hand_rule_to_german (outGDB.at(i).corr.DIPDIR);
 
@@ -103,16 +106,7 @@ double german_to_right_hand_rule (const double corrDIPDIR) {
 	if ((corrDIPDIR > 90.0) && (corrDIPDIR <= 360.0)) 	return corrDIPDIR - 90.0;
 	else 												return corrDIPDIR + 270.0;
 }
-/*
-bool has_bedding (const vector <vector <GDB> >& inGDB) {
 
-	for (size_t i = 0; i < inGDB.size(); i++) {
-
-		if (is_allowed_handle_as_bedding (inGDB.at(i).at(0).DATATYPE)) return true;
-	}
-	return false;
-}
-*/
 vector <GDB> fix_360_0 (const vector <GDB>& inGDB) {
 
 	vector <GDB> outGDB = inGDB;
@@ -153,7 +147,8 @@ vector <GDB> generate_NDS_vectors (const vector <GDB>& inGDB) {
 			const string OF = outGDB.at(i).OFFSET;
 			const bool O = is_allowed_bedding_overturned_sense (OF);
 
-			if (O && !B) ASSERT_DEAD_END();
+			ASSERT (!(O && !B));
+			//if (O && !B) ASSERT_DEAD_END();
 
 			const DIPDIR_DIP DDD = outGDB.at(i).corr;
 
@@ -187,9 +182,10 @@ vector <GDB> generate_NCDCSC_vectors (const vector <GDB>& inGDB) {
 
 		if (STRIAE || SC) {
 
+			ASSERT_EXACTLY_ONE_TRUE (SC || LINEATION, PITCH);
+
 			if (SC || LINEATION) outGDB.at(i) = generate_NCDCSC_LINEATION_SC (outGDB.at(i));
-			else if (PITCH) 	 outGDB.at(i) = generate_NCDCSC_PITCH (outGDB.at(i));
-			else ASSERT_DEAD_END();
+			else 				 outGDB.at(i) = generate_NCDCSC_PITCH (outGDB.at(i));
 		}
 	}
 	return outGDB;
@@ -230,7 +226,7 @@ GDB generate_NCDCSC_PITCH (const GDB& inGDB) {
 	const vector <string> GDV = allowed_geodetic_vector();
 	const vector <double> GDA = geodetic_angle_vector();
 
-	if (GDV.size() != GDA.size()) ASSERT_DEAD_END();
+	ASSERT_EQ (GDV.size(), GDA.size());
 
 	for (size_t i = 0; i < GDV.size(); i++) if (PITCH == GDV.at(i)) GEOD_DIR = GDA.at(i);
 
@@ -270,7 +266,7 @@ vector <GDB> manipulate_N (const vector <GDB>& inGDB) {
 		const bool STRIAE = 	is_allowed_striae_datatype(DT);
 		const bool SC = 		is_allowed_SC_datatype(DT);
 
-		if (!LITHOLOGY && !PLANE && !LINEATION && !STRIAE && !SC) ASSERT_DEAD_END();
+		ASSERT_EXACTLY_ONE_TRUE (LITHOLOGY, PLANE, LINEATION, STRIAE, SC);
 
 		const double a = uniform_0_1();
 		const double S = a * 0.01;
@@ -513,7 +509,7 @@ void ASSERT_OFFSET (const string OR_OFS, const string NW_OFS) {
 	const bool OD = is_allowed_striae_dextral_sense(OR_OFS);
 	const bool ND = is_allowed_striae_dextral_sense(NW_OFS);
 
-	if ((OS && ND) || (OD && NS)) ASSERT_DEAD_END();
+	ASSERT (!((OS && ND) || (OD && NS)));
 
 	return;
 }
@@ -667,80 +663,45 @@ vector <vector <GDB> > EVALUATE (const vector <vector <GDB> >& inGDB_G) {
 
 	if (!is_mode_DEBUG()) writeln (msg);
 
-	//cout << "a1" << endl;
-
 	if (TRJ) {
-
-		//cout << "a2" << endl;
 
 		P = RETILT (P, "TRAJECTORY");
 
-		//cout << "a3" << endl;
-
 		P = PREPARE_GDB_VECTOR_FOR_PROCESSING (P, true);
-
-	//	cout << "a4" << endl;
 
 		P = AVERAGE (P);
 
-		//cout << "a5" << endl;
-
 		P = ASSOCIATE_AVERAGE_BEDDING_GROUPS (P);
-
-		//cout << "a6" << endl;
 	}
-
-	//cout << "a7" << endl;
 
 	if (TLT) {
 
-		//cout << "a8" << endl;
-
 		P = RETILT (P, "BEDDING");
-
-		//cout << "a9" << endl;
 
 		P = RETILT (P, "PALEONORTH");
 
-		//cout << "a10" << endl;
-
 		P = PREPARE_GDB_VECTOR_FOR_PROCESSING (P, true);
-
-		//cout << "a11" << endl;
 
 		P = AVERAGE (P);
 
-		//cout << "a12" << endl;
-
 		P = ASSOCIATE_AVERAGE_BEDDING_GROUPS (P);
-
-		//cout << "a13" << endl;
 	}
 	P = PROCESS_GROUPS (P, TLT);
 
-	//cout << "a14" << endl;
-
 	vector <GDB> p = MERGE_GROUPS_TO_GDB (P);
-
-	//cout << "a15" << endl;
 
 	p = GENERATE_PS_CODE (p);
 
-	//cout << "a16" << endl;
-
 	p = SORT_GDB (p, "IID");
-
-	//cout << "a17" << endl;
 
 	P = SEPARATE_DATASET_GROUPS (p);
 
-	//cout << "a18" << endl;
+	ASSERT_EXACTLY_ONE_TRUE (is_GROUPSEPARATION_IGNORE(), is_GROUPSEPARATION_GROUPCODE(), is_GROUPSEPARATION_KMEANS(), is_GROUPSEPARATION_RUPANG());
 
 	if (is_GROUPSEPARATION_IGNORE()) {}
 	else if (is_GROUPSEPARATION_GROUPCODE()) 	P = SEPARATE_DATASET (P, "GROUPS", "GROUPCODE");//ez nem kell az alapfugvenybe!
 	else if (is_GROUPSEPARATION_KMEANS()) 		P = SEPARATE_DATASET (P, "CLUSTER", "CLUSTER");
-	else if (is_GROUPSEPARATION_RUPANG()) 		P = SEPARATE_DATASET (P, "RUP_ANG", "RUP_ANG");
-	else ASSERT_DEAD_END();
+	else 										P = SEPARATE_DATASET (P, "RUP_ANG", "RUP_ANG");
 
 	STANDARD_OUTPUT (p);
 
@@ -1034,11 +995,11 @@ void dbg_cout_GDB_vector (const vector <GDB>& inGDB) {
 
 void compare_structures (const vector <double>& IN1, const vector <double>& IN2) {
 
-	if (IN1.size() != IN2.size()) ASSERT_DEAD_END();
+	ASSERT_EQ (IN1.size(), IN2.size());
 
 	for (size_t i = 0; i < IN1.size(); i++) {
 
-		if (!is_in_range (IN1.at(i), IN2.at(i), IN2.at(i))) ASSERT_DEAD_END();
+		ASSERT (!is_in_range (IN1.at(i), IN2.at(i), IN2.at(i)));
 	}
 	return;
 }

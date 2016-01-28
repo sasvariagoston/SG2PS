@@ -1,19 +1,19 @@
-// Copyright (C) 2012-2015, Ágoston Sasvári
+// Copyright (C) 2012-2016, Ágoston Sasvári
 // All rights reserved.
 // This code is published under the GNU Lesser General Public License.
 
 #ifndef VALLEY_METHOD_HPP_
 #define VALLEY_METHOD_HPP_
 
-vector <HISTOGRAM> generate_DATA_histogram (const vector <double>& in, const size_t bin_number);//ok
+vector <HISTOGRAM> generate_DATA_histogram (const vector <double>& in, const size_t bin_number);
 
-vector <VALLEY> generate_valley_graph (const vector <HISTOGRAM>& H); //ok
+vector <VALLEY> generate_valley_graph (const vector <HISTOGRAM>& H);
 
-vector <VALLEY> reduce_N_valley_graph (const vector <VALLEY>& inV);//ok
+vector <VALLEY> reduce_N_valley_graph (const vector <VALLEY>& inV);
 
-vector <VALLEY> create_valley_graph (const vector <VALLEY>& V);//ok
+vector <VALLEY> create_valley_graph (const vector <VALLEY>& V);
 
-vector <VALLEY> return_valleys (const vector <double>& in, const size_t bin_number);//ok
+vector <VALLEY> return_valleys (const vector <double>& in, const size_t bin_number);
 
 void dbg_cout_H (vector <HISTOGRAM> inH);
 

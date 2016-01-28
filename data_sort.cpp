@@ -1,4 +1,4 @@
-// Copyright (C) 2012-2015, Ágoston Sasvári
+// Copyright (C) 2012-2016, Ágoston Sasvári
 // All rights reserved.
 // This code is published under the GNU Lesser General Public License.
 
@@ -176,16 +176,13 @@ bool by_rev_DEPTH_trj (const TRJ& x, const TRJ& y) {
 
 vector <TRJ> SORT_TRJ (const vector <TRJ>& inTRJ, const string SORT) {
 
+	ASSERT_EXACTLY_ONE_TRUE (SORT == "DEPTH", SORT == "rDEPTH");
+
 	vector <TRJ> P = inTRJ;
 
-	if (SORT == "DEPTH") 		stable_sort (P.begin(), P.end(), by_DEPTH_trj);
-	else if (SORT == "rDEPTH")	stable_sort (P.begin(), P.end(), by_rev_DEPTH_trj);
+	if (SORT == "DEPTH") 	stable_sort (P.begin(), P.end(), by_DEPTH_trj);
+	else 					stable_sort (P.begin(), P.end(), by_rev_DEPTH_trj);
 
-	else {
-
-		cout << SORT << endl;
-		ASSERT_DEAD_END();
-	}
 	return P;
 }
 

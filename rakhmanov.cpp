@@ -1,19 +1,15 @@
-// Copyright (C) 2012-2015, Ágoston Sasvári
+// Copyright (C) 2012-2016, Ágoston Sasvári
 // All rights reserved.
 // This code is published under the GNU Lesser General Public License.
 
-////#include <algorithm>
 #include <cmath>
-//#include <fstream>
 #include <iomanip>
 #include <iostream>
 #include <vector>
 
 #include "assertions.hpp"
 #include "common.h"
-//#include "rup_clustering.hpp"
 #include "structs.h"
-//#include "valley_method.hpp"
 
 using namespace std;
 
@@ -59,5 +55,5 @@ vector <VCTR> return_rakhmanov_points (size_t N) {
 
 		phi_prev = phi;
 	}
-	return OUT;  //CHECKED, OK
+	return OUT;
 }

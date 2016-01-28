@@ -1,4 +1,4 @@
-// Copyright (C) 2012-2015, Ágoston Sasvári
+// Copyright (C) 2012-2016, Ágoston Sasvári
 // All rights reserved.
 // This code is published under the GNU Lesser General Public License.
 
@@ -90,11 +90,12 @@ vector < vector <GRID_CENTER> > calculate_grid_cell_values_from_triangle (vector
 
 				distance = sqrt((R_X - T_X) * (R_X - T_X) + (R_Y - T_Y) * (R_Y - T_Y));
 
-				if (distance < 0.0) ASSERT_DEAD_END()
-				else if (is_in_range (0.0, 1.0, distance)) {}
+				ASSERT_GE (distance, 0.0);
+				ASSERT_LE (distance, 3.0);
+
+				if (is_in_range (0.0, 1.0, distance)) {}
 				else if (is_in_range (1.0, 2.0, distance)) distance = 2.0 - distance;
-				else if (is_in_range (2.0, 3.0, distance)) distance = 0.0;
-				else ASSERT_DEAD_END();
+				else distance = 0.0;
 
 				if (distance < (GRID_SIZE / 5.0)) distance = GRID_SIZE;
 
@@ -246,7 +247,7 @@ vector < vector <GRID_CENTER> > check_saddle (vector < vector <GRID_CENTER> >& m
 				if (SADDLE_CNT > isoline) 	m_sq.at(j).at(i).COUNT = 10;
 				else 						m_sq.at(j).at(i).COUNT = 5;
 			}
-			else {}//ok
+			else {}
 		}
 	}
 	return m_sq;
@@ -278,6 +279,8 @@ vector <LINE> return_line_from_m_sq_number (const vector <vector <GRID_CENTER> >
 	double W = 0.5;
 	double U = 0.5;
 	double INTERVAL = 0.0;
+
+	ASSERT_LE (m_sq_id, 15);
 
 	if (m_sq_id == 0) {}
 	else if (m_sq_id == 1) {
@@ -532,8 +535,7 @@ vector <LINE> return_line_from_m_sq_number (const vector <vector <GRID_CENTER> >
 
 		out.push_back(buf);
 	}
-	else if (m_sq_id == 15) {}
-	else ASSERT_DEAD_END();
+	else {}
 
 	return out;
 }
@@ -542,7 +544,8 @@ vector <LINE> manage_points_outside (const vector <LINE>& L) {
 
 	vector <LINE> OUT;
 
-	if (L.size() < 1 && L.size() > 2) ASSERT_DEAD_END();
+	//fixme what's that?
+	//if (L.size() < 1 && L.size() > 2) ASSERT_DEAD_END();
 
 	for (size_t i = 0; i < L.size(); i++) {
 
@@ -555,7 +558,7 @@ vector <LINE> manage_points_outside (const vector <LINE>& L) {
 		bool CRS = (A_IN || B_IN);
 		bool OSD = (!A_IN && !B_IN);
 
-		if (!IN && !OSD && !CRS) ASSERT_DEAD_END();
+		ASSERT_AT_LEAST_ONE_TRUE (IN, OSD, CRS);
 
 		if (IN) OUT.push_back(ACT_L);
 		else if (CRS) {
@@ -697,6 +700,8 @@ vector <vector <LINE> > connect_vectors (vector <vector <LINE> >& LV) {
 
 				if (HAS_VALUE && (FIRST_FIRST || FIRST_LAST || LAST_FIRST || LAST_LAST)) {
 
+					ASSERT_AT_LEAST_ONE_TRUE (FIRST_FIRST, FIRST_LAST, LAST_FIRST, LAST_LAST);
+
 					if (FIRST_FIRST) LV.at(j) = flip_line (LV.at(j));
 
 					else if (FIRST_LAST) {
@@ -704,10 +709,10 @@ vector <vector <LINE> > connect_vectors (vector <vector <LINE> >& LV) {
 						LV.at(j) = 	flip_line (LV.at(j));
 						LV.at(k) = 	flip_line (LV.at(k));
 					}
-					else if (LAST_FIRST) {}
-					else if (LAST_LAST) LV.at(k) = flip_line (LV.at(k));
-
-					else ASSERT_DEAD_END();
+					else if (LAST_LAST) {}
+					else LV.at(k) = flip_line (LV.at(k));
+					//else if (LAST_LAST) LV.at(k) = flip_line (LV.at(k));
+					//FIXME Something wrong above!
 
 					LV.at(j).insert(LV.at(j).end(), LV.at(k).begin(), LV.at(k).end());
 
@@ -810,8 +815,7 @@ XY interpolate_between_points (const XY& inA, const XY& inB) {
 
 	bool is_A_in = is_point_in_circle(inA);
 	bool is_B_in = is_point_in_circle(inB);
-
-	if (!(is_A_in || is_B_in)) ASSERT_DEAD_END();
+	ASSERT_EXACTLY_ONE_TRUE(is_A_in, is_B_in);
 
 	bool CLIN_X = is_in_range (inA.X, inA.X, inB.X);
 	bool CLIN_Y = is_in_range (inA.Y, inA.Y, inB.Y);
@@ -876,14 +880,14 @@ XY interpolate_between_points (const XY& inA, const XY& inB) {
 		X1_FIT = is_in_range(inB.X, inA.X, X1);
 		X2_FIT = is_in_range(inB.X, inA.X, X2);
 	}
+	ASSERT_EXACTLY_ONE_TRUE (X1_FIT, X2_FIT);
 
-	if (X1_FIT) 		X = X1;
-	else if (X2_FIT) 	X = X2;
-	else ASSERT_DEAD_END();
+	if (X1_FIT) X = X1;
+	else 		X = X2;
 
 	Y = m * X + b;
 
-	ASSERT_FINITE(Y);
+	ASSERT_FINITE (Y);
 
 	OUT.X = X;
 	OUT.Y = Y;
@@ -1159,6 +1163,8 @@ bool is_point_inside_curve (const vector <XY>& I, const GRID_CENTER& GP) {
 		else {}
 	}
 
+	ASSERT_EQ (CLOSE_TO_SIDE, !CLOSE_TO_VERTEX);
+
 	if (CLOSE_TO_SIDE && !CLOSE_TO_VERTEX) {
 
 		double A1 = return_triangle_area (sC, sB, P);
@@ -1167,17 +1173,13 @@ bool is_point_inside_curve (const vector <XY>& I, const GRID_CENTER& GP) {
 		if (AREA_POSITIVE) return true;
 		else return false;
 	}
-	else if (!CLOSE_TO_SIDE && CLOSE_TO_VERTEX) {
+	else {
 
 		double A2 = return_triangle_area (vC, vB, vA);
 		bool VERTEX_CONCAVE = (A2 < 0.0);
 
 		if (VERTEX_CONCAVE) return true;
 		else return false;
-	}
-	else {
-		ASSERT_DEAD_END();
-		return false;
 	}
 }
 
@@ -1238,7 +1240,6 @@ vector <XY> close_contourline (const vector <XY>& I, const double START_ANGLE, c
 	vector <XY> OUT = I;
 
 	ASSERT2 (is_line_CCW(I), "CCW line is expected in 'close_contourline' function");
-	//ASSERT2(! (is_in_range(START_ANGLE, END_ANGLE, END_ANGLE)), "open line expected in 'close_contourline' function");
 
 	bool START_LESS_THAN_END = (START_ANGLE < END_ANGLE);
 
@@ -1304,7 +1305,7 @@ void contourline_to_ps (ofstream& o, const CENTER& center, const vector <XY>& BZ
 
 	bool CLOSED = is_closed_line(FRST_PNT, LAST_PNT);
 
-	if (!CLOSED && FRST_ANGLE > 900.0 && LAST_ANGLE > 900.0) ASSERT_DEAD_END();
+	ASSERT (!(!CLOSED && FRST_ANGLE > 900.0 && LAST_ANGLE > 900.0));
 
 	vector <BEZIER> B = generate_final_bezier (BZ);
 
@@ -1373,9 +1374,6 @@ void output_contourline (ofstream& o, const CENTER& center, vector <vector <XY> 
 		XY F = A.at(0);
 		XY L = A.at(A.size() - 1);
 
-		//FRST_PNT.Z = 0.0;
-		//LAST_PNT.Z = 0.0;
-
 		if (!is_closed_line (F, L)) {
 
 			const VCTR FRST_PNT = declare_vector(F.X, F.Y, 0.0);
@@ -1410,14 +1408,15 @@ void output_contourline (ofstream& o, const CENTER& center, vector <vector <XY> 
 
 			if (DRAW_IT) {
 
+				ASSERT (A1_HAS_PEAK || A2_HAS_PEAK);
+
 				if (A1_HAS_PEAK && !A2_HAS_PEAK) 		contourline_to_ps (o, center, A, FRST_ANGLE, LAST_ANGLE, CONTOUR, C_MN, C_MX);
 				else if (!A1_HAS_PEAK && A2_HAS_PEAK) 	contourline_to_ps (o, center, A, LAST_ANGLE, FRST_ANGLE, CONTOUR, C_MN, C_MX);
-				else if (A1_HAS_PEAK && A2_HAS_PEAK) {
+				else {
 
 					if (A1_AREA < A2_AREA) 	contourline_to_ps (o, center, A, FRST_ANGLE, LAST_ANGLE, CONTOUR, C_MN, C_MX);
 					else 					contourline_to_ps (o, center, A, LAST_ANGLE, FRST_ANGLE, CONTOUR, C_MN, C_MX);
 				}
-				else ASSERT_DEAD_END();
 			}
 			else {}
 		}
@@ -1525,8 +1524,7 @@ void dbg_cout_NET (const vector <vector <vector <XY> > >& NET) {
 
 				cout
 				<< NET.at(i).at(j).at(k).X << '\t'
-				<< NET.at(i).at(j).at(k).Y << endl;//'\t'
-				//<< NET.at(i).at(j).at(k).Z << endl;
+				<< NET.at(i).at(j).at(k).Y << endl;
 			}
 		}
 	}
@@ -1588,7 +1586,6 @@ void dbg_cout_triangle_center (const vector <GRID_CENTER>& TRI_CENTER) {
 		cout
 		<< TRI_CENTER.at(i).CENTER.X << '\t'
 		<< TRI_CENTER.at(i).CENTER.Y << '\t'
-		//<< TRI_CENTER.at(i).CENTER.Z << '\t'
 		<< TRI_CENTER.at(i).COUNT << endl;
 	}
 	cout << "**** END DEBUGGING TRIANGULAR GRID CENTERS ****" << endl;

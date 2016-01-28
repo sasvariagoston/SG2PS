@@ -1,4 +1,4 @@
-// Copyright (C) 2012-2015, Ágoston Sasvári
+// Copyright (C) 2012-2016, Ágoston Sasvári
 // All rights reserved.
 // This code is published under the GNU Lesser General Public License.
 
@@ -545,7 +545,8 @@ void dbg_default_settings_database (const vector <vector < vector <string> > >& 
 
 void dump_keys_values_into_settings_file (const vector <string>& KEY, const vector <string>& VAL, const string FN) {
 
-	if (KEY.size() != VAL.size()) ASSERT_DEAD_END();
+	ASSERT_EQ (KEY.size(), VAL.size());
+	//if (KEY.size() != VAL.size()) ASSERT_DEAD_END();
 
 	ofstream o;
 

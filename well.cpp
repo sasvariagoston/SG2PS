@@ -1,4 +1,4 @@
-// Copyright (C) 2012-2015, Ágoston Sasvári
+// Copyright (C) 2012-2016, Ágoston Sasvári
 // All rights reserved.
 // This code is published under the GNU Lesser General Public License.
 
@@ -102,7 +102,7 @@ vector <WELL_FREQUENCY> FREQUENCY (const vector <GDB>& inGDB) {
 
 		const double INT = NXT.DEPTH - ACT.DEPTH;
 
-		if (INT < 0.0) ASSERT_DEAD_END();
+		ASSERT_GE (INT, 0.0);
 
 		buf.DEPTH = (NXT.DEPTH + ACT.DEPTH) / 2.0;
 
@@ -205,7 +205,6 @@ vector <WELL_INTERVAL> FIRST_DERIVATE (const vector <WELL_INTERVAL>& IN) {
 	}
 
 	for (size_t i = 0; i < OUT.size(); i++) {
-
 
 		OUT.at(i).DD_DERIV = OUT.at(i).DD_DERIV / MAX_DERIVATE;
 		OUT.at(i).D_DERIV  = OUT.at(i).D_DERIV  / MAX_DERIVATE;
@@ -351,22 +350,22 @@ vector <WELL_INTERVAL> WELL_AVERAGE_M (const vector <GDB>& p_GDB) {
 
 	ASSERT (!p_GDB.empty());
 
-	const double IVL = is_WELL_INTERVAL_LENGTH();//ok
+	const double IVL = is_WELL_INTERVAL_LENGTH();
 
 	const size_t S = p_GDB.size();
 
-	const double MIN_DEPTH = p_GDB.at(0).DEPTH;//ok
-	const double MAX_DEPTH = p_GDB.at(S - 1).DEPTH;//ok
+	const double MIN_DEPTH = p_GDB.at(0).DEPTH;
+	const double MAX_DEPTH = p_GDB.at(S - 1).DEPTH;
 
-	if (MAX_DEPTH <= MIN_DEPTH) ASSERT_DEAD_END();
-	if ((MAX_DEPTH - MIN_DEPTH) <= IVL) ASSERT_DEAD_END();
+	ASSERT_GT (MAX_DEPTH, MIN_DEPTH);
+	ASSERT_GT ((MAX_DEPTH - MIN_DEPTH), IVL);
 
 	for (double i = MIN_DEPTH; i < MAX_DEPTH - IVL + 1; i++) {
 
-		const double MIN = i;//ok
-		const double MAX = i + IVL;//ok
+		const double MIN = i;
+		const double MAX = i + IVL;
 
-		vector <GDB> temp = return_GDB_for_data_interval (p_GDB, MIN, MAX);//ok
+		vector <GDB> temp = return_GDB_for_data_interval (p_GDB, MIN, MAX);
 
 		const bool PROCESSABLE = temp.size() != 0;
 
@@ -396,7 +395,7 @@ vector <WELL_INTERVAL> WELL_AVERAGE_D (const vector <GDB>& p_GDB) {
 
 	size_t I = string_to_size_t (double_to_string (IVL, 0));
 
-	if (S < I) ASSERT_DEAD_END();
+	ASSERT_GE (S, I);
 
 	for (size_t i = 0; i < S - I + 1; i++) {
 
@@ -413,7 +412,7 @@ vector <WELL_INTERVAL> WELL_AVERAGE_D (const vector <GDB>& p_GDB) {
 		wbuf.MIN = temp.at(0).DEPTH;
 		wbuf.MAX = temp.at(temp.size() - 1).DEPTH;
 
-		if (temp.size() == 0) ASSERT_DEAD_END();
+		ASSERT_NE (temp.size(), 0);
 
 		OUT.push_back (wbuf);
 	}

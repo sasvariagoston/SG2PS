@@ -1,6 +1,7 @@
-// Copyright (C) 2012-2015, Ágoston Sasvári
+// Copyright (C) 2012-2016, Ágoston Sasvári
 // All rights reserved.
 // This code is published under the GNU Lesser General Public License.
+
 #include <algorithm>
 #include <cmath>
 #include <ctime>
@@ -155,7 +156,6 @@ STRESSTENSOR stresstensor_from_eigenvalue_eigenvector (STRESSFIELD sf) {
 	D.at(2).at(0) = E3.X;
 	D.at(2).at(1) = E3.Y;
 	D.at(2).at(2) = E3.Z;
-
 
 	T.at(0).at(0) = sf.EIGENVALUE.X;
 	T.at(0).at(1) = 0.0;
@@ -365,27 +365,7 @@ VCTR return_shearstress (const STRESSTENSOR& st, const VCTR& N) {
 			stressvector.Y - normalstress.Y,
 			stressvector.Z - normalstress.Z));
 }
-/*
-VCTR return_upsilon (const STRESSTENSOR& st, const VCTR& N, const VCTR& SV, const VCTR& UPSILON, const double& lambda, const string& method) {
 
-	const VCTR shearstress = return_shearstress (st, N);
-
-	if (method == "ANGELIER") {
-
-		return declare_vector(
-				(SV.X * lambda) - shearstress.X,
-				(SV.Y * lambda) - shearstress.Y,
-				(SV.Z * lambda) - shearstress.Z);
-	}
-	else {
-
-		return declare_vector(
-				(UPSILON.X * lambda) - shearstress.X,
-				(UPSILON.Y * lambda) - shearstress.Y,
-				(UPSILON.Z * lambda) - shearstress.Z);
-	}
-}
-*/
 double return_ANG (const STRESSTENSOR& st, const VCTR& N, const VCTR& SV) {
 
 	const VCTR shearstress = return_shearstress (st, N);

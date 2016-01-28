@@ -1,4 +1,4 @@
-// Copyright (C) 2012-2015,  Ágoston Sasvári
+// Copyright (C) 2012-2016,  Ágoston Sasvári
 // All rights reserved.
 // This code is published under the GNU Lesser General Public License.
 
@@ -14,7 +14,6 @@ using namespace std;
 
 namespace {
 
-//bool M_GUI = false;
 bool M_STD = false;
 bool M_DBG = false;
 bool M_VER = false;
@@ -22,16 +21,10 @@ bool M_VID = false;
 bool M_TST = false;
 }
 
-//bool is_mode_GUI () {
-
-//	return M_GUI;
-//}
-
 bool is_mode_STD () {
 
 	return M_STD;
 }
-
 
 bool is_mode_DEBUG () {
 
@@ -55,7 +48,6 @@ bool is_mode_GENERATE_TEST_FILES () {
 
 void init_run_mode () {
 
-	//M_GUI = false;
 	M_STD = false;
 	M_DBG = false;
 	M_VER = false;
@@ -76,11 +68,6 @@ void setup_run_mode (const vector <string>&  ARG_V) {
 		M_DBG = true;
 		MODE = "DEBUG";
 	}
-	//else if (is_allowed_gui_mode (A)) 	{
-
-	//	M_GUI = true;
-	//	MODE = "GUI";
-	//}
 	else if (is_allowed_version_id_mode (A)) {
 
 		M_VID = true;

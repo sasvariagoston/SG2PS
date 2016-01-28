@@ -1,4 +1,4 @@
-// Copyright (C) 2012-2015, Ágoston Sasvári
+// Copyright (C) 2012-2016, Ágoston Sasvári
 // All rights reserved.
 // This code is published under the GNU Lesser General Public License.
 
@@ -142,8 +142,6 @@ void copy_original_files () {
 	back_up_file (".trj", project_name, new_path);
 }
 
-
-
 void copy_rgf_to_test_file (const string FN, const string ARG) {
 
 	back_up_file (".rgf", ARG, FN);
@@ -222,7 +220,6 @@ void output_rgf_record (const GDB& i, ofstream& o, const bool AVERAGE) {
 	const bool is_LITHOLOGY = is_allowed_lithology_datatype(i.DATATYPE);
 	const bool is_BEDDING = is_allowed_foldsurface_processing(i.DATATYPE);
 
-
 	o
 	<< i.ID << '\t'
 	<< i.GC << '\t'
@@ -241,12 +238,6 @@ void output_rgf_record (const GDB& i, ofstream& o, const bool AVERAGE) {
 
 		if (!is_LITHOLOGY && !is_SC && !is_STRIAE && is_allowed_DIP (i.corr.DIP)) o << i.corr.DIP << '\t';
 		else o << "" << '\t';
-
-		//if (!is_allowed_DIR (i.avd.DIPDIR)) o << "" << '\t';
-		//else o << i.avd.DIPDIR << '\t';
-
-		//if (!is_allowed_DIP(i.avd.DIP)) o << "" << '\t';
-		//else o << i.avd.DIP << '\t';
 
 		o << "" << '\t';
 		o << "" << '\t';
@@ -393,17 +384,14 @@ GDB return_dummy_GDB () {
 
 bool ACT_NXT_EQ (const GDB& ACT, const GDB& NXT, const string METHOD) {
 
+	ASSERT_EXACTLY_ONE_TRUE (METHOD == "GROUPS", METHOD == "FORMATION", METHOD == "CLUSTER", METHOD == "RUP_ANG", METHOD == "DATATYPE", METHOD == "LOCATION");
+
 	if (METHOD == "GROUPS") 		return ACT.GC.at(0) == NXT.GC.at(0);
 	else if (METHOD == "FORMATION") return ACT.FORMATION == NXT.FORMATION;
 	else if (METHOD == "CLUSTER") 	return ACT.GC.at(1) == NXT.GC.at(1);
 	else if (METHOD == "RUP_ANG")	return ACT.GC.at(2) == NXT.GC.at(2);
 	else if (METHOD == "DATATYPE") 	return ACT.DATATYPE == NXT.DATATYPE;
-	else if (METHOD == "LOCATION")	return ACT.LOC == NXT.LOC;
-	else {
-
-		ASSERT_DEAD_END();
-		return false;
-	}
+	else 							return ACT.LOC == NXT.LOC;
 }
 
 vector <vector <GDB> > SEPARATE (const vector <GDB> & inGDB, const string METHOD) {
@@ -540,7 +528,7 @@ vector <vector <GDB> > PROCESS_GROUPS (const vector <vector <GDB> >& inGDB_G, co
 				const vector <STRESSTENSOR> STV = return_STV ();
 				const vector <STRESSFIELD> SFV = return_SFV ();
 
-				if (SFV.size() != STV.size()) ASSERT_DEAD_END();
+				ASSERT_EQ (SFV.size(), STV.size());
 
 				hasoffset_GDB = ASSOCIATE_STV_SFV (hasoffset_GDB, STV, SFV);
 
