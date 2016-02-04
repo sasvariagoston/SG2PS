@@ -756,7 +756,10 @@ void build_column_map() {
 
 		size_t index = find_index(reserved_column_names(), to_uppercase(col_name));
 
-		if (index==NOT_FOUND) {}
+		if (index==NOT_FOUND) {
+
+			// That's OK
+		}
 		else if (contains(index_map, index)) {
 
 			duplicates.push_back(index);
@@ -782,8 +785,13 @@ void convert_row(const vector<string>& orig_row) {
 
 		size_t index = cell_index(i);
 
-		if (index==NOT_FOUND) {}
-		else row.at(index) = to_uppercase( orig_row.at(i) );
+		if (index==NOT_FOUND) {
+			// That is OK, ignored column
+		}
+		else {
+			row.at(index) = to_uppercase( orig_row.at(i) );
+			//row.at(index) = orig_row.at(i); // useful for testing
+		}
 	}
 
 	rgf_to_check.push_back(row);
