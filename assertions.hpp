@@ -5,6 +5,8 @@
 #ifndef ASSERTIONS_HPP
 #define ASSERTIONS_HPP
 
+#include <algorithm>
+#include <array>
 #include <cmath>
 #include <sstream>
 #include <vector>
@@ -98,19 +100,6 @@ void throw_std_logic_error(const std::string& message);
 	} \
 }
 
-//THAT'S THE ORIGINAL, LOOKS FAULTY TO ME
-/*
-#define ASSERT_GT(val_1, val_2) { \
-	if (val_1 >= val_2) { \
-		std::ostringstream os; \
-		os << #val_1 << " < " << #val_2 << " failed: "; \
-		os << val_1 << " >= " << val_2 << '\n'; \
-		os << "In \'" << FUNCTION_NAME << "\' at "<< __FILE__ << ':' << __LINE__ ; \
-		throw_std_logic_error(os.str()); \
-	} \
-}
-
-*/
 #define ASSERT_LT(val_1, val_2) { \
 	if (val_1 >= val_2) { \
 		std::ostringstream os; \
@@ -166,7 +155,7 @@ void print_values(std::ostream& os, const T (&array)[n]) {
     int count = number_of_false_values(arr); \
     if (count < 1) { \
         std::ostringstream os; \
-        os << "Expected atleast 1 false value but got " << count <<  " in \'" \
+        os << "Expected at least 1 false value but got " << count <<  " in \'" \
            << FUNCTION_NAME << "\' at "<< __FILE__ << ':' << __LINE__ << '\n'; \
         os << "Arguments were: " << #__VA_ARGS__ << '\n' ; \
         os << "Their values:   " ; \
@@ -180,7 +169,7 @@ void print_values(std::ostream& os, const T (&array)[n]) {
     int count = number_of_true_values(arr); \
     if (count < 1) { \
         std::ostringstream os; \
-        os << "Expected atleast 1 false value but got " << count <<  " in \'" \
+        os << "Expected at least 1 true value but got " << count <<  " in \'" \
            << FUNCTION_NAME << "\' at "<< __FILE__ << ':' << __LINE__ << '\n'; \
         os << "Arguments were: " << #__VA_ARGS__ << '\n' ; \
         os << "Their values:   " ; \
@@ -206,6 +195,25 @@ bool has_nan_or_inf(const double (&array)[n]) {
         os << "Arguments were: " << #__VA_ARGS__ << '\n' ; \
         os << "Their values:   " ; \
         print_values(os, arr); \
+        throw_std_logic_error(os.str()); \
+    } \
+}
+
+
+template<typename... T>
+std::array<typename std::common_type<T...>::type, sizeof...(T)>
+make_array(T &&...t) {
+    return {std::forward<T>(t)...};
+}
+
+#define ASSERT_ONE_OF(val, ...) { \
+    auto arr = make_array( __VA_ARGS__ ); \
+    bool not_found = std::find(begin(arr), end(arr), val) == end(arr); \
+    if (not_found) { \
+        std::ostringstream os; \
+        os << "ASSERT_ONE_OF failed in \'" \
+           << FUNCTION_NAME << "\' at "<< __FILE__ << ':' << __LINE__ << '\n'; \
+        os << val << " not found in: " << #__VA_ARGS__ ; \
         throw_std_logic_error(os.str()); \
     } \
 }

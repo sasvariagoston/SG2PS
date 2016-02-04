@@ -32,7 +32,7 @@ using namespace std;
 
 vector <vector <GDB> > associate_empty_clustercode (const vector <vector <GDB> >& inGDB_G, const size_t WHICH) {
 
-	ASSERT_EXACTLY_ONE_TRUE (WHICH == 2, WHICH == 3);
+	ASSERT_ONE_OF(WHICH, 2, 3);
 
 	vector <vector <GDB> > outGDB_G = inGDB_G;
 

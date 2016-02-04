@@ -176,7 +176,7 @@ bool by_rev_DEPTH_trj (const TRJ& x, const TRJ& y) {
 
 vector <TRJ> SORT_TRJ (const vector <TRJ>& inTRJ, const string SORT) {
 
-	ASSERT_EXACTLY_ONE_TRUE (SORT == "DEPTH", SORT == "rDEPTH");
+	ASSERT_ONE_OF(SORT, "DEPTH", "rDEPTH");
 
 	vector <TRJ> P = inTRJ;
 
