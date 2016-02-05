@@ -158,8 +158,8 @@ const vector<string> allowed_geodetic(from_array(geodetic_allowed));
 
 const double geodetic_angle [] = {
 
-		000.0, 022.5, 045.0, 067.5,
-		090.0, 112.5, 135.0, 157.5,
+		  0.0,  22.5,  45.0,  67.5,
+		 90.0, 112.5, 135.0, 157.5,
 		180.0, 202.5, 225.0, 247.5,
 		270.0, 292.5, 315.0, 337.5
 };
