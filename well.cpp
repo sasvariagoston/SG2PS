@@ -9,6 +9,7 @@
 #include <stdlib.h>
 #include <vector>
 
+#include "allowed_keys.hpp"
 #include "assertions.hpp"
 #include "average.hpp"
 #include "bingham.h"

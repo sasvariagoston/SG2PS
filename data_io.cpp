@@ -521,7 +521,7 @@ vector <vector <GDB> > PROCESS_GROUPS (const vector <vector <GDB> >& inGDB_G, co
 
 				if (!TILT) cout_method_text (hasoffset_GDB);
 
-				if (is_VIRTUAL_USE()) hasoffset_GDB = generate_virtual_striae (hasoffset_GDB);
+				if (is_VIRTUAL_USE() && STRIAE_TO_PROCESS) hasoffset_GDB = generate_virtual_striae (hasoffset_GDB);
 
 				INVERSION (hasoffset_GDB);
 
