@@ -70,6 +70,8 @@ bool is_allowed_BINGHAM_datatype (const string& datatype);
 
 bool is_allowed_handle_as_bedding (const string& datatype);
 
+bool is_allowed_to_process_as_well (const string& datatype);
+
 bool is_allowed_pscolor_rgb (const string& datatype);
 vector <string> allowed_pscolor_rgb_vector ();
 bool is_allowed_pscolor_gray (const string& datatype);

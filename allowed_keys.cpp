@@ -536,6 +536,15 @@ bool is_allowed_handle_as_bedding (const string& datatype) {
 	return contains(allowed_handle_as_bedding, datatype);
 }
 
+bool is_allowed_to_process_as_well (const string& datatype) {
+
+	const bool LT = is_allowed_lithology_datatype (datatype);
+	const bool SC = is_allowed_SC_datatype (datatype);
+	const bool ST = is_allowed_striae_datatype (datatype);
+
+	return ! (LT || SC || ST);
+}
+
 bool is_allowed_pscolor_rgb (const string& datatype) {
 
 	return contains(allowed_pscolor_rgb, datatype);

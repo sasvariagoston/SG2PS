@@ -1859,11 +1859,7 @@ void OUTPUT_TO_WELL_PS (const vector <vector <GDB> >& GDB_G) {
 		setup_ACTUAL_FORMATION(temp.at(0).FORMATION);
 		setup_ACTUAL_GROUPCODE(temp.at(0).GC);
 
-		const bool PLN = is_allowed_plane_datatype (DT);
-		const bool LIN = is_allowed_lineation_datatype (DT);
-
-		const bool PROCESS_AS_WELL = PLN || LIN;
-
+		const bool PROCESS_AS_WELL = is_allowed_to_process_as_well (DT);
 
 		if (PROCESS_AS_WELL) {
 

@@ -431,8 +431,12 @@ void PROCESS_WELL_GROUPS (const vector <vector <GDB> >& inGDB_G) {
 
 		ASSERT (!inGDB_G.at(i).empty());
 
+		const string DT = inGDB_G.at(i).at(0).DATATYPE;
+
+		const bool AS_WELL = is_allowed_to_process_as_well (DT);
+
 		setup_ACTUAL_LOCATION (inGDB_G.at(i).at(0).LOC);
-		setup_ACTUAL_DATATYPE (inGDB_G.at(i).at(0).DATATYPE);
+		setup_ACTUAL_DATATYPE (DT);
 		setup_ACTUAL_FORMATION(inGDB_G.at(i).at(0).FORMATION);
 		setup_ACTUAL_GROUPCODE(inGDB_G.at(i).at(0).GC);
 
@@ -463,7 +467,7 @@ void PROCESS_WELL_GROUPS (const vector <vector <GDB> >& inGDB_G) {
 
 		if (p_GDB.size() <= 2) PROCESSABLE = false;
 
-		if (PROCESSABLE) {
+		if (PROCESSABLE && AS_WELL) {
 
 			if (is_M)	INTERVAL_buf = WELL_AVERAGE_M (p_GDB);//ok
 			else		INTERVAL_buf = WELL_AVERAGE_D (p_GDB);
@@ -471,10 +475,9 @@ void PROCESS_WELL_GROUPS (const vector <vector <GDB> >& inGDB_G) {
 			INTERVAL_buf = FIRST_DERIVATE (INTERVAL_buf);
 
 			FREQUENCY_buf = FREQUENCY (p_GDB);
-
-			W_INTERVAL.push_back (INTERVAL_buf);
-			W_FREQUENCY.push_back (FREQUENCY_buf);
 		}
+		W_INTERVAL.push_back (INTERVAL_buf);
+		W_FREQUENCY.push_back (FREQUENCY_buf);
 	}
 	if (is_CHK_WELL()) STANDARD_OUTPUT_WELL_GROUPS ();
 

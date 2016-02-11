@@ -70,7 +70,12 @@ void create_required_folders (const vector <GDB>& inGDB) {
 
 			make_dir (return_RGF_FOLDER() + path_separator + capslock (DIR));
 			make_dir (return_PS_FOLDER() + path_separator + capslock (DIR));
-			if (is_WELLDATA_USE()) make_dir (return_WELL_PS_FOLDER() + path_separator + capslock (DIR));
+			if (is_WELLDATA_USE()) {
+
+				const bool AS_WELL = is_allowed_to_process_as_well(DIR);
+
+				if (AS_WELL) make_dir (return_WELL_PS_FOLDER() + path_separator + capslock (DIR));
+			}
 		}
 	}
 }
