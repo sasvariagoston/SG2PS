@@ -2,30 +2,20 @@
 // All rights reserved.
 // This code is published under the GNU Lesser General Public License.
 
-#include <algorithm>
-#include <cmath>
-#include <iostream>
-#include <iomanip>
-
 #include "average.hpp"
-#include "allowed_keys.hpp"
-#include "assertions.hpp"
-#include "bingham.h"
-#include "brute_force.hpp"
 #include "checkrgffilecontent.h"
 #include "checkxycontent.h"
+#include "cluster.h"
 #include "color_management.hpp"
+#include "common.h"
 #include "data_io.h"
 #include "data_sort.hpp"
-#include "filename.hpp"
 #include "ps.h"
-#include "rakhmanov.hpp"
 #include "random.hpp"
 #include "retilt.hpp"
 #include "rgf.h"
-#include "run_mode.h"
-#include "settings.hpp"
 #include "standard_output.hpp"
+#include "trajectory.hpp"
 #include "well.hpp"
 #include "well_ps.hpp"
 

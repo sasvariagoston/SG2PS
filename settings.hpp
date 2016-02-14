@@ -5,6 +5,8 @@
 #ifndef SETTINGS_HPP_
 #define SETTINGS_HPP_
 
+#include "allowed_keys.hpp"
+
 bool is_WELLDATA_USE ();
 bool is_WELLDATA_NO ();
 

@@ -14,16 +14,7 @@ S3: 109/03 ( 0.942249, -0.331843, -0.045237)
 EIGENVALUES: 18.888006, -1.842917, -17.045090
 */
 
-#include <cmath>
-#include <iomanip>
-#include <iostream>
-
-#include "allowed_keys.hpp"
-#include "common.h"
-#include "inversion.h"
 #include "nda.h"
-#include "rgf.h"
-#include "settings.hpp"
 #include "stresstensor.hpp"
 
 using namespace std;

@@ -5,11 +5,6 @@
 #ifndef CLUSTER_HPP_
 #define CLUSTER_HPP_
 
-#include <string>
-#include <vector>
-
-#include "structs.h"
-
 vector <size_t> init_whichgroup_uni (const size_t cluster_number, const vector <GDB>& inGDB);
 vector <size_t> init_whichgroup_rnd (const size_t cluster_number, const vector <GDB>& inGDB);
 

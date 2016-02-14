@@ -2,23 +2,9 @@
 // All rights reserved.
 // This code is published under the GNU Lesser General Public License.
 
-#include <cmath>
-#include <fstream>
-#include <iomanip>
-#include <iostream>
-
-#include "assertions.hpp"
-#include "allowed_keys.hpp"
-#include "common.h"
 #include "filename.hpp"
-#include "inversion.h"
 #include "rgf.h"
-#include "run_mode.h"
-#include "rup_clustering.hpp"
-#include "settings.hpp"
 #include "standard_output.hpp"
-#include "structs.h"
-#include "valley_method.hpp"
 #include "well.hpp"
 #include "well_ps.hpp"
 

@@ -2,20 +2,9 @@
 // All rights reserved.
 // This code is published under the GNU Lesser General Public License.
 
-#include <fstream>
-#include <iostream>
-#include <stdlib.h>
-#include <string>
-#include <vector>
-
-#include "assertions.hpp"
 #include "common.h"
 #include "data_io.h"
 #include "exceptions.hpp"
-#include "generate_default_settings.hpp"
-#include "iomanip"
-#include "math.h"
-#include "run_mode.h"
 
 using namespace std;
 

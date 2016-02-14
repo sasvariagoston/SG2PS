@@ -15,12 +15,6 @@ EIGENVALUES: 0.967683, -0.397449, -0.570234
 
 */
 
-#include <cmath>
-#include <iomanip>
-#include <iostream>
-
-#include "common.h"
-#include "rgf.h"
 #include "shan.h"
 #include "stresstensor.hpp"
 

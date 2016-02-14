@@ -5,8 +5,6 @@
 #ifndef DATA_IO_HPP_
 #define DATA_IO_HPP_
 
-#include <iosfwd>
-
 #include "common.h"
 
 using namespace std;

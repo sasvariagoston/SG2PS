@@ -5,10 +5,6 @@
 #ifndef KAALSBEEK_HPP_
 #define KAALSBEEK_HPP_
 
-#include <vector>
-
-#include "structs.h"
-
 using namespace std;
 
 vector <VCTR> generate_arc (const size_t SEG_CNT, const size_t ARC_CNT, const size_t POINTS_DISTANCE);

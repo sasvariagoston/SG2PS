@@ -2,26 +2,12 @@
 // All rights reserved.
 // This code is published under the GNU Lesser General Public License.
 
-#include <algorithm>
-#include <cmath>
-#include <fstream>
-#include <iomanip>
-#include <iostream>
-
-#include "allowed_keys.hpp"
-#include "assertions.hpp"
-#include "common.h"
+#include "density.h"
 #include "filename.hpp"
 #include "homogenity_check.hpp"
-#include "paper.hpp"
-#include "run_mode.h"
 #include "rgf.h"
 #include "kaalsbeek.hpp"
-#include "density.h"
-#include "ps.h"
-#include "settings.hpp"
 #include "standard_output.hpp"
-#include "structs.h"
 
 vector < vector <GRID_CENTER> > generate_rectangular_grid_from_triange_center (const size_t cell_number) {
 

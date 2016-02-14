@@ -2,28 +2,11 @@
 // All rights reserved.
 // This code is published under the GNU Lesser General Public License.
 
-#include <fstream>
-#include <iomanip>
-#include <iostream>
-#include <math.h>
-//#include <sstream>
-#include <stdlib.h>
-#include <vector>
-
-#include "allowed_keys.hpp"
-#include "assertions.hpp"
-#include "common.h"
 #include "data_io.h"
 #include "data_sort.hpp"
 #include "filename.hpp"
-#include "run_mode.h"
-#include "paper.hpp"
-#include "platform_dep.hpp"
 #include "ps.h"
-#include "rgf.h"
-#include "settings.hpp"
 #include "standard_output.hpp"
-#include "structs.h"
 #include "well.hpp"
 #include "well_ps.hpp"
 

@@ -5,9 +5,8 @@
 #ifndef RGF_HPP_
 #define RGF_HPP_
 
-#include "inversion.h"
-#include "cluster.h"
 #include "common.h"
+#include "settings.hpp"
 
 bool is_PROCESS_AS_TILTED ();
 bool is_PROCESS_AS_TRAJECTORY ();

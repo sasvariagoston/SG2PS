@@ -2,16 +2,9 @@
 // All rights reserved.
 // This code is published under the GNU Lesser General Public License.
 
-#include <iostream>
-#include <stdlib.h>
-
-#include "average.hpp"
 #include "bingham.h"
+#include "common.h"
 #include "foldsurface.hpp"
-#include "ps.h"
-#include "rgf.h"
-#include "settings.hpp"
-#include "standard_output.hpp"
 
 using namespace std;
 

@@ -6,8 +6,6 @@
 #include <stdexcept>
 #include <string>
 
-#include "assertions.hpp"
-
 using namespace std;
 
 void throw_std_logic_error(const string& msg) {

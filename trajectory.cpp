@@ -2,20 +2,13 @@
 // All rights reserved.
 // This code is published under the GNU Lesser General Public License.
 
-#include <iomanip>
-#include <iostream>
 #include <map>
 
-#include "allowed_keys.hpp"
-#include "assertions.hpp"
 #include "checkrgffilecontent.h"
 #include "data_sort.hpp"
 #include "exceptions.hpp"
 #include "read_csv.hpp"
 #include "rgf.h"
-#include "run_mode.h"
-#include "settings.hpp"
-#include "structs.h"
 
 struct TRJ_N {
 

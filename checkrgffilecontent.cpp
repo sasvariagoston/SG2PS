@@ -2,22 +2,13 @@
 // All rights reserved.
 // This code is published under the GNU Lesser General Public License.
 
-#include <algorithm>
-#include <fstream>
-#include <iomanip>
-#include <iostream>
-#include <limits>
 #include <map>
-#include <stdexcept>
 
-#include "allowed_keys.hpp"
-#include "assertions.hpp"
 #include "checkrgffilecontent.h"
-#include "checksettingfilecontent.h"
+#include "common.h"
 #include "exceptions.hpp"
 #include "read_csv.hpp"
 #include "ReservedColumnNames.hpp"
-#include "run_mode.h"
 #include "settings.hpp"
 
 template <typename T>

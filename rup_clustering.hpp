@@ -5,12 +5,7 @@
 #ifndef RUP_CLUSTERING_HPP_
 #define RUP_CLUSTERING_HPP_
 
-#include <algorithm>
-#include <iomanip>
-#include <iostream>
-#include <vector>
-
-#include "structs.h"
+#include "common.h"
 
 using namespace std;
 

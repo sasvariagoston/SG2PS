@@ -5,8 +5,15 @@
 #ifndef COMMON_HPP_
 #define COMMON_HPP_
 
+#include <algorithm>
 #include <ctime>
-#include <vector>
+#include <fstream>
+#include <iomanip>
+#include <iostream>
+#include "math.h"
+
+#include "assertions.hpp"
+#include "run_mode.h"
 #include "structs.h"
 
 using namespace std;

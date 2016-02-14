@@ -2,17 +2,9 @@
 // All rights reserved.
 // This code is published under the GNU Lesser General Public License.
 
-#include <iomanip>
-#include <iostream>
-
-#include "assertions.hpp"
-#include "allowed_keys.hpp"
-#include "filename.hpp"
 #include "rgf.h"
 #include "rose.h"
-#include "run_mode.h"
 #include "ps.h"
-#include "settings.hpp"
 #include "standard_output.hpp"
 
 using namespace std;

@@ -5,11 +5,9 @@
 #ifndef ASSERTIONS_HPP
 #define ASSERTIONS_HPP
 
-#include <algorithm>
 #include <array>
 #include <cmath>
 #include <sstream>
-#include <vector>
 
 // The FORTRAN traditions are followed
 // EQ	==	EQuals

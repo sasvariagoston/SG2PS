@@ -14,14 +14,7 @@ S3: 289/08 (-0.937645,  0.317660, -0.141115)
 EIGENVALUES: 1.515783, -0.641149, -0.874634
 */
 
-#include <cmath>
-#include <iomanip>
-#include <iostream>
-
-#include "common.h"
-#include "inversion.h"
 #include "michael.h"
-#include "rgf.h"
 #include "stresstensor.hpp"
 
 using namespace std;

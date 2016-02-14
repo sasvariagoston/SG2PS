@@ -5,10 +5,6 @@
 #ifndef MOSTAFA_H
 #define MOSTAFA_H
 
-#include "common.h"
-
-#include "inversion.h"
-
 using namespace std;
 
 vector <STRESSTENSOR> stv_MOSTAFA ();

@@ -5,6 +5,10 @@
 #ifndef VALLEY_METHOD_HPP_
 #define VALLEY_METHOD_HPP_
 
+#include <vector>
+
+#include "structs.h"
+
 vector <HISTOGRAM> generate_DATA_histogram (const vector <double>& in, const size_t bin_number);
 
 vector <VALLEY> generate_valley_graph (const vector <HISTOGRAM>& H);

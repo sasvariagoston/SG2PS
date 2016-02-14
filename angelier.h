@@ -5,9 +5,7 @@
 #ifndef ANGELIER_HPP_
 #define ANGELIER_HPP_
 
-#include "common.h"
-
-#include "inversion.h"
+#include "structs.h"
 
 using namespace std;
 

@@ -5,6 +5,8 @@
 #ifndef RUN_MODE_HPP_
 #define RUN_MODE_HPP_
 
+#include <vector>
+
 using namespace std;
 
 bool is_mode_STD ();

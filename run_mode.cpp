@@ -4,13 +4,10 @@
 
 using namespace std;
 
-#include <vector>
-#include <iostream>
-
 #include "allowed_keys.hpp"
-#include "assertions.hpp"
 #include "exceptions.hpp"
 #include "generate_default_settings.hpp"
+#include "run_mode.h"
 
 namespace {
 

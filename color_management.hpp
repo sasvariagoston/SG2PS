@@ -5,8 +5,6 @@
 #ifndef COLOR_MANAGEMENT_HPP_
 #define COLOR_MANAGEMENT_HPP_
 
-#include <vector>
-
 #include "structs.h"
 
 vector <GDB> attach_k_means_group_codes (const vector <size_t>& which_group, const vector <GDB>& inGDB);

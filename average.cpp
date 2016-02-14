@@ -2,24 +2,10 @@
 // All rights reserved.
 // This code is published under the GNU Lesser General Public License.
 
-#include <iostream>
-#include <iomanip>
-#include <math.h>
-#include <stdlib.h>
-
 #include "average.hpp"
-#include "allowed_keys.hpp"
-#include "assertions.hpp"
-#include "bingham.h"
-#include "common.h"
-#include "data_io.h"
-#include "foldsurface.hpp"
 #include "homogenity_check.hpp"
 #include "rgf.h"
-#include "run_mode.h"
-#include "stresstensor.hpp"
 #include "settings.hpp"
-#include "well.hpp"
 
 using namespace std;
 

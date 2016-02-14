@@ -5,8 +5,6 @@
 #ifndef WELL_PS_HPP_
 #define WELL_PS_HPP_
 
-#include "structs.h"
-
 vector <PEAK_TO_PLOT> return_PEAK ();
 vector <PEAK_TO_PLOT> return_FAULTS ();
 

@@ -2,18 +2,10 @@
 // All rights reserved.
 // This code is published under the GNU Lesser General Public License.
 
-#include <fstream>
-#include <iomanip>
-#include <iostream>
-
-#include "allowed_keys.hpp"
 #include "color_management.hpp"
 #include "common.h"
 #include "cluster.h"
-#include "data_io.h"
 #include "random.hpp"
-#include "rgf.h"
-#include "run_mode.h"
 #include "settings.hpp"
 #include "standard_output.hpp"
 

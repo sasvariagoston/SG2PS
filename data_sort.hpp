@@ -5,10 +5,7 @@
 #ifndef DATA_SORT_HPP_
 #define DATA_SORT_HPP_
 
-#include <vector>
-
 #include "structs.h"
-#include "trajectory.hpp"
 
 bool by_ID(const GDB& x, const GDB& y);
 bool by_rev_ID(const GDB& x, const GDB& y);

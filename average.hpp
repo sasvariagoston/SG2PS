@@ -5,8 +5,6 @@
 #ifndef AVERAGE_HPP_
 #define AVERAGE_HPP_
 
-#include <vector>
-
 #include "structs.h"
 
 bool is_datatype_processable_for_average (const string DT);

@@ -5,11 +5,6 @@
 #ifndef FOLDSURFACE_H
 #define FOLDSURFACE_H
 
-#include <vector>
-
-#include "common.h"
-#include "structs.h"
-
 using namespace std;
 
 vector <GDB> CALCULATE_FOLDSURFACE_NORMAL (const vector <GDB>& inGDB);

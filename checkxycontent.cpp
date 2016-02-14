@@ -2,15 +2,11 @@
 // All rights reserved.
 // This code is published under the GNU Lesser General Public License.
 
-#include <algorithm>
-#include <iostream>
-#include <iterator>
 #include <map>
 
-#include "allowed_keys.hpp"
 #include "checkxycontent.h"
 #include "checkrgffilecontent.h"
-#include "run_mode.h"
+#include "common.h"
 #include "exceptions.hpp"
 #include "read_csv.hpp"
 #include "settings.hpp"

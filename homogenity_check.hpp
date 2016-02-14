@@ -5,6 +5,10 @@
 #ifndef HOMOGENITY_CHECK_HPP_
 #define HOMOGENITY_CHECK_HPP_
 
+#include "structs.h"
+
+using namespace std;
+
 size_t minimum_independent_dataset ();
 
 bool check_dataset_geometry_homogenity (const vector <GDB>& inGDB);

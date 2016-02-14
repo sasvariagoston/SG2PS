@@ -5,16 +5,6 @@
 #ifndef PS_RUP_ANG_HPP_
 #define PS_RUP_ANG_HPP_
 
-#include <algorithm>
-#include <fstream>
-#include <iomanip>
-#include <iostream>
-#include <vector>
-
-#include "rup_clustering.hpp"
-#include "structs.h"
-#include "valley_method.hpp"
-
 using namespace std;
 
 bool by_border (const BRDR& x, const BRDR& y);

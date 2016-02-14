@@ -2,33 +2,8 @@
 // All rights reserved.
 // This code is published under the GNU Lesser General Public License.
 
-#include <algorithm>
-#include <cmath>
-//#include <iomanip>
-//#include <fstream>
-#include <iostream>
-
-#include "angelier.h"
-#include "assertions.hpp"
-#include "allowed_keys.hpp"
-#include "brute_force.hpp"
-#include "bingham.h"
-#include "common.h"
-//#include "data_io.h"
-#include "fry.h"
-//#include "inversion.h"
-#include "michael.h"
-#include "mostafa.h"
-#include "nda.h"
-//#include "ps.h"
-#include "ptn.h"
+#include "homogenity_check.hpp"
 #include "rgf.h"
-//#include "rup_clustering.hpp"
-#include "settings.hpp"
-#include "shan.h"
-#include "structs.h"
-//#include "valley_method.hpp"
-//#include "yamaji.hpp"
 
 using namespace std;
 

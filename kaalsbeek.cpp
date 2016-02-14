@@ -2,14 +2,6 @@
 // All rights reserved.
 // This code is published under the GNU Lesser General Public License.
 
-#include <fstream>
-#include <iomanip>
-#include <iostream>
-#include <math.h>
-#include <vector>
-
-#include "allowed_keys.hpp"
-#include "assertions.hpp"
 #include "common.h"
 #include "kaalsbeek.hpp"
 #include "settings.hpp"
