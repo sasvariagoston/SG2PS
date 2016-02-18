@@ -5,6 +5,8 @@
 #ifndef TRAJECTORY_HPP_
 #define TRAJECTORY_HPP_
 
+#include "structs.h"
+
 vector <TRJ> return_TRAJECTORY ();
 
 bool CHECK_TRAJECTORY_FILE (const string projectname);

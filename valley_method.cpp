@@ -2,7 +2,12 @@
 // All rights reserved.
 // This code is published under the GNU Lesser General Public License.
 
+#include <vector>
+
+#include <fstream>
+#include "structs.h"
 #include "rup_clustering.hpp"
+#include "standard_output.hpp"
 #include "valley_method.hpp"
 
 using namespace std;

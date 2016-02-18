@@ -2,12 +2,21 @@
 // All rights reserved.
 // This code is published under the GNU Lesser General Public License.
 
+#include <algorithm>
+#include <fstream>
+#include <iomanip>
+#include <iostream>
+#include <vector>
+
+#include "assertions.hpp"
+#include "allowed_keys.hpp"
 #include "color_management.hpp"
 #include "common.h"
 #include "data_sort.hpp"
 #include "ps.h"
-#include "ps_RUP_ANG.hpp"
 #include "rup_clustering.hpp"
+#include "settings.hpp"
+#include "structs.h"
 #include "valley_method.hpp"
 
 using namespace std;
@@ -48,7 +57,7 @@ double return_datamax (const vector <GDB>& inGDB, const string field) {
 	return outGDB.at(inGDB.size() - 1).ANG;
 }
 
-size_t return_count_max (const vector <GDB>& inGDB, const string& method, const size_t bin_number) {
+size_t return_count_max (const vector <GDB>& inGDB, const string method, const size_t bin_number) {
 
 	vector <HISTOGRAM> H = generate_DATA_histogram (GDB_to_table (inGDB, method), bin_number);
 

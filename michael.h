@@ -5,7 +5,7 @@
 #ifndef MICHAEL_H
 #define MICHAEL_H
 
-#include "structs.h"
+#include "common.h"
 
 using namespace std;
 

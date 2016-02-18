@@ -5,7 +5,9 @@
 #ifndef RETILT_HPP_
 #define RETILT_HPP_
 
-#include "rgf.h"
+#include <vector>
+
+#include "structs.h"
 
 VCTR return_tilting_axis (const GDB& in, const string METHOD);
 double return_tilting_angle (const GDB& in, const string METHOD);

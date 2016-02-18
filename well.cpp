@@ -2,12 +2,25 @@
 // All rights reserved.
 // This code is published under the GNU Lesser General Public License.
 
+//#include <algorithm>
+#include <math.h>
+#include <iostream>
+#include <iomanip>
+#include <stdlib.h>
+#include <vector>
+
+#include "allowed_keys.hpp"
+#include "assertions.hpp"
 #include "average.hpp"
 #include "bingham.h"
+#include "common.h"
 #include "data_sort.hpp"
 #include "filename.hpp"
 #include "rgf.h"
+//#include "run_mode.h"
+#include "settings.hpp"
 #include "standard_output.hpp"
+#include "structs.h"
 #include "well.hpp"
 
 namespace {

@@ -3,6 +3,7 @@
 // This code is published under the GNU Lesser General Public License.
 
 #include "paper.hpp"
+#include "structs.h"
 
 namespace {
 

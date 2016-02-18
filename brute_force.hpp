@@ -5,7 +5,8 @@
 #ifndef BRUTE_FORCE_HPP_
 #define BRUTE_FORCE_HPP_
 
-#include "common.h"
+#include <vector>
+
 #include "structs.h"
 
 using namespace std;

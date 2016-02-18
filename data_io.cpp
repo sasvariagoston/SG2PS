@@ -2,16 +2,33 @@
 // All rights reserved.
 // This code is published under the GNU Lesser General Public License.
 
+#include <algorithm>
+#include <cmath>
+#include <ctime>
+#include <fstream>
+#include <iomanip>
+#include <iostream>
+#include <stdexcept>
+
+#include "allowed_keys.hpp"
+#include "assertions.hpp"
 #include "color_management.hpp"
 #include "data_io.h"
 #include "data_sort.hpp"
+#include "density.h"
 #include "filename.hpp"
 #include "foldsurface.hpp"
 #include "homogenity_check.hpp"
-#include "inversion.h"
+#include "kaalsbeek.hpp"
 #include "platform_dep.hpp"
+#include "ps.h"
 #include "ReservedColumnNames.hpp"
+#include "rgf.h"
+#include "rose.h"
+#include "run_mode.h"
 #include "rup_clustering.hpp"
+#include "settings.hpp"
+#include "structs.h"
 
 vector <string> possible_folders_name () {
 

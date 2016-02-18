@@ -4,7 +4,6 @@
 
 #include <string>
 #include <vector>
-
 #include "ReservedColumnNames.hpp"
 
 using namespace std;

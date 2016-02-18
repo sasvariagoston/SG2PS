@@ -6,7 +6,7 @@
 #define INVERSION_H
 
 #include "common.h"
-#include "rgf.h"
+#include "structs.h"
 
 using namespace std;
 

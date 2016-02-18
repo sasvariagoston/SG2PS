@@ -2,6 +2,9 @@
 // All rights reserved.
 // This code is published under the GNU Lesser General Public License.
 
+#include <algorithm>
+#include <iostream>
+
 #include "allowed_keys.hpp"
 #include "array_to_vector.hpp"
 #include "rgf.h"

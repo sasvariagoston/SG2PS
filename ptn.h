@@ -5,6 +5,9 @@
 #ifndef PTN_H
 #define PTN_H
 
+#include "common.h"
+#include "structs.h"
+
 using namespace std;
 
 vector <GDB> ptn (const vector <GDB>& inGDB);

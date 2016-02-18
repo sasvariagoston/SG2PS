@@ -3,8 +3,18 @@
 // This code is published under the GNU Lesser General Public License.
 
 #include <algorithm>
+#include <cmath>
+#include <ctime>
+#include <iomanip>
+#include <iostream>
+#include <sstream>
+#include <stdexcept>
 
+#include "allowed_keys.hpp"
+#include "assertions.hpp"
 #include "brute_force.hpp"
+#include "common.h"
+#include "rgf.h"
 #include "stresstensor.hpp"
 
 using namespace std;

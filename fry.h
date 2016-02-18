@@ -5,6 +5,8 @@
 #ifndef FRY_H
 #define FRY_H
 
+#include "common.h"
+
 using namespace std;
 
 bool check_fry_matrix (const size_t frst_eigenvalue, const vector <vector <double> >& in_eigenvector);

@@ -2,8 +2,17 @@
 // All rights reserved.
 // This code is published under the GNU Lesser General Public License.
 
+#include <cmath>
+#include <iomanip>
+#include <iostream>
+
+#include "allowed_keys.hpp"
+#include "average.hpp"
+#include "assertions.hpp"
 #include "bingham.h"
 #include "common.h"
+#include "exceptions.hpp"
+#include "rgf.h"
 #include "stresstensor.hpp"
 
 using namespace std;

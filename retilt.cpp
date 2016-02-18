@@ -2,7 +2,16 @@
 // All rights reserved.
 // This code is published under the GNU Lesser General Public License.
 
+#include <iostream>
+#include <math.h>
+
+#include "allowed_keys.hpp"
+#include "assertions.hpp"
+#include "common.h"
+#include "iomanip"
+#include "retilt.hpp"
 #include "rgf.h"
+#include "settings.hpp"
 
 using namespace std;
 

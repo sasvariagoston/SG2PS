@@ -2,9 +2,14 @@
 // All rights reserved.
 // This code is published under the GNU Lesser General Public License.
 
-#include "filename.hpp"
+#include <ctime>
+#include <iostream>
+
+#include "assertions.hpp"
 #include "platform_dep.hpp"
 #include "rgf.h"
+#include "run_mode.h"
+#include "settings.hpp"
 
 namespace {
 

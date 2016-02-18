@@ -5,10 +5,6 @@
 #ifndef FILENAME_HPP_
 #define FILENAME_HPP_
 
-#include <string>
-
-using namespace std;
-
 void generate_DATE_TIME ();
 string return_DATE_TIME ();
 

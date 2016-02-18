@@ -2,10 +2,14 @@
 // All rights reserved.
 // This code is published under the GNU Lesser General Public License.
 
-#include "math.h"
+#include <cmath>
+#include <iomanip>
+#include <iostream>
+#include <vector>
 
+#include "assertions.hpp"
 #include "common.h"
-#include "rakhmanov.hpp"
+#include "structs.h"
 
 using namespace std;
 

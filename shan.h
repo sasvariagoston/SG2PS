@@ -5,7 +5,7 @@
 #ifndef SHAN_H
 #define SHAN_H
 
-#include "structs.h"
+#include "common.h"
 
 using namespace std;
 

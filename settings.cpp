@@ -2,6 +2,10 @@
 // All rights reserved.
 // This code is published under the GNU Lesser General Public License.
 
+#include <algorithm>
+#include <iostream>
+
+#include "assertions.hpp"
 #include "common.h"
 
 using namespace std;

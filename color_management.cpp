@@ -2,8 +2,31 @@
 // All rights reserved.
 // This code is published under the GNU Lesser General Public License.
 
+//#include <cmath>
+//#include <iomanip>
+#include <iostream>
+
+#include "allowed_keys.hpp"
+//#include "angelier.h"
+#include "assertions.hpp"
+//#include "brute_force.hpp"
+//#include "bingham.h"
 #include "color_management.hpp"
+//#include "common.h"
+//#include "data_io.h"
+//#include "fry.h"
+//#include "inversion.h"
+//#include "michael.h"
+//#include "mostafa.h"
+//#include "nda.h"
+//#include "ps.h"
+//#include "ptn.h"
+//#include "rgf.h"
+//#include "rup_clustering.hpp"
 #include "settings.hpp"
+//#include "shan.h"
+//#include "structs.h"
+//#include "valley_method.hpp"
 
 using namespace std;
 

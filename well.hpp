@@ -5,8 +5,6 @@
 #ifndef WELL_HPP_
 #define WELL_HPP_
 
-#include "common.h"
-
 bool is_WELL_PROCESSING_CALLS ();
 
 vector <vector <WELL_INTERVAL> > RETURN_INTERVAL ();

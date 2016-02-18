@@ -2,11 +2,31 @@
 // All rights reserved.
 // This code is published under the GNU Lesser General Public License.
 
+//#include <algorithm>
+//#include <cmath>
+#include <iostream>
+#include <iomanip>
+#include <vector>
+
+//#include "average.hpp"
+//#include "allowed_keys.hpp"
+#include "assertions.hpp"
+//#include "bingham.h"
 #include "brute_force.hpp"
+//#include "checkrgffilecontent.h"
+//#include "checkxycontent.h"
+#include "common.h"
+//#include "data_io.h"
 #include "inversion.h"
+//#include "ps.h"
 #include "rakhmanov.hpp"
+//#include "random.hpp"
+//#include "retilt.hpp"
+//#include "rgf.h"
+#include "stdlib.h"
 #include "stresstensor.hpp"
 #include "structs.h"
+#include "yamaji.hpp"
 
 using namespace std;
 

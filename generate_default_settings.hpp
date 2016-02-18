@@ -5,6 +5,9 @@
 #ifndef GENERATE_DEFAULT_SETTINGS_HPP_
 #define GENERATE_DEFAULT_SETTINGS_HPP_
 
+#include <string>
+#include <vector>
+
 using namespace std;
 
 void pushbach_settings_item (vector < vector <string> >& defitem, const string key, const string output);

@@ -5,6 +5,10 @@
 #ifndef DENSITY_HPP_
 #define DENSITY_HPP_
 
+
+#include <algorithm>
+#include <vector>
+
 #include "structs.h"
 
 vector < vector <GRID_CENTER> > generate_rectangular_grid_from_triange_center (const size_t cell_number);

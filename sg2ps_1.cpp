@@ -2,11 +2,16 @@
 // All rights reserved.
 // This code is published under the GNU Lesser General Public License.
 
+#include <iostream>
+#include <string>
+#include <ctime>
+
 #include "exceptions.hpp"
 #include "rgf.h"
 #include "checksettingfilecontent.h"
 #include "checkrgffilecontent.h"
 #include "checkxycontent.h"
+#include "generate_default_settings.hpp"
 #include "run_mode.h"
 #include "trajectory.hpp"
 

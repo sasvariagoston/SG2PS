@@ -2,16 +2,28 @@
 // All rights reserved.
 // This code is published under the GNU Lesser General Public License.
 
+#include <algorithm>
+#include <cmath>
+#include <ctime>
+#include <iomanip>
+#include <iostream>
 #include <sstream>
+#include <stdexcept>
+//#include <time.h>
 
 #if __linux__
 #include <fenv.h>
 #endif
 
+#include "allowed_keys.hpp"
 #include "array_to_vector.hpp"
+#include "assertions.hpp"
 #include "common.h"
 #include "data_sort.hpp"
+#include "rgf.h"
+#include "run_mode.h"
 #include "settings.hpp"
+#include "stresstensor.hpp"
 
 template <typename T>
 T convert(const string& s, bool& failed) {

@@ -2,15 +2,31 @@
 // All rights reserved.
 // This code is published under the GNU Lesser General Public License.
 
+#include <cmath>
+#include <fstream>
+#include <iomanip>
+#include <iostream>
+#include <sstream>
+
+#include "allowed_keys.hpp"
+#include "assertions.hpp"
 #include "color_management.hpp"
+#include "common.h"
+#include "data_io.h"
 #include "density.h"
+#include "filename.hpp"
 #include "homogenity_check.hpp"
-#include "inversion.h"
+#include "kaalsbeek.hpp"
+#include "paper.hpp"
+#include "platform_dep.hpp"
 #include "ps_RUP_ANG.hpp"
 #include "ps.h"
+#include "rgf.h"
 #include "rose.h"
+#include "run_mode.h"
 #include "rup_clustering.hpp"
 #include "standard_output.hpp"
+#include "settings.hpp"
 #include "stresstensor.hpp"
 #include "valley_method.hpp"
 

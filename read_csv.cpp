@@ -4,7 +4,6 @@
 
 #include <fstream>
 #include <sstream>
-
 #include "read_csv.hpp"
 
 using namespace std;

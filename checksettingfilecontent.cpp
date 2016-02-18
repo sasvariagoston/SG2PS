@@ -2,10 +2,16 @@
 // All rights reserved.
 // This code is published under the GNU Lesser General Public License.
 
+#include <cstdlib> // TODO Instead of atof, a string_to_int function should be used in common.cpp
+#include <fstream>
+#include <iomanip>
+#include <iostream>
+
+#include "assertions.hpp"
 #include "checksettingfilecontent.h"
-#include "common.h"
 #include "exceptions.hpp"
 #include "generate_default_settings.hpp"
+#include "run_mode.h"
 #include "settings.hpp"
 
 vector < vector <string> > READ_SETTINGS_FILE (const string settingfilename) {

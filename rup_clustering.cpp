@@ -2,8 +2,20 @@
 // All rights reserved.
 // This code is published under the GNU Lesser General Public License.
 
+#include <algorithm>
+#include <iomanip>
+#include <iostream>
+#include <vector>
+
+#include "allowed_keys.hpp"
+#include "assertions.hpp"
+#include "common.h"
 #include "data_sort.hpp"
+#include "math.h"
+#include "settings.hpp"
+#include "structs.h"
 #include "rgf.h"
+#include "run_mode.h"
 #include "rup_clustering.hpp"
 #include "standard_output.hpp"
 #include "valley_method.hpp"

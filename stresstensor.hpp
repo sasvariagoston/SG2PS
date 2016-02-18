@@ -5,8 +5,6 @@
 #ifndef STRESSTENSOR_HPP_
 #define STRESSTENSOR_HPP_
 
-#include "rgf.h"
-
 double stresstensor_determinant (const STRESSTENSOR& st);
 void check_stress_tensor_singularity(const STRESSTENSOR& st);
 STRESSTENSOR fix_stress_tensor_singularity(STRESSTENSOR& st);

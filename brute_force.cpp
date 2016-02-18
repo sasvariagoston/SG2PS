@@ -14,9 +14,21 @@ S3: 279/27 (-0.881055,  0.133001, -0.453931)
 EIGENVALUES: 1.000000,  0.110000, -0.000000
 */
 
+//#include <algorithm>
+#include <algorithm>
+#include <iostream>
+#include <iomanip>
+#include <math.h>
+#include <fstream>
+
+#include "assertions.hpp"
 #include "brute_force.hpp"
+#include "common.h"
+#include "inversion.h"
 #include "kaalsbeek.hpp"
+#include "rakhmanov.hpp"
 #include "settings.hpp"
+#include "structs.h"
 #include "stresstensor.hpp"
 
 using namespace std;

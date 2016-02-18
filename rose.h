@@ -5,6 +5,8 @@
 #ifndef ROSE_HPP_
 #define ROSE_HPP_
 
+#include "common.h"
+
 ROSENUMBER compute_data_number_DIPDIR_DIP (const vector <GDB>& inGDB, const double strike_begin, const double strike_end, const string DIPDIR_DIP); //ok
 
 void PS_draw_rose_DATATYPE (const vector <GDB>& inGBD, ofstream& o, const CENTER& center, const ROSENUMBER& percent, const double begin_angle, const bool vertical); //ok

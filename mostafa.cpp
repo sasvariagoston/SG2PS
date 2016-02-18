@@ -14,7 +14,16 @@ S3: 284/05 (-0.964855,  0.248133, -0.086516)
 EIGENVALUES: 1.232731, -0.531661, -0.701071
 */
 
+#include <cmath>
+#include <iomanip>
+#include <iostream>
+
 #include "angelier.h"
+#include "common.h"
+#include "inversion.h"
+#include "mostafa.h"
+#include "ps.h"
+#include "rgf.h"
 #include "stresstensor.hpp"
 
 using namespace std;

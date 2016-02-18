@@ -5,10 +5,9 @@
 #ifndef PS_HPP_
 #define PS_HPP_
 
-#include "common.h"
-#include "filename.hpp"
-#include "paper.hpp"
-#include "rgf.h"
+#include <string>
+#include <vector>
+
 #include "structs.h"
 
 using namespace std;
