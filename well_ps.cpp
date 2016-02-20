@@ -1082,6 +1082,8 @@ void plot_well_faults (ofstream& o, const double X, const double LENGTH, const d
 
 		const double DEPTH = FAULTS.at(i).DEPTH;
 		const double count = FAULTS.at(i).COUNT;
+		ASSERT_FINITE(count, MAX);
+		ASSERT_NE(MAX, 0.0);
 		const double VALUE =(count / MAX) * (count / MAX);
 
 		const double ACT_data_X = X + (PL_WDT * P.A * VALUE);
@@ -1226,6 +1228,7 @@ vector <vector <XY> >  generate_xy_vector_vector (const vector <XY>& IN) {
 
 		const bool LAST = i == IN.size() - 2;
 
+		ASSERT_LT(i, IN.size());
 		XY buf = IN.at(i);
 		BUF.push_back (buf);
 
@@ -1876,6 +1879,7 @@ void OUTPUT_TO_WELL_PS (const vector <vector <GDB> >& GDB_G) {
 			const bool GDB_OK = temp.size() > 1;
 
 			const bool MIN_VAL_OK = MIN_VAL > 0.0;
+			ASSERT_FINITE(MAX_VAL, MIN_VAL);
 			const bool MAX_VAL_OK = MAX_VAL > MIN_VAL;
 
 			const bool INT_OK = INTERVAL.at(i).size() > 0;

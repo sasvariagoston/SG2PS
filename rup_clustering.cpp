@@ -104,6 +104,8 @@ RUP_table return_cost_function_member (const vector <double>& in, const size_t b
 
 	out.v = cml_variance / out.clusternumber;
 
+	ASSERT_FINITE(out.k, out.v, out.delta);
+	ASSERT_NE(out.delta, 0.0);
 	out.C = ((2.0 * out.k) - out.v) / (out.delta * out.delta);
 
 	return out;
