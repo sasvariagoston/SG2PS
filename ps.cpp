@@ -740,22 +740,39 @@ void PS_mohr_circle (const vector <GDB>& inGDB, ofstream& o, const CENTER& mohrc
 	const double S1 = SF.EIGENVALUE.X;
 	const double S3 = SF.EIGENVALUE.Z;
 
+	ASSERT_GE (fi, 0);
+	ASSERT_LE (fi, 1);
+
 	string CLR = generate_stress_colors (SF.delvaux_str);
 
 	color_PS(o, CLR);
 	linewidth_PS (o, 3.0, 1);
 
+	const double S1_S3_center = mohrcenter.X + 2.5 * P.A;
+	const double S1_S3_radius = 2.5 * P.A;
+	const double S2_S3_center = mohrcenter.X + (0.5 * fi * X);
+	const double S2_S3_radius = 0.5 * fi * X;
+	const double S1_S2_center = mohrcenter.X + 2.5 * P.A + (0.5 * fi * X);
+	const double S1_S2_radius = 2.5 * P.A - (0.5 * fi * X);
+
 	newpath_PS (o);
-	arc_PS (o, mohrcenter.X + 2.5 * P.A, mohrcenter.Y, 2.5 * P.A, 0.0, 180.0, 3);
+	arc_PS (o, S1_S3_center, mohrcenter.Y, S1_S3_radius, 0.0, 180.0, 3);
 	stroke_PS (o);
 
 	newpath_PS (o);
-	arc_PS (o, mohrcenter.X + (0.5 * fi * X), mohrcenter.Y, 0.5 * fi * X, 0.0, 180.0, 3);
+	arc_PS (o, S2_S3_center, mohrcenter.Y, S2_S3_radius, 0.0, 180.0, 3);
 	stroke_PS (o);
 
 	newpath_PS (o);
-	arc_PS (o, mohrcenter.X + 2.5 * P.A + (0.5 * fi * X), mohrcenter.Y, 2.5 * P.A - (0.5 * fi * X), 0.0, 180.0, 3);
+	arc_PS (o, S1_S2_center, mohrcenter.Y, S1_S2_radius, 0.0, 180.0, 3);
 	stroke_PS (o);
+
+	const double PLOT_S1_X = S1_S3_center + S1_S3_radius;
+	const double PLOT_S2_X = S2_S3_center + S2_S3_radius;
+	const double PLOT_S3_X = S2_S3_center - S2_S3_radius;
+
+	ASSERT_GE (PLOT_S1_X, PLOT_S2_X);
+	ASSERT_GE (PLOT_S2_X, PLOT_S3_X);
 
 	color_PS (o, "0.0 0.0 0.0");
 	font_PS (o, "ArialNarrow-Bold", 8);
@@ -790,16 +807,25 @@ void PS_mohr_circle (const vector <GDB>& inGDB, ofstream& o, const CENTER& mohrc
 
 			shear_s = shear_s / (S1 - S3);
 
+			const double PLOT_X = mohrcenter.X + X * normal_s;
+			const double PLOT_Y = mohrcenter.Y + X * shear_s;
+
+			ASSERT_LE (PLOT_X, PLOT_S1_X + 1);
+			ASSERT_GE (PLOT_X, PLOT_S3_X - 1);
+
+			ASSERT_LE (PLOT_Y, mohrcenter.Y + mohrcenter.radius + 1);
+			ASSERT_GE (PLOT_Y, mohrcenter.Y - 1);
+
 			newpath_PS(o);
 			color_PS(o, "1.0 1.0 1.0");
 			linewidth_PS (o, 3.0, 1);
-			arc_PS (o, mohrcenter.X + X * normal_s, mohrcenter.Y + X * shear_s, 0.7, 0.0, 360.0, 3);
+			arc_PS (o, PLOT_X, PLOT_Y, 0.7, 0.0, 360.0, 3);
 			stroke_PS(o);
 
 			newpath_PS(o);
 			color_PS(o, "0.0 0.0 0.0");
 			linewidth_PS (o, 2.0, 1);
-			arc_PS(o, mohrcenter.X + X * normal_s, mohrcenter.Y + X * shear_s, 0.7, 0.0, 360.0, 3);
+			arc_PS (o, PLOT_X, PLOT_Y, 0.7, 0.0, 360.0, 3);
 			stroke_PS(o);
 		}
 		else {}
