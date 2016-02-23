@@ -17,7 +17,6 @@
 #include "data_sort.hpp"
 #include "filename.hpp"
 #include "rgf.h"
-//#include "run_mode.h"
 #include "settings.hpp"
 #include "standard_output.hpp"
 #include "structs.h"
@@ -29,6 +28,8 @@ vector <vector <WELL_INTERVAL> > W_INTERVAL;
 vector <vector <WELL_FREQUENCY> > W_FREQUENCY;
 
 const double MIN_DATAINTERVAL = 0.10;
+
+const double MINIMUM_DEPTH_LIMIT = 1.0e-1;
 
 bool WELL_PROCESSING_CALLS = false;
 
@@ -181,7 +182,7 @@ vector <WELL_INTERVAL> FIRST_DERIVATE (const vector <WELL_INTERVAL>& IN) {
 		const WELL_INTERVAL ACT = IN.at(i);
 		const WELL_INTERVAL NXT = IN.at(i + 1);
 
-		const bool PROCESSABLE = fabs (ACT.DEPTH - NXT.DEPTH) > 10e-2;
+		const bool PROCESSABLE = fabs (ACT.DEPTH - NXT.DEPTH) > MINIMUM_DEPTH_LIMIT;
 
 		if (PROCESSABLE) {
 

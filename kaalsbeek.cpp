@@ -16,6 +16,11 @@
 
 using namespace std;
 
+namespace {
+
+const double MINIMUM_DISTANCE = 1.0e-3;
+}
+
 vector <VCTR> generate_arc (const size_t SEG_CNT, const size_t ARC_CNT, const size_t POINTS_DISTANCE) {
 
 	VCTR buf;
@@ -516,15 +521,15 @@ bool is_neighbouring_internal_triange (const TRIANGLE& inTRI, const TRIANGLE& of
 
 	size_t fit_counter = 0;
 
-	if (points_distance (inTRI.A, offTRI.A) < 10e-4) fit_counter++;
-	if (points_distance (inTRI.A, offTRI.B) < 10e-4) fit_counter++;
-	if (points_distance (inTRI.A, offTRI.C) < 10e-4) fit_counter++;
-	if (points_distance (inTRI.B, offTRI.A) < 10e-4) fit_counter++;
-	if (points_distance (inTRI.B, offTRI.B) < 10e-4) fit_counter++;
-	if (points_distance (inTRI.B, offTRI.C) < 10e-4) fit_counter++;
-	if (points_distance (inTRI.C, offTRI.A) < 10e-4) fit_counter++;
-	if (points_distance (inTRI.C, offTRI.B) < 10e-4) fit_counter++;
-	if (points_distance (inTRI.C, offTRI.C) < 10e-4) fit_counter++;
+	if (points_distance (inTRI.A, offTRI.A) < MINIMUM_DISTANCE) fit_counter++;
+	if (points_distance (inTRI.A, offTRI.B) < MINIMUM_DISTANCE) fit_counter++;
+	if (points_distance (inTRI.A, offTRI.C) < MINIMUM_DISTANCE) fit_counter++;
+	if (points_distance (inTRI.B, offTRI.A) < MINIMUM_DISTANCE) fit_counter++;
+	if (points_distance (inTRI.B, offTRI.B) < MINIMUM_DISTANCE) fit_counter++;
+	if (points_distance (inTRI.B, offTRI.C) < MINIMUM_DISTANCE) fit_counter++;
+	if (points_distance (inTRI.C, offTRI.A) < MINIMUM_DISTANCE) fit_counter++;
+	if (points_distance (inTRI.C, offTRI.B) < MINIMUM_DISTANCE) fit_counter++;
+	if (points_distance (inTRI.C, offTRI.C) < MINIMUM_DISTANCE) fit_counter++;
 
 	if (fit_counter == 2) return true;
 	else return false;

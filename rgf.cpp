@@ -15,6 +15,7 @@
 #include "checkrgffilecontent.h"
 #include "checkxycontent.h"
 #include "color_management.hpp"
+#include "common.h"
 #include "data_io.h"
 #include "data_sort.hpp"
 #include "filename.hpp"
@@ -35,7 +36,7 @@ namespace {
 
 string INPUTFILENAME = "";
 
-const double SN = 10e-8;
+//const double SN = 10e-8;
 
 bool PROCESS_AS_TILTED = false;
 bool PROCESS_AS_TRAJECTORY = false;
@@ -122,11 +123,11 @@ vector <GDB> fix_360_0 (const vector <GDB>& inGDB) {
 
 			ASSERT_FINITE(DD, D);
 
-			if (DD == 360.0) outGDB.at(i).corr.DIPDIR = 360.0 - SN;
-			if (DD ==   0.0) outGDB.at(i).corr.DIPDIR = SN;
+			if (DD == 360.0) outGDB.at(i).corr.DIPDIR = 360.0 - return_SMALL_NUMBER();
+			if (DD ==   0.0) outGDB.at(i).corr.DIPDIR = return_SMALL_NUMBER();
 
-			if (D == 90.0) outGDB.at(i).corr.DIP = 90.0 - SN;
-			if (D ==  0.0) outGDB.at(i).corr.DIP = SN;
+			if (D == 90.0) outGDB.at(i).corr.DIP = 90.0 - return_SMALL_NUMBER();
+			if (D ==  0.0) outGDB.at(i).corr.DIP = return_SMALL_NUMBER();
 		}
 	}
 	return outGDB;
@@ -201,7 +202,7 @@ GDB generate_NCDCSC_LINEATION_SC (const GDB& inGDB) {
 	const bool NCY_EQ_NY (is_in_range (outGDB.NC.Y, outGDB.NC.Y, outGDB.N.Y));
 	const bool NCZ_EQ_NZ (is_in_range (outGDB.NC.Z, outGDB.NC.Z, outGDB.N.Z));
 
-	if (NCX_EQ_NX && NCY_EQ_NY && NCZ_EQ_NZ) outGDB.N.X = outGDB.N.X + SN;
+	if (NCX_EQ_NX && NCY_EQ_NY && NCZ_EQ_NZ) outGDB.N.X = outGDB.N.X + return_SMALL_NUMBER();
 
 	outGDB.DC = DXDYDZ_from_dipdir_dip (outGDB.corrL);
 
@@ -209,7 +210,7 @@ GDB generate_NCDCSC_LINEATION_SC (const GDB& inGDB) {
 	const bool DCY_EQ_DY (is_in_range (outGDB.DC.Y, outGDB.DC.Y, outGDB.D.Y));
 	const bool DCZ_EQ_DZ (is_in_range (outGDB.DC.Z, outGDB.DC.Z, outGDB.D.Z));
 
-	if (DCX_EQ_DX && DCY_EQ_DY && DCZ_EQ_DZ) outGDB.D.X = outGDB.D.X + SN;
+	if (DCX_EQ_DX && DCY_EQ_DY && DCZ_EQ_DZ) outGDB.D.X = outGDB.D.X + return_SMALL_NUMBER();
 
 	outGDB.SC = crossproduct (outGDB.NC, outGDB.DC);
 
@@ -377,7 +378,7 @@ VCTR striae_DIP_correction (const GDB& in) {
 	bool NY_EQ_SCY = is_in_range (PROC.N.Y, PROC.N.Y, PROC.SC.Y);
 	bool NZ_EQ_SCZ = is_in_range (PROC.N.Z, PROC.N.Z, PROC.SC.Z);
 
-	if (NX_EQ_SCX && NY_EQ_SCY && NZ_EQ_SCZ) PROC.N.X = PROC.N.X + 10e-8;
+	if (NX_EQ_SCX && NY_EQ_SCY && NZ_EQ_SCZ) PROC.N.X = PROC.N.X + return_SMALL_NUMBER();
 
 	VCTR STR = crossproduct (PROC.SC, PROC.N);
 
@@ -395,7 +396,7 @@ VCTR striae_DIPDIR_correction (const GDB& in) {
 	bool NY_EQ_NCY = is_in_range (PROC.N.Y, PROC.N.Y, PROC.NC.Y);
 	bool NZ_EQ_NCZ = is_in_range (PROC.N.Z, PROC.N.Z, PROC.NC.Z);
 
-	if (NX_EQ_NCX && NY_EQ_NCY && NZ_EQ_NCZ) PROC.N.X = PROC.N.X + 10e-8;
+	if (NX_EQ_NCX && NY_EQ_NCY && NZ_EQ_NCZ) PROC.N.X = PROC.N.X + return_SMALL_NUMBER();
 
 	VCTR STR = crossproduct (in.N, in.NC);
 

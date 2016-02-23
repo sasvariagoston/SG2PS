@@ -260,14 +260,12 @@ void ps_percentage_max (ofstream& o, const CENTER& center, const PAPER& P, const
 
 vector <line_RUP_ANG> generate_graph_histogram (const vector <HISTOGRAM>& H, const vector <VALLEY>& V, const double DATA_MAX) {
 
-	const double SN = 10e-8;
-
 	vector <line_RUP_ANG> out;
 
 	BRDR brdr_buf;
 	vector <BRDR> BORDERS;
 
-	brdr_buf.border = DATA_MAX + SN;
+	brdr_buf.border = DATA_MAX + return_SMALL_NUMBER();
 	brdr_buf.ID = "MAX";
 	BORDERS.push_back(brdr_buf);
 

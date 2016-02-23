@@ -19,6 +19,11 @@
 
 using namespace std;
 
+namespace {
+
+const double MINIMUM_DET = 1.0e-25;
+}
+
 double stresstensor_determinant (const STRESSTENSOR& st) {
 
 	return	(st._11 * st._22 * st._33) +
@@ -42,7 +47,7 @@ STRESSTENSOR fix_stress_tensor_singularity(STRESSTENSOR& st) {
 
 	double det = stresstensor_determinant (st);
 
-	if (det < 10e-25) {
+	if (det < MINIMUM_DET) {
 
 		st._11 *= one_plus_tiny;
 		st._22 *= one_plus_tiny;

@@ -25,6 +25,19 @@
 #include "settings.hpp"
 #include "stresstensor.hpp"
 
+namespace {
+
+const double SMALL_NUMBER = 1.0e-7;
+const double MINIMUM_VECTORLENGTH = 1.0e-20;
+const double MAXIMUM_VECTORLENGTH = 1.0e+300;
+
+}
+
+double return_SMALL_NUMBER () {
+
+	return SMALL_NUMBER;
+}
+
 template <typename T>
 T convert(const string& s, bool& failed) {
 
@@ -234,8 +247,8 @@ double ASIN (const double& in) {
 
 	double out = in;
 
-	if (out >= 1.0)  out =   (1.0 - 10e-8);
-	if (out <= -1.0) out = - (1.0 - 10e-8);
+	if (out >= 1.0)  out =   (1.0 - SMALL_NUMBER);
+	if (out <= -1.0) out = - (1.0 - SMALL_NUMBER);
 
 	out = asin (out);
 
@@ -248,8 +261,8 @@ double ACOS (const double& in) {
 
 	double out = in;
 
-	if (out >= 1.0)  out =   (1.0 - 10e-8);
-	if (out <= -1.0) out = - (1.0 - 10e-8);
+	if (out >= 1.0)  out =   (1.0 - SMALL_NUMBER);
+	if (out <= -1.0) out = - (1.0 - SMALL_NUMBER);
 
 	out = acos(out);
 
@@ -489,7 +502,7 @@ size_t search_max_off_diagonal_element_in_mtrx (const vector <vector <double> >&
 
 	} while (m < in.size());
 
-	if (max_element_size < 10e-8) out = 9999;
+	if (max_element_size < SMALL_NUMBER) out = 9999;
 
 	return out;
 }
@@ -1046,7 +1059,7 @@ VCTR unitvector (const VCTR& in, const bool CHECK) {
 
 	if (CHECK) {
 
-		if ((vectorlength > 10e-20) && (vectorlength < 1.0e+300)) {
+		if ((vectorlength > MINIMUM_VECTORLENGTH) && (vectorlength < MAXIMUM_VECTORLENGTH)) {
 
 			OUT.X = (in.X / vectorlength);
 			OUT.Y = (in.Y / vectorlength);
@@ -1735,9 +1748,7 @@ bool is_in_range (const double range_min, const double range_max, const double i
 
 	ASSERT_FINITE (in);
 
-	double SN = 10e-8;
-
-	return (range_min - SN <= in && in <= range_max + SN);
+	return (range_min - SMALL_NUMBER <= in && in <= range_max + SMALL_NUMBER);
 }
 
 bool is_in_range_exactly (const double range_min, const double range_max, const double in) {

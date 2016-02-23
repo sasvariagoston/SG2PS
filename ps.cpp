@@ -1795,7 +1795,8 @@ void PS_idealmovement (const vector <GDB>& inGDB, ofstream& o, const CENTER& cen
 
 	for (size_t i = 0; i < inGDB.size(); i++) {
 
-		if (vectorlength (inGDB.at(i).SHEAR_S) > 10e-5) {
+		//if (vectorlength (inGDB.at(i).SHEAR_S) > 10e-5) {
+		if (vectorlength (inGDB.at(i).SHEAR_S) > return_SMALL_NUMBER()) {
 
 			PS_polepoint (inGDB.at(i), o, center.X, center.Y, center.radius, "IDEAL");
 		}

@@ -11,6 +11,8 @@
 
 using namespace std;
 
+double return_SMALL_NUMBER ();
+
 void print_banner () ;
 
 void progress_bar (const size_t WIDTH, const double STATUS, const double MAX);

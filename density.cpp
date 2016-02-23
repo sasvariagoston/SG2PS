@@ -1111,7 +1111,8 @@ bool is_point_inside_curve (const vector <XY>& I, const GRID_CENTER& GP) {
 	if (!CLOSED) temp.push_back(temp.at(0));
 	temp.push_back(temp.at(1));
 
-	double DISTANCE = 10e9;
+	//double DISTANCE = 10e9;
+	double DISTANCE = 1 / return_SMALL_NUMBER();
 
 	bool CLOSE_TO_VERTEX = false;
 	bool CLOSE_TO_SIDE = false;
