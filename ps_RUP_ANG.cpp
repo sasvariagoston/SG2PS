@@ -133,6 +133,12 @@ void ps_draw_histogram_bars (const vector <GDB>& inGDB, const vector <line_RUP_A
 		Y1 = center.Y - P.R + 2.0 * P.R * (L_R_A.at(j).L_STR / DATA_max);
 		Y2 = center.Y - P.R + 2.0 * P.R * (L_R_A.at(j).L_END / DATA_max);
 
+		ASSERT_LE (Y1, center.Y + P.R + 1);
+		ASSERT_LE (Y2, center.Y + P.R + 1);
+
+		ASSERT_GE (Y1, center.Y - P.R - 1);
+		ASSERT_GE (Y2, center.Y - P.R - 1);
+
 		linewidth_PS (o, linewidth, 1);
 
 		if (!BW1 && !BW2) color_PS (o, L_R_A.at(j).GC);
