@@ -816,6 +816,28 @@ void PS_mohr_circle (const vector <GDB>& inGDB, ofstream& o, const CENTER& mohrc
 			ASSERT_LE (PLOT_Y, mohrcenter.Y + mohrcenter.radius + 1);
 			ASSERT_GE (PLOT_Y, mohrcenter.Y - 1);
 
+			const VCTR POINT = declare_vector (PLOT_X, PLOT_Y, 0.0);
+
+			if (PLOT_X < PLOT_S2_X) {
+
+				ASSERT_LE (PLOT_X, PLOT_S2_X + 1);
+
+				const VCTR ORIGO = declare_vector (S2_S3_center, mohrcenter.Y, 0.0);
+
+				const double D = points_distance (POINT, ORIGO);
+
+				ASSERT_GE (D, S2_S3_radius - 1);
+			}
+			else {
+
+				ASSERT_GE (PLOT_X, PLOT_S2_X - 1);
+
+				const VCTR ORIGO = declare_vector (S1_S2_center, mohrcenter.Y, 0.0);
+
+				const double D = points_distance (POINT, ORIGO);
+
+				ASSERT_GE (D, S1_S2_radius - 1);
+			}
 			newpath_PS(o);
 			color_PS(o, "1.0 1.0 1.0");
 			linewidth_PS (o, 3.0, 1);
