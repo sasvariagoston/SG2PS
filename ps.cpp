@@ -1183,6 +1183,17 @@ void PS_plane (const GDB& i, ofstream& o, const double X, const double Y, const 
 	ASSERT (is_in_range(X-R-1, X+R+1, X_C));
 	ASSERT (is_in_range(Y-R-1, Y+R+1, Y_C));
 
+	const VCTR POINT_B = declare_vector(X_B, Y_B, 0.0);
+	const VCTR POINT_C = declare_vector(X_C, Y_C, 0.0);
+
+	const VCTR ORIGO = declare_vector(X, Y, 0.0);
+
+	const double D1 = points_distance (POINT_B, ORIGO);
+	const double D2 = points_distance (POINT_C, ORIGO);
+
+	ASSERT_LE (D1, R+1);
+	ASSERT_LE (D2, R+1);
+
 	if (is_CHK_PLOT_PLANE()) {
 
 		if (i.ID == "BZ66") {
