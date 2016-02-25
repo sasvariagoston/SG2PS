@@ -1759,9 +1759,23 @@ void PS_rosesegment (ofstream& o, const CENTER center, const double percentage, 
 			color_PS (o, "0.0 0.5 0.0");
 		}
 	}
+
+	const VCTR POINT = declare_vector (radius * SIN (step_angle), radius * COS(step_angle), 0);
+	const VCTR ORIGO = declare_vector (0, 0, 0);
+
+	ASSERT_LE (POINT.X, 0 + center.radius + 1);
+	ASSERT_GE (POINT.X, 0 - center.radius - 1);
+
+	ASSERT_LE (POINT.Y, 0 + center.radius + 1);
+	ASSERT_GE (POINT.Y, 0 - center.radius - 1);
+
+	const double D = points_distance (POINT, ORIGO);
+
+	ASSERT_LE (D, center.radius+1);
+
 	newpath_PS (o);
 	moveto_PS (o, 0.0, 0.0, 3);
-	lineto_PS (o, radius * SIN (step_angle), radius * COS(step_angle), 3);
+	lineto_PS (o, POINT.X, POINT.Y, 3);
 	arc_PS (o, 0.0, 0.0, radius, angle, 90.0, 3);
 	moveto_PS (o, 0.0, 0.0, 3);
 	lineto_PS (o, 0.0, radius, 3);
