@@ -1004,6 +1004,18 @@ void PS_lineation (const GDB& i, ofstream& o, const CENTER& center, const STRESS
 	X = X + center.X;
 	Y = Y + center.Y;
 
+	ASSERT_LE (X, center.X + center.radius + 1);
+	ASSERT_GE (X, center.X - center.radius - 1);
+
+	ASSERT_LE (Y, center.Y + center.radius + 1);
+	ASSERT_GE (Y, center.Y - center.radius - 1);
+
+	const VCTR DATA = declare_vector (X, Y, 0);
+	const VCTR ORIGO = declare_vector (center.X, center.Y, 0);
+
+	const double D = points_distance (DATA, ORIGO);
+
+	ASSERT_LE (D, center.radius + 1);
 
 	if (is_CHK_PLOT_LINEATION ()) {
 
