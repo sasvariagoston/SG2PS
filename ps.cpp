@@ -1368,6 +1368,19 @@ void PS_polepoint (const GDB& i, ofstream& o, const double X, const double Y, co
 	O.X = O.X + X;
 	O.Y = O.Y + Y;
 
+	ASSERT_GE (O.X, X-R-1);
+	ASSERT_LE (O.X, X+R+1);
+
+	ASSERT_GE (O.Y, Y-R-1);
+	ASSERT_LE (O.Y, Y+R+1);
+
+	const VCTR ORIGO = declare_vector(O.X, O.Y, 0.0);
+	const VCTR POLE = declare_vector(X, Y, 0.0);
+
+	const double D = points_distance (ORIGO, POLE);
+
+	ASSERT_LE (D, R-1);
+
 	string CLR = "";
 
 	if (AV) {
