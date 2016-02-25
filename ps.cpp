@@ -1483,6 +1483,19 @@ void PS_striaearrow (const GDB& i, ofstream& o, const CENTER& center) {
 	X = X + center.X;
 	Y = Y + center.Y;
 
+	ASSERT_LE (X, center.X + center.radius + 1);
+	ASSERT_GE (X, center.X - center.radius - 1);
+
+	ASSERT_LE (Y, center.Y + center.radius + 1);
+	ASSERT_GE (Y, center.Y - center.radius - 1);
+
+	const VCTR ORIGO = declare_vector (center.X, center.Y, 0);
+	const VCTR POINT = declare_vector (X, Y, 0);
+
+	const double D = points_distance (ORIGO, POINT);
+
+	ASSERT_LE (D, center.radius + 1);
+
 	if (is_CHK_PLOT_STRIAE()) {
 
 		if (i.ID == "ANG001") {
