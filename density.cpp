@@ -1297,7 +1297,32 @@ vector <XY> close_contourline (const vector <XY>& I, const double START_ANGLE, c
 	return OUT;
 }
 
+void check_points_are_in_circle (const CENTER& center, const vector <XY>& BZ) {
+
+	for (size_t i = 0; i < BZ.size(); i++) {
+
+		const double X = BZ.at(i).X * center.radius + center.X;
+		const double Y = BZ.at(i).Y * center.radius + center.Y;
+
+		ASSERT_LE (X, center.X + center.radius + 1);
+		ASSERT_GE (X, center.X - center.radius - 1);
+
+		ASSERT_LE (Y, center.Y + center.radius + 1);
+		ASSERT_GE (Y, center.Y - center.radius - 1);
+
+		const VCTR ORIGO = declare_vector (center.X, center.Y, 0);
+		const VCTR POINT = declare_vector (X, Y, 0);
+
+		const double D = points_distance (ORIGO, POINT);
+
+		ASSERT_LE (D, center.radius + 1);
+	}
+	return;
+}
+
 void contourline_to_ps (ofstream& o, const CENTER& center, const vector <XY>& BZ, const double& FRST_ANGLE, const double& LAST_ANGLE, const double& CONTOUR, const double& C_MN, const double& C_MX) {
+
+	check_points_are_in_circle (center, BZ);
 
 	o << "%% contourline_to_ps" << endl;
 

@@ -87,6 +87,7 @@ bool is_line_close_unitcircle (const vector <XY>& I, const double CELL);
 
 vector <XY> close_contourline (const vector <XY>& I, const double START_ANGLE, const double END_ANGLE, const double CELL, const bool CHECK_DISTANCE);
 
+void check_points_are_in_circle (const CENTER& center, const vector <XY>& BZ);
 void contourline_to_ps (ofstream& o, const CENTER& center, const vector <XY>& BZ, const double& FRST_ANGLE, const double& LAST_ANGLE, const double& CONTOUR, const double& C_MN, const double& C_MX);
 
 void output_contourline (ofstream& o, const CENTER& center, vector <vector <XY> >& BZ,  vector < vector <GRID_CENTER> >& RECT_GRID, const double& CONTOUR, const double C_MN, const double C_MX, const double& MAX, const bool is_debug);
