@@ -107,9 +107,8 @@ STRESSFIELD eigenvalue_eigenvector (STRESSTENSOR st) {
 
 	double denom = (b2 * a1) - (a2 * b1);
 
-	if (fabs(denom) < 1.0e-20) {
-		ASSERT2(false, "Computing eigenvector, small denom = "<< denom);
-	}
+	ASSERT_NE(denom, 0.0);               // Please keep it like this: We would like to
+	ASSERT_GE(fabs(denom), MINIMUM_DET); // distinguish between small and exact zero.
 
 	sf.EIGENVECTOR2.X = ((b1 * c2) - (b2 * c1)) / denom;
 	sf.EIGENVECTOR2.Y = - ((a1 * sf.EIGENVECTOR2.X) + c1) / b1;
