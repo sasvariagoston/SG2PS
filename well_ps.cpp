@@ -1688,8 +1688,20 @@ void PS_well_intervals_error (const vector <WELL_INTERVAL>& INTERVAL, ofstream& 
 
         ASSERT_NE (MAX_VAL, MIN_VAL);
 
-		const double Y1 = P.O1Y - LENGTH * ((MAX - MIN_VAL) / (MAX_VAL - MIN_VAL));
-		const double Y2 = P.O1Y - LENGTH * ((MIN - MIN_VAL) / (MAX_VAL - MIN_VAL));
+        const double Y1 = P.O1Y - LENGTH * ((MAX - MIN_VAL) / (MAX_VAL - MIN_VAL));
+        const double Y2 = P.O1Y - LENGTH * ((MIN - MIN_VAL) / (MAX_VAL - MIN_VAL));
+
+        ASSERT_LE (X1, X + (PL_WDT * P.A) + 1);
+        ASSERT_GE (X1, X - 1);
+
+        ASSERT_LE (X1 + WIDTH, X + (PL_WDT * P.A) + 1);
+        ASSERT_GE (X1 + WIDTH, X - 1);
+
+        ASSERT_LE (Y1, P.O1Y + 1);
+        ASSERT_GE (Y1, P.O1Y - LENGTH - 1);
+
+        ASSERT_LE (Y2, P.O1Y + 1);
+        ASSERT_GE (Y2, P.O1Y - LENGTH - 1);
 
         ASSERT_NE (MAX_ERROR, MIN_ERROR);
 
