@@ -10,10 +10,12 @@
 
 using namespace std;
 
-void throw_std_logic_error(const string& msg) {
+void throw_std_logic_error(const string& msg, const string& func, const string& loc) {
 
-	cout << flush;
-	cerr << msg << endl;
+    cout << flush;
+    string location = "In \'" + func + "\' at " + loc;
+    cerr << msg << endl;
+    cerr << location << endl;
 
-	throw logic_error(msg);
+    throw logic_error(msg + '\n' + location);
 }

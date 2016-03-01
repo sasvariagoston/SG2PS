@@ -16,47 +16,40 @@
 // LE   <=	Less or Equals
 // LT   <	Less Than
 // GE   >=	Greater or Equals
-// GT   >	Greater Than // FIXME Finish!
+// GT   >	Greater Than
 // CC approx. CirCa
 
-void throw_std_logic_error(const std::string& message);
+void throw_std_logic_error(const std::string& message, const std::string& func, const std::string& loc);
 
-#ifdef __GNUG__
-#define FUNCTION_NAME __PRETTY_FUNCTION__
-#else
-#define FUNCTION_NAME __FUNCTION__
-#endif
+#define HELPER_1_(x) #x
+#define HELPER_2_(x) HELPER_1_(x)
+#define FILE_LINE_ __FILE__ ":" HELPER_2_(__LINE__)
+#define THROW_STD_LOGIC_ERROR_(s) throw_std_logic_error(s, __FUNCTION__, FILE_LINE_)
 
 #define ASSERT(condition) { \
-	if (!(condition)) { \
-		std::ostringstream os; \
-		os << #condition << " failed in \'" << FUNCTION_NAME << "\' at "<< __FILE__ << ':' << __LINE__ ; \
-		throw_std_logic_error(os.str()); \
-	} \
+    if (!(condition)) { \
+        THROW_STD_LOGIC_ERROR_(#condition " failed"); \
+    } \
 }
 
 #define ASSERT2(condition, message) { \
-	if (!(condition)) { \
-		std::ostringstream os; \
-		os << #condition << " failed in \'" << FUNCTION_NAME << "\' at "<< __FILE__ << ':' << __LINE__ << '\n'; \
-		os << message ; \
-		throw_std_logic_error(os.str()); \
-	} \
+    if (!(condition)) { \
+        std::ostringstream os; \
+        os << #condition << " failed; " << message; \
+        THROW_STD_LOGIC_ERROR_(os.str()); \
+    } \
 }
 
 #define ASSERT_DEAD_END() { \
-		std::ostringstream os; \
-		os  << " Unexpected branch in \'" << FUNCTION_NAME << "\' at "<< __FILE__ << ':' << __LINE__ << '\n'; \
-		throw_std_logic_error(os.str()); \
+		THROW_STD_LOGIC_ERROR_("Unexpected branch"); \
 }
 
 #define ASSERT_EQ(val_1, val_2) { \
 	if (val_1!=val_2) { \
 		std::ostringstream os; \
 		os << #val_1 << " == " << #val_2 << " failed: "; \
-		os << val_1 << " != " << val_2 << '\n'; \
-		os << "In \'" << FUNCTION_NAME << "\' at "<< __FILE__ << ':' << __LINE__ ; \
-		throw_std_logic_error(os.str()); \
+		os << val_1 << " != " << val_2; \
+		THROW_STD_LOGIC_ERROR_(os.str()); \
 	} \
 }
 
@@ -64,9 +57,8 @@ void throw_std_logic_error(const std::string& message);
     if (val_1==val_2) { \
         std::ostringstream os; \
         os << #val_1 << " != " << #val_2 << " failed: "; \
-        os << val_1 << " == " << val_2 << '\n'; \
-        os << "In \'" << FUNCTION_NAME << "\' at "<< __FILE__ << ':' << __LINE__ ; \
-        throw_std_logic_error(os.str()); \
+        os << val_1 << " == " << val_2; \
+        THROW_STD_LOGIC_ERROR_(os.str()); \
     } \
 }
 
@@ -74,9 +66,8 @@ void throw_std_logic_error(const std::string& message);
 	if (val_1 < val_2) { \
 		std::ostringstream os; \
 		os << #val_1 << " >= " << #val_2 << " failed: "; \
-		os << val_1 << " < " << val_2 << '\n'; \
-		os << "In \'" << FUNCTION_NAME << "\' at "<< __FILE__ << ':' << __LINE__ ; \
-		throw_std_logic_error(os.str()); \
+		os << val_1 << " < " << val_2; \
+		THROW_STD_LOGIC_ERROR_(os.str()); \
 	} \
 }
 
@@ -84,9 +75,8 @@ void throw_std_logic_error(const std::string& message);
 	if (val_1 > val_2) { \
 		std::ostringstream os; \
 		os << #val_1 << " <= " << #val_2 << " failed: "; \
-		os << val_1 << " > " << val_2 << '\n'; \
-		os << "In \'" << FUNCTION_NAME << "\' at "<< __FILE__ << ':' << __LINE__ ; \
-		throw_std_logic_error(os.str()); \
+		os << val_1 << " > " << val_2; \
+		THROW_STD_LOGIC_ERROR_(os.str()); \
 	} \
 }
 
@@ -94,9 +84,8 @@ void throw_std_logic_error(const std::string& message);
 	if (val_1 <= val_2) { \
 		std::ostringstream os; \
 		os << #val_1 << " < " << #val_2 << " failed: "; \
-		os << val_1 << " >= " << val_2 << '\n'; \
-		os << "In \'" << FUNCTION_NAME << "\' at "<< __FILE__ << ':' << __LINE__ ; \
-		throw_std_logic_error(os.str()); \
+		os << val_1 << " >= " << val_2; \
+		THROW_STD_LOGIC_ERROR_(os.str()); \
 	} \
 }
 
@@ -104,9 +93,8 @@ void throw_std_logic_error(const std::string& message);
 	if (val_1 >= val_2) { \
 		std::ostringstream os; \
 		os << #val_1 << " < " << #val_2 << " failed: "; \
-		os << val_1 << " >= " << val_2 << '\n'; \
-		os << "In \'" << FUNCTION_NAME << "\' at "<< __FILE__ << ':' << __LINE__ ; \
-		throw_std_logic_error(os.str()); \
+		os << val_1 << " >= " << val_2; \
+		THROW_STD_LOGIC_ERROR_(os.str()); \
 	} \
 }
 
@@ -141,12 +129,11 @@ void print_values(std::ostream& os, const T (&array)[n]) {
     int count = number_of_true_values(arr); \
     if (count!=1) { \
         std::ostringstream os; \
-        os << "Expected exactly 1 true value but got " << count <<  " in \'" \
-           << FUNCTION_NAME << "\' at "<< __FILE__ << ':' << __LINE__ << '\n'; \
+        os << "Expected exactly 1 true value but got " << count << '\n'; \
         os << "Arguments were: " << #__VA_ARGS__ << '\n' ; \
         os << "Their values:   " ; \
         print_values(os, arr); \
-        throw_std_logic_error(os.str()); \
+        THROW_STD_LOGIC_ERROR_(os.str()); \
     } \
 }
 
@@ -155,12 +142,11 @@ void print_values(std::ostream& os, const T (&array)[n]) {
     int count = number_of_false_values(arr); \
     if (count < 1) { \
         std::ostringstream os; \
-        os << "Expected at least 1 false value but got " << count <<  " in \'" \
-           << FUNCTION_NAME << "\' at "<< __FILE__ << ':' << __LINE__ << '\n'; \
+        os << "Expected at least 1 false value but got " << count << '\n'; \
         os << "Arguments were: " << #__VA_ARGS__ << '\n' ; \
         os << "Their values:   " ; \
         print_values(os, arr); \
-        throw_std_logic_error(os.str()); \
+        THROW_STD_LOGIC_ERROR_(os.str()); \
     } \
 }
 
@@ -169,12 +155,11 @@ void print_values(std::ostream& os, const T (&array)[n]) {
     int count = number_of_true_values(arr); \
     if (count < 1) { \
         std::ostringstream os; \
-        os << "Expected at least 1 true value but got " << count <<  " in \'" \
-           << FUNCTION_NAME << "\' at "<< __FILE__ << ':' << __LINE__ << '\n'; \
+        os << "Expected at least 1 true value but got " << count << '\n'; \
         os << "Arguments were: " << #__VA_ARGS__ << '\n' ; \
         os << "Their values:   " ; \
         print_values(os, arr); \
-        throw_std_logic_error(os.str()); \
+        THROW_STD_LOGIC_ERROR_(os.str()); \
     } \
 }
 
@@ -190,12 +175,10 @@ bool has_nan_or_inf(const double (&array)[n]) {
     double arr[] = { __VA_ARGS__ } ; \
     if (has_nan_or_inf(arr)) { \
         std::ostringstream os; \
-        os << "NaN or infinity found in \'" \
-           << FUNCTION_NAME << "\' at "<< __FILE__ << ':' << __LINE__ << '\n'; \
-        os << "Arguments were: " << #__VA_ARGS__ << '\n' ; \
-        os << "Their values:   " ; \
+        os << "NaN or inf in: " << #__VA_ARGS__ << '\n' ; \
+        os << "Their values:  " ; \
         print_values(os, arr); \
-        throw_std_logic_error(os.str()); \
+        THROW_STD_LOGIC_ERROR_(os.str()); \
     } \
 }
 
@@ -211,10 +194,8 @@ make_array(T &&...t) {
     bool not_found = std::find(begin(arr), end(arr), val) == end(arr); \
     if (not_found) { \
         std::ostringstream os; \
-        os << "ASSERT_ONE_OF failed in \'" \
-           << FUNCTION_NAME << "\' at "<< __FILE__ << ':' << __LINE__ << '\n'; \
-        os << val << " not found in: " << #__VA_ARGS__ ; \
-        throw_std_logic_error(os.str()); \
+        os << "ASSERT_ONE_OF failed, " << val << " not found in: " << #__VA_ARGS__ ; \
+        THROW_STD_LOGIC_ERROR_(os.str()); \
     } \
 }
 

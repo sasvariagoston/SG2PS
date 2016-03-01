@@ -17,6 +17,9 @@ int main (int argc, char *argv[]) {
 
     enable_fpe(); // does nothing if ENABLE_FPE is not defined
 
+#ifdef DISABLE_EXCEPTION_HANDLING
+    real_main(argc, argv);
+#else
     try {
         real_main(argc, argv);
     }
@@ -62,6 +65,6 @@ int main (int argc, char *argv[]) {
         cout << "Unknown error, please report it (sg2ps@sg2ps.eu)!" << endl;
         return ExitStatus::UNKNOWN_ERROR;
     }
-
+#endif
     return ExitStatus::OK;
 }
