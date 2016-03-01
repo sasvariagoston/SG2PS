@@ -484,3 +484,72 @@ void PROCESS_WELL_GROUPS (const vector <vector <GDB> >& inGDB_G) {
 
 	return;
 }
+
+void cout_dbg_well_INTERVAL (const vector <WELL_INTERVAL> INT) {
+
+	cout << " -------- START WELL INTERVAL -------- " << endl;
+
+	cout << "INTERVAL with " << INT.size() << " records." << endl;
+
+	cout
+	<< "DEPTH" << '\t'
+	<< "INT_AV_DD.DIPDIR" << '\t'
+	<< "INT_AV_DD.DIP" << '\t'
+	<< "SIZE" << '\t'
+	<< "D_DERIV" << '\t'
+	<< "DD_DERIV" << '\t'
+	<< "INT_AV_D_STDEV" << '\t'
+	<< "INT_AV_DD_STDEV" << '\t'
+	<<endl;
+
+	for (size_t i = 0; i < INT.size(); i++) {
+
+		cout
+		<< INT.at(i).DEPTH << '\t'
+		<< INT.at(i).INT_AV_DD.DIPDIR << '\t'
+		<< INT.at(i).INT_AV_DD.DIP << '\t'
+		<< INT.at(i).SIZE << '\t'
+		<< INT.at(i).D_DERIV << '\t'
+		<< INT.at(i).DD_DERIV << '\t'
+		<< INT.at(i).INT_AV_D_STDEV << '\t'
+		<< INT.at(i).INT_AV_DD_STDEV << '\t'
+		<<endl;
+	}
+	cout << " --------- END WELL INTERVAL --------- " << endl;
+}
+
+void cout_dbg_well_INTERVAL (const vector <vector <WELL_INTERVAL> > INT) {
+
+	cout << " -------- START WELL INTERVAL -------- " << endl;
+
+	for (size_t i = 0; i < INT.size(); i++) {
+
+		cout << "SUB INTERVAL " << i << " with " << INT.at(i).size() << " records." << endl;
+
+		cout
+		<< "DEPTH" << '\t'
+		<< "INT_AV_DD.DIPDIR" << '\t'
+		<< "INT_AV_DD.DIP" << '\t'
+		<< "SIZE" << '\t'
+		<< "D_DERIV" << '\t'
+		<< "DD_DERIV" << '\t'
+		<< "INT_AV_D_STDEV" << '\t'
+		<< "INT_AV_DD_STDEV" << '\t'
+		<<endl;
+
+		for (size_t j = 0; j < INT.at(i).size(); j++) {
+
+			cout
+			<< INT.at(i).at(j).DEPTH << '\t'
+			<< INT.at(i).at(j).INT_AV_DD.DIPDIR << '\t'
+			<< INT.at(i).at(j).INT_AV_DD.DIP << '\t'
+			<< INT.at(i).at(j).SIZE << '\t'
+			<< INT.at(i).at(j).D_DERIV << '\t'
+			<< INT.at(i).at(j).DD_DERIV << '\t'
+			<< INT.at(i).at(j).INT_AV_D_STDEV << '\t'
+			<< INT.at(i).at(j).INT_AV_DD_STDEV << '\t'
+			<<endl;
+		}
+	}
+	cout << " --------- END WELL INTERVAL --------- " << endl;
+}

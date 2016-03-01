@@ -33,4 +33,7 @@ vector <WELL_INTERVAL> WELL_AVERAGE_D (const vector <GDB>& p_GDB);
 
 void PROCESS_WELL_GROUPS (const vector <vector <GDB> >& inGDB_G);
 
+void cout_dbg_well_INTERVAL (const vector <WELL_INTERVAL> INT);
+void cout_dbg_well_INTERVAL (const vector <vector <WELL_INTERVAL> > INT);
+
 #endif /* WELL_HPP_ */

@@ -1421,7 +1421,21 @@ void plot_peaks (ofstream& o, const double X, const double LENGTH, const double 
 		const double ACT_data_X = X + (PL_WDT * P.A * ((ACT_V - MN) / (MX - MN)));
 		const double ACT_data_Y = P.O1Y - (LENGTH * ((ACT_D - MIN_VAL) / (MAX_VAL - MIN_VAL)));
 
-		ACT_X.push_back (ACT_data_X);
+		if (!DIPDIR) {
+
+			ASSERT_LE (ACT_data_X, X + (PL_WDT * P.A) + 1);
+			ASSERT_GE (ACT_data_X, X - 1);
+		}
+		else {
+
+			ASSERT_LE (ACT_data_X, X + (PL_WDT * P.A) + 1);
+			ASSERT_GE (ACT_data_X, X - 1);
+
+		}
+		ASSERT_LE (ACT_data_Y, P.O1Y);
+		ASSERT_GE (ACT_data_Y, P.O1Y - LENGTH - 1);
+
+		ACT_X.push_back (ACT_data_Y);
 		ACT_Y.push_back (ACT_data_Y);
 	}
 
@@ -1544,14 +1558,16 @@ void plot_well_curve (const vector <WELL_INTERVAL>& IN, ofstream& o, const doubl
 			}
 		}
 	}
+	if (is_CHK_WELL()) STANDARD_OUTPUT_WELL_PS (DEPTH, VALUE, DIPDIR, TYPE);
+
+	vector <XY> PLOT = generate_xy_vector (VALUE, DEPTH, DIPDIR);
+
+	VALUE = generate_VALUE_from_XY_vector (PLOT);
+	DEPTH = generate_DEPTH_from_XY_vector (PLOT);
 
 	if 		(TYPE == "DERIVATE") 	PEAK_IDENTIFICATION (DEPTH, VALUE, "MAX");
 	else if (TYPE == "AVERAGE") 	PEAK_IDENTIFICATION (DEPTH, VALUE, "MINMAX");
 	else 							PEAK_IDENTIFICATION (DEPTH, VALUE, "NONE");
-
-	if (is_CHK_WELL()) STANDARD_OUTPUT_WELL_PS (DEPTH, VALUE, DIPDIR, TYPE);
-
-	vector <XY> PLOT = generate_xy_vector (VALUE, DEPTH, DIPDIR);
 
 	PLOT = cutting_points (PLOT);
 
@@ -1928,4 +1944,27 @@ vector <size_t> return_FREQUENCY_structure () {
 		OUT.push_back (F.at(i).size());
 	}
 	return OUT;
+}
+
+void dbg_cout_PEAK (const vector <PEAK_TO_PLOT> P) {
+
+	cout << " -------- START PEAKS -------- " << endl;
+
+	cout << "PEAK data set with " << P.size() << " records." << endl;
+
+	cout
+	<< "DEPTH" << '\t'
+	<< "VALUE" << '\t'
+	<< "COUNT" << '\t'
+	<<endl;
+
+	for (size_t i = 0; i < P.size(); i++) {
+
+		cout
+		<< P.at(i).DEPTH << '\t'
+		<< P.at(i).VALUE << '\t'
+		<< P.at(i).COUNT << '\t'
+		<<endl;
+	}
+	cout << " --------- END PEAKS --------- " << endl;
 }

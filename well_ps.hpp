@@ -85,4 +85,6 @@ void OUTPUT_TO_WELL_PS (const vector <vector <GDB> >& GDB_G);
 vector <size_t> return_INTERVAL_structure ();
 vector <size_t> return_FREQUENCY_structure ();
 
+void dbg_cout_PEAK (const vector <PEAK_TO_PLOT> P);
+
 #endif /* WELL_PS_HPP_ */
