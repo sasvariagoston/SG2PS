@@ -1770,6 +1770,18 @@ void PS_well_intervals (const vector <WELL_INTERVAL>& INTERVAL, ofstream& o, con
 		const double Y1 = P.O1Y - LENGTH * ((MAX - MIN_VAL) / (MAX_VAL - MIN_VAL));
 		const double Y2 = P.O1Y - LENGTH * ((MIN - MIN_VAL) / (MAX_VAL - MIN_VAL));
 
+		ASSERT_LE (X1, X + (PL_WDT * P.A) + 1);
+		ASSERT_GE (X1, X - 1);
+
+		ASSERT_LE (X1 + WIDTH, X + (PL_WDT * P.A) + 1);
+		ASSERT_GE (X1 + WIDTH, X - 1);
+
+		ASSERT_LE (Y1, P.O1Y + 1);
+		ASSERT_GE (Y1, P.O1Y - LENGTH - 1);
+
+		ASSERT_LE (Y2, P.O1Y + 1);
+		ASSERT_GE (Y2, P.O1Y - LENGTH - 1);
+
 		double CLR_RATIO = 0.0;
 
 		if (! is_WELL_INTERVAL_DATANUMBER()) {
