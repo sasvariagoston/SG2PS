@@ -1357,18 +1357,15 @@ void plot_curve (const vector <double> DEPTH, const vector <double> VALUE, ofstr
 		const double ACT_data_Y = P.O1Y - (LENGTH * ((ACT_D - MIN_VAL) / (MAX_VAL - MIN_VAL)));
 		const double NXT_data_Y = P.O1Y - (LENGTH * ((NXT_D - MIN_VAL) / (MAX_VAL - MIN_VAL)));
 
-		if (!DIPDIR) {
+		ASSERT_LE (ACT_data_X, X + (PL_WDT * P.A) + 1);
+		ASSERT_GE (ACT_data_X, X - 1);
+		ASSERT_LE (NXT_data_X, X + (PL_WDT * P.A) + 1);
+		ASSERT_GE (NXT_data_X, X - 1);
 
-			ASSERT_LE (ACT_data_X, X + (PL_WDT * P.A) + 1);
-			ASSERT_GE (ACT_data_X, X - 1);
-		}
-		else {
-
-			ASSERT_LE (ACT_data_X, X + (PL_WDT * P.A) + 1);
-			ASSERT_GE (ACT_data_X, X - 1);
-		}
 		ASSERT_LE (ACT_data_Y, P.O1Y);
 		ASSERT_GE (ACT_data_Y, P.O1Y - LENGTH - 1);
+		ASSERT_LE (NXT_data_Y, P.O1Y);
+		ASSERT_GE (NXT_data_Y, P.O1Y - LENGTH - 1);
 
 		ACT_X.push_back (ACT_data_X);
 		ACT_Y.push_back (ACT_data_Y);
@@ -1378,6 +1375,7 @@ void plot_curve (const vector <double> DEPTH, const vector <double> VALUE, ofstr
 	ASSERT_EQ (ACT_X.size(), ACT_Y.size());
 	ASSERT_EQ (ACT_Y.size(), NXT_X.size());
 	ASSERT_EQ (NXT_X.size(), NXT_Y.size());
+	ASSERT_EQ (NXT_Y.size(), ACT_X.size());
 
 	newpath_PS(o);
 	color_PS (o, CRV_CLR);
@@ -1434,17 +1432,9 @@ void plot_peaks (ofstream& o, const double X, const double LENGTH, const double 
 		const double ACT_data_X = X + (PL_WDT * P.A * ((ACT_V - MN) / (MX - MN)));
 		const double ACT_data_Y = P.O1Y - (LENGTH * ((ACT_D - MIN_VAL) / (MAX_VAL - MIN_VAL)));
 
-		if (!DIPDIR) {
+		ASSERT_LE (ACT_data_X, X + (PL_WDT * P.A) + 1);
+		ASSERT_GE (ACT_data_X, X - 1);
 
-			ASSERT_LE (ACT_data_X, X + (PL_WDT * P.A) + 1);
-			ASSERT_GE (ACT_data_X, X - 1);
-		}
-		else {
-
-			ASSERT_LE (ACT_data_X, X + (PL_WDT * P.A) + 1);
-			ASSERT_GE (ACT_data_X, X - 1);
-
-		}
 		ASSERT_LE (ACT_data_Y, P.O1Y);
 		ASSERT_GE (ACT_data_Y, P.O1Y - LENGTH - 1);
 
@@ -1630,6 +1620,12 @@ void plot_well_measurements (const vector <GDB>& inGDB, ofstream& o, const doubl
 		}
 		const double data_X = PL_WDT * P.A * ((DATA - MN) / (MX - MN));
 		const double data_Y = LENGTH * ((inGDB.at(i).DEPTH - MIN_VAL) / (MAX_VAL - MIN_VAL));
+
+		ASSERT_LE (data_X, (PL_WDT * P.A) + 1);
+		ASSERT_GE (data_X, - 1);
+
+		ASSERT_GE (data_Y, -1);
+		ASSERT_LE (data_Y, LENGTH + 1);
 
 		translate_PS (o, X + data_X, P.O1Y - data_Y, 3);
 
