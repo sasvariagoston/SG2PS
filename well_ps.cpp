@@ -464,7 +464,7 @@ double return_MAX_value (const vector <GDB>& inGDB, const double STEP) {
 
 	for (double i = STEP * 2000.0; i > 0.0; i-=STEP) {
 
-		if (has_GDB_DEPTH_value_in_range (temp, i, i + STEP)) return i + STEP;
+		if (has_GDB_DEPTH_value_in_range (temp, i - STEP, i)) return i - 1;
 	}
 	return NaN();
 }
@@ -1087,7 +1087,14 @@ void plot_well_faults (ofstream& o, const double X, const double LENGTH, const d
 		const double VALUE =(count / MAX) * (count / MAX);
 
 		const double ACT_data_X = X + (PL_WDT * P.A * VALUE);
+
 		const double ACT_data_Y = P.O1Y - (LENGTH * ((DEPTH - MIN_VAL) / (MAX_VAL - MIN_VAL)));
+
+		ASSERT_LE (ACT_data_X, X + (PL_WDT * P.A) + 1);
+		ASSERT_GE (ACT_data_X, X - 1);
+
+		ASSERT_LE (ACT_data_Y, P.O1Y + 1);
+		ASSERT_GE (ACT_data_Y, P.O1Y - LENGTH - 1);
 
 		newpath_PS (o);
 		moveto_PS (o, X, ACT_data_Y, 3);
@@ -1785,7 +1792,7 @@ void INIT_FAULT_POSITIONS (const double MIN_VAL, const double MAX_VAL) {
 
 		PEAK_TO_PLOT buf;
 
-		buf.DEPTH = i + (0.5);
+		buf.DEPTH = i;
 		buf.COUNT = 0;
 
 		FAULTS.push_back (buf);
@@ -1858,7 +1865,6 @@ void WELL_PS (const vector <GDB>& inGDB, const vector <WELL_INTERVAL>& INT, cons
 	X = X + (PL_WDT * 0.5 + PL_GP) * P.A;
 	PS_well_coordinate_axes_FAULTS (OPS, X, LENGTH);
 	plot_well_faults (OPS, X, LENGTH, MIN_VAL, MAX_VAL);
-
 	PS_eof (OPS);
 
 	return;
