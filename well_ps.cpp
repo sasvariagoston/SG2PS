@@ -1357,6 +1357,19 @@ void plot_curve (const vector <double> DEPTH, const vector <double> VALUE, ofstr
 		const double ACT_data_Y = P.O1Y - (LENGTH * ((ACT_D - MIN_VAL) / (MAX_VAL - MIN_VAL)));
 		const double NXT_data_Y = P.O1Y - (LENGTH * ((NXT_D - MIN_VAL) / (MAX_VAL - MIN_VAL)));
 
+		if (!DIPDIR) {
+
+			ASSERT_LE (ACT_data_X, X + (PL_WDT * P.A) + 1);
+			ASSERT_GE (ACT_data_X, X - 1);
+		}
+		else {
+
+			ASSERT_LE (ACT_data_X, X + (PL_WDT * P.A) + 1);
+			ASSERT_GE (ACT_data_X, X - 1);
+		}
+		ASSERT_LE (ACT_data_Y, P.O1Y);
+		ASSERT_GE (ACT_data_Y, P.O1Y - LENGTH - 1);
+
 		ACT_X.push_back (ACT_data_X);
 		ACT_Y.push_back (ACT_data_Y);
 		NXT_X.push_back (NXT_data_X);
