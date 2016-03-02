@@ -1833,6 +1833,8 @@ void SETUP_FAULT_POSITIONS (const double MIN_VAL, const double MAX_VAL) {
 
 void WELL_PS (const vector <GDB>& inGDB, const vector <WELL_INTERVAL>& INT, const vector <WELL_FREQUENCY>& FREQ, ofstream& OPS, const double MIN_VAL, const double MAX_VAL, const double STEP) {
 
+	ASSERT (inGDB.size() > 1);
+
 	const PAPER P = RETURN_PAPER();
 	SETUP_FAULT_POSITIONS (MIN_VAL, MAX_VAL);
 
@@ -1912,47 +1914,47 @@ void OUTPUT_TO_WELL_PS (const vector <vector <GDB> >& GDB_G) {
 
 		const string DT = temp.at(0).DATATYPE;
 
-		setup_ACTUAL_LOCATION (temp.at(0).LOC);
-		setup_ACTUAL_DATATYPE (DT);
-		setup_ACTUAL_FORMATION(temp.at(0).FORMATION);
-		setup_ACTUAL_GROUPCODE(temp.at(0).GC);
-
-		const bool PROCESS_AS_WELL = is_allowed_to_process_as_well (DT);
-
-		if (PROCESS_AS_WELL) {
-
-			const double MIN = temp.at(0).DEPTH;
-			const double MAX = temp.at(temp.size() - 1).DEPTH;
-
-			const double STEP = well_axes_step (MIN, MAX);
-
-			const double MIN_VAL = return_MIN_value (temp, STEP);
-			const double MAX_VAL = return_MAX_value (temp, STEP);
+		if (is_allowed_to_process_as_well (DT)) {
 
 			INIT_PAPER (true);
 
 			const bool GDB_OK = temp.size() > 1;
-
-			const bool MIN_VAL_OK = MIN_VAL > 0.0;
-			ASSERT_FINITE(MAX_VAL, MIN_VAL);
-			const bool MAX_VAL_OK = MAX_VAL > MIN_VAL;
-
 			const bool INT_OK = INTERVAL.at(i).size() > 0;
 			const bool FRQ_OK = FREQUENCY.at(i).size() > 0;
 
-			if (GDB_OK && MIN_VAL_OK && MAX_VAL_OK && INT_OK && FRQ_OK) {
+			if (GDB_OK && INT_OK && FRQ_OK) {
 
-				string PS_NAME = generate_ACTUAL_WELL_PS_NAME ();
+				const double MIN = temp.at(0).DEPTH;
+				const double MAX = temp.at(temp.size() - 1).DEPTH;
 
-				ofstream OPS (PS_NAME.c_str());
+				const double STEP = well_axes_step (MIN, MAX);
 
-				PS_well_header (OPS);
+				const double MIN_VAL = return_MIN_value (temp, STEP);
+				const double MAX_VAL = return_MAX_value (temp, STEP);
 
-				PS_well_border (OPS);
+				const bool MIN_VAL_OK = MIN_VAL > 0.0;
+				ASSERT_FINITE(MAX_VAL, MIN_VAL);
+				const bool MAX_VAL_OK = MAX_VAL > MIN_VAL;
 
-				PS_well_symbols (OPS);
+				if (MIN_VAL_OK && MAX_VAL_OK) {
 
-				WELL_PS (temp, INTERVAL.at(i), FREQUENCY.at(i), OPS, MIN_VAL, MAX_VAL, STEP);
+					setup_ACTUAL_LOCATION (temp.at(0).LOC);
+					setup_ACTUAL_DATATYPE (DT);
+					setup_ACTUAL_FORMATION(temp.at(0).FORMATION);
+					setup_ACTUAL_GROUPCODE(temp.at(0).GC);
+
+					string PS_NAME = generate_ACTUAL_WELL_PS_NAME ();
+
+					ofstream OPS (PS_NAME.c_str());
+
+					PS_well_header (OPS);
+
+					PS_well_border (OPS);
+
+					PS_well_symbols (OPS);
+
+					WELL_PS (temp, INTERVAL.at(i), FREQUENCY.at(i), OPS, MIN_VAL, MAX_VAL, STEP);
+				}
 			}
 		}
 	}
