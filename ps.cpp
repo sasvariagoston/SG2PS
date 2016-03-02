@@ -771,6 +771,10 @@ void PS_mohr_circle (const vector <GDB>& inGDB, ofstream& o, const CENTER& mohrc
 	const double PLOT_S2_X = S2_S3_center + S2_S3_radius;
 	const double PLOT_S3_X = S2_S3_center - S2_S3_radius;
 
+	ASSERT_FINITE(S1_S3_center, S2_S3_center, S1_S2_center);
+	ASSERT_FINITE(S1_S3_radius, S2_S3_radius, S1_S2_radius);
+	ASSERT_FINITE(PLOT_S1_X, PLOT_S2_X, PLOT_S3_X);
+
 	ASSERT_GE (PLOT_S1_X, PLOT_S2_X);
 	ASSERT_GE (PLOT_S2_X, PLOT_S3_X);
 
@@ -813,7 +817,7 @@ void PS_mohr_circle (const vector <GDB>& inGDB, ofstream& o, const CENTER& mohrc
 			ASSERT_LE (PLOT_X, PLOT_S1_X + 1);
 			ASSERT_GE (PLOT_X, PLOT_S3_X - 1);
 
-			ASSERT_LE (PLOT_Y, mohrcenter.Y + mohrcenter.radius + 1);
+			ASSERT_LE (PLOT_Y, mohrcenter.Y + S1_S3_radius + 1);
 			ASSERT_GE (PLOT_Y, mohrcenter.Y - 1);
 
 			const VCTR POINT = declare_vector (PLOT_X, PLOT_Y, 0.0);
@@ -1682,6 +1686,7 @@ void PS_GDB (const vector <GDB>& inGDB, ofstream& o, bool TILT) {
 	center.radius = P.R;
 	rosecenter.radius = P.R;
 	vrosecenter.radius = P.R;
+	mohrcenter.radius = -999;
 
 	if (!TILT) {
 
