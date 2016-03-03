@@ -1040,15 +1040,17 @@ void PEAK_IDENTIFICATION (const vector <double>& DEPTH, const vector <double>& V
 
 	vector <PEAK_TO_PLOT> PK = PEAK;
 
-	const size_t STEP =  string_to_size_t (double_to_string ((PEAK.size() / 10.0), 0));
+	const size_t STEP = string_to_size_t (double_to_string ((PEAK.size() / 10.0), 0));
 
-	for (size_t i = 2; i < PK.size(); i+=STEP) {
+	if (STEP > 0) {
 
-		const vector <PEAK_TO_PLOT> FL_PK = generate_flattened_curve (i);
+		for (size_t i = 2; i < PK.size(); i+=STEP) {
 
-		count_real_peaks (FL_PK, METHOD);
+			const vector <PEAK_TO_PLOT> FL_PK = generate_flattened_curve (i);
+
+			count_real_peaks (FL_PK, METHOD);
+		}
 	}
-
 	rescale_peaks ();
 
 	if (is_CHK_WELL()) STANDARD_OUTPUT_PEAKS (METHOD);
