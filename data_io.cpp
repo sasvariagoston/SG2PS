@@ -520,6 +520,8 @@ vector <vector <GDB> > PROCESS_GROUPS (const vector <vector <GDB> >& inGDB_G, co
 
 			if (IS_STRIAE) hasoffset_GDB = return_striae_with_offset (process_GDB);//was testGDB
 
+			ASSERT_LE (hasoffset_GDB.size(), process_GDB.size());
+
 			const bool ENOUGH_STRIAE = hasoffset_GDB.size() >= minimum_independent_dataset ();
 
 			if (ENOUGH_HOMOGENEOUS && ENOUGH_STRIAE) {

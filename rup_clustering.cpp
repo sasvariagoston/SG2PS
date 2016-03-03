@@ -113,6 +113,8 @@ RUP_table return_cost_function_member (const vector <double>& in, const size_t b
 
 size_t return_DATA_ideal_bin_number (const vector <double>& in) {
 
+	if (in.size() == 1) return 1;
+
 	vector <RUP_table> RT;
 
 	for (size_t bin_number = 1; bin_number < sqrt(static_cast<double>(in.size())) * 2.0; bin_number++) {
