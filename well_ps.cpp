@@ -1078,6 +1078,8 @@ void plot_well_faults (ofstream& o, const double X, const double LENGTH, const d
 		if (FAULTS.at(i).COUNT > MAX) MAX = FAULTS.at(i).COUNT;
 	}
 
+	if (MAX == 0) return;
+
 	for (size_t i = 0; i < FAULTS.size(); i++) {
 
 		const double DEPTH = FAULTS.at(i).DEPTH;
@@ -1235,7 +1237,7 @@ vector <vector <XY> >  generate_xy_vector_vector (const vector <XY>& IN) {
 
 		const bool LAST = i == IN.size() - 2;
 
-		ASSERT_LT(i, IN.size());
+		ASSERT_LT (i, IN.size());
 		XY buf = IN.at(i);
 		BUF.push_back (buf);
 
@@ -1572,6 +1574,8 @@ void plot_well_curve (const vector <WELL_INTERVAL>& IN, ofstream& o, const doubl
 
 	vector <XY> PLOT = generate_xy_vector (VALUE, DEPTH, DIPDIR);
 
+	if (PLOT.size() == 0) return;
+
 	VALUE = generate_VALUE_from_XY_vector (PLOT);
 	DEPTH = generate_DEPTH_from_XY_vector (PLOT);
 
@@ -1581,9 +1585,15 @@ void plot_well_curve (const vector <WELL_INTERVAL>& IN, ofstream& o, const doubl
 
 	PLOT = cutting_points (PLOT);
 
+	if (PLOT.size() == 0) return;
+
 	vector <vector <XY> > PLOT_V = generate_xy_vector_vector (PLOT);
 
+	if (PLOT_V.size() == 0) return;
+
 	PLOT_V = tidy_xy_vector_vector (PLOT_V);
+
+	if (PLOT_V.size() == 0) return;
 
 	for (size_t i = 0; i < PLOT_V.size(); i++) {
 
@@ -1648,6 +1658,8 @@ void plot_well_measurements (const vector <GDB>& inGDB, ofstream& o, const doubl
 
 void PS_well_intervals_error (const vector <WELL_INTERVAL>& INTERVAL, ofstream& o, const double X, const double LENGTH, const double MIN_VAL, const double MAX_VAL, const bool DIPDIR) {
 
+	if (INTERVAL.size() < 2) return;
+
 	const PAPER P = RETURN_PAPER();
 
 	double  MIN_ERROR = 999.0;
@@ -1703,9 +1715,13 @@ void PS_well_intervals_error (const vector <WELL_INTERVAL>& INTERVAL, ofstream& 
         ASSERT_LE (Y2, P.O1Y + 1);
         ASSERT_GE (Y2, P.O1Y - LENGTH - 1);
 
-        ASSERT_NE (MAX_ERROR, MIN_ERROR);
+		double CLR_RATIO = 0.0;
 
-		double CLR_RATIO = 100 * (1.0 * (SD - MIN_ERROR)) / (MAX_ERROR - MIN_ERROR);
+		if (MAX_ERROR > MIN_ERROR) {
+
+			//ASSERT_NE (MAX_ERROR, MIN_ERROR);
+			CLR_RATIO = 100 * (1.0 * (SD - MIN_ERROR)) / (MAX_ERROR - MIN_ERROR);
+		}
 
 		if (INTERVAL.at(i).SIZE == 0) CLR_RATIO = 0.0;
 
@@ -1784,7 +1800,7 @@ void PS_well_intervals (const vector <WELL_INTERVAL>& INTERVAL, ofstream& o, con
 
 		double CLR_RATIO = 0.0;
 
-		if (! is_WELL_INTERVAL_DATANUMBER()) {
+		if (! is_WELL_INTERVAL_DATANUMBER() && INTERVAL.at(i).SIZE > 1) {
 
 	        ASSERT_NE(MAX_DATA, MIN_DATA);
 			CLR_RATIO = 100 * (1.0 * (INTERVAL.at(i).SIZE) - MIN_DATA) / (MAX_DATA - MIN_DATA);
