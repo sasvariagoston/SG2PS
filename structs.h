@@ -20,6 +20,14 @@ struct VCTR {
 	double X, Y, Z;
 };
 
+struct STRESSAXIS {
+
+	STRESSAXIS () { EIGENVALUE=NaN(); }
+
+	double EIGENVALUE;
+	VCTR EIGENVECTOR;
+};
+
 struct DIPDIR_DIP {
 
 	DIPDIR_DIP() { DIPDIR=DIP=NaN(); }

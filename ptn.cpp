@@ -116,6 +116,8 @@ STRESSFIELD sf_PTN (const vector <GDB>& inGDB) {
 	sf.EIGENVALUE.Y = sf_ptn.EIGENVALUE.Y;
 	sf.EIGENVECTOR2 = flip_vector (sf_ptn.EIGENVECTOR1);
 
+	sf = sort_stress_axes (sf);
+
 	sf = correct_SF_to_fit_D (sf);
 
 	sf = computestressfield_DXDYDZ(sf);

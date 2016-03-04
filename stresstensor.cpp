@@ -14,6 +14,7 @@
 #include "assertions.hpp"
 #include "brute_force.hpp"
 #include "common.h"
+#include "data_sort.hpp"
 #include "rgf.h"
 #include "stresstensor.hpp"
 
@@ -135,7 +136,53 @@ STRESSFIELD eigenvalue_eigenvector (STRESSTENSOR st) {
 	if (is_in_range(0.9999, 1.0001, sf.EIGENVECTOR3.X)) sf.EIGENVECTOR3.Z = 1.0 - 1E-8;
 	sf.EIGENVECTOR3 = unitvector (sf.EIGENVECTOR3, true);
 
+	sf = sort_stress_axes (sf);
+
 	return sf;
+}
+
+vector <STRESSAXIS> stressfield_to_stress_axes (const STRESSFIELD& sf) {
+
+	STRESSAXIS E1;
+	E1.EIGENVALUE = sf.EIGENVALUE.X;
+	E1.EIGENVECTOR = sf.EIGENVECTOR1;
+
+	STRESSAXIS E2;
+	E2.EIGENVALUE = sf.EIGENVALUE.Y;
+	E2.EIGENVECTOR = sf.EIGENVECTOR2;
+
+	STRESSAXIS E3;
+	E3.EIGENVALUE = sf.EIGENVALUE.Z;
+	E3.EIGENVECTOR = sf.EIGENVECTOR3;
+
+	return {E1, E2, E3};
+}
+
+STRESSFIELD stress_axes_to_stressfield (const vector <STRESSAXIS>& sa) {
+
+	ASSERT (sa.size() == 3);
+
+	STRESSFIELD OUT;
+
+	OUT.EIGENVALUE.X = sa.at(0).EIGENVALUE;
+	OUT.EIGENVECTOR1 = sa.at(0).EIGENVECTOR;
+
+	OUT.EIGENVALUE.Y = sa.at(1).EIGENVALUE;
+	OUT.EIGENVECTOR2 = sa.at(1).EIGENVECTOR;
+
+	OUT.EIGENVALUE.Z = sa.at(2).EIGENVALUE;
+	OUT.EIGENVECTOR3 = sa.at(2).EIGENVECTOR;
+
+	return OUT;
+}
+
+STRESSFIELD sort_stress_axes (const STRESSFIELD& sf) {
+
+	vector <STRESSAXIS> SA = stressfield_to_stress_axes (sf);
+
+	SA = sort_by_stressaxes (SA);
+
+	return stress_axes_to_stressfield (SA);
 }
 
 STRESSTENSOR stresstensor_from_eigenvalue_eigenvector (STRESSFIELD sf) {

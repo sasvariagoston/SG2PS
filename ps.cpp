@@ -1406,7 +1406,7 @@ void PS_polepoint (const GDB& i, ofstream& o, const double X, const double Y, co
 
 	const double D = points_distance (ORIGO, POLE);
 
-	ASSERT_LE (D, R-1);
+	ASSERT_LE (D, R+1);
 
 	string CLR = "";
 

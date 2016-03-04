@@ -199,3 +199,17 @@ vector <RUP_table> sort_by_C (const vector <RUP_table>& RT) {
 
 	return OUT;
 }
+
+bool by_eigenvalue (const STRESSAXIS& x, const STRESSAXIS& y) {
+
+	return x.EIGENVALUE > y.EIGENVALUE;
+}
+
+vector <STRESSAXIS> sort_by_stressaxes (const vector <STRESSAXIS>& in) {
+
+	vector <STRESSAXIS> OUT = in;
+
+	stable_sort (OUT.begin(), OUT.end(), by_eigenvalue);
+
+	return OUT;
+}

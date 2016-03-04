@@ -10,6 +10,9 @@ void check_stress_tensor_singularity(const STRESSTENSOR& st);
 STRESSTENSOR fix_stress_tensor_singularity(STRESSTENSOR& st);
 
 STRESSFIELD eigenvalue_eigenvector (STRESSTENSOR st);
+vector <STRESSAXIS> stressfield_to_stress_axes (const STRESSFIELD& sf);
+STRESSFIELD stress_axes_to_stressfield (const vector <STRESSAXIS>& sa);
+STRESSFIELD sort_stress_axes (const STRESSFIELD& sf);
 STRESSTENSOR stresstensor_from_eigenvalue_eigenvector (STRESSFIELD sf);
 
 STRESSFIELD stress_regime (const STRESSFIELD& in);

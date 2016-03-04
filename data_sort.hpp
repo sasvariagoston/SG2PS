@@ -51,4 +51,7 @@ vector <TRJ> SORT_TRJ (const vector <TRJ>& inTRJ, const string SORT);
 bool by_C(const RUP_table& x, const RUP_table& y);
 vector <RUP_table> sort_by_C (const vector <RUP_table>& RT);
 
+bool by_eigenvalue (const STRESSAXIS& x, const STRESSAXIS& y);
+vector <STRESSAXIS> sort_by_stressaxes (const vector <STRESSAXIS>& in);
+
 #endif /* DATA_SORT_HPP_ */
