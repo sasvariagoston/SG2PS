@@ -496,15 +496,18 @@ void ps_well_formation_tops (ofstream& o, const double X, const double LENGTH, c
 
 	for (size_t i = 0; i < WTP.size(); i++) {
 
-		const double Y = LENGTH * ((WTP.at(i).DEPTH - MIN_VAL) / (MAX_VAL - MIN_VAL));
+		if (is_in_range(MIN_VAL, MAX_VAL, WTP.at(i).DEPTH)) {
 
-		moveto_PS (o, X + 900.0 * P.D, P.O1Y - Y, 3);
-		lineto_PS (o, X + 150.0 * P.D, P.O1Y - Y, 3);
-		stroke_PS(o);
+			const double Y = LENGTH * ((WTP.at(i).DEPTH - MIN_VAL) / (MAX_VAL - MIN_VAL));
 
-		const string T = "TOP " + WTP.at(i).FORMATION + " (" + double_to_string (WTP.at(i).DEPTH, 0) + ")";
+			moveto_PS (o, X + 900.0 * P.D, P.O1Y - Y, 3);
+			lineto_PS (o, X + 150.0 * P.D, P.O1Y - Y, 3);
+			stroke_PS(o);
 
-		text_PS (o, X + 5.0 * P.D, P.O1Y -Y - 5 * P.D, 3, T);
+			const string T = "TOP " + WTP.at(i).FORMATION + " (" + double_to_string (WTP.at(i).DEPTH, 0) + ")";
+
+			text_PS (o, X + 5.0 * P.D, P.O1Y -Y - 5 * P.D, 3, T);
+		}
 	}
 	return;
 }
