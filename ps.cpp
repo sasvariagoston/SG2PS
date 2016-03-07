@@ -464,6 +464,19 @@ void PS_stress_scale (ofstream& o) {
 	return;
 }
 
+void PS_dump_ps_path (ofstream& o) {
+
+	const PAPER P = RETURN_PAPER();
+
+	const string TXT = "File location: " + capslock (generate_ACTUAL_PS_NAME_for_ps ());
+
+	color_PS (o, "0 0 0");
+
+	font_PS (o, "ArialNarrow", 8);
+
+	text_PS (o, 20.0 * P.A, P.A + 5.0 * P.D, 3, TXT);
+}
+
 void PS_net (ofstream& o) {
 
 	const PAPER P = RETURN_PAPER();
@@ -574,7 +587,7 @@ void PS_net (ofstream& o) {
 		stroke_PS (o);
 	}
 	font_PS(o, "ArialNarrow", 8);
-	text_PS (o, 20.0 * P.A, P.A + 5.0 * P.D, 3, "Plotted by SG2PS - for reference see www.sg2ps.eu webpage.");
+	text_PS (o, 15.0 * P.A, P.A + 5.0 * P.D, 3, "Plotted by SG2PS - for reference see www.sg2ps.eu webpage.");
 
 	PS_eof (o);
 
@@ -2753,6 +2766,8 @@ void OUTPUT_TO_PS (const vector <vector <GDB> >& in_GDB_G, const vector <vector 
 			PS_GDB (t_GDB_G.at(i), OPS, true);
 
 			PS_datanumber_averagebedding (in_GDB_G.at(i).at(0), OPS, in_GDB_G.at(i).size());
+
+			PS_dump_ps_path (OPS);
 
 			PS_net (OPS);
 		}

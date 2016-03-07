@@ -6,6 +6,7 @@
 #include <iostream>
 
 #include "assertions.hpp"
+#include "filename.hpp"
 #include "platform_dep.hpp"
 #include "rgf.h"
 #include "run_mode.h"
@@ -206,6 +207,27 @@ void check_dataseparation_mode () {
 	const bool by_RUPANG = is_GROUPSEPARATION_RUPANG ();
 
 	ASSERT_EXACTLY_ONE_TRUE (IGNORE, by_GROUPCODE, by_KMEANS, by_RUPANG);
+}
+
+string generate_ACTUAL_PS_NAME_for_ps () {
+
+	const string PS = generate_ACTUAL_PS_NAME ();
+
+	string OUT;
+
+	for (size_t i = 0; i < PS.size(); i++) {
+
+		if (PS.at(i) == '\\') {
+
+			OUT.push_back (' ');
+			OUT.push_back ('/');
+			OUT.push_back (' ');
+		}
+		else OUT.push_back (PS.at(i));
+	}
+	ASSERT_GE (OUT.size(), PS.size());
+
+	return OUT;
 }
 
 string generate_ACTUAL_PS_NAME () {

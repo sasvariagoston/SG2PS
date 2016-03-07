@@ -80,6 +80,9 @@ void PS_well_intervals (const vector <WELL_INTERVAL>& INTERVAL, ofstream& o, con
 void INIT_FAULT_POSITIONS (const double MIN_VAL, const double MAX_VAL);
 void SETUP_FAULT_POSITIONS (const double MIN_VAL, const double MAX_VAL);
 void WELL_PS (const vector <GDB>& inGDB, const vector <WELL_INTERVAL>& INT, const vector <WELL_FREQUENCY>& FREQ, ofstream& OPS, const double MIN_VAL, const double MAX_VAL, const double STEP);
+
+void PS_dump_ps_well_path (ofstream& o);
+
 void OUTPUT_TO_WELL_PS (const vector <vector <GDB> >& GDB_G);
 
 vector <size_t> return_INTERVAL_structure ();

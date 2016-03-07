@@ -5,6 +5,8 @@
 #ifndef FILENAME_HPP_
 #define FILENAME_HPP_
 
+#include "common.h"
+
 void generate_DATE_TIME ();
 string return_DATE_TIME ();
 
@@ -46,6 +48,7 @@ string return_ACTUAL_FORMATION ();
 
 void check_dataseparation_mode ();
 
+string generate_ACTUAL_PS_NAME_for_ps ();
 string generate_ACTUAL_PS_NAME ();
 string generate_ACTUAL_AVERAGE_RGF_NAME ();
 string generate_ACTUAL_RGF_NAME ();

@@ -1914,6 +1914,22 @@ void WELL_PS (const vector <GDB>& inGDB, const vector <WELL_INTERVAL>& INT, cons
 	return;
 }
 
+void PS_dump_ps_well_path (ofstream& o) {
+
+	const PAPER P = RETURN_PAPER();
+
+	const string TXT = "File location: " + capslock (generate_ACTUAL_PS_NAME_for_ps ());
+
+	font_PS (o, "ArialNarrow", 8);
+
+	color_PS (o, "0 0 0");
+
+	text_PS (o, 9.0 * P.A, P.A + 5.0 * P.D, 3, TXT);
+
+	text_PS (o, 2.0 * P.A, P.A + 5.0 * P.D, 3, "Plotted by SG2PS - for reference see www.sg2ps.eu webpage.");
+
+}
+
 void OUTPUT_TO_WELL_PS (const vector <vector <GDB> >& GDB_G) {
 
 	if (is_WELLDATA_NO()) return;
@@ -1970,6 +1986,8 @@ void OUTPUT_TO_WELL_PS (const vector <vector <GDB> >& GDB_G) {
 					PS_well_border (OPS);
 
 					PS_well_symbols (OPS);
+
+					PS_dump_ps_well_path (OPS);
 
 					WELL_PS (temp, INTERVAL.at(i), FREQUENCY.at(i), OPS, MIN_VAL, MAX_VAL, STEP);
 				}
