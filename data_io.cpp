@@ -78,6 +78,7 @@ void create_required_folders (const vector <GDB>& inGDB) {
 			}
 		}
 	}
+	return;
 }
 
 namespace {

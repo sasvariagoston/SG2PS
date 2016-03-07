@@ -81,6 +81,9 @@ void PS_SYMBOLS_INVERSION (ofstream& o);
 
 void PS_GDB (const vector <GDB>& inGDB, ofstream& o, bool TILT);
 void PS_GDB_DATA (const vector <GDB>& inGDB, ofstream& o, const CENTER& center);
+
+size_t anything_to_plot_on_ps (const vector <vector <GDB> >& inGDB_G);
+
 void OUTPUT_TO_PS (const vector <vector <GDB> >& in_GDB_G, const vector <vector <GDB> >& t_GDB_G);
 
 #endif

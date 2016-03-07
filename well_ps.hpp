@@ -83,6 +83,8 @@ void WELL_PS (const vector <GDB>& inGDB, const vector <WELL_INTERVAL>& INT, cons
 
 void PS_dump_ps_well_path (ofstream& o);
 
+size_t anything_to_plot_on_well_ps (const vector <vector <GDB> >& inGDB_G);
+
 void OUTPUT_TO_WELL_PS (const vector <vector <GDB> >& GDB_G);
 
 vector <size_t> return_INTERVAL_structure ();

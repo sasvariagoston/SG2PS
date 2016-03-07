@@ -2722,6 +2722,19 @@ void setdash_PS (ofstream& o, const string DASH) {
 	o << " [" << DASH << "] 0 setdash" << '\n';
 }
 
+size_t anything_to_plot_on_ps (const vector <vector <GDB> >& inGDB_G) {
+
+	size_t counter = 0;
+
+	for (size_t i = 0; i < inGDB_G.size(); i++) {
+
+		const string DT = inGDB_G.at(i).at(0).DATATYPE;
+
+		if (!is_allowed_lithology_datatype (DT)) counter++;
+	}
+	return counter;
+}
+
 void OUTPUT_TO_PS (const vector <vector <GDB> >& in_GDB_G, const vector <vector <GDB> >& t_GDB_G) {
 
 	if (in_GDB_G.size() != t_GDB_G.size()) {
@@ -2736,6 +2749,13 @@ void OUTPUT_TO_PS (const vector <vector <GDB> >& in_GDB_G, const vector <vector 
 
 		return;
 	}
+
+	//const size_t DATA_TO_PLOT = anything_to_plot_on_ps (in_GDB_G);
+
+	//if (DATA_TO_PLOT > 0) make_dir (return_PS_FOLDER());
+
+	//size_t counter = 0;
+
 	for (size_t i = 0; i < in_GDB_G.size(); i++) {
 
 		setup_ACTUAL_DATATYPE 	(in_GDB_G.at(i).at(0).DATATYPE);
@@ -2748,6 +2768,8 @@ void OUTPUT_TO_PS (const vector <vector <GDB> >& in_GDB_G, const vector <vector 
 		const bool LITHOLOGY = is_allowed_lithology_datatype (DT);
 
 		if (!LITHOLOGY) {
+
+			//make_dir (return_PS_FOLDER() + path_separator + capslock (DT));
 
 			const string PS_NAME = generate_ACTUAL_PS_NAME();
 
@@ -2771,7 +2793,11 @@ void OUTPUT_TO_PS (const vector <vector <GDB> >& in_GDB_G, const vector <vector 
 			PS_dump_ps_path (OPS);
 
 			PS_net (OPS);
+
+			//counter++;
 		}
 	}
+	//ASSERT_EQ (counter, DATA_TO_PLOT);
+
 	return;
 }

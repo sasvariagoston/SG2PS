@@ -1930,8 +1930,46 @@ void PS_dump_ps_well_path (ofstream& o) {
 	text_PS (o, 12.0 * P.A, P.A + 5.0 * P.D, 3, TXT);
 
 	text_PS (o, 2.0 * P.A, P.A + 5.0 * P.D, 3, "Plotted by SG2PS (version: " + version() + ") - for reference see www.sg2ps.eu webpage.");
+}
 
+size_t anything_to_plot_on_well_ps (const vector <vector <GDB> >& inGDB_G) {
 
+	size_t counter = 0;
+
+	const vector <vector <WELL_INTERVAL> > INTERVAL = RETURN_INTERVAL ();
+	const vector <vector <WELL_FREQUENCY> > FREQUENCY = RETURN_FREQUENCY ();
+
+	for (size_t i = 0; i < inGDB_G.size(); i++) {
+
+		const vector <GDB> temp = SORT_GDB (inGDB_G.at(i), "DEPTH");
+
+		const string DT = temp.at(0).DATATYPE;
+
+		if (is_allowed_to_process_as_well (DT)) {
+
+			const bool GDB_OK = temp.size() > 1;
+			const bool INT_OK = INTERVAL.at(i).size() > 0;
+			const bool FRQ_OK = FREQUENCY.at(i).size() > 0;
+
+			if (GDB_OK && INT_OK && FRQ_OK) {
+
+				const double MIN = temp.at(0).DEPTH;
+				const double MAX = temp.at(temp.size() - 1).DEPTH;
+
+				const double STEP = well_axes_step (MIN, MAX);
+
+				const double MIN_VAL = return_MIN_value (temp, STEP);
+				const double MAX_VAL = return_MAX_value (temp, STEP);
+
+				const bool MIN_VAL_OK = MIN_VAL > 0.0;
+				ASSERT_FINITE(MAX_VAL, MIN_VAL);
+				const bool MAX_VAL_OK = MAX_VAL > MIN_VAL;
+
+				if (MIN_VAL_OK && MAX_VAL_OK) counter++;
+			}
+		}
+	}
+	return counter;
 }
 
 void OUTPUT_TO_WELL_PS (const vector <vector <GDB> >& GDB_G) {
@@ -1945,6 +1983,12 @@ void OUTPUT_TO_WELL_PS (const vector <vector <GDB> >& GDB_G) {
 	ASSERT_EQ (FREQUENCY.size(), GDB_G.size());
 
 	return_records_with_formation_names (GDB_G);
+
+	//const size_t DATA_TO_PLOT = anything_to_plot_on_well_ps (GDB_G);
+
+	//if (DATA_TO_PLOT > 0) make_dir (return_WELL_PS_FOLDER());
+
+	//size_t counter = 0;
 
 	for (size_t i = 0; i < GDB_G.size(); i++) {
 
@@ -1981,6 +2025,8 @@ void OUTPUT_TO_WELL_PS (const vector <vector <GDB> >& GDB_G) {
 					setup_ACTUAL_FORMATION(temp.at(0).FORMATION);
 					setup_ACTUAL_GROUPCODE(temp.at(0).GC);
 
+					//make_dir (return_WELL_PS_FOLDER() + path_separator + capslock (DT));
+
 					string PS_NAME = generate_ACTUAL_WELL_PS_NAME ();
 
 					ofstream OPS (PS_NAME.c_str());
@@ -1994,10 +2040,14 @@ void OUTPUT_TO_WELL_PS (const vector <vector <GDB> >& GDB_G) {
 					PS_dump_ps_well_path (OPS);
 
 					WELL_PS (temp, INTERVAL.at(i), FREQUENCY.at(i), OPS, MIN_VAL, MAX_VAL, STEP);
+
+					//counter++;
 				}
 			}
 		}
 	}
+	//ASSERT_EQ (DATA_TO_PLOT, counter);
+
 	return;
 }
 
