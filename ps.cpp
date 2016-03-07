@@ -587,7 +587,8 @@ void PS_net (ofstream& o) {
 		stroke_PS (o);
 	}
 	font_PS(o, "ArialNarrow", 8);
-	text_PS (o, 15.0 * P.A, P.A + 5.0 * P.D, 3, "Plotted by SG2PS - for reference see www.sg2ps.eu webpage.");
+
+	text_PS (o, 12.0 * P.A, P.A + 5.0 * P.D, 3, "Plotted by SG2PS (version: " + version() + ") - for reference see www.sg2ps.eu webpage.");
 
 	PS_eof (o);
 

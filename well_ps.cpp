@@ -1924,9 +1924,10 @@ void PS_dump_ps_well_path (ofstream& o) {
 
 	color_PS (o, "0 0 0");
 
-	text_PS (o, 9.0 * P.A, P.A + 5.0 * P.D, 3, TXT);
+	text_PS (o, 12.0 * P.A, P.A + 5.0 * P.D, 3, TXT);
 
-	text_PS (o, 2.0 * P.A, P.A + 5.0 * P.D, 3, "Plotted by SG2PS - for reference see www.sg2ps.eu webpage.");
+	text_PS (o, 2.0 * P.A, P.A + 5.0 * P.D, 3, "Plotted by SG2PS (version: " + version() + ") - for reference see www.sg2ps.eu webpage.");
+
 
 }
 
