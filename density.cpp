@@ -984,7 +984,9 @@ vector <XY> flip_line (const vector <XY>& I) {
 
 vector <XY> flip_curve_to_CCW (const vector <XY>& BZ) {
 
-	if (!is_line_CCW (BZ)) return flip_line(BZ);
+	//cout << "is_line_CCW (BZ): " << is_line_CCW (BZ) << endl;
+
+	if (!is_line_CCW (BZ)) return flip_line (BZ);
 	else return BZ;
 }
 
@@ -1235,6 +1237,28 @@ bool is_line_close_unitcircle (const vector <XY>& I, const double CELL) {
 	return ((CLOSE_COUNTER / I.size()) > 0.6);
 }
 
+bool first_angle_less_than_last (const double START_ANGLE, const double END_ANGLE) {
+
+	vector <XY> test;
+
+	XY POINT;
+
+	POINT.X = SIN (START_ANGLE);
+	POINT.Y = COS (START_ANGLE);
+	test.push_back (POINT);
+
+
+	POINT.X = SIN (END_ANGLE);
+	POINT.Y = COS (END_ANGLE);
+	test.push_back (POINT);
+
+	POINT.X = 0;
+	POINT.Y = 0;
+	test.push_back (POINT);
+
+	return !is_line_CCW (test);
+}
+
 vector <XY> close_contourline (const vector <XY>& I, const double START_ANGLE, const double END_ANGLE, const double CELL, const bool CHECK_DISTANCE) {
 
 	vector <XY> NEW;
@@ -1242,7 +1266,7 @@ vector <XY> close_contourline (const vector <XY>& I, const double START_ANGLE, c
 
 	ASSERT2 (is_line_CCW(I), "CCW line is expected in 'close_contourline' function");
 
-	bool START_LESS_THAN_END = (START_ANGLE < END_ANGLE);
+	bool START_LESS_THAN_END = first_angle_less_than_last (START_ANGLE, END_ANGLE);
 
 	XY END;
 	double step = 0.0;
@@ -1255,7 +1279,6 @@ vector <XY> close_contourline (const vector <XY>& I, const double START_ANGLE, c
 		step = START_ANGLE - END_ANGLE;
 		END = I.at(I.size() - 1);
 	}
-
 	step = step / 100.0;
 
 	VCTR END_V;
@@ -1267,7 +1290,7 @@ vector <XY> close_contourline (const vector <XY>& I, const double START_ANGLE, c
 
 	if (CHECK_DISTANCE && is_line_close_unitcircle (I, CELL)) RATIO = 1.0 + (CELL * 2.0);
 
-	VCTR AXIS = declare_vector(0.0, 0.0, 1.0);
+	VCTR AXIS = declare_vector (0.0, 0.0, 1.0);
 
 	for (size_t i = 1; i < 100; i++) {
 
@@ -1402,8 +1425,8 @@ void output_contourline (ofstream& o, const CENTER& center, vector <vector <XY> 
 
 		if (!is_closed_line (F, L)) {
 
-			const VCTR FRST_PNT = declare_vector(F.X, F.Y, 0.0);
-			const VCTR LAST_PNT = declare_vector(L.X, L.Y, 0.0);
+			const VCTR FRST_PNT = declare_vector (F.X, F.Y, 0.0);
+			const VCTR LAST_PNT = declare_vector (L.X, L.Y, 0.0);
 
 			double FRST_ANGLE = dipdir_dip_from_DXDYDZ (FRST_PNT).DIPDIR;
 			double LAST_ANGLE = dipdir_dip_from_DXDYDZ (LAST_PNT).DIPDIR;
@@ -1682,6 +1705,8 @@ void dbg_cout_line_vctr (const vector <vector <LINE> >& LV) {
 void dbg_bezier_points (const vector <XY>& BZ) {
 
 	cout << "**** BEZIER POINTS FOR CONTOURING ****" << endl;
+
+	cout << fixed << setprecision(6) << flush;
 
 	for (size_t j = 0; j < BZ.size(); j++) {
 

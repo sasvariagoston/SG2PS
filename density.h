@@ -85,6 +85,7 @@ double polygon_area (const vector <XY>& I); //OK
 
 bool is_line_close_unitcircle (const vector <XY>& I, const double CELL);
 
+bool first_angle_less_than_last (const double START_ANGLE, const double END_ANGLE);
 vector <XY> close_contourline (const vector <XY>& I, const double START_ANGLE, const double END_ANGLE, const double CELL, const bool CHECK_DISTANCE);
 
 void check_points_are_in_circle (const CENTER& center, const vector <XY>& BZ);
