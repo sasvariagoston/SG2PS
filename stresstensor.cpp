@@ -91,7 +91,15 @@ STRESSFIELD eigenvalue_eigenvector (STRESSTENSOR st) {
 	double c2 = st._23;
 
 	sf.EIGENVECTOR1.Z = 1.0;
-	sf.EIGENVECTOR1.X = ((b1 * c2) - (b2 * c1)) / ((b2 * a1) - (a2 * b1));
+
+    ASSERT_GT(fabs(b1), 1.0e-20);
+
+    const double denom1 = (b2 * a1) - (a2 * b1);
+
+    ASSERT_NE(denom1, 0.0);               // Please keep it like this: We would like to
+    ASSERT_GE(fabs(denom1), MINIMUM_DET); // distinguish between small and exact zero.
+
+	sf.EIGENVECTOR1.X = ((b1 * c2) - (b2 * c1)) / denom1;
 
 	sf.EIGENVECTOR1.Y = - ((a1 * sf.EIGENVECTOR1.X) + c1) / b1;
 	sf.EIGENVECTOR1 = unitvector (sf.EIGENVECTOR1, true);
@@ -106,15 +114,13 @@ STRESSFIELD eigenvalue_eigenvector (STRESSTENSOR st) {
 
 	sf.EIGENVECTOR2.Z = 1.0;
 
-	double denom = (b2 * a1) - (a2 * b1);
+	const double denom2 = (b2 * a1) - (a2 * b1);
 
-	ASSERT_NE(denom, 0.0);               // Please keep it like this: We would like to
-	ASSERT_GE(fabs(denom), MINIMUM_DET); // distinguish between small and exact zero.
+	ASSERT_NE(denom2, 0.0);               // Please keep it like this: We would like to
+	ASSERT_GE(fabs(denom2), MINIMUM_DET); // distinguish between small and exact zero.
 
-	sf.EIGENVECTOR2.X = ((b1 * c2) - (b2 * c1)) / denom;
+	sf.EIGENVECTOR2.X = ((b1 * c2) - (b2 * c1)) / denom2;
 	sf.EIGENVECTOR2.Y = - ((a1 * sf.EIGENVECTOR2.X) + c1) / b1;
-
-	ASSERT2(fabs(b1)>1.0e-20, "Computing eigenvector, b1 = "<< b1);
 
 	sf.EIGENVECTOR2 = unitvector (sf.EIGENVECTOR2, true);
 

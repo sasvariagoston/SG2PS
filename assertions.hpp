@@ -83,8 +83,8 @@ void throw_std_logic_error(const std::string& message, const std::string& func, 
 #define ASSERT_GT(val_1, val_2) { \
 	if (!(val_1 > val_2)) { \
 		std::ostringstream os; \
-		os << #val_1 << " < " << #val_2 << " failed: "; \
-		os << val_1 << " >= " << val_2; \
+		os << #val_1 << " > " << #val_2 << " failed: "; \
+		os << val_1 << " <= " << val_2; \
 		THROW_STD_LOGIC_ERROR_(os.str()); \
 	} \
 }
