@@ -2753,12 +2753,12 @@ void OUTPUT_TO_PS (const vector <vector <GDB> >& in_GDB_G, const vector <vector 
 
 	const size_t DATA_TO_PLOT = anything_to_plot_on_ps (in_GDB_G);
 
-	if (DATA_TO_PLOT > 0) {
+	if (DATA_TO_PLOT == 0) return;
 
-		const string PS_FOLDER = return_WELL_PS_FOLDER();
+	const string PS_FOLDER = return_WELL_PS_FOLDER();
 
-		if (! change_dir (PS_FOLDER)) make_dir (PS_FOLDER);
-	}
+	if (! change_dir (PS_FOLDER)) make_dir (PS_FOLDER);
+
 	size_t counter = 0;
 
 	for (size_t i = 0; i < in_GDB_G.size(); i++) {

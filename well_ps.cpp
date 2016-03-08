@@ -1977,12 +1977,12 @@ void OUTPUT_TO_WELL_PS (const vector <vector <GDB> >& GDB_G) {
 
 	const size_t DATA_TO_PLOT = anything_to_plot_on_well_ps (GDB_G);
 
-	if (DATA_TO_PLOT > 0) {
+	if (DATA_TO_PLOT == 0) return;
 
-		const string PS_FOLDER = return_WELL_PS_FOLDER();
+	const string PS_FOLDER = return_WELL_PS_FOLDER();
 
-		if (! change_dir (PS_FOLDER)) make_dir (PS_FOLDER);
-	}
+	if (! change_dir (PS_FOLDER)) make_dir (PS_FOLDER);
+
 	size_t counter = 0;
 
 	for (size_t i = 0; i < GDB_G.size(); i++) {
