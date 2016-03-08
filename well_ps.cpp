@@ -434,26 +434,15 @@ double well_axes_step (const double MIN, const double MAX) {
 	}
 }
 
-bool has_GDB_DEPTH_value_in_range (const vector <GDB>& inGDB, const double MIN, const double MAX) {
-
-	for (size_t i = 0; i < inGDB.size(); i++) {
-
-		const double D = inGDB.at(i).DEPTH;
-
-		if (is_in_range(MIN, MAX, D)) return true;
-	}
-	return false;
-}
-
 double return_MIN_value (const vector <GDB>& inGDB, const double STEP) {
 
 	const vector <GDB> temp = SORT_GDB (inGDB, "DEPTH");
 
-	const double LIMIT = inGDB.at(inGDB.size() - 1).DEPTH;
+	const double SHALLOWEST = temp.at(0).DEPTH;
 
-	for (double i = 0.0; i < LIMIT; i+=STEP) {
+	for (double i = 0.0; i < SHALLOWEST + STEP; i+=STEP) {
 
-		if (has_GDB_DEPTH_value_in_range (temp, i, i + STEP)) return i;
+		if (is_in_range (i, i + STEP, SHALLOWEST)) return i;
 	}
 	return NaN();
 }
@@ -462,9 +451,11 @@ double return_MAX_value (const vector <GDB>& inGDB, const double STEP) {
 
 	const vector <GDB> temp = SORT_GDB (inGDB, "rDEPTH");
 
-	for (double i = STEP * 2000.0; i > 0.0; i-=STEP) {
+	const double DEEPEST = temp.at(0).DEPTH;
 
-		if (has_GDB_DEPTH_value_in_range (temp, i - STEP, i)) return i - 1;
+	for (double i = 0.0; i < DEEPEST + STEP; i+=STEP) {
+
+		if (is_in_range (i, i + STEP, DEEPEST)) return i + STEP;
 	}
 	return NaN();
 }

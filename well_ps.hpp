@@ -24,7 +24,7 @@ void PS_well_symbols (ofstream& o, const PAPER& P);
 
 double well_axes_step (const double MIN, const double MAX);
 
-bool has_GDB_DEPTH_value_in_range (const vector <GDB>& inGDB, const double MIN, const double MAX);
+//bool has_GDB_DEPTH_value_in_range (const vector <GDB>& inGDB, const double MIN, const double MAX);
 
 double return_MIN_value (const vector <GDB>& inGDB, const double STEP);
 double return_MAX_value (const vector <GDB>& inGDB, const double STEP);

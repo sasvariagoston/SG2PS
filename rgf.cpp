@@ -834,14 +834,14 @@ void dbg_cout_GDB_vector (const vector <GDB>& inGDB) {
 	//<< "MISFIT" << '\t'
 	//<< "LINEATION" << '\t'
 	//<< "OFFSET" << '\t'
-	//<< "DEPTH" << '\t'
-	<< "GC" << '\t'
+	<< "DEPTH" << '\t'
+	//<< "GC" << '\t'
 	//<< "COLOR" << '\t'
 	//<< "LOC" << '\t'
 	//<< "LOCX" << '\t'
 	//<< "LOCY" << '\t'
 	//<< "FORMATION" << '\t'
-	<< "DATATYPE" << '\t'
+	//<< "DATATYPE" << '\t'
 	//<< "DIPDIR" << '\t'
 	//<< "DIP" << '\t'
 	//<< "LDIR" << '\t'
@@ -852,7 +852,7 @@ void dbg_cout_GDB_vector (const vector <GDB>& inGDB) {
 	//<< "corrL.DIPDIR" << '\t'
 	//<< "corrL.DIP" << '\t'
 
-	<< "PALEON" << '\t'
+	//<< "PALEON" << '\t'
 	//<< "COMMENT" << '\t'
 	//<< "DATAGROUP" << '\t'
 	//<< "PSCOLOR" << '\t'
@@ -874,8 +874,8 @@ void dbg_cout_GDB_vector (const vector <GDB>& inGDB) {
 	//<< "avS0N.X" << '\t' << "avS0N.Y" << '\t'<< "avS0N.Z" << '\t'
 	//<< "T.X" << '\t' << "T.Y" << '\t'<< "T.Z" << '\t'
 
-	<< "avS0d.DIPDIR" << '\t'
-	<< "avS0d.DIP" << '\t'
+	//<< "avS0d.DIPDIR" << '\t'
+	//<< "avS0d.DIP" << '\t'
 	//<< "avd.DIPDIR" << '\t'
 	//<< "avd.DIP" << '\t'
 	//<< "avS0offset" << '\t'
@@ -919,16 +919,16 @@ void dbg_cout_GDB_vector (const vector <GDB>& inGDB) {
 		//<< T.MISFIT << '\t'
 		//<< T.LINEATION << '\t'
 		//<< T.OFFSET << '\t'
-		//<< T.DEPTH << '\t'
+		<< T.DEPTH << '\t'
 
 		<< fixed << setprecision(0)
-		<< T.GC << '\t'
+		//<< T.GC << '\t'
 		//<< T.COLOR << '\t'
 		//<< T.LOC << '\t'
 		//<< T.LOCX << '\t'
 		//<< T.LOCY << '\t'
 		//<< T.FORMATION << '\t'
-		<< T.DATATYPE << '\t'
+		//<< T.DATATYPE << '\t'
 
 		<< fixed << setprecision (0)
 		//<< T.DIPDIR << '\t'
@@ -942,7 +942,7 @@ void dbg_cout_GDB_vector (const vector <GDB>& inGDB) {
 		//<< T.corrL.DIP << '\t'
 
 		<< fixed << setprecision(0)
-		<< T.PALEON << '\t'
+		//<< T.PALEON << '\t'
 		//<< T.COMMENT << '\t'
 		//<< T.DATAGROUP << '\t'
 		//<< T.PSCOLOR << '\t'
@@ -968,8 +968,8 @@ void dbg_cout_GDB_vector (const vector <GDB>& inGDB) {
 		//<< T.T.X << '\t' << T.T.Y << '\t'<< T.T.Z << '\t'
 
 		<< fixed << setprecision(6)
-		<< T.avS0d.DIPDIR << '\t'
-		<< T.avS0d.DIP << '\t'
+		//<< T.avS0d.DIPDIR << '\t'
+		//<< T.avS0d.DIP << '\t'
 		//<< T.avd.DIPDIR << '\t'
 		//<< T.avd.DIP << '\t'
 		//<< T.avS0offset << '\t'
