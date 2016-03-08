@@ -84,7 +84,7 @@ vector <WELL_FREQUENCY> FREQUENCY (const vector <GDB>& inGDB) {
 
 	process_GDB = filter_too_small_distances (process_GDB);
 
-    ASSERT (!process_GDB.empty());
+	if (process_GDB.empty()) return OUT;
 
 	process_GDB = SORT_GDB (process_GDB, "DEPTH");
 
@@ -122,11 +122,16 @@ vector <WELL_FREQUENCY> FREQUENCY (const vector <GDB>& inGDB) {
 		ID_v.push_back (process_GDB.at(i).ID);
 	}
 
+	if (OUT.empty()) return OUT;
+
 	for (size_t i = 0; i < OUT.size(); i++) {
 
 		OUT.at(i).FREQ = OUT.at(i).FREQ / MAX_FREQ;
 		FREQ_v2.push_back (OUT.at(i).FREQ);
 	}
+
+	if (OUT.empty()) return OUT;
+
 	double MAX_DERIV = 0.0;
 
 	for (size_t i = 0; i < OUT.size() - 1; i++) {
