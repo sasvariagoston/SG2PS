@@ -85,7 +85,8 @@ void PS_stereonet_header (ofstream& o) {
 
 	const bool FRACTURE_TO_PROCESS = is_BINGHAM_USE() && return_ACTUAL_DATATYPE() == "FRACTURE";
 	const bool IS_STRIAE = is_allowed_striae_datatype (return_ACTUAL_DATATYPE());
-	const bool STRIAE_TO_PROCESS = !is_INVERSION_NONE() && IS_STRIAE;
+	//const bool STRIAE_TO_PROCESS = !is_INVERSION_NONE() && IS_STRIAE;
+	const bool STRIAE_TO_PROCESS = IS_STRIAE;
 
 	if (!FRACTURE_TO_PROCESS && !STRIAE_TO_PROCESS) return;
 
