@@ -273,6 +273,8 @@ string generate_binsize_colors (const size_t percent) {
 
 	if (is_WELL_INTERVAL_DATANUMBER()) return STD_CLR;
 
+	if (percent > 100) return STD_CLR;
+
 	return (generate_colorstep (LRD, LYL, LGN, percent));
 }
 
@@ -1756,6 +1758,9 @@ void PS_well_intervals (const vector <WELL_INTERVAL>& INTERVAL, ofstream& o, con
 		if (INTERVAL.at(i).SIZE < MIN_DATA) MIN_DATA = INTERVAL.at(i).SIZE;
 	}
 
+	cout << MIN_DATA << endl;
+	cout << MAX_DATA << endl;
+
     if (!INTERVAL.empty()) {
         ASSERT_LE(MIN_DATA, MAX_DATA);
         ASSERT_NE(MIN_DATA, 999);
@@ -1794,12 +1799,14 @@ void PS_well_intervals (const vector <WELL_INTERVAL>& INTERVAL, ofstream& o, con
 		ASSERT_LE (Y2, P.O1Y + 1);
 		ASSERT_GE (Y2, P.O1Y - LENGTH - 1);
 
-		double CLR_RATIO = 0.0;
+		double CLR_RATIO = 999.0;
 
-		if (! is_WELL_INTERVAL_DATANUMBER() && INTERVAL.at(i).SIZE > 1) {
+		if (! is_WELL_INTERVAL_DATANUMBER() && INTERVAL.at(i).SIZE > 1 && (MAX_DATA < MIN_DATA)) {
 
-	        ASSERT_NE(MAX_DATA, MIN_DATA);
+			ASSERT_NE (MAX_DATA, MIN_DATA);
 			CLR_RATIO = 100 * (1.0 * (INTERVAL.at(i).SIZE) - MIN_DATA) / (MAX_DATA - MIN_DATA);
+
+			ASSERT_LE (CLR_RATIO, 100);
 		}
 
 		if (INTERVAL.at(i).SIZE == 0) CLR_RATIO = 0.0;
@@ -2010,7 +2017,7 @@ void OUTPUT_TO_WELL_PS (const vector <vector <GDB> >& GDB_G) {
 				const double MAX_VAL = return_MAX_value (temp, STEP);
 
 				const bool MIN_VAL_OK = MIN_VAL > 0.0;
-				ASSERT_FINITE(MAX_VAL, MIN_VAL);
+				ASSERT_FINITE (MAX_VAL, MIN_VAL);
 				const bool MAX_VAL_OK = MAX_VAL > MIN_VAL;
 
 				if (MIN_VAL_OK && MAX_VAL_OK) {
