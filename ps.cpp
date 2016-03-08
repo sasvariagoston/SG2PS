@@ -1960,13 +1960,13 @@ void PS_INVERSION_RESULTS (const vector <GDB>& inGDB, ofstream& o, const CENTER&
 	const vector <STRESSTENSOR> STV = inGDB.at(0).STV;
 	const vector <STRESSFIELD> SFV = inGDB.at(0).SFV;
 
-	if (STV.size() < 1 || SFV.size() < 1) return;
-
-	PS_stressdata (inGDB, o, center, SFV.at(SFV.size() - 1));
+	if (STV.size() == 0 || SFV.size() == 0) return;
 
 	ASSERT_EXACTLY_ONE_TRUE (STRIAE && !no_INVERSION, FRACTURE && !no_BINGHAM);
 
 	if (STRIAE && !no_INVERSION) {
+
+		PS_stressdata (inGDB, o, center, SFV.at(SFV.size() - 1));
 
 		PS_stressarrows (o, center, SFV.at(SFV.size() - 1));
 
@@ -2767,6 +2767,8 @@ void OUTPUT_TO_PS (const vector <vector <GDB> >& in_GDB_G, const vector <vector 
 
 		const bool LITHOLOGY = is_allowed_lithology_datatype (DT);
 
+		const bool SUCCESFULL = in_GDB_G.at(i).at(0).SFV.size() > 0;
+
 		if (!LITHOLOGY) {
 
 			//make_dir (return_PS_FOLDER() + path_separator + capslock (DT));
@@ -2781,7 +2783,7 @@ void OUTPUT_TO_PS (const vector <vector <GDB> >& in_GDB_G, const vector <vector 
 
 			PS_STEREONET_SYMBOLS (in_GDB_G.at(i), OPS);
 
-			if (is_allowed_striae_datatype (DT) && ! is_INVERSION_NONE()) PS_stress_scale (OPS);
+			if (is_allowed_striae_datatype (DT) && ! is_INVERSION_NONE() && SUCCESFULL) PS_stress_scale (OPS);
 
 			PS_border (in_GDB_G.at(i), OPS);
 
