@@ -1975,11 +1975,15 @@ void OUTPUT_TO_WELL_PS (const vector <vector <GDB> >& GDB_G) {
 
 	return_records_with_formation_names (GDB_G);
 
-	//const size_t DATA_TO_PLOT = anything_to_plot_on_well_ps (GDB_G);
+	const size_t DATA_TO_PLOT = anything_to_plot_on_well_ps (GDB_G);
 
-	//if (DATA_TO_PLOT > 0) make_dir (return_WELL_PS_FOLDER());
+	if (DATA_TO_PLOT > 0) {
 
-	//size_t counter = 0;
+		const string PS_FOLDER = return_WELL_PS_FOLDER();
+
+		if (! change_dir (PS_FOLDER)) make_dir (PS_FOLDER);
+	}
+	size_t counter = 0;
 
 	for (size_t i = 0; i < GDB_G.size(); i++) {
 
@@ -2016,7 +2020,9 @@ void OUTPUT_TO_WELL_PS (const vector <vector <GDB> >& GDB_G) {
 					setup_ACTUAL_FORMATION(temp.at(0).FORMATION);
 					setup_ACTUAL_GROUPCODE(temp.at(0).GC);
 
-					//make_dir (return_WELL_PS_FOLDER() + path_separator + capslock (DT));
+					const string DATA_FOLDER = return_WELL_PS_FOLDER() + path_separator + capslock (DT);
+
+					if (! change_dir(DATA_FOLDER)) make_dir (DATA_FOLDER);
 
 					string PS_NAME = generate_ACTUAL_WELL_PS_NAME ();
 
@@ -2032,12 +2038,12 @@ void OUTPUT_TO_WELL_PS (const vector <vector <GDB> >& GDB_G) {
 
 					WELL_PS (temp, INTERVAL.at(i), FREQUENCY.at(i), OPS, MIN_VAL, MAX_VAL, STEP);
 
-					//counter++;
+					counter++;
 				}
 			}
 		}
 	}
-	//ASSERT_EQ (DATA_TO_PLOT, counter);
+	ASSERT_EQ (DATA_TO_PLOT, counter);
 
 	return;
 }

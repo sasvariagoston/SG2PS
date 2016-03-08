@@ -2750,11 +2750,15 @@ void OUTPUT_TO_PS (const vector <vector <GDB> >& in_GDB_G, const vector <vector 
 		return;
 	}
 
-	//const size_t DATA_TO_PLOT = anything_to_plot_on_ps (in_GDB_G);
+	const size_t DATA_TO_PLOT = anything_to_plot_on_ps (in_GDB_G);
 
-	//if (DATA_TO_PLOT > 0) make_dir (return_PS_FOLDER());
+	if (DATA_TO_PLOT > 0) {
 
-	//size_t counter = 0;
+		const string PS_FOLDER = return_WELL_PS_FOLDER();
+
+		if (! change_dir (PS_FOLDER)) make_dir (PS_FOLDER);
+	}
+	size_t counter = 0;
 
 	for (size_t i = 0; i < in_GDB_G.size(); i++) {
 
@@ -2771,7 +2775,9 @@ void OUTPUT_TO_PS (const vector <vector <GDB> >& in_GDB_G, const vector <vector 
 
 		if (!LITHOLOGY) {
 
-			//make_dir (return_PS_FOLDER() + path_separator + capslock (DT));
+			const string DATA_FOLDER = return_PS_FOLDER() + path_separator + capslock (DT);
+
+			if (! change_dir(DATA_FOLDER)) make_dir (DATA_FOLDER);
 
 			const string PS_NAME = generate_ACTUAL_PS_NAME();
 
@@ -2796,10 +2802,10 @@ void OUTPUT_TO_PS (const vector <vector <GDB> >& in_GDB_G, const vector <vector 
 
 			PS_net (OPS);
 
-			//counter++;
+			counter++;
 		}
 	}
-	//ASSERT_EQ (counter, DATA_TO_PLOT);
+	ASSERT_EQ (counter, DATA_TO_PLOT);
 
 	return;
 }

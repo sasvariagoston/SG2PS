@@ -10,6 +10,9 @@
 #include <iostream>
 #include <stdexcept>
 
+#include <sys/stat.h>
+#include <sys/types.h>
+
 #include "allowed_keys.hpp"
 #include "assertions.hpp"
 #include "color_management.hpp"
@@ -45,9 +48,20 @@ void make_dir (const string& dir_name) {
 
 	string command = "mkdir " + dir_name;
 
-	int ret = system(command.c_str());
+	int ret = system (command.c_str());
 
 	if (ret) throw runtime_error("failed to execute command \""+command+"\"");
+}
+
+bool change_dir (const string& dir_name) {
+
+	string command = "cd " + dir_name;
+
+	int ret = system (command.c_str());
+
+	if (ret) return false;
+
+	return true;
 }
 
 void create_required_folders (const vector <GDB>& inGDB) {
@@ -57,8 +71,8 @@ void create_required_folders (const vector <GDB>& inGDB) {
 	make_dir (return_COMPLETED_FOLDER());
 	make_dir (return_AVERAGE_FOLDER());
 	make_dir (return_RGF_FOLDER());
-	make_dir (return_PS_FOLDER());
-	if (is_WELLDATA_USE()) make_dir (return_WELL_PS_FOLDER());
+	//make_dir (return_PS_FOLDER());
+	//if (is_WELLDATA_USE()) make_dir (return_WELL_PS_FOLDER());
 
 	vector <string> possible_folders = possible_folders_name ();
 
@@ -69,13 +83,13 @@ void create_required_folders (const vector <GDB>& inGDB) {
 		if (existence (DIR, inGDB)) {
 
 			make_dir (return_RGF_FOLDER() + path_separator + capslock (DIR));
-			make_dir (return_PS_FOLDER() + path_separator + capslock (DIR));
-			if (is_WELLDATA_USE()) {
+			//make_dir (return_PS_FOLDER() + path_separator + capslock (DIR));
+			//if (is_WELLDATA_USE()) {
 
-				const bool AS_WELL = is_allowed_to_process_as_well(DIR);
+				//const bool AS_WELL = is_allowed_to_process_as_well(DIR);
 
-				if (AS_WELL) make_dir (return_WELL_PS_FOLDER() + path_separator + capslock (DIR));
-			}
+				//if (AS_WELL) make_dir (return_WELL_PS_FOLDER() + path_separator + capslock (DIR));
+			//}
 		}
 	}
 	return;
