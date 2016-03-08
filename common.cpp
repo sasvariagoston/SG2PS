@@ -63,31 +63,33 @@ bool equals(const string& s, const T& value) {
 }
 
 void print_banner () {
-
-	writeln("");
-	writeln(" ------------------------------------------------------------------ ");
-	writeln("|                                                                  |");
-	writeln("|                             SG2PS                                |");
-	writeln("|       Structural Geological data to PostScript converter         |");
-	writeln("|                                                                  |");
-	writeln("|                       Data processing software                   |");
-	writeln("|                                                                  |");
-	writeln("|            Copyright (C) 2012-2016, Agoston Sasvari.             |");
-	writeln("|                        All rights reserved.                      |");
-	writeln("|             This a free software, license: GNU LGPL.             |");
-	writeln("|                                                                  |");
-	writeln("|              This software comes with NO WARRANTY.               |");
-	writeln("|                                                                  |");
-	writeln("|            For further information check www.sg2ps.eu            |");
-	writeln("|                                                                  |");
-	writeln(" ------------------------------------------------------------------ ");
-	writeln("|                                                                  |");
-	cout << "|                 Built on: " << version() <<   "                  |"<<endl;
-	writeln("|                                                                  |");
-	writeln(" ------------------------------------------------------------------ ");
-	writeln("");
-
-	return;
+#ifdef ENABLE_FPE
+    cout << "Built on: " << version() << endl;
+#else
+    writeln("");
+    writeln(" ------------------------------------------------------------------ ");
+    writeln("|                                                                  |");
+    writeln("|                             SG2PS                                |");
+    writeln("|       Structural Geological data to PostScript converter         |");
+    writeln("|                                                                  |");
+    writeln("|                       Data processing software                   |");
+    writeln("|                                                                  |");
+    writeln("|            Copyright (C) 2012-2016, Agoston Sasvari.             |");
+    writeln("|                        All rights reserved.                      |");
+    writeln("|             This a free software, license: GNU LGPL.             |");
+    writeln("|                                                                  |");
+    writeln("|              This software comes with NO WARRANTY.               |");
+    writeln("|                                                                  |");
+    writeln("|            For further information check www.sg2ps.eu            |");
+    writeln("|                                                                  |");
+    writeln(" ------------------------------------------------------------------ ");
+    writeln("|                                                                  |");
+    cout << "|                 Built on: " << version() <<   "                  |"<<endl;
+    writeln("|                                                                  |");
+    writeln(" ------------------------------------------------------------------ ");
+    writeln("");
+#endif
+    return;
 }
 
 void progress_bar (const size_t WIDTH, const double STATUS, const double MAX) {
