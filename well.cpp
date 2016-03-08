@@ -130,7 +130,7 @@ vector <WELL_FREQUENCY> FREQUENCY (const vector <GDB>& inGDB) {
 	double MAX_DERIV = 0.0;
 
 	for (size_t i = 0; i < OUT.size() - 1; i++) {
-
+	    ASSERT_NE(OUT.size(), 0); // if out is empty, OUT.size()-1 == 18446744073709551615, not -1
 		const WELL_FREQUENCY ACT = OUT.at(i);
 		const WELL_FREQUENCY NXT = OUT.at(i + 1);
 
