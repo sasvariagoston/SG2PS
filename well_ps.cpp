@@ -1758,9 +1758,6 @@ void PS_well_intervals (const vector <WELL_INTERVAL>& INTERVAL, ofstream& o, con
 		if (INTERVAL.at(i).SIZE < MIN_DATA) MIN_DATA = INTERVAL.at(i).SIZE;
 	}
 
-	cout << MIN_DATA << endl;
-	cout << MAX_DATA << endl;
-
     if (!INTERVAL.empty()) {
         ASSERT_LE(MIN_DATA, MAX_DATA);
         ASSERT_NE(MIN_DATA, 999);

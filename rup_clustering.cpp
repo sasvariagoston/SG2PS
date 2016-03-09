@@ -111,6 +111,15 @@ RUP_table return_cost_function_member (const vector <double>& in, const size_t b
 	return out;
 }
 
+bool is_homogeneous (const vector <double>& in) {
+
+	const size_t MIN = in.at(0);
+	const size_t MAX = in.at(in.size() - 1);
+
+
+	return (is_in_range (MIN, MIN, MAX));
+}
+
 size_t return_DATA_ideal_bin_number (const vector <double>& in) {
 
 	if (in.size() == 1) return 1;
@@ -119,10 +128,17 @@ size_t return_DATA_ideal_bin_number (const vector <double>& in) {
 
 	for (size_t bin_number = 1; bin_number < sqrt(static_cast<double>(in.size())) * 2.0; bin_number++) {
 
-		const RUP_table buffer = return_cost_function_member (in, bin_number);
+		RUP_table buffer;
 
-		RT.push_back (buffer);
+		if (! is_homogeneous (in)) {
+
+			buffer = return_cost_function_member (in, bin_number);
+
+			RT.push_back (buffer);
+		}
 	}
+	if (RT.size() == 0) return 1;
+
 	RT = sort_by_C (RT);
 
 	return RT.at(0).clusternumber;

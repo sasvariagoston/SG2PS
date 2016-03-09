@@ -22,6 +22,8 @@ double bin_size_for_DATA (const vector <double>& in, const size_t bin_number);
 
 RUP_table return_cost_function_member (const vector <double>& in, const size_t bin_number);
 
+bool is_homogeneous (const vector <double>& in);
+
 size_t return_DATA_ideal_bin_number (const vector <double>& in);
 
 vector <VALLEY> return_valleygraph_for_dataset (const vector <GDB>& inGDB, const string field);
