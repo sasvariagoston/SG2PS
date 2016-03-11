@@ -228,29 +228,44 @@ vector < vector <GRID_CENTER> > check_saddle (vector < vector <GRID_CENTER> >& m
 
 		for (size_t i = 0; i < cell_number; i++) {
 
-			size_t SQ_ID = m_sq.at(j).at(i).COUNT;
+			const size_t SQ_ID = m_sq.at(j).at(i).COUNT;
 
-			size_t A_CNT = rect_grid.at(j + 1).at(i + 0).COUNT;
-			size_t B_CNT = rect_grid.at(j + 1).at(i + 1).COUNT;
-			size_t C_CNT = rect_grid.at(j + 0).at(i + 1).COUNT;
-			size_t D_CNT = rect_grid.at(j + 0).at(i + 0).COUNT;
+			if (SQ_ID == 5 || SQ_ID == 10) {
 
-			double SADDLE_CNT = (A_CNT + B_CNT + C_CNT + D_CNT) / 4.0;
+				const size_t A_CNT = rect_grid.at(j + 1).at(i + 0).COUNT;
+				const size_t B_CNT = rect_grid.at(j + 1).at(i + 1).COUNT;
+				const size_t C_CNT = rect_grid.at(j + 0).at(i + 1).COUNT;
+				const size_t D_CNT = rect_grid.at(j + 0).at(i + 0).COUNT;
 
-			if (SQ_ID == 5) {
+				const double SADDLE_CNT = (A_CNT + B_CNT + C_CNT + D_CNT) / 4.0;
 
-				if (SADDLE_CNT > isoline) 	m_sq.at(j).at(i).COUNT = 5;
-				else 						m_sq.at(j).at(i).COUNT = 10;
+				if (SQ_ID == 5) {
+
+					if (SADDLE_CNT > isoline) 	m_sq.at(j).at(i).COUNT = 5;
+					else 						m_sq.at(j).at(i).COUNT = 10;
+				}
+				else {
+
+					if (SADDLE_CNT > isoline) 	m_sq.at(j).at(i).COUNT = 10;
+					else 						m_sq.at(j).at(i).COUNT = 5;
+				}
 			}
-			else if (SQ_ID == 10) {
-
-				if (SADDLE_CNT > isoline) 	m_sq.at(j).at(i).COUNT = 10;
-				else 						m_sq.at(j).at(i).COUNT = 5;
-			}
-			else {}
 		}
 	}
 	return m_sq;
+}
+
+double return_U (const double AW, const size_t isoline, const double INTERVAL) {
+
+	double U = fabs (AW - isoline) / INTERVAL;
+
+	ASSERT_FINITE (U);
+
+	const double SN = 1e-4;
+
+	if (U < SN) return SN;
+	else if (U > 1 - SN) return (1 - SN);
+	else return U;
 }
 
 vector <LINE> return_line_from_m_sq_number (const vector <vector <GRID_CENTER> >& m_sq, const vector <vector <GRID_CENTER> >& rect_grid, const size_t j, const size_t i, const size_t isoline) {
@@ -286,14 +301,18 @@ vector <LINE> return_line_from_m_sq_number (const vector <vector <GRID_CENTER> >
 	else if (m_sq_id == 1) {
 
 		INTERVAL = fabs(AW - BW);
-		U = fabs((AW - isoline) / INTERVAL);
-		W = fabs((BW - isoline) / INTERVAL);
+		U = return_U (AW, isoline, INTERVAL);
+		W = return_U (BW, isoline, INTERVAL);
+		//U = fabs(AW - isoline) / INTERVAL;
+		//W = fabs(BW - isoline) / INTERVAL;
 		buf.A.X = (AX * W + BX * U);
 		buf.A.Y = (AY * W + BY * U);
 
 		INTERVAL = fabs(DW - AW);
-		U = fabs(DW - isoline) / INTERVAL;
-		W = fabs(AW - isoline) / INTERVAL;
+		U = return_U (DW, isoline, INTERVAL);
+		W = return_U (AW, isoline, INTERVAL);
+		//U = fabs(DW - isoline) / INTERVAL;
+		//W = fabs(AW - isoline) / INTERVAL;
 		buf.B.X = (DX * W + AX * U);
 		buf.B.Y = (DY * W + AY * U);
 
@@ -302,14 +321,18 @@ vector <LINE> return_line_from_m_sq_number (const vector <vector <GRID_CENTER> >
 	else if (m_sq_id == 2) {
 
 		INTERVAL = fabs(AW - BW);
-		U = fabs(AW - isoline) / INTERVAL;
-		W = fabs(BW - isoline) / INTERVAL;
+		U = return_U (AW, isoline, INTERVAL);
+		W = return_U (BW, isoline, INTERVAL);
+		//U = fabs(AW - isoline) / INTERVAL;
+		//W = fabs(BW - isoline) / INTERVAL;
 		buf.A.X = (AX * W + BX * U);
 		buf.A.Y = (AY * W + BY * U);
 
 		INTERVAL = fabs(BW - CW);
-		U = fabs(BW - isoline) / INTERVAL;
-		W = fabs(CW - isoline) / INTERVAL;
+		U = return_U (BW, isoline, INTERVAL);
+		W = return_U (CW, isoline, INTERVAL);
+		//U = fabs(BW - isoline) / INTERVAL;
+		//W = fabs(CW - isoline) / INTERVAL;
 		buf.B.X = (BX * W + CX * U);
 		buf.B.Y = (BY * W + CY * U);
 
@@ -318,14 +341,18 @@ vector <LINE> return_line_from_m_sq_number (const vector <vector <GRID_CENTER> >
 	else if (m_sq_id == 3) {
 
 		INTERVAL = fabs(BW - CW);
-		U = fabs(BW - isoline) / INTERVAL;
-		W = fabs(CW - isoline) / INTERVAL;
+		U = return_U (BW, isoline, INTERVAL);
+		W = return_U (CW, isoline, INTERVAL);
+		//U = fabs(BW - isoline) / INTERVAL;
+		//W = fabs(CW - isoline) / INTERVAL;
 		buf.A.X = (BX * W + CX * U);
 		buf.A.Y = (BY * W + CY * U);
 
 		INTERVAL = fabs(DW - AW);
-		U = fabs(DW - isoline) / INTERVAL;
-		W = fabs(AW - isoline) / INTERVAL;
+		U = return_U (DW, isoline, INTERVAL);
+		W = return_U (AW, isoline, INTERVAL);
+		//U = fabs(DW - isoline) / INTERVAL;
+		//W = fabs(AW - isoline) / INTERVAL;
 		buf.B.X = (DX * W + AX * U);
 		buf.B.Y = (DY * W + AY * U);
 
@@ -334,14 +361,18 @@ vector <LINE> return_line_from_m_sq_number (const vector <vector <GRID_CENTER> >
 	else if (m_sq_id == 4) {
 
 		INTERVAL = fabs(BW - CW);
-		U = fabs(BW - isoline) / INTERVAL;
-		W = fabs(CW - isoline) / INTERVAL;
+		U = return_U (BW, isoline, INTERVAL);
+		W = return_U (CW, isoline, INTERVAL);
+		//U = fabs(BW - isoline) / INTERVAL;
+		//W = fabs(CW - isoline) / INTERVAL;
 		buf.A.X = (BX * W + CX * U);
 		buf.A.Y = (BY * W + CY * U);
 
 		INTERVAL = fabs(CW - DW);
-		U = fabs(CW - isoline) / INTERVAL;
-		W = fabs(DW - isoline) / INTERVAL;
+		U = return_U (CW, isoline, INTERVAL);
+		W = return_U (DW, isoline, INTERVAL);
+		//U = fabs(CW - isoline) / INTERVAL;
+		//W = fabs(DW - isoline) / INTERVAL;
 		buf.B.X = (CX * W + DX * U);
 		buf.B.Y = (CY * W + DY * U);
 
@@ -350,28 +381,36 @@ vector <LINE> return_line_from_m_sq_number (const vector <vector <GRID_CENTER> >
 	else if (m_sq_id == 5) {
 
 		INTERVAL = fabs(AW - BW);
-		U = fabs(AW - isoline) / INTERVAL;
-		W = fabs(BW - isoline) / INTERVAL;
+		U = return_U (AW, isoline, INTERVAL);
+		W = return_U (BW, isoline, INTERVAL);
+		//U = fabs(AW - isoline) / INTERVAL;
+		//W = fabs(BW - isoline) / INTERVAL;
 		buf.A.X = (AX * W + BX * U);
 		buf.A.Y = (AY * W + BY * U);
 
 		INTERVAL = fabs(BW - CW);
-		U = fabs(BW - isoline) / INTERVAL;
-		W = fabs(CW - isoline) / INTERVAL;
+		U = return_U (BW, isoline, INTERVAL);
+		W = return_U (CW, isoline, INTERVAL);
+		//U = fabs(BW - isoline) / INTERVAL;
+		//W = fabs(CW - isoline) / INTERVAL;
 		buf.B.X = (BX * W + CX * U);
 		buf.B.Y = (BY * W + CY * U);
 
 		out.push_back(buf);
 
 		INTERVAL = fabs(CW - DW);
-		U = fabs(CW - isoline) / INTERVAL;
-		W = fabs(DW - isoline) / INTERVAL;
+		U = return_U (CW, isoline, INTERVAL);
+		W = return_U (DW, isoline, INTERVAL);
+		//U = fabs(CW - isoline) / INTERVAL;
+		//W = fabs(DW - isoline) / INTERVAL;
 		buf.A.X = (CX * W + DX * U);
 		buf.A.Y = (CY * W + DY * U);
 
 		INTERVAL = fabs(DW - AW);
-		U = fabs(DW - isoline) / INTERVAL;
-		W = fabs(AW - isoline) / INTERVAL;
+		U = return_U (DW, isoline, INTERVAL);
+		W = return_U (AW, isoline, INTERVAL);
+		//U = fabs(DW - isoline) / INTERVAL;
+		//W = fabs(AW - isoline) / INTERVAL;
 		buf.B.X = (DX * W + AX * U);
 		buf.B.Y = (DY * W + AY * U);
 
@@ -380,14 +419,18 @@ vector <LINE> return_line_from_m_sq_number (const vector <vector <GRID_CENTER> >
 	else if (m_sq_id == 6) {
 
 		INTERVAL = fabs(AW - BW);
-		U = fabs(AW - isoline) / INTERVAL;
-		W = fabs(BW - isoline) / INTERVAL;
+		U = return_U (AW, isoline, INTERVAL);
+		W = return_U (BW, isoline, INTERVAL);
+		//U = fabs(AW - isoline) / INTERVAL;
+		//W = fabs(BW - isoline) / INTERVAL;
 		buf.A.X = (AX * W + BX * U);
 		buf.A.Y = (AY * W + BY * U);
 
 		INTERVAL = fabs(CW - DW);
-		U = fabs(CW - isoline) / INTERVAL;
-		W = fabs(DW - isoline) / INTERVAL;
+		U = return_U (CW, isoline, INTERVAL);
+		W = return_U (DW, isoline, INTERVAL);
+		//U = fabs(CW - isoline) / INTERVAL;
+		//W = fabs(DW - isoline) / INTERVAL;
 		buf.B.X = (CX * W + DX * U);
 		buf.B.Y = (CY * W + DY * U);
 
@@ -396,14 +439,18 @@ vector <LINE> return_line_from_m_sq_number (const vector <vector <GRID_CENTER> >
 	else if (m_sq_id == 7) {
 
 		INTERVAL = fabs(CW - DW);
-		U = fabs(CW - isoline) / INTERVAL;
-		W = fabs(DW - isoline) / INTERVAL;
+		U = return_U (CW, isoline, INTERVAL);
+		W = return_U (DW, isoline, INTERVAL);
+		//U = fabs(CW - isoline) / INTERVAL;
+		//W = fabs(DW - isoline) / INTERVAL;
 		buf.A.X = (CX * W + DX * U);
 		buf.A.Y = (CY * W + DY * U);
 
 		INTERVAL = fabs(DW - AW);
-		U = fabs(DW - isoline) / INTERVAL;
-		W = fabs(AW - isoline) / INTERVAL;
+		U = return_U (DW, isoline, INTERVAL);
+		W = return_U (AW, isoline, INTERVAL);
+		//U = fabs(DW - isoline) / INTERVAL;
+		//W = fabs(AW - isoline) / INTERVAL;
 		buf.B.X = (DX * W + AX * U);
 		buf.B.Y = (DY * W + AY * U);
 
@@ -412,14 +459,18 @@ vector <LINE> return_line_from_m_sq_number (const vector <vector <GRID_CENTER> >
 	else if (m_sq_id == 8) {
 
 		INTERVAL = fabs(CW - DW);
-		U = fabs(CW - isoline) / INTERVAL;
-		W = fabs(DW - isoline) / INTERVAL;
+		U = return_U (CW, isoline, INTERVAL);
+		W = return_U (DW, isoline, INTERVAL);
+		//U = fabs(CW - isoline) / INTERVAL;
+		//W = fabs(DW - isoline) / INTERVAL;
 		buf.A.X = (CX * W + DX * U);
 		buf.A.Y = (CY * W + DY * U);
 
 		INTERVAL = fabs(DW - AW);
-		U = fabs(DW - isoline) / INTERVAL;
-		W = fabs(AW - isoline) / INTERVAL;
+		U = return_U (DW, isoline, INTERVAL);
+		W = return_U (AW, isoline, INTERVAL);
+		//U = fabs(DW - isoline) / INTERVAL;
+		//W = fabs(AW - isoline) / INTERVAL;
 		buf.B.X = (DX * W + AX * U);
 		buf.B.Y = (DY * W + AY * U);
 
@@ -428,14 +479,18 @@ vector <LINE> return_line_from_m_sq_number (const vector <vector <GRID_CENTER> >
 	else if (m_sq_id == 9) {
 
 		INTERVAL = fabs(AW - BW);
-		U = fabs(AW - isoline) / INTERVAL;
-		W = fabs(BW - isoline) / INTERVAL;
+		U = return_U (AW, isoline, INTERVAL);
+		W = return_U (BW, isoline, INTERVAL);
+		//U = fabs(AW - isoline) / INTERVAL;
+		//W = fabs(BW - isoline) / INTERVAL;
 		buf.A.X = (AX * W + BX * U);
 		buf.A.Y = (AY * W + BY * U);
 
 		INTERVAL = fabs(CW - DW);
-		U = fabs(CW - isoline) / INTERVAL;
-		W = fabs(DW - isoline) / INTERVAL;
+		U = return_U (CW, isoline, INTERVAL);
+		W = return_U (DW, isoline, INTERVAL);
+		//U = fabs(CW - isoline) / INTERVAL;
+		//W = fabs(DW - isoline) / INTERVAL;
 		buf.B.X = (CX * W + DX * U);
 		buf.B.Y = (CY * W + DY * U);
 
@@ -444,28 +499,36 @@ vector <LINE> return_line_from_m_sq_number (const vector <vector <GRID_CENTER> >
 	else if (m_sq_id == 10) {
 
 		INTERVAL = fabs(AW - BW);
-		U = fabs(AW - isoline) / INTERVAL;
-		W = fabs(BW - isoline) / INTERVAL;
+		U = return_U (AW, isoline, INTERVAL);
+		W = return_U (BW, isoline, INTERVAL);
+		//U = fabs(AW - isoline) / INTERVAL;
+		//W = fabs(BW - isoline) / INTERVAL;
 		buf.A.X = (AX * W + BX * U);
 		buf.A.Y = (AY * W + BY * U);
 
 		INTERVAL = fabs(DW - AW);
-		U = fabs(DW - isoline) / INTERVAL;
-		W = fabs(AW - isoline) / INTERVAL;
-		buf.B.X = (DX * W + AX * U);
+		U = return_U (DW, isoline, INTERVAL);
+		W = return_U (AW, isoline, INTERVAL);
+		//U = fabs(DW - isoline) / INTERVAL;
+		//W = fabs(AW - isoline) / INTERVAL;
+		buf.B.X = (DX *  + AX * U);
 		buf.B.Y = (DY * W + AY * U);
 
 		out.push_back(buf);
 
 		INTERVAL = fabs(BW - CW);
-		U = fabs(BW - isoline) / INTERVAL;
-		W = fabs(CW - isoline) / INTERVAL;
+		U = return_U (BW, isoline, INTERVAL);
+		W = return_U (CW, isoline, INTERVAL);
+		//U = fabs(BW - isoline) / INTERVAL;
+		//W = fabs(CW - isoline) / INTERVAL;
 		buf.A.X = (BX * W + CX * U);
 		buf.A.Y = (BY * W + CY * U);
 
 		INTERVAL = fabs(CW - DW);
-		U = fabs(CW - isoline) / INTERVAL;
-		W = fabs(DW - isoline) / INTERVAL;
+		U = return_U (CW, isoline, INTERVAL);
+		W = return_U (DW, isoline, INTERVAL);
+		//U = fabs(CW - isoline) / INTERVAL;
+		//W = fabs(DW - isoline) / INTERVAL;
 		buf.B.X = (CX * W + DX * U);
 		buf.B.Y = (CY * W + DY * U);
 
@@ -474,14 +537,18 @@ vector <LINE> return_line_from_m_sq_number (const vector <vector <GRID_CENTER> >
 	else if (m_sq_id == 11) {
 
 		INTERVAL = fabs(BW - CW);
-		U = fabs(BW - isoline) / INTERVAL;
-		W = fabs(CW - isoline) / INTERVAL;
+		U = return_U (BW, isoline, INTERVAL);
+		W = return_U (CW, isoline, INTERVAL);
+		//U = fabs(BW - isoline) / INTERVAL;
+		//W = fabs(CW - isoline) / INTERVAL;
 		buf.A.X = (BX * W + CX * U);
 		buf.A.Y = (BY * W + CY * U);
 
 		INTERVAL = fabs(CW - DW);
-		U = fabs(CW - isoline) / INTERVAL;
-		W = fabs(DW - isoline) / INTERVAL;
+		U = return_U (CW, isoline, INTERVAL);
+		W = return_U (DW, isoline, INTERVAL);
+		//U = fabs(CW - isoline) / INTERVAL;
+		//W = fabs(DW - isoline) / INTERVAL;
 		buf.B.X = (CX * W + DX * U);
 		buf.B.Y = (CY * W + DY * U);
 
@@ -490,14 +557,18 @@ vector <LINE> return_line_from_m_sq_number (const vector <vector <GRID_CENTER> >
 	else if (m_sq_id == 12) {
 
 		INTERVAL = fabs(BW - CW);
-		U = fabs(BW - isoline) / INTERVAL;
-		W = fabs(CW - isoline) / INTERVAL;
+		U = return_U (BW, isoline, INTERVAL);
+		W = return_U (CW, isoline, INTERVAL);
+		//U = fabs(BW - isoline) / INTERVAL;
+		//W = fabs(CW - isoline) / INTERVAL;
 		buf.A.X = (BX * W + CX * U);
 		buf.A.Y = (BY * W + CY * U);
 
 		INTERVAL = fabs(DW - AW);
-		U = fabs(DW - isoline) / INTERVAL;
-		W = fabs(AW - isoline) / INTERVAL;
+		U = return_U (DW, isoline, INTERVAL);
+		W = return_U (AW, isoline, INTERVAL);
+		//U = fabs(DW - isoline) / INTERVAL;
+		//W = fabs(AW - isoline) / INTERVAL;
 		buf.B.X = (DX * W + AX * U);
 		buf.B.Y = (DY * W + AY * U);
 
@@ -506,14 +577,18 @@ vector <LINE> return_line_from_m_sq_number (const vector <vector <GRID_CENTER> >
 	else if (m_sq_id == 13) {
 
 		INTERVAL = fabs(AW - BW);
-		U = fabs(AW - isoline) / INTERVAL;
-		W = fabs(BW - isoline) / INTERVAL;
+		U = return_U (AW, isoline, INTERVAL);
+		W = return_U (BW, isoline, INTERVAL);
+		//U = fabs(AW - isoline) / INTERVAL;
+		//W = fabs(BW - isoline) / INTERVAL;
 		buf.A.X = (AX * W + BX * U);
 		buf.A.Y = (AY * W + BY * U);
 
 		INTERVAL = fabs(BW - CW);
-		U = fabs(BW - isoline) / INTERVAL;
-		W = fabs(CW - isoline) / INTERVAL;
+		U = return_U (BW, isoline, INTERVAL);
+		W = return_U (CW, isoline, INTERVAL);
+		//U = fabs(BW - isoline) / INTERVAL;
+		//W = fabs(CW - isoline) / INTERVAL;
 		buf.B.X = (BX * W + CX * U);
 		buf.B.Y = (BY * W + CY * U);
 
@@ -522,14 +597,18 @@ vector <LINE> return_line_from_m_sq_number (const vector <vector <GRID_CENTER> >
 	else if (m_sq_id == 14) {
 
 		INTERVAL = fabs(AW - BW);
-		U = fabs(AW - isoline) / INTERVAL;
-		W = fabs(BW - isoline) / INTERVAL;
+		U = return_U (AW, isoline, INTERVAL);
+		W = return_U (BW, isoline, INTERVAL);
+		//U = fabs(AW - isoline) / INTERVAL;
+		//W = fabs(BW - isoline) / INTERVAL;
 		buf.A.X = (AX * W + BX * U);
 		buf.A.Y = (AY * W + BY * U);
 
 		INTERVAL = fabs(DW - AW);
-		U = fabs(DW - isoline) / INTERVAL;
-		W = fabs(AW - isoline) / INTERVAL;
+		U = return_U (DW, isoline, INTERVAL);
+		W = return_U (AW, isoline, INTERVAL);
+		//U = fabs(DW - isoline) / INTERVAL;
+		//W = fabs(AW - isoline) / INTERVAL;
 		buf.B.X = (DX * W + AX * U);
 		buf.B.Y = (DY * W + AY * U);
 
@@ -1688,6 +1767,8 @@ void dbg_cout_line (const vector <LINE>& L) {
 void dbg_cout_line_vctr (const vector <vector <LINE> >& LV) {
 
 	cout << "LINE VECTOR: " << endl;
+
+	cout << fixed << setprecision (6) << flush;
 
 	for(size_t i = 0; i < LV.size(); i++) {
 
