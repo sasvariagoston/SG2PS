@@ -200,14 +200,16 @@ vector <WELL_INTERVAL> FIRST_DERIVATE (const vector <WELL_INTERVAL>& IN) {
 			if (D_DRV > MAX_DERIVATE) MAX_DERIVATE = D_DRV;
 
 			ASSERT_FINITE (MAX_DERIVATE);
-			ASSERT (MAX_DERIVATE > 0);
 
-			buf.DD_DERIV = DD_DRV;
-			buf.D_DERIV = D_DRV;
+			if (MAX_DERIVATE > 0) {
 
-			ASSERT_FINITE (buf.DD_DERIV, buf.D_DERIV);
+				buf.DD_DERIV = DD_DRV;
+				buf.D_DERIV = D_DRV;
 
-			OUT.push_back (buf);
+				ASSERT_FINITE (buf.DD_DERIV, buf.D_DERIV);
+
+				OUT.push_back (buf);
+			}
 		}
 	}
 
