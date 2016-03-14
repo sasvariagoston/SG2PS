@@ -17,6 +17,7 @@
 #include "exceptions.hpp"
 #include "read_csv.hpp"
 #include "ReservedColumnNames.hpp"
+#include "rgf.h"
 #include "run_mode.h"
 #include "settings.hpp"
 
@@ -530,6 +531,7 @@ vector <GDB> create_GDB_from_rgf () {
 		}
 
 		if (is_PITCHcorrect(row)) buffer.LINEATION = "PITCH";
+
 		if (is_LINEATIONcorrect(row)) buffer.LINEATION = "LINEATION";
 		if (is_SCcorrect(row)) buffer.LINEATION = "SC";
 

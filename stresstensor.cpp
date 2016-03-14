@@ -133,7 +133,13 @@ STRESSFIELD eigenvalue_eigenvector (STRESSTENSOR st) {
 	b2 = st._22 - sf.EIGENVALUE.Z;
 
 	sf.EIGENVECTOR3.Z = 1.0;
-	sf.EIGENVECTOR3.X = ((b1 * c2) - (b2 * c1)) / ((b2 * a1) - (a2 * b1));
+
+	const double denom3 = (b2 * a1) - (a2 * b1);
+
+    ASSERT_NE(denom3, 0.0);               // Please keep it like this: We would like to
+    ASSERT_GE(fabs(denom3), MINIMUM_DET); // distinguish between small and exact zero.
+
+	sf.EIGENVECTOR3.X = ((b1 * c2) - (b2 * c1)) / denom3;
 	sf.EIGENVECTOR3.Y = - ((a1 * sf.EIGENVECTOR3.X) + c1) / b1;
 	sf.EIGENVECTOR3 = unitvector (sf.EIGENVECTOR3, true);
 

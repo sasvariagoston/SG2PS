@@ -523,7 +523,7 @@ vector <GDB> generate_OFFSET (const vector <GDB>& inGDB) {
 
 		const GDB ACT = outGDB.at(i);
 
-		bool STRIAE = is_allowed_striae_datatype (ACT.DATATYPE);
+		const bool STRIAE = is_allowed_striae_datatype (ACT.DATATYPE);
 
 		const bool NON = is_allowed_striae_none_sense(ACT.OFFSET);
 
@@ -539,7 +539,7 @@ vector <GDB> generate_OFFSET (const vector <GDB>& inGDB) {
 
 			if (NEW_OFFSET != ORIG_OFFSET) outGDB.at(i).OFFSET = NEW_OFFSET;
 
-			ASSERT_OFFSET (ORIG_OFFSET, NEW_OFFSET);
+			//ASSERT_OFFSET (ORIG_OFFSET, NEW_OFFSET);
 		}
 	}
 	return outGDB;
@@ -737,6 +737,7 @@ void PROCESS_RGF (const string inputfilename, const bool XY_OK, const bool TRJ_O
 
 	nGDB = SORT_GDB (nGDB, "LOC_GC_TYPE");
 	vector < vector <GDB> > nGDB_G = SEPARATE_DATASET_GROUPS (nGDB);
+
 	nGDB_G = PREPARE_GDB_VECTOR_FOR_PROCESSING (nGDB_G, false);
 
 	nGDB_G = AVERAGE (nGDB_G);
@@ -754,7 +755,7 @@ void PROCESS_RGF (const string inputfilename, const bool XY_OK, const bool TRJ_O
 
 	for (size_t i = 0; i < LOOPS_NUMBER; i++) {
 
-		PROCESS_AS_TILTED = false;
+			PROCESS_AS_TILTED = false;
 		if (i == 1 || i == 3) PROCESS_AS_TILTED = true;
 
 		PROCESS_AS_TRAJECTORY = false;
@@ -827,30 +828,30 @@ void dbg_cout_GDB_vector (const vector <GDB>& inGDB) {
 	//<< "DC.X" << '\t' << "DC.Y" << '\t'<< "DC.Z" << '\t'
 	//<< "SC.X" << '\t' << "SC.Y" << '\t'<< "SC.Z" << '\t'
 
-	//<< "LPITCH" << '\t'
-	//<< "LPITCHSENSE" << '\t'
-	//<< "PITCHANGLE" << '\t'
+	<< "LPITCH" << '\t'
+	<< "LPITCHSENSE" << '\t'
+	<< "PITCHANGLE" << '\t'
 
 	//<< "MISFIT" << '\t'
-	//<< "LINEATION" << '\t'
-	//<< "OFFSET" << '\t'
-	<< "DEPTH" << '\t'
+	<< "LINEATION" << '\t'
+	<< "OFFSET" << '\t'
+	//<< "DEPTH" << '\t'
 	//<< "GC" << '\t'
 	//<< "COLOR" << '\t'
 	//<< "LOC" << '\t'
 	//<< "LOCX" << '\t'
 	//<< "LOCY" << '\t'
 	//<< "FORMATION" << '\t'
-	//<< "DATATYPE" << '\t'
-	//<< "DIPDIR" << '\t'
-	//<< "DIP" << '\t'
-	//<< "LDIR" << '\t'
-	//<< "LDIP" << '\t'
+	<< "DATATYPE" << '\t'
+	<< "DIPDIR" << '\t'
+	<< "DIP" << '\t'
+	<< "LDIR" << '\t'
+	<< "LDIP" << '\t'
 
-	//<< "corr.DIPDIR" << '\t'
-	//<< "corr.DIP" << '\t'
-	//<< "corrL.DIPDIR" << '\t'
-	//<< "corrL.DIP" << '\t'
+	<< "corr.DIPDIR" << '\t'
+	<< "corr.DIP" << '\t'
+	<< "corrL.DIPDIR" << '\t'
+	<< "corrL.DIP" << '\t'
 
 	//<< "PALEON" << '\t'
 	//<< "COMMENT" << '\t'
@@ -874,12 +875,11 @@ void dbg_cout_GDB_vector (const vector <GDB>& inGDB) {
 	//<< "avS0N.X" << '\t' << "avS0N.Y" << '\t'<< "avS0N.Z" << '\t'
 	//<< "T.X" << '\t' << "T.Y" << '\t'<< "T.Z" << '\t'
 
-	//<< "avS0d.DIPDIR" << '\t'
-	//<< "avS0d.DIP" << '\t'
-	//<< "avd.DIPDIR" << '\t'
-	//<< "avd.DIP" << '\t'
-	//<< "avS0offset" << '\t'
-
+	<< "avS0d.DIPDIR" << '\t'
+	<< "avS0d.DIP" << '\t'
+	<< "avd.DIPDIR" << '\t'
+	<< "avd.DIP" << '\t'
+	<< "avS0offset" << '\t'
 
 	//<< "fold_great_circle_N.X" << '\t'
 	//<< "fold_great_circle_N.Y" << '\t'
@@ -911,15 +911,15 @@ void dbg_cout_GDB_vector (const vector <GDB>& inGDB) {
 		//<< T.DC.X << '\t' << T.DC.Y << '\t'<< T.DC.Z << '\t'
 		//<< T.SC.X << '\t' << T.SC.Y << '\t'<< T.SC.Z << '\t'
 
-		//<< T.LPITCH << '\t'
-		//<< T.LPITCHSENSE << '\t'
-		//<< T.PITCHANGLE << '\t'
+		<< T.LPITCH << '\t'
+		<< T.LPITCHSENSE << '\t'
+		<< T.PITCHANGLE << '\t'
 
 		<< fixed << setprecision(8)
 		//<< T.MISFIT << '\t'
-		//<< T.LINEATION << '\t'
-		//<< T.OFFSET << '\t'
-		<< T.DEPTH << '\t'
+		<< T.LINEATION << '\t'
+		<< T.OFFSET << '\t'
+		//<< T.DEPTH << '\t'
 
 		<< fixed << setprecision(0)
 		//<< T.GC << '\t'
@@ -928,18 +928,18 @@ void dbg_cout_GDB_vector (const vector <GDB>& inGDB) {
 		//<< T.LOCX << '\t'
 		//<< T.LOCY << '\t'
 		//<< T.FORMATION << '\t'
-		//<< T.DATATYPE << '\t'
+		<< T.DATATYPE << '\t'
 
-		<< fixed << setprecision (0)
-		//<< T.DIPDIR << '\t'
-		//<< T.DIP << '\t'
-		//<< T.LDIR << '\t'
-		//<< T.LDIP << '\t'
+		<< fixed << setprecision (6)
+		<< T.DIPDIR << '\t'
+		<< T.DIP << '\t'
+		<< T.LDIR << '\t'
+		<< T.LDIP << '\t'
 
-		//<< T.corr.DIPDIR << '\t'
-		//<< T.corr.DIP << '\t'
-		//<< T.corrL.DIPDIR << '\t'
-		//<< T.corrL.DIP << '\t'
+		<< T.corr.DIPDIR << '\t'
+		<< T.corr.DIP << '\t'
+		<< T.corrL.DIPDIR << '\t'
+		<< T.corrL.DIP << '\t'
 
 		<< fixed << setprecision(0)
 		//<< T.PALEON << '\t'
@@ -968,11 +968,11 @@ void dbg_cout_GDB_vector (const vector <GDB>& inGDB) {
 		//<< T.T.X << '\t' << T.T.Y << '\t'<< T.T.Z << '\t'
 
 		<< fixed << setprecision(6)
-		//<< T.avS0d.DIPDIR << '\t'
-		//<< T.avS0d.DIP << '\t'
-		//<< T.avd.DIPDIR << '\t'
-		//<< T.avd.DIP << '\t'
-		//<< T.avS0offset << '\t'
+		<< T.avS0d.DIPDIR << '\t'
+		<< T.avS0d.DIP << '\t'
+		<< T.avd.DIPDIR << '\t'
+		<< T.avd.DIP << '\t'
+		<< T.avS0offset << '\t'
 
 		//<< fixed << setprecision(6)
 		//<< T.fold_great_circle_N.X << '\t'
