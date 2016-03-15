@@ -2755,7 +2755,7 @@ void OUTPUT_TO_PS (const vector <vector <GDB> >& in_GDB_G, const vector <vector 
 
 	if (DATA_TO_PLOT == 0) return;
 
-	const string PS_FOLDER = return_WELL_PS_FOLDER();
+	const string PS_FOLDER = return_PS_FOLDER();
 
 	if (! change_dir (PS_FOLDER)) make_dir (PS_FOLDER);
 

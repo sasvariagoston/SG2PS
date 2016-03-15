@@ -66,6 +66,8 @@ vector <double> generate_phi_vector (const double& PHI_MIN, const double& PHI_MA
 
 	for (size_t i = 0; i < INT_NUM + 1; i++) {
 
+		if (PHI < 0.0001) PHI = 0.0001;
+
 		PHI_CONTAINER.push_back (PHI);
 
 		PHI = PHI + step;
@@ -90,9 +92,9 @@ vector <vector <double> > DIR_MX1_from_n1 (const VCTR& n1, const double& angle) 
 vector <vector <double> > st_from_reduced_stresstensor (const vector <vector <double> >& DIR_MX1, const double& fi) {
 
 	vector <vector <double> >  T = declare_3x3_matrix (
-			0.0, 0.0, 0.0,
-			0.0, fi , 0.0,
-			0.0, 0.0, 1.0);
+			0.0001, 0.0000, 0.0000,
+			0.0000,   fi  , 0.0000,
+			0.0000, 0.0000, 1.0000);
 
 	vector <vector <double> >  DIR_MX2 = transpose (DIR_MX1);
 
@@ -169,12 +171,12 @@ STRESSTENSOR calculate_stresstensor (const VCTR& n1, double ANG, double PHI) {
 
 	STRESSTENSOR st;
 
-	st._11 = n3.X * n3.X + n2.X * n2.X * PHI;
-	st._12 = n3.X * n3.Y + n2.X * n2.Y * PHI;
-	st._13 = n3.X * n3.Z + n2.X * n2.Z * PHI;
-	st._22 = n3.Y * n3.Y + n2.Y * n2.Y * PHI;
-	st._23 = n3.Y * n3.Z + n2.Y * n2.Z * PHI;
-	st._33 = n3.Z * n3.Z + n2.Z * n2.Z * PHI;
+	st._11 = n3.X * n3.X + n2.X * n2.X * PHI + n1.X * n1.X * 0.0001;
+	st._12 = n3.X * n3.Y + n2.X * n2.Y * PHI + n1.X * n1.Y * 0.0001;
+	st._13 = n3.X * n3.Z + n2.X * n2.Z * PHI + n1.X * n1.Z * 0.0001;
+	st._22 = n3.Y * n3.Y + n2.Y * n2.Y * PHI + n1.Y * n1.Y * 0.0001;
+	st._23 = n3.Y * n3.Z + n2.Y * n2.Z * PHI + n1.Y * n1.Z * 0.0001;
+	st._33 = n3.Z * n3.Z + n2.Z * n2.Z * PHI + n1.Z * n1.Z * 0.0001;
 
     return st;
 }

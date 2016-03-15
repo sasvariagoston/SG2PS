@@ -35,13 +35,14 @@ double stresstensor_determinant (const STRESSTENSOR& st) {
 			(st._11 * st._23 * st._23);
 }
 
-void check_stress_tensor_singularity(const STRESSTENSOR& st) {
+bool is_stress_tensor_singular (const STRESSTENSOR& st) {
 
 	double det = stresstensor_determinant (st);
 
-	ASSERT2(fabs(det) > 1.0e-25, "Stress tensor nearly singluar, determinant = "<< det);
+	return (fabs (det) < 1.0e-12);
 }
 
+/*
 STRESSTENSOR fix_stress_tensor_singularity(STRESSTENSOR& st) {
 
 	const double one_plus_tiny = 1 + 1.0e-4;
@@ -56,12 +57,9 @@ STRESSTENSOR fix_stress_tensor_singularity(STRESSTENSOR& st) {
 	}
 	return st;
 }
+*/
 
 STRESSFIELD eigenvalue_eigenvector (STRESSTENSOR st) {
-
-	st =  fix_stress_tensor_singularity (st);
-
-	check_stress_tensor_singularity (st);
 
 	STRESSFIELD sf;
 

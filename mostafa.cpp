@@ -60,16 +60,20 @@ vector <STRESSFIELD> sfv_MOSTAFA (const vector <GDB>& inGDB) {
 
 		process_GDB = return_stressvector_estimators (MOSTAFA_st, process_GDB, METHOD);
 
-		STRESSFIELD sf = eigenvalue_eigenvector (MOSTAFA_st);
+		if (! is_stress_tensor_singular (MOSTAFA_st)) {
 
-		sf = correct_SF_to_fit_D (sf);
+			STRESSFIELD sf = eigenvalue_eigenvector (MOSTAFA_st);
 
-		sf = computestressfield_DXDYDZ (sf);
+			sf = correct_SF_to_fit_D (sf);
 
-		sf = stress_regime (sf);
+			sf = computestressfield_DXDYDZ (sf);
 
-		SFV.push_back(sf);
-		MOSTAFA_stv.push_back(MOSTAFA_st);
+			sf = stress_regime (sf);
+
+			SFV.push_back(sf);
+
+			MOSTAFA_stv.push_back(MOSTAFA_st);
+		}
 	}
 	return SFV;
 }

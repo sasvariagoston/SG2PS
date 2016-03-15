@@ -6,8 +6,9 @@
 #define STRESSTENSOR_HPP_
 
 double stresstensor_determinant (const STRESSTENSOR& st);
-void check_stress_tensor_singularity(const STRESSTENSOR& st);
-STRESSTENSOR fix_stress_tensor_singularity(STRESSTENSOR& st);
+bool is_stress_tensor_singular (const STRESSTENSOR& st);
+
+//STRESSTENSOR fix_stress_tensor_singularity(STRESSTENSOR& st);
 
 STRESSFIELD eigenvalue_eigenvector (STRESSTENSOR st);
 vector <STRESSAXIS> stressfield_to_stress_axes (const STRESSFIELD& sf);

@@ -188,36 +188,74 @@ void INVERSION (const vector <GDB>& inGDB) {
 	STV.clear();
 	SFV.clear();
 
+	STRESSTENSOR TEST;
+
 	const bool IS_STRIAE = is_allowed_striae_datatype(inGDB.at(0).DATATYPE);
 
 	if (is_INVERSION_ANGELIER() && IS_STRIAE) {
-		STV.push_back (st_ANGELIER (inGDB));
-		SFV.push_back (sf_ANGELIER (STV.at(0)));
+
+		TEST = st_ANGELIER (inGDB);
+
+		if (! is_stress_tensor_singular (TEST)) {
+
+			STV.push_back (TEST);
+			SFV.push_back (sf_ANGELIER (STV.at(0)));
+		}
 	}
 	else if (is_BINGHAM_USE() && !IS_STRIAE) {
 		const vector <VCTR> BNG = generate_Bingham_dataset(inGDB);
-		STV.push_back (st_BINGHAM (BNG));
-		SFV.push_back (sf_BINGHAM (STV.at(0)));
+
+		TEST = st_BINGHAM (BNG);
+
+		if (! is_stress_tensor_singular (TEST)) {
+
+			STV.push_back (TEST);
+			SFV.push_back (sf_BINGHAM (STV.at(0)));
+		}
 	}
 	else if (is_INVERSION_BRUTEFORCE() && IS_STRIAE) {
-		STV.push_back (st_BRUTEFORCE (inGDB));
-		SFV.push_back (sf_BRUTEFORCE (STV.at(0)));
+
+		TEST = st_BRUTEFORCE (inGDB);
+
+		if (! is_stress_tensor_singular (TEST)) {
+
+			STV.push_back (TEST);
+			SFV.push_back (sf_BRUTEFORCE (STV.at(0)));
+		}
 	}
 	else if (is_INVERSION_FRY() && fry_correct (inGDB) && IS_STRIAE) {
-		STV.push_back (st_FRY (inGDB));
-		SFV.push_back (sf_FRY (STV.at(0)));
+
+		TEST = st_FRY (inGDB);
+
+		if (! is_stress_tensor_singular (TEST)) {
+
+			STV.push_back (TEST);
+			SFV.push_back (sf_FRY (STV.at(0)));
+		}
 	}
 	else if (is_INVERSION_MICHAEL() && IS_STRIAE) {
-		STV.push_back (st_MICHAEL(inGDB));
-		SFV.push_back (sf_MICHAEL(STV.at(0)));
+
+		TEST = st_MICHAEL (inGDB);
+
+		if (! is_stress_tensor_singular (TEST)) {
+
+			STV.push_back (TEST);
+			SFV.push_back (sf_MICHAEL(STV.at(0)));
+		}
 	}
 	else if (is_INVERSION_MOSTAFA() && IS_STRIAE) {
 		SFV = sfv_MOSTAFA (inGDB);
 		STV = stv_MOSTAFA ();
 	}
 	else if (is_INVERSION_SPRANG() && IS_STRIAE) {
-		STV.push_back (st_NDA (inGDB));
-		SFV.push_back (sf_NDA (STV.at(0)));
+
+		TEST = st_NDA (inGDB);
+
+		if (! is_stress_tensor_singular (TEST)) {
+
+			STV.push_back (TEST);
+			SFV.push_back (sf_NDA (STV.at(0)));
+		}
 	}
 	else if (is_INVERSION_YAMAJI() && IS_STRIAE) {
 		//STV.push_back (st_YAMAJI (inGDB));
@@ -225,12 +263,26 @@ void INVERSION (const vector <GDB>& inGDB) {
 		ASSERT_DEAD_END ();
 	}
 	else if (is_INVERSION_TURNER() && IS_STRIAE) {
-		SFV.push_back (sf_PTN (inGDB));
-		STV.push_back (st_PTN (SFV.at(0), inGDB));
+
+		const STRESSFIELD TEST_SF = sf_PTN (inGDB);
+
+		TEST = st_PTN (TEST_SF, inGDB);
+
+		if (! is_stress_tensor_singular (TEST)) {
+
+			SFV.push_back (TEST_SF);
+			STV.push_back (TEST);
+		}
 	}
 	else if (is_INVERSION_SHAN() && IS_STRIAE) {
-		STV.push_back (st_SHAN(inGDB));
-		SFV.push_back (sf_SHAN(STV.at(0)));
+
+		TEST = st_SHAN (inGDB);
+
+		if (! is_stress_tensor_singular (TEST)) {
+
+			STV.push_back (st_SHAN(inGDB));
+			SFV.push_back (sf_SHAN(STV.at(0)));
+		}
 	}
 	else ASSERT_DEAD_END();
 
@@ -331,7 +383,7 @@ void cout_dbg_stressfield (const vector <STRESSFIELD>& sf) {
 
 void cout_dbg_stresstensor (const STRESSTENSOR& in) {
 
-	cout << fixed << setprecision (6) << endl;
+	cout << scientific  << setprecision (16) << endl;
 
 	cout << in._11 << "    " << in._12  << "    " << in._13 << endl;
 	cout << in._12 << "    " << in._22  << "    " << in._23 << endl;
