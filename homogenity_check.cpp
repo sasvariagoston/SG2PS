@@ -34,15 +34,15 @@ using namespace std;
 
 size_t minimum_independent_dataset () {
 
-	if 		(is_INVERSION_SPRANG()) 	return 6;
-	else if (is_INVERSION_TURNER()) 	return 5;
-	else if (is_INVERSION_MICHAEL()) 	return 4;
-	else if (is_INVERSION_SHAN()) 		return 5;
-	else if (is_INVERSION_FRY()) 		return 6;
-	else if (is_INVERSION_ANGELIER()) 	return 4;
-	else if (is_INVERSION_MOSTAFA()) 	return 4;
-	else if (is_INVERSION_BRUTEFORCE()) return 6;
-	else if (is_BINGHAM_USE()) 			return 4;
+	if 		(is_INVERSION_SPRANG()) 	return 6;//ok
+	else if (is_INVERSION_TURNER()) 	return 6;//ok
+	else if (is_INVERSION_MICHAEL()) 	return 5;//ok
+	else if (is_INVERSION_SHAN()) 		return 5;//ok
+	else if (is_INVERSION_FRY()) 		return 6;//ok
+	else if (is_INVERSION_ANGELIER()) 	return 4;//ok
+	else if (is_INVERSION_MOSTAFA()) 	return 4;//ok
+	else if (is_INVERSION_BRUTEFORCE()) return 6;//ok
+	else if (is_BINGHAM_USE()) 			return 6;//ok
 	else return 1;
 }
 
