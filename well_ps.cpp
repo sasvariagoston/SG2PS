@@ -557,7 +557,7 @@ void PS_well_coordinate_axes_DIPDIR (ofstream& o, const double X, const double L
 	font_PS(o, "ArialNarrow-Bold", 24);
 	color_PS (o, "0.9 0.9 0.9");
 
-	if (is_DATARULE_GERMAN()) 	text_PS (o, X + (PL_WDT - 5.5) * P.A, P.O1Y + 45.0 * P.D, 3, " DIP DIR");
+	if (is_DATARULE_GERMAN()) 	text_PS (o, X + (PL_WDT - 2.2) * P.A, P.O1Y + 45.0 * P.D, 3, " DIP DIR");//5.5
 	else text_PS (o, X + (PL_WDT - 3.2) * P.A, P.O1Y + 45.0 * P.D, 3, "STRIKE DIR");
 
 	font_PS(o, "ArialNarrow", 12);
@@ -1445,7 +1445,7 @@ void plot_peaks (ofstream& o, const double X, const double LENGTH, const double 
 		ASSERT_LE (ACT_data_Y, P.O1Y);
 		ASSERT_GE (ACT_data_Y, P.O1Y - LENGTH - 1);
 
-		ACT_X.push_back (ACT_data_Y);
+		ACT_X.push_back (ACT_data_X);
 		ACT_Y.push_back (ACT_data_Y);
 	}
 
