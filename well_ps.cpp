@@ -664,9 +664,9 @@ void PS_well_coordinate_grid_DIP (ofstream& o, const double X, const double LENG
 	font_PS(o, "ArialNarrow", 12);
 	color_PS (o, "0.0 0.0 0.0");
 
-	for (size_t i = 0; i < 7; i++) { //7 was 4
+	for (size_t i = 0; i < 7; i++) {
 
-		const double stp = (i * PL_WDT * P.A) / 6.0; //6.0 was 3.0
+		const double stp = (i * PL_WDT * P.A) / 6.0;
 
 		moveto_PS (o, X + stp, P.O1Y, 3);
 		lineto_PS (o, X + stp, P.O1Y + 5.0 * P.D, 3);
@@ -1162,8 +1162,8 @@ vector <XY> cutting_points (const vector <XY>& IN) {
 		const double ACT_DPT = IN.at(i).Y;
 		const double NXT_DPT = IN.at(i+1).Y;
 
-		const bool PLUS = (NXT - ACT) > 180.0; 		// 012 > 355
-		const bool MINUS = (NXT - ACT) < -180.0;	// 355 > 012
+		const bool PLUS = (NXT - ACT) > 180.0;
+		const bool MINUS = (NXT - ACT) < -180.0;
 
 		OUT.push_back (buf);
 
@@ -1717,7 +1717,7 @@ void PS_well_intervals_error (const vector <WELL_INTERVAL>& INTERVAL, ofstream& 
 
 		if (MAX_ERROR > MIN_ERROR) {
 
-			//ASSERT_NE (MAX_ERROR, MIN_ERROR);
+			ASSERT_NE (MAX_ERROR, MIN_ERROR);
 			CLR_RATIO = 100 * (1.0 * (SD - MIN_ERROR)) / (MAX_ERROR - MIN_ERROR);
 		}
 
