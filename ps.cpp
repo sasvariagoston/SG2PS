@@ -2596,7 +2596,7 @@ void PS_STEREONET_SYMBOLS (const vector <GDB>& inGDB, ofstream& o) {
 		color_PS (o, "0.0 0.0 0.0");
 		text_PS (o, P.S1X + 2.6 * P.A, P.S1Y - 0.3 * P.A, 3, "STRESS INVERSION");
 
-		PS_SYMBOLS_INVERSION (o);
+		//PS_SYMBOLS_INVERSION (o);
 	}
 }
 
@@ -2793,7 +2793,12 @@ void OUTPUT_TO_PS (const vector <vector <GDB> >& in_GDB_G, const vector <vector 
 
 			PS_STEREONET_SYMBOLS (in_GDB_G.at(i), OPS);
 
-			if (is_allowed_striae_datatype (DT) && ! is_INVERSION_NONE() && SUCCESFULL) PS_stress_scale (OPS);
+			if (is_allowed_striae_datatype (DT) && ! is_INVERSION_NONE() && SUCCESFULL) {
+
+				PS_stress_scale (OPS);
+
+				PS_SYMBOLS_INVERSION (o);
+			}
 
 			PS_border (in_GDB_G.at(i), OPS);
 
