@@ -2760,7 +2760,7 @@ void OUTPUT_TO_PS (const vector <vector <GDB> >& in_GDB_G, const vector <vector 
 
 	const string PS_FOLDER = return_PS_FOLDER();
 
-	if (! change_dir (PS_FOLDER)) make_dir (PS_FOLDER);
+	if (! dir_exists(PS_FOLDER)) make_dir (PS_FOLDER);
 
 	size_t counter = 0;
 
@@ -2781,7 +2781,7 @@ void OUTPUT_TO_PS (const vector <vector <GDB> >& in_GDB_G, const vector <vector 
 
 			const string DATA_FOLDER = return_PS_FOLDER() + path_separator + capslock (DT);
 
-			if (! change_dir(DATA_FOLDER)) make_dir (DATA_FOLDER);
+			if (! dir_exists(DATA_FOLDER)) make_dir (DATA_FOLDER);
 
 			const string PS_NAME = generate_ACTUAL_PS_NAME();
 

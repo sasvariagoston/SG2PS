@@ -1985,7 +1985,7 @@ void OUTPUT_TO_WELL_PS (const vector <vector <GDB> >& GDB_G) {
 
 	const string PS_FOLDER = return_WELL_PS_FOLDER();
 
-	if (! change_dir (PS_FOLDER)) make_dir (PS_FOLDER);
+	if (! dir_exists (PS_FOLDER)) make_dir (PS_FOLDER);
 
 	size_t counter = 0;
 
@@ -2026,7 +2026,7 @@ void OUTPUT_TO_WELL_PS (const vector <vector <GDB> >& GDB_G) {
 
 					const string DATA_FOLDER = return_WELL_PS_FOLDER() + path_separator + capslock (DT);
 
-					if (! change_dir(DATA_FOLDER)) make_dir (DATA_FOLDER);
+					if (! dir_exists(DATA_FOLDER)) make_dir (DATA_FOLDER);
 
 					string PS_NAME = generate_ACTUAL_WELL_PS_NAME ();
 

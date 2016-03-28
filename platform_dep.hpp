@@ -13,4 +13,11 @@ const char path_separator[] =
 		"/";
 #endif
 
+const char MKDIR[] =
+#ifdef _WIN32
+        "mkdir ";
+#else
+        "mkdir -p ";
+#endif
+
 #endif

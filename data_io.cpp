@@ -9,10 +9,7 @@
 #include <iomanip>
 #include <iostream>
 #include <stdexcept>
-
 #include <sys/stat.h>
-#include <sys/types.h>
-
 #include "allowed_keys.hpp"
 #include "assertions.hpp"
 #include "color_management.hpp"
@@ -46,22 +43,17 @@ vector <string> possible_folders_name () {
 
 void make_dir (const string& dir_name) {
 
-	string command = "mkdir " + dir_name;
+	string command = MKDIR + dir_name;
 
 	int ret = system (command.c_str());
 
 	if (ret) throw runtime_error("failed to execute command \""+command+"\"");
 }
 
-bool change_dir (const string& dir_name) {
 
-	string command = "cd " + dir_name;
-
-	int ret = system (command.c_str());
-
-	if (ret) return false;
-
-	return true;
+bool dir_exists(const string& dir) {
+    struct stat sb;
+    return stat(dir.c_str(), &sb) == 0 && S_ISDIR(sb.st_mode);
 }
 
 void create_required_folders (const vector <GDB>& inGDB) {

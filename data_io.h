@@ -13,7 +13,7 @@ using namespace std;
 
 vector <string> possible_folders_name ();
 void make_dir (const string& dir_name);
-bool change_dir (const string& dir_name);
+bool dir_exists(const string& dir_name);
 void create_required_folders (const vector <GDB>& inGDB);
 void copy_original_files ();
 void copy_log ();
