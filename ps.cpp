@@ -2797,7 +2797,7 @@ void OUTPUT_TO_PS (const vector <vector <GDB> >& in_GDB_G, const vector <vector 
 
 				PS_stress_scale (OPS);
 
-				PS_SYMBOLS_INVERSION (o);
+				PS_SYMBOLS_INVERSION (OPS);
 			}
 
 			PS_border (in_GDB_G.at(i), OPS);
