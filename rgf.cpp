@@ -828,30 +828,30 @@ void dbg_cout_GDB_vector (const vector <GDB>& inGDB) {
 	//<< "DC.X" << '\t' << "DC.Y" << '\t'<< "DC.Z" << '\t'
 	//<< "SC.X" << '\t' << "SC.Y" << '\t'<< "SC.Z" << '\t'
 
-	<< "LPITCH" << '\t'
-	<< "LPITCHSENSE" << '\t'
-	<< "PITCHANGLE" << '\t'
+	//<< "LPITCH" << '\t'
+	//<< "LPITCHSENSE" << '\t'
+	//<< "PITCHANGLE" << '\t'
 
 	//<< "MISFIT" << '\t'
-	<< "LINEATION" << '\t'
-	<< "OFFSET" << '\t'
+	//<< "LINEATION" << '\t'
+	//<< "OFFSET" << '\t'
 	//<< "DEPTH" << '\t'
-	//<< "GC" << '\t'
-	//<< "COLOR" << '\t'
+	<< "GC" << '\t'
+	<< "COLOR" << '\t'
 	//<< "LOC" << '\t'
 	//<< "LOCX" << '\t'
 	//<< "LOCY" << '\t'
 	//<< "FORMATION" << '\t'
-	<< "DATATYPE" << '\t'
-	<< "DIPDIR" << '\t'
-	<< "DIP" << '\t'
-	<< "LDIR" << '\t'
-	<< "LDIP" << '\t'
+	//<< "DATATYPE" << '\t'
+	//<< "DIPDIR" << '\t'
+	//<< "DIP" << '\t'
+	//<< "LDIR" << '\t'
+	//<< "LDIP" << '\t'
 
-	<< "corr.DIPDIR" << '\t'
-	<< "corr.DIP" << '\t'
-	<< "corrL.DIPDIR" << '\t'
-	<< "corrL.DIP" << '\t'
+	//<< "corr.DIPDIR" << '\t'
+	//<< "corr.DIP" << '\t'
+	//<< "corrL.DIPDIR" << '\t'
+	//<< "corrL.DIP" << '\t'
 
 	//<< "PALEON" << '\t'
 	//<< "COMMENT" << '\t'
@@ -875,11 +875,11 @@ void dbg_cout_GDB_vector (const vector <GDB>& inGDB) {
 	//<< "avS0N.X" << '\t' << "avS0N.Y" << '\t'<< "avS0N.Z" << '\t'
 	//<< "T.X" << '\t' << "T.Y" << '\t'<< "T.Z" << '\t'
 
-	<< "avS0d.DIPDIR" << '\t'
-	<< "avS0d.DIP" << '\t'
-	<< "avd.DIPDIR" << '\t'
-	<< "avd.DIP" << '\t'
-	<< "avS0offset" << '\t'
+	//<< "avS0d.DIPDIR" << '\t'
+	//<< "avS0d.DIP" << '\t'
+	//<< "avd.DIPDIR" << '\t'
+	//<< "avd.DIP" << '\t'
+	//<< "avS0offset" << '\t'
 
 	//<< "fold_great_circle_N.X" << '\t'
 	//<< "fold_great_circle_N.Y" << '\t'
@@ -901,7 +901,7 @@ void dbg_cout_GDB_vector (const vector <GDB>& inGDB) {
 		cout
 
 		<< fixed << setprecision(0)
-		<< T.ID << '\t' << T.iID << '\t'
+		//<< T.ID << '\t' << T.iID << '\t'
 
 		<< fixed << setprecision(6)
 		//<< T.N.X << '\t' << T.N.Y << '\t' << T.N.Z << '\t'
@@ -911,35 +911,35 @@ void dbg_cout_GDB_vector (const vector <GDB>& inGDB) {
 		//<< T.DC.X << '\t' << T.DC.Y << '\t'<< T.DC.Z << '\t'
 		//<< T.SC.X << '\t' << T.SC.Y << '\t'<< T.SC.Z << '\t'
 
-		<< T.LPITCH << '\t'
-		<< T.LPITCHSENSE << '\t'
-		<< T.PITCHANGLE << '\t'
+		//<< T.LPITCH << '\t'
+		//<< T.LPITCHSENSE << '\t'
+		//<< T.PITCHANGLE << '\t'
 
 		<< fixed << setprecision(8)
 		//<< T.MISFIT << '\t'
-		<< T.LINEATION << '\t'
-		<< T.OFFSET << '\t'
+		//<< T.LINEATION << '\t'
+		//<< T.OFFSET << '\t'
 		//<< T.DEPTH << '\t'
 
 		<< fixed << setprecision(0)
-		//<< T.GC << '\t'
-		//<< T.COLOR << '\t'
+		<< T.GC << '\t'
+		<< T.COLOR << '\t'
 		//<< T.LOC << '\t'
 		//<< T.LOCX << '\t'
 		//<< T.LOCY << '\t'
 		//<< T.FORMATION << '\t'
-		<< T.DATATYPE << '\t'
+		//<< T.DATATYPE << '\t'
 
 		<< fixed << setprecision (6)
-		<< T.DIPDIR << '\t'
-		<< T.DIP << '\t'
-		<< T.LDIR << '\t'
-		<< T.LDIP << '\t'
+		//<< T.DIPDIR << '\t'
+		//<< T.DIP << '\t'
+		//<< T.LDIR << '\t'
+		//<< T.LDIP << '\t'
 
-		<< T.corr.DIPDIR << '\t'
-		<< T.corr.DIP << '\t'
-		<< T.corrL.DIPDIR << '\t'
-		<< T.corrL.DIP << '\t'
+		//<< T.corr.DIPDIR << '\t'
+		//<< T.corr.DIP << '\t'
+		//<< T.corrL.DIPDIR << '\t'
+		//<< T.corrL.DIP << '\t'
 
 		<< fixed << setprecision(0)
 		//<< T.PALEON << '\t'
@@ -968,11 +968,11 @@ void dbg_cout_GDB_vector (const vector <GDB>& inGDB) {
 		//<< T.T.X << '\t' << T.T.Y << '\t'<< T.T.Z << '\t'
 
 		<< fixed << setprecision(6)
-		<< T.avS0d.DIPDIR << '\t'
-		<< T.avS0d.DIP << '\t'
-		<< T.avd.DIPDIR << '\t'
-		<< T.avd.DIP << '\t'
-		<< T.avS0offset << '\t'
+		//<< T.avS0d.DIPDIR << '\t'
+		//<< T.avS0d.DIP << '\t'
+		//<< T.avd.DIPDIR << '\t'
+		//<< T.avd.DIP << '\t'
+		//<< T.avS0offset << '\t'
 
 		//<< fixed << setprecision(6)
 		//<< T.fold_great_circle_N.X << '\t'

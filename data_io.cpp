@@ -10,6 +10,7 @@
 #include <iostream>
 #include <stdexcept>
 #include <sys/stat.h>
+
 #include "allowed_keys.hpp"
 #include "assertions.hpp"
 #include "color_management.hpp"
