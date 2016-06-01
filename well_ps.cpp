@@ -1798,7 +1798,7 @@ void PS_well_intervals (const vector <WELL_INTERVAL>& INTERVAL, ofstream& o, con
 
 		double CLR_RATIO = 999.0;
 
-		if (! is_WELL_INTERVAL_DATANUMBER() && INTERVAL.at(i).SIZE > 1 && (MAX_DATA < MIN_DATA)) {
+		if (! is_WELL_INTERVAL_DATANUMBER() && INTERVAL.at(i).SIZE > 1 && (MAX_DATA > MIN_DATA)) {
 
 			ASSERT_NE (MAX_DATA, MIN_DATA);
 			CLR_RATIO = 100 * (1.0 * (INTERVAL.at(i).SIZE) - MIN_DATA) / (MAX_DATA - MIN_DATA);
