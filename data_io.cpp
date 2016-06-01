@@ -233,7 +233,12 @@ void output_rgf_record (const GDB& i, ofstream& o, const bool AVERAGE) {
 	const bool is_BEDDING = is_allowed_foldsurface_processing(i.DATATYPE);
 
 	o
-	<< i.ID << '\t'
+	<< i.ID << '\t';
+
+	if (fabs (i.DEPTH) >= 0) o << i.DEPTH << '\t';
+	else o << '\t';
+
+	o
 	<< i.GC << '\t'
 	<< i.COLOR << '\t'
 	<< i.LOC << '\t'
@@ -283,8 +288,8 @@ void output_rgf_record (const GDB& i, ofstream& o, const bool AVERAGE) {
 		}
 		else o << "" << '\t';
 
-		o
-		<< i.PALEON	<< '\t';
+		if (is_allowed_DIR (fabs (i.PALEON))) o << i.PALEON	<< '\t';
+		else o << '\t';
 	}
 	o << i.COMMENT << '\n';
 
