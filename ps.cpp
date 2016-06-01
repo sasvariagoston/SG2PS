@@ -2330,7 +2330,7 @@ void PS_SYMBOLS_GROUPS (ofstream& o) {
 
 			color_PS (o, "0.0 0.0 0.0");
 
-			text_PS(o, P.S1X + 7.5 * P.A, P.S1Y - 0.855 * P.A - 0.63*(i-1)*P.A, 3, "Group '" + GROUP + "'");
+			text_PS(o, P.S1X + 7.5 * P.A + 8.0 * P.D, P.S1Y - 0.855 * P.A - 0.63*(i-1)*P.A - 20.0 * P.D, 3, "Group '" + GROUP + "'");
 		}
 	}
 	else {
@@ -2341,7 +2341,7 @@ void PS_SYMBOLS_GROUPS (ofstream& o) {
 
 		color_PS (o, "0.0 0.0 0.0");
 
-		text_PS(o, P.S1X + 7.5 * P.A, P.S1Y - 0.855 * P.A, 3, "Default group");
+		text_PS(o, P.S1X + 7.5 * P.A + + 8.0 * P.D, P.S1Y - 0.855 * P.A - 20.0 * P.D, 3, "Default group");
 	}
 	return;
 }
