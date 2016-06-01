@@ -829,9 +829,6 @@ void PS_mohr_circle (const vector <GDB>& inGDB, ofstream& o, const CENTER& mohrc
 			const double PLOT_X = mohrcenter.X + X * normal_s;
 			const double PLOT_Y = mohrcenter.Y + X * shear_s;
 
-			cout << "normal_s:" << normal_s << endl;
-			cout << "shear_s:" << shear_s << endl;
-
 			ASSERT_LE (PLOT_X, PLOT_S1_X + 1);
 			ASSERT_GE (PLOT_X, PLOT_S3_X - 1);
 

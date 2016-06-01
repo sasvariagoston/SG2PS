@@ -52,8 +52,8 @@ void make_dir (const string& dir_name) {
 
 
 bool dir_exists(const string& dir) {
-    struct stat sb;
-    return stat(dir.c_str(), &sb) == 0 && S_ISDIR(sb.st_mode);
+    struct __stat64 sb;
+    return __stat64(dir.c_str(), &sb) == 0 && S_ISDIR(sb.st_mode);
 }
 
 void create_required_folders (const vector <GDB>& inGDB) {
@@ -535,9 +535,15 @@ vector <vector <GDB> > PROCESS_GROUPS (const vector <vector <GDB> >& inGDB_G, co
 
 				if (!TILT) cout_method_text (hasoffset_GDB);
 
-				if (is_VIRTUAL_USE() && STRIAE_TO_PROCESS) hasoffset_GDB = generate_virtual_striae (hasoffset_GDB);
+				vector <GDB> hasoffset_virtual_GDB;
 
-				INVERSION (hasoffset_GDB);
+				if (is_VIRTUAL_USE() && STRIAE_TO_PROCESS) {
+
+					hasoffset_virtual_GDB = generate_virtual_striae (hasoffset_GDB);
+				}
+
+				if (is_VIRTUAL_USE()) 	INVERSION (hasoffset_virtual_GDB);
+				else 					INVERSION (hasoffset_GDB);
 
 				const vector <STRESSTENSOR> STV = return_STV ();
 				const vector <STRESSFIELD> SFV = return_SFV ();

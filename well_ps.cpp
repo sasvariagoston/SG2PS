@@ -1118,7 +1118,7 @@ void plot_well_frequency_derivate (const vector <WELL_FREQUENCY> IN, ofstream& o
 	}
 	PEAK_IDENTIFICATION (DEPTH, VALUE, "MAX");
 
-	plot_peaks (o, X, LENGTH, MIN_VAL, MAX_VAL, false, "DERIVATE");
+	//plot_peaks (o, X, LENGTH, MIN_VAL, MAX_VAL, false, "DERIVATE");
 
 	plot_curve (DEPTH, VALUE, o, X, LENGTH, MIN_VAL, MAX_VAL, false, "DERIVATE");
 
@@ -1139,7 +1139,7 @@ void plot_well_frequency (const vector <WELL_FREQUENCY> IN, ofstream& o, const d
 	}
 	PEAK_IDENTIFICATION (DEPTH, VALUE, "MAX");
 
-	plot_peaks (o, X, LENGTH, MIN_VAL, MAX_VAL, false, "FREQUENCY");
+	//plot_peaks (o, X, LENGTH, MIN_VAL, MAX_VAL, false, "FREQUENCY");
 
 	plot_curve (DEPTH, VALUE, o, X, LENGTH, MIN_VAL, MAX_VAL, false, "FREQUENCY");
 
@@ -1598,7 +1598,7 @@ void plot_well_curve (const vector <WELL_INTERVAL>& IN, ofstream& o, const doubl
 		VALUE = generate_VALUE_from_XY_vector (PLOT_V.at(i));
 		DEPTH = generate_DEPTH_from_XY_vector (PLOT_V.at(i));
 
-		plot_peaks (o, X, LENGTH, MIN_VAL, MAX_VAL, DIPDIR, TYPE);
+		//plot_peaks (o, X, LENGTH, MIN_VAL, MAX_VAL, DIPDIR, TYPE);
 
 		plot_curve (DEPTH, VALUE, o, X, LENGTH, MIN_VAL, MAX_VAL, DIPDIR, TYPE);
 	}
