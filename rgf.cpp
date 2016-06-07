@@ -695,7 +695,7 @@ vector <vector <GDB> > EVALUATE (const vector <vector <GDB> >& inGDB_G) {
 
 	p = SORT_GDB (p, "IID");
 
-	P = SEPARATE_DATASET_GROUPS (p);
+	P = SEPARATE_DATASET_GROUPS (p, false);//na ide nem kell
 
 	ASSERT_EXACTLY_ONE_TRUE (is_GROUPSEPARATION_IGNORE(), is_GROUPSEPARATION_GROUPCODE(), is_GROUPSEPARATION_KMEANS(), is_GROUPSEPARATION_RUPANG());
 
@@ -736,7 +736,7 @@ void PROCESS_RGF (const string inputfilename, const bool XY_OK, const bool TRJ_O
 	if (!is_mode_DEBUG()) CREATE_PROJECT_FOLDERS (nGDB);
 
 	nGDB = SORT_GDB (nGDB, "LOC_GC_TYPE");
-	vector < vector <GDB> > nGDB_G = SEPARATE_DATASET_GROUPS (nGDB);
+	vector < vector <GDB> > nGDB_G = SEPARATE_DATASET_GROUPS (nGDB, true);//ok
 
 	nGDB_G = PREPARE_GDB_VECTOR_FOR_PROCESSING (nGDB_G, false);
 
@@ -746,7 +746,7 @@ void PROCESS_RGF (const string inputfilename, const bool XY_OK, const bool TRJ_O
 
 	nGDB_G = clustering_GBD (nGDB_G);
 	nGDB = MERGE_GROUPS_TO_GDB (nGDB_G);
-	nGDB_G = SEPARATE_DATASET_GROUPS (nGDB);
+	nGDB_G = SEPARATE_DATASET_GROUPS (nGDB, true);//ok
 
 	if (!is_mode_DEBUG()) cout << "DATA EVALUATION FROM '" << capslock(inputfilename) << ".RGF' DATABASE FILE" << endl;
 
@@ -755,7 +755,7 @@ void PROCESS_RGF (const string inputfilename, const bool XY_OK, const bool TRJ_O
 
 	for (size_t i = 0; i < LOOPS_NUMBER; i++) {
 
-			PROCESS_AS_TILTED = false;
+		PROCESS_AS_TILTED = false;
 		if (i == 1 || i == 3) PROCESS_AS_TILTED = true;
 
 		PROCESS_AS_TRAJECTORY = false;
@@ -769,7 +769,7 @@ void PROCESS_RGF (const string inputfilename, const bool XY_OK, const bool TRJ_O
 
 		if (PROCESS_AS_TILTED) OUTPUT_TO_PS (MASTER_GDB.at(i-1), MASTER_GDB.at(i));
 
-		OUTPUT_TO_WELL_PS (MASTER_GDB.at(i));
+		OUTPUT_TO_WELL_PS_TXT (MASTER_GDB.at(i));
 	}
 	if (!is_mode_DEBUG()) cout << endl << endl << "EXPORT FROM '" << capslock(inputfilename) << ".RGF' DATABASE FILE" << endl;
 

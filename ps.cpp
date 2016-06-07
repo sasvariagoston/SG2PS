@@ -2766,6 +2766,7 @@ void OUTPUT_TO_PS (const vector <vector <GDB> >& in_GDB_G, const vector <vector 
 		setup_ACTUAL_DATATYPE 	(in_GDB_G.at(i).at(0).DATATYPE);
 		setup_ACTUAL_LOCATION 	(in_GDB_G.at(i).at(0).LOC);
 		setup_ACTUAL_GROUPCODE 	(in_GDB_G.at(i).at(0).GC);
+
 		setup_ACTUAL_FORMATION 	(in_GDB_G.at(i).at(0).FORMATION);
 
 		const string DT = return_ACTUAL_DATATYPE();

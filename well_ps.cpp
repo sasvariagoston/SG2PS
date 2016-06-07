@@ -1028,6 +1028,32 @@ void associate_peaks_to_faults () {
 	return;
 }
 
+void DUMP_DATASET_TO_TXT (vector <double> DEPTH, vector <double> VALUE, const bool DIPDIR, const string METHOD, const bool FAULT) {
+
+	ASSERT (DEPTH.size() == VALUE.size());
+
+	if (METHOD == "LOWER_STDEV" || METHOD == "UPPER_STDEV") return;
+
+	const string FN = generate_ACTUAL_WELL_TXT_NAME (DIPDIR, METHOD, FAULT);
+
+	ofstream o;
+
+	ASSERT (! o.is_open());
+
+	o.open (FN.c_str());
+
+	o << "DEPTH" << '\t' << flush;
+	if (FAULT) o << "COUNT"<< endl;
+	else o << "VALUE" << endl;
+
+	for (size_t i = 0; i < DEPTH.size(); i++) {
+
+		o << dmp_dbl (DEPTH.at(i), 8) << '\t' << flush;
+		o << dmp_dbl (VALUE.at(i), 8) << endl;
+	}
+	return;
+}
+
 void PEAK_IDENTIFICATION (const vector <double>& DEPTH, const vector <double>& VALUE, const string METHOD) {
 
 	SETUP_PEAK (DEPTH, VALUE);
@@ -1078,6 +1104,8 @@ void plot_well_faults (ofstream& o, const double X, const double LENGTH, const d
 
 	if (MAX == 0) return;
 
+	vector <double> DEPTH, COUNT;
+
 	for (size_t i = 0; i < FAULTS.size(); i++) {
 
 		const double DEPTH = FAULTS.at(i).DEPTH;
@@ -1101,6 +1129,16 @@ void plot_well_faults (ofstream& o, const double X, const double LENGTH, const d
 		lineto_PS (o, ACT_data_X, ACT_data_Y, 3);
 		stroke_PS (o);
 	}
+
+	for (size_t i = 0; i < FAULTS.size(); i++) {
+
+		DEPTH.push_back (FAULTS.at(i).DEPTH);
+		COUNT.push_back (FAULTS.at(i).COUNT);
+	}
+
+	const bool DUMMY = false;
+	DUMP_DATASET_TO_TXT (DEPTH, COUNT, DUMMY, "", true);
+
 	return;
 }
 
@@ -1122,6 +1160,9 @@ void plot_well_frequency_derivate (const vector <WELL_FREQUENCY> IN, ofstream& o
 
 	plot_curve (DEPTH, VALUE, o, X, LENGTH, MIN_VAL, MAX_VAL, false, "DERIVATE");
 
+	const bool DUMMY = false;
+	DUMP_DATASET_TO_TXT (DEPTH, VALUE, DUMMY, "FREQUENCY_DERIVATE", false);
+
 	return;
 }
 
@@ -1142,6 +1183,9 @@ void plot_well_frequency (const vector <WELL_FREQUENCY> IN, ofstream& o, const d
 	//plot_peaks (o, X, LENGTH, MIN_VAL, MAX_VAL, false, "FREQUENCY");
 
 	plot_curve (DEPTH, VALUE, o, X, LENGTH, MIN_VAL, MAX_VAL, false, "FREQUENCY");
+
+	const bool DUMMY = false;
+	DUMP_DATASET_TO_TXT (DEPTH, VALUE, DUMMY, "FREQUENCY", false);
 
 	return;
 }
@@ -1570,6 +1614,8 @@ void plot_well_curve (const vector <WELL_INTERVAL>& IN, ofstream& o, const doubl
 	}
 	if (is_CHK_WELL()) STANDARD_OUTPUT_WELL_PS (DEPTH, VALUE, DIPDIR, TYPE);
 
+	DUMP_DATASET_TO_TXT (DEPTH, VALUE, DIPDIR, TYPE, false);
+
 	vector <XY> PLOT = generate_xy_vector (VALUE, DEPTH, DIPDIR);
 
 	if (PLOT.size() == 0) return;
@@ -1592,6 +1638,8 @@ void plot_well_curve (const vector <WELL_INTERVAL>& IN, ofstream& o, const doubl
 	PLOT_V = tidy_xy_vector_vector (PLOT_V);
 
 	if (PLOT_V.size() == 0) return;
+
+
 
 	for (size_t i = 0; i < PLOT_V.size(); i++) {
 
@@ -1847,7 +1895,7 @@ void SETUP_FAULT_POSITIONS (const double MIN_VAL, const double MAX_VAL) {
 	return;
 }
 
-void WELL_PS (const vector <GDB>& inGDB, const vector <WELL_INTERVAL>& INT, const vector <WELL_FREQUENCY>& FREQ, ofstream& OPS, const double MIN_VAL, const double MAX_VAL, const double STEP) {
+void WELL_PS_TXT (const vector <GDB>& inGDB, const vector <WELL_INTERVAL>& INT, const vector <WELL_FREQUENCY>& FREQ, ofstream& OPS, const double MIN_VAL, const double MAX_VAL, const double STEP) {
 
 	ASSERT (inGDB.size() > 1);
 
@@ -1906,6 +1954,8 @@ void WELL_PS (const vector <GDB>& inGDB, const vector <WELL_INTERVAL>& INT, cons
 	//cout << "5A-----------------------------------------" << endl;
 	X = X + (PL_WDT * 0.5 + PL_GP) * P.A;
 	PS_well_coordinate_axes_FAULTS (OPS, X, LENGTH);
+
+	//DONE
 	plot_well_faults (OPS, X, LENGTH, MIN_VAL, MAX_VAL);
 	PS_eof (OPS);
 
@@ -1967,7 +2017,7 @@ size_t anything_to_plot_on_well_ps (const vector <vector <GDB> >& inGDB_G) {
 	return counter;
 }
 
-void OUTPUT_TO_WELL_PS (const vector <vector <GDB> >& GDB_G) {
+void OUTPUT_TO_WELL_PS_TXT (const vector <vector <GDB> >& GDB_G) {
 
 	if (is_WELLDATA_NO()) return;
 
@@ -1984,8 +2034,10 @@ void OUTPUT_TO_WELL_PS (const vector <vector <GDB> >& GDB_G) {
 	if (DATA_TO_PLOT == 0) return;
 
 	const string PS_FOLDER = return_WELL_PS_FOLDER();
+	const string TXT_FOLDER = return_WELL_TXT_FOLDER();
 
 	if (! dir_exists (PS_FOLDER)) make_dir (PS_FOLDER);
+	if (! dir_exists (TXT_FOLDER)) make_dir (TXT_FOLDER);
 
 	size_t counter = 0;
 
@@ -2017,6 +2069,7 @@ void OUTPUT_TO_WELL_PS (const vector <vector <GDB> >& GDB_G) {
 				ASSERT_FINITE (MAX_VAL, MIN_VAL);
 				const bool MAX_VAL_OK = MAX_VAL > MIN_VAL;
 
+
 				if (MIN_VAL_OK && MAX_VAL_OK) {
 
 					setup_ACTUAL_LOCATION (temp.at(0).LOC);
@@ -2024,12 +2077,14 @@ void OUTPUT_TO_WELL_PS (const vector <vector <GDB> >& GDB_G) {
 					setup_ACTUAL_FORMATION(temp.at(0).FORMATION);
 					setup_ACTUAL_GROUPCODE(temp.at(0).GC);
 
-					const string DATA_FOLDER = return_WELL_PS_FOLDER() + path_separator + capslock (DT);
+					const string PS_FOLDER = return_WELL_PS_FOLDER() + path_separator + capslock (DT);
+					if (! dir_exists (PS_FOLDER)) make_dir (PS_FOLDER);
 
-					if (! dir_exists(DATA_FOLDER)) make_dir (DATA_FOLDER);
+					const string TXT_FOLDER = return_WELL_TXT_FOLDER() + path_separator + capslock (DT);
+					if (! dir_exists (TXT_FOLDER)) make_dir (TXT_FOLDER);
 
-					string PS_NAME = generate_ACTUAL_WELL_PS_NAME ();
 
+					const string PS_NAME = generate_ACTUAL_WELL_PS_NAME ();
 					ofstream OPS (PS_NAME.c_str());
 
 					PS_well_header (OPS);
@@ -2040,7 +2095,7 @@ void OUTPUT_TO_WELL_PS (const vector <vector <GDB> >& GDB_G) {
 
 					PS_dump_ps_well_path (OPS);
 
-					WELL_PS (temp, INTERVAL.at(i), FREQUENCY.at(i), OPS, MIN_VAL, MAX_VAL, STEP);
+					WELL_PS_TXT (temp, INTERVAL.at(i), FREQUENCY.at(i), OPS, MIN_VAL, MAX_VAL, STEP);
 
 					counter++;
 				}

@@ -34,6 +34,9 @@ string return_PS_FOLDER ();
 void generate_WELL_PS_FOLDER ();
 string return_WELL_PS_FOLDER ();
 
+void generate_WELL_TXT_FOLDER ();
+string return_WELL_TXT_FOLDER ();
+
 void setup_ACTUAL_DATATYPE (const string DT);
 string return_ACTUAL_DATATYPE ();
 
@@ -54,6 +57,7 @@ string generate_ACTUAL_AVERAGE_RGF_NAME ();
 string generate_ACTUAL_RGF_NAME ();
 string generate_ACTUAL_COMPLETED_RGF_NAME ();
 string generate_ACTUAL_WELL_PS_NAME ();
+string generate_ACTUAL_WELL_TXT_NAME (const bool DIPDIR, const string METHOD, const bool FAULT);
 string generate_ACTUAL_RGF_NAME_FOR_STANDARD ();
 
 void GENERATE_FOLDER_NAMES (const string projectname);

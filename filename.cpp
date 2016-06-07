@@ -23,6 +23,7 @@ string AVERAGE_FOLDER = "";
 string RGF_FOLDER = "";
 string PS_FOLDER = "";
 string WELL_PS_FOLDER = "";
+string WELL_TXT_FOLDER = "";
 
 string ACTUAL_DATATYPE = "";
 string ACTUAL_LOCATION = "";
@@ -103,7 +104,6 @@ void generate_ORIGINAL_FOLDER () {
 
 	ORIGINAL_FOLDER = PROJECT_FOLDER + BS + "1_ORIGINAL";
 }
-
 string return_ORIGINAL_FOLDER () {
 
 	return ORIGINAL_FOLDER;
@@ -113,7 +113,6 @@ void generate_COMPLETED_FOLDER () {
 
 	COMPLETED_FOLDER = PROJECT_FOLDER + BS + "2_COMPLETED";
 }
-
 string return_COMPLETED_FOLDER () {
 
 	return COMPLETED_FOLDER;
@@ -123,7 +122,6 @@ void generate_AVERAGE_FOLDER () {
 
 	AVERAGE_FOLDER = PROJECT_FOLDER + BS + "3_AVERAGE";
 }
-
 string return_AVERAGE_FOLDER () {
 
 	return AVERAGE_FOLDER;
@@ -133,7 +131,6 @@ void generate_RGF_FOLDER () {
 
 	RGF_FOLDER = PROJECT_FOLDER + BS + "4_RGF_SEPARATED";
 }
-
 string return_RGF_FOLDER () {
 
 	return RGF_FOLDER;
@@ -143,7 +140,6 @@ void generate_PS_FOLDER () {
 
 	PS_FOLDER = PROJECT_FOLDER + BS + "5_PS_SEPARATED";
 }
-
 string return_PS_FOLDER () {
 
 	return PS_FOLDER;
@@ -153,10 +149,18 @@ void generate_WELL_PS_FOLDER () {
 
 	WELL_PS_FOLDER = PROJECT_FOLDER + BS + "6_WELL_PS_SEPARATED";
 }
-
 string return_WELL_PS_FOLDER () {
 
 	return WELL_PS_FOLDER;
+}
+
+void generate_WELL_TXT_FOLDER () {
+
+	WELL_TXT_FOLDER = PROJECT_FOLDER + BS + "7_WELL_PLOTS_SEPARATED";
+}
+string return_WELL_TXT_FOLDER() {
+
+	return WELL_TXT_FOLDER;
 }
 
 void setup_ACTUAL_DATATYPE (const string DT) {
@@ -309,19 +313,58 @@ string generate_ACTUAL_WELL_PS_NAME () {
 	const string FM = return_ACTUAL_FORMATION ();
 	const string GC = return_ACTUAL_GROUPCODE ();
 
-	string PS_NAME = WELL_PS_FOLDER + BS + DT + BS + LOC;
+	string FN = WELL_PS_FOLDER + BS + DT + BS + LOC + US + DT;
 
-	PS_NAME = PS_NAME + US + DT;
+	if (is_GROUPSEPARATION_GROUPCODE ())	FN = FN + US + GC.at(0);
+	if (is_GROUPSEPARATION_KMEANS ()) 		FN = FN + US + GC.at(1);
+	if (is_GROUPSEPARATION_RUPANG ()) 		FN = FN + US + GC.at(2);
 
-	if (is_GROUPSEPARATION_GROUPCODE ())	PS_NAME = PS_NAME + US + GC.at(0);
-	if (is_GROUPSEPARATION_KMEANS ()) 		PS_NAME = PS_NAME + US + GC.at(1);
-	if (is_GROUPSEPARATION_RUPANG ()) 		PS_NAME = PS_NAME + US + GC.at(2);
+	if (is_PROCESS_AS_TILTED()) 	FN = FN + "_TILTED";
+	if (is_PROCESS_AS_TRAJECTORY()) FN = FN + "_TRAJECTORY_CORRECTED";
 
-	if (is_PROCESS_AS_TILTED()) 	PS_NAME = PS_NAME + "_TILTED";
-	if (is_PROCESS_AS_TRAJECTORY()) PS_NAME = PS_NAME + "_TRAJECTORY_CORRECTED";
-
-	return PS_NAME + ".eps";
+	return FN + ".eps";
 }
+
+string generate_ACTUAL_WELL_TXT_NAME (const bool DIPDIR, const string METHOD, const bool FAULT) {
+
+	const string PF = return_PROJECT_FOLDER();
+	const string WF = return_WELL_TXT_FOLDER();
+	const string L = return_ACTUAL_LOCATION();
+	const string F = return_ACTUAL_FORMATION();
+	const string D = return_ACTUAL_DATATYPE();
+	const string GC = return_ACTUAL_GROUPCODE();
+
+	string G;
+
+	if (is_GROUPSEPARATION_GROUPCODE ())	G = GC.at(0);
+	if (is_GROUPSEPARATION_KMEANS ()) 		G = GC.at(1);
+	if (is_GROUPSEPARATION_RUPANG ()) 		G = GC.at(2);
+
+	string T = L;
+	if (F.size() > 0) T = T + "_" + F;
+	T = T + "_" + D;
+	if (G.size() > 0) T = T + "_" + G;
+
+	if (METHOD != "FREQUENCY") {
+
+		if (DIPDIR) T = T + "_DIPDIR";
+		else T = T + "_DIP";
+	}
+
+	if (is_PROCESS_AS_TILTED()) T = T + "_TLT";
+	else T = T + "_NRM";
+
+	if (is_PROCESS_AS_TRAJECTORY()) T = T + "_TRJ";
+
+	if (METHOD.size() > 0) T = T + "_" + METHOD;
+
+	if (FAULT) T = T + "_FAULT";
+
+	const string FN = WF + BS + D + BS + T + ".csv";
+
+	return FN;
+}
+
 
 string generate_ACTUAL_RGF_NAME_FOR_STANDARD () {
 
@@ -358,4 +401,5 @@ void GENERATE_FOLDER_NAMES (const string projectname) {
 	generate_RGF_FOLDER ();
 	generate_PS_FOLDER ();
 	generate_WELL_PS_FOLDER ();
+	generate_WELL_TXT_FOLDER ();
 }

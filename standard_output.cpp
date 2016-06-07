@@ -784,7 +784,10 @@ void STANDARD_OUTPUT_PEAKS (const string METHOD) {
 	T = T + "_" + METHOD;
 
 	ofstream o;
-	o.open (("ST_WELL_PEAKS" + T + ".csv").c_str());
+
+	const string FN = "ST_WELL_PEAKS" + T + ".csv";
+
+	o.open (FN.c_str());
 
 	dump_PEAK_to_file (o, true);
 }
@@ -804,7 +807,10 @@ void STANDARD_OUTPUT_FAULTS (const string METHOD) {
 	T = T + "_" + METHOD;
 
 	ofstream o;
-	o.open (("ST_WELL_FAULTS" + T + ".csv").c_str());
+
+	const string FN = "ST_WELL_FAULTS" + T + ".csv";
+
+	o.open (FN.c_str());
 
 	dump_PEAK_to_file (o, false);
 }

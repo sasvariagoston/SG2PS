@@ -385,6 +385,18 @@ void OUTPUT_TO_RGF (const vector <vector <GDB> >& inGDB_G) {
 	return;
 }
 
+
+
+
+
+
+
+
+
+
+
+
+
 GDB return_dummy_GDB () {
 
 	GDB dummy;
@@ -458,11 +470,11 @@ vector <vector <GDB> > SEPARATE_DATASET (const vector <vector <GDB> >& inGDB_G, 
 	return OUT;
 }
 
-vector < vector <GDB> > SEPARATE_DATASET_GROUPS (const vector <GDB>& inGDB) {
+vector < vector <GDB> > SEPARATE_DATASET_GROUPS (const vector <GDB>& inGDB, const bool USE_GROUP) {
 
 	//const bool W = is_WELLDATA_USE();
 	//const bool F = is_FORMATION_USE();
-	const bool G = is_GROUPS_USE();
+	const bool G = is_GROUPS_USE() ;
 
 	vector < vector <GDB> > processGDB_G;
 
@@ -476,7 +488,7 @@ vector < vector <GDB> > SEPARATE_DATASET_GROUPS (const vector <GDB>& inGDB) {
 
 	processGDB_G = SEPARATE_DATASET (processGDB_G, "DATATYPE", "DATATYPE");
 
-	if (G) processGDB_G = SEPARATE_DATASET (processGDB_G, "GROUPS", "GROUPCODE");
+	if (G && USE_GROUP) processGDB_G = SEPARATE_DATASET (processGDB_G, "GROUPS", "GROUPCODE");
 
 	return processGDB_G;
 }
