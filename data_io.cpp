@@ -29,6 +29,7 @@
 #include "run_mode.h"
 #include "rup_clustering.hpp"
 #include "settings.hpp"
+#include "stdarg.h"
 #include "structs.h"
 
 vector <string> possible_folders_name () {
@@ -64,8 +65,6 @@ void create_required_folders (const vector <GDB>& inGDB) {
 	make_dir (return_COMPLETED_FOLDER());
 	make_dir (return_AVERAGE_FOLDER());
 	make_dir (return_RGF_FOLDER());
-	//make_dir (return_PS_FOLDER());
-	//if (is_WELLDATA_USE()) make_dir (return_WELL_PS_FOLDER());
 
 	vector <string> possible_folders = possible_folders_name ();
 
@@ -76,13 +75,6 @@ void create_required_folders (const vector <GDB>& inGDB) {
 		if (existence (DIR, inGDB)) {
 
 			make_dir (return_RGF_FOLDER() + path_separator + capslock (DIR));
-			//make_dir (return_PS_FOLDER() + path_separator + capslock (DIR));
-			//if (is_WELLDATA_USE()) {
-
-				//const bool AS_WELL = is_allowed_to_process_as_well(DIR);
-
-				//if (AS_WELL) make_dir (return_WELL_PS_FOLDER() + path_separator + capslock (DIR));
-			//}
 		}
 	}
 	return;
@@ -385,18 +377,6 @@ void OUTPUT_TO_RGF (const vector <vector <GDB> >& inGDB_G) {
 	return;
 }
 
-
-
-
-
-
-
-
-
-
-
-
-
 GDB return_dummy_GDB () {
 
 	GDB dummy;
@@ -470,29 +450,6 @@ vector <vector <GDB> > SEPARATE_DATASET (const vector <vector <GDB> >& inGDB_G, 
 	return OUT;
 }
 
-vector < vector <GDB> > SEPARATE_DATASET_GROUPS (const vector <GDB>& inGDB, const bool USE_GROUP) {
-
-	//const bool W = is_WELLDATA_USE();
-	//const bool F = is_FORMATION_USE();
-	const bool G = is_GROUPS_USE() ;
-
-	vector < vector <GDB> > processGDB_G;
-
-	processGDB_G.push_back (inGDB);
-
-	processGDB_G = SEPARATE_DATASET (processGDB_G, "LOCATION", "LOCATION");
-
-	//if (W && F) 		processGDB_G = SEPARATE_DATASET (processGDB_G, "FORMATION", "DEPTH");
-	//else if (!W && F)	processGDB_G = SEPARATE_DATASET (processGDB_G, "FORMATION", "FORMATION");
-	//else {};
-
-	processGDB_G = SEPARATE_DATASET (processGDB_G, "DATATYPE", "DATATYPE");
-
-	if (G && USE_GROUP) processGDB_G = SEPARATE_DATASET (processGDB_G, "GROUPS", "GROUPCODE");
-
-	return processGDB_G;
-}
-
 vector <GDB> MERGE_GROUPS_TO_GDB (const vector <vector <GDB> >& GDB_G) {
 
 	vector <GDB> outGDB;
@@ -549,9 +506,9 @@ vector <vector <GDB> > PROCESS_GROUPS (const vector <vector <GDB> >& inGDB_G, co
 
 			const bool ENOUGH_STRIAE = hasoffset_GDB.size() >= minimum_independent_dataset ();
 
-			if (ENOUGH_HOMOGENEOUS && ENOUGH_STRIAE) {
+			cout_method_text (hasoffset_GDB);
 
-				if (!TILT) cout_method_text (hasoffset_GDB);
+			if (ENOUGH_HOMOGENEOUS && ENOUGH_STRIAE) {
 
 				vector <GDB> hasoffset_virtual_GDB;
 
@@ -580,7 +537,6 @@ vector <vector <GDB> > PROCESS_GROUPS (const vector <vector <GDB> >& inGDB_G, co
 
 					hasoffset_GDB = apply_inversion_result (hasoffset_GDB, STV.at(MX));
 				}
-				cout_original_tilted_text (TILT);
 
 				cout_inversion_results (hasoffset_GDB, SFV);
 
@@ -588,7 +544,7 @@ vector <vector <GDB> > PROCESS_GROUPS (const vector <vector <GDB> >& inGDB_G, co
 
 				process_GDB = combine_inversion_for_none_offset (process_GDB, hasoffset_GDB);
 			}
-			else cout_less_than_required_text (TILT);
+			else cout_less_than_required_text (hasoffset_GDB);
 		}
 		else if (FOLD_TO_PROCESS) process_GDB = CALCULATE_FOLDSURFACE_NORMAL (process_GDB);
 		else {}
@@ -607,17 +563,21 @@ void cout_method_text (const vector <GDB>& inGDB) {
 	const string FM = inGDB.at(0).FORMATION;
 
 	const bool GROUPS = is_GROUPS_USE();
-	//const bool FORMATION = is_FORMATION_USE();
+	const bool FORMATION = is_FORMATION_USE();
 	const bool CLUSTER = !is_CLUSTERING_NONE();
 	const bool RUP = !is_RUP_CLUSTERING_NONE();
 	const bool IS_STRIAE = is_allowed_striae_datatype (inGDB.at(0).DATATYPE);
 
 	string OUT = "  - For '" + LOC + "' location";
 
-	if (GROUPS || CLUSTER || RUP) OUT = OUT + " group, " + GC;
-	//else if (FORMATION) OUT = OUT + " formation, " + FM;
+	if (GROUPS || CLUSTER || RUP) {
 
-	OUT = OUT + ", ";
+		if (GROUPS) 		OUT = OUT + ", '" + GC.at(0) + "' group (using group code)";
+		else if (CLUSTER) 	OUT = OUT + ", '" + GC.at(1) + "' group (using k-means clustering))";
+		else				OUT = OUT + ",' " + GC.at(2) + "' group (using RUP/ANG clustering)";
+	}
+
+	if (FORMATION) OUT = OUT + ", '" + FM + "' formation";
 
 	string M = "";
 
@@ -636,22 +596,26 @@ void cout_method_text (const vector <GDB>& inGDB) {
 	}
 	else {};
 
-	cout << OUT + " " + M << endl;
+	cout << OUT << ", " << M << '\n';
 }
 
 void cout_original_tilted_text (const bool tilt) {
 
 	if (is_mode_DEBUG()) return;
 
-	if (!tilt) 	cout << "    - Original : " << flush;
+	if (!tilt) 	cout << "    - Original:  " << flush;
 	else 		cout << "    - Corrected: " << flush;
 }
 
-void cout_less_than_required_text (const bool tilt) {
+void cout_less_than_required_text (const vector <GDB>& inGDB) {
 
 	if (is_mode_DEBUG()) return;
 
-	if (!tilt) cout << "less (independent) data than required." << endl;
+	const size_t MIN = minimum_independent_dataset();
+
+	ASSERT_GT (MIN, inGDB.size());
+
+	cout << "    - less independent data (" << inGDB.size() << ") than required (" << MIN <<")." << endl;
 }
 
 void dbg_cout_RGF_colors (vector <GDB> inGDB) {

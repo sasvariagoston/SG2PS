@@ -72,8 +72,8 @@ bool INPUTGROUP_THIRD = false;
 bool GROUPS_USE = false;
 bool GROUPS_NONE = false;
 
-//bool FORMATION_USE = false;
-//bool FORMATION_NONE = false;
+bool FORMATION_USE = false;
+bool FORMATION_NONE = false;
 
 bool CLUSTERING_NONE = false;
 bool CLUSTERING_AUTOMATIC = false;
@@ -115,6 +115,8 @@ bool COLOURING_RUPANG = false;
 
 bool GRAYSCALE_NONE = false;
 bool GRAYSCALE_USE = false;
+
+bool MULTIPLE_GROUPS = false;
 }
 
 
@@ -311,14 +313,14 @@ bool is_GROUPS_NONE () {
 	return GROUPS_NONE;
 }
 
-//bool is_FORMATION_USE () {
+bool is_FORMATION_USE () {
 
-//	return FORMATION_USE;
-//}
-//bool is_FORMATION_NONE () {
+	return FORMATION_USE;
+}
+bool is_FORMATION_NONE () {
 
-//	return FORMATION_NONE;
-//}
+	return FORMATION_NONE;
+}
 
 bool is_CLUSTERING_NONE () {
 
@@ -451,6 +453,24 @@ bool is_GRAYSCALE_USE () {
 	return GRAYSCALE_USE;
 }
 
+bool is_MULTIPLE_GROUPS () {
+
+	return MULTIPLE_GROUPS;
+}
+
+void INIT_MULTIPLE_GROUPS (const vector <GDB> inGDB) {
+
+	const bool SG = is_GROUPSEPARATION_GROUPCODE ();
+	const bool SK = is_GROUPSEPARATION_KMEANS ();
+	const bool SR = is_GROUPSEPARATION_RUPANG ();
+
+	const bool G = existence_of_more_than_one_specific_groupcode (inGDB, true, false, false);
+	const bool K = existence_of_more_than_one_specific_groupcode (inGDB, false, true, false);
+	const bool R = existence_of_more_than_one_specific_groupcode (inGDB, false, false, true);
+
+	if ((!SG && G) || (!SK && K) || (!SR && R)) MULTIPLE_GROUPS = true;
+}
+
 void INIT_SETTINGS (const vector <vector <string> >& SET) {
 
 	for (size_t i = 0; i < SET.size(); i++) {
@@ -551,11 +571,11 @@ void INIT_SETTINGS (const vector <vector <string> >& SET) {
 			else if (VAL == "N") GROUPS_NONE = true;
 			else ASSERT_DEAD_END();
 		}
-		//else if (KEY == "FORMATION:") {
-		//	if 		(VAL == "Y") FORMATION_USE = true;
-		//	else if (VAL == "N") FORMATION_NONE = true;
-		//	else ASSERT_DEAD_END();
-		//}
+		else if (KEY == "FORMATION:") {
+			if 		(VAL == "Y") FORMATION_USE = true;
+			else if (VAL == "N") FORMATION_NONE = true;
+			else ASSERT_DEAD_END();
+		}
 		else if (KEY == "CLUSTERNUMBER:") {
 
 			if 		(VAL == "N") CLUSTERING_NONE = true;

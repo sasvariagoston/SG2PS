@@ -2,31 +2,13 @@
 // All rights reserved.
 // This code is published under the GNU Lesser General Public License.
 
-//#include <cmath>
-//#include <iomanip>
 #include <iostream>
 
 #include "allowed_keys.hpp"
-//#include "angelier.h"
 #include "assertions.hpp"
-//#include "brute_force.hpp"
-//#include "bingham.h"
 #include "color_management.hpp"
-//#include "common.h"
-//#include "data_io.h"
-//#include "fry.h"
-//#include "inversion.h"
-//#include "michael.h"
-//#include "mostafa.h"
-//#include "nda.h"
-//#include "ps.h"
-//#include "ptn.h"
-//#include "rgf.h"
-//#include "rup_clustering.hpp"
+#include "ps.h"
 #include "settings.hpp"
-//#include "shan.h"
-//#include "structs.h"
-//#include "valley_method.hpp"
 
 using namespace std;
 
@@ -47,6 +29,29 @@ vector <vector <GDB> > associate_empty_clustercode (const vector <vector <GDB> >
 		}
 	}
 	return outGDB_G;
+}
+
+string pastel (const string COLOR) {
+
+	ASSERT (is_valid_color(COLOR));
+
+	stringstream ss (COLOR);
+
+	double r=-1, g=-1, b=-1;
+
+	string rest;
+
+	ss >> r >> g >> b >> rest;
+
+	string R = double_to_string ((r+1)/2, 3);
+	string G = double_to_string ((g+1)/2, 3);
+	string B = double_to_string ((b+1)/2, 3);
+
+	const string OUT = R + " " + G + " " + B;
+
+	ASSERT (is_valid_color (OUT));
+
+	return OUT;
 }
 
 vector <GDB> attach_k_means_group_codes (const vector <size_t>& which_group, const vector <GDB>& inGDB) {
@@ -83,9 +88,14 @@ string generate_PSCOLOR_from_GC (const string GC) {
 
 	for (size_t i = 0; i < GC_STR_V.size(); i++) {
 
-		if (GC_STR_V.at(i) == GC) return PS_CLR_V.at(i);
+		if (GC_STR_V.at(i) == GC) {
+
+			return PS_CLR_V.at(i);
+		}
 	}
 	ASSERT_DEAD_END();
+
+
 	return PS_CLR_V.at(0);
 }
 

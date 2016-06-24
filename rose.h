@@ -11,6 +11,9 @@ ROSENUMBER compute_data_number_DIPDIR_DIP (const vector <GDB>& inGDB, const doub
 
 void PS_draw_rose_DATATYPE (const vector <GDB>& inGBD, ofstream& o, const CENTER& center, const ROSENUMBER& percent, const double begin_angle, const bool vertical); //ok
 
-void PS_draw_rose_DIPDIR_DIP (vector <GDB> inGDB, ofstream& o, CENTER center, const string MODE, const bool TILT);
+bool process_as_lineation (const vector <GDB>& inGDB);
+bool process_as_plane (const vector <GDB>& inGDB);
+
+void PS_draw_rose_DIPDIR_DIP (const vector <vector <GDB> >& inGDB_G, ofstream& o, CENTER center, const string MODE, const bool TILT);
 
 #endif

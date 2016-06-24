@@ -6,7 +6,6 @@
 #include <iomanip>
 #include <iostream>
 #include <math.h>
-//#include <sstream>
 #include <stdlib.h>
 #include <vector>
 
@@ -1306,7 +1305,6 @@ vector <vector <XY> >  generate_xy_vector_vector (const vector <XY>& IN) {
 	return OUT;
 }
 
-
 vector <vector <XY> > tidy_xy_vector_vector (vector <vector <XY> >& IN) {
 
 	vector <vector <XY> > OUT = IN;
@@ -1334,7 +1332,6 @@ vector <vector <XY> > tidy_xy_vector_vector (vector <vector <XY> >& IN) {
 	return OUT;
 }
 
-
 vector <double> generate_VALUE_from_XY_vector (const vector <XY>& IN) {
 
 	vector <double> OUT;
@@ -1343,7 +1340,6 @@ vector <double> generate_VALUE_from_XY_vector (const vector <XY>& IN) {
 
 	return OUT;
 }
-
 
 vector <double> generate_DEPTH_from_XY_vector (const vector <XY>& IN) {
 

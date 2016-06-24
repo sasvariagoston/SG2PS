@@ -35,9 +35,9 @@ using namespace std;
 namespace {
 
 const string AV_GRY_CLR = "0.20 0.20 0.20";
-const string AV_RGB_CLR = "1.00 0.00 0.00";
+const string AV_RGB_CLR = "0.50 0.00 0.50";
 const string AVO_GRY_CLR = "0.40 0.40 0.40";
-const string AVO_RGB_CLR = "0.80 0.00 0.20";
+const string AVO_RGB_CLR = "0.50 0.00 0.50";
 const string OTB_GRY_CLR = "0.00 0.00 0.00";
 const string OTB_RGB_CLR = "0.00 0.00 0.00";
 const string FLD_GRY_CLR = "0.60 0.60 0.60";
@@ -45,27 +45,136 @@ const string FLD_RGB_CLR = "0.00 0.00 1.00";
 const string C_GRY_CLR = "0.80 0.80 0.80";
 const string C_RGB_CLR = "0.80 0.80 0.80";
 
-const double AV_GRY_LNW = 2.0;
-const double AV_RGB_LNW = 1.5;
-const double AVO_GRY_LNW = 2.0;
-const double AVO_RGB_LNW = 1.5;
-const double OTB_GRY_LNW = 1.5;
-const double OTB_RGB_LNW = 1.5;
-const double FLD_GRY_LNW = 2.0;
-const double FLD_RGB_LNW = 1.5;
-const double C_GRY_LNW = 2.0;
-const double C_RGB_LNW = 1.5;
+const double AV_GRY_LNW = 2;
+const double AV_RGB_LNW = 2;
+const double AVO_GRY_LNW = 2;
+const double AVO_RGB_LNW = 2;
+const double OTB_GRY_LNW = 2;
+const double OTB_RGB_LNW = 2;
+const double FLD_GRY_LNW = 2;
+const double FLD_RGB_LNW = 2;
+const double C_GRY_LNW = 2;
+const double C_RGB_LNW = 2;
 
-const string AV_GRY_DSH = "   ";
-const string AV_RGB_DSH = "   ";
+const string AV_GRY_DSH =  "  ";
+const string AV_RGB_DSH =  "  ";
 const string AVO_GRY_DSH = "6 6";
 const string AVO_RGB_DSH = "6 6";
 const string OTB_GRY_DSH = "6 6";
 const string OTB_RGB_DSH = "6 6";
 const string FLD_GRY_DSH = "6 6";
 const string FLD_RGB_DSH = "6 6";
-const string C_GRY_DSH = "6  6";
-const string C_RGB_DSH = "6  6";
+const string C_GRY_DSH =   "6 6";
+const string C_RGB_DSH =   "6 6";
+}
+
+void PS_s1s2s3 (ofstream& o, const string COLOR, const bool ITER, const string AXIS) {
+
+	vector <string> RGB_CLR;
+	vector <string> GRY_CLR;
+
+	GRY_CLR.push_back ("0.0 0.0 0.0");
+	RGB_CLR.push_back ("1.0 0.0 0.0");
+	GRY_CLR.push_back ("0.5 0.5 0.5");
+	RGB_CLR.push_back ("0.0 1.0 0.0");
+	GRY_CLR.push_back ("1.0 1.0 1.0");
+	RGB_CLR.push_back ("0.0 0.0 1.0");
+
+	const bool S1 = AXIS == "S1";
+	const bool S2 = AXIS == "S2";
+	const bool S3 = AXIS == "S3";
+
+	ASSERT_EXACTLY_ONE_TRUE (S1, S2, S3);
+
+	size_t i = 999;
+
+	if 		(S1) i = 0;
+	else if (S2) i = 1;
+	else 		 i = 2;
+
+	newpath_PS (o);
+	moveto_PS  (o,  0.0,  0.0, 3);
+	rlineto_PS (o,  3.0,  3.0, 3);
+	rlineto_PS (o, -3.0,  3.0, 3);
+	rlineto_PS (o, -3.0, -3.0, 3);
+	closepath_PS (o);
+	color_PS (o, "1 1 1");
+	linewidth_PS (o, 2.25, 1);
+	stroke_PS (o);
+
+	newpath_PS (o);
+	moveto_PS  (o,  0.0,  0.0, 3);
+	rlineto_PS (o,  3.0,  3.0, 3);
+	rlineto_PS (o, -3.0,  3.0, 3);
+	rlineto_PS (o, -3.0, -3.0, 3);
+	closepath_PS (o);
+
+	if (ITER) {
+
+		if (is_GRAYSCALE_USE())	color_PS (o, GRY_CLR.at(i));
+		else 					color_PS (o, RGB_CLR.at(i));
+		linewidth_PS (o, 1.0, 1);
+	}
+	else {
+
+		if (is_GRAYSCALE_USE())	color_PS (o, GRY_CLR.at(i));
+		else 					color_PS (o, RGB_CLR.at(i));
+		fill_PS (o);
+	}
+
+	newpath_PS (o);
+	moveto_PS  (o,  0.0,  0.0, 3);
+	rlineto_PS (o,  3.0,  3.0, 3);
+	rlineto_PS (o, -3.0,  3.0, 3);
+	rlineto_PS (o, -3.0, -3.0, 3);
+	closepath_PS (o);
+	color_PS (o, COLOR);
+	linewidth_PS (o, 1.5, 1);
+	stroke_PS (o);
+
+	newpath_PS (o);
+	moveto_PS  (o,  0.0,  0.0, 3);
+	rlineto_PS (o,  3.0,  3.0, 3);
+	rlineto_PS (o, -3.0,  3.0, 3);
+	rlineto_PS (o, -3.0, -3.0, 3);
+	closepath_PS (o);
+	color_PS (o, "1 1 1");
+	linewidth_PS (o, 0.3, 1);
+	stroke_PS (o);
+
+	return;
+}
+
+void PS_extension_arrow (ofstream& o, const string COLOR) {
+
+	newpath_PS (o);
+	moveto_PS  (o, -3.0,  0.0, 3);
+	rlineto_PS (o,  0.0,  5.0, 3);
+	rlineto_PS (o, -2.0,  0.0, 3);
+	rlineto_PS (o,  5.0,  5.0, 3);
+	rlineto_PS (o,  5.0, -5.0, 3);
+	rlineto_PS (o, -2.0,  0.0, 3);
+	rlineto_PS (o,  0.0, -5.0, 3);
+	closepath_PS (o);
+	color_PS (o, COLOR);
+	linewidth_PS (o, 1.0, 1);
+	stroke_PS (o);
+}
+
+void PS_compression_arrow (ofstream& o, const string COLOR) {
+
+	newpath_PS (o);
+	moveto_PS  (o, -5.0,  5.0, 3);
+	rlineto_PS (o,  2.0,  0.0, 3);
+	rlineto_PS (o,  0.0,  5.0, 3);
+	rlineto_PS (o,  6.0,  0.0, 3);
+	rlineto_PS (o,  0.0, -5.0, 3);
+	rlineto_PS (o,  2.0,  0.0, 3);
+	rlineto_PS (o, -5.0, -5.0, 3);
+	closepath_PS (o);
+	color_PS (o, COLOR);
+	fill_PS (o);
+	stroke_PS (o);
 }
 
 void PS_stereonet_header (ofstream& o) {
@@ -85,96 +194,11 @@ void PS_stereonet_header (ofstream& o) {
 
 	const bool FRACTURE_TO_PROCESS = is_BINGHAM_USE() && return_ACTUAL_DATATYPE() == "FRACTURE";
 	const bool IS_STRIAE = is_allowed_striae_datatype (return_ACTUAL_DATATYPE());
-	//const bool STRIAE_TO_PROCESS = !is_INVERSION_NONE() && IS_STRIAE;
-	const bool STRIAE_TO_PROCESS = IS_STRIAE;
 
-	if (!FRACTURE_TO_PROCESS && !STRIAE_TO_PROCESS) return;
-
-	text_PS (o, "/extension_arrow {");
-	newpath_PS (o);
-	moveto_PS (o,  -3.0,  0.0, 3);
-	rlineto_PS (o,  0.0,  5.0, 3);
-	rlineto_PS (o, -2.0,  0.0, 3);
-	rlineto_PS (o,  5.0,  5.0, 3);
-	rlineto_PS (o,  5.0, -5.0, 3);
-	rlineto_PS (o, -2.0,  0.0, 3);
-	rlineto_PS (o,  0.0, -5.0, 3);
-	closepath_PS (o);
-	color_PS (o, "0.0 0.0 0.0");
-	linewidth_PS (o, 1.0, 1);
-	stroke_PS (o);
-	text_PS(o, "} def");
-
-	text_PS (o, "/compression_arrow {" );
-	newpath_PS (o);
-	moveto_PS (o, -5.0,  5.0, 3);
-	rlineto_PS (o,  2.0,  0.0, 3);
-	rlineto_PS (o,  0.0,  5.0, 3);
-	rlineto_PS (o,  6.0,  0.0, 3);
-	rlineto_PS (o,  0.0, -5.0, 3);
-	rlineto_PS (o,  2.0,  0.0, 3);
-	rlineto_PS (o, -5.0, -5.0, 3);
-	closepath_PS (o);
-	color_PS (o, "0.0 0.0 0.0");
-	fill_PS (o);
-	stroke_PS (o);
-	text_PS (o, "} def");
-
-	vector <string> TITLE;
-	vector <string> RGB_CLR;
-	vector <string> GRY_CLR;
-
-	TITLE.push_back ("/s1_axis {");
-	GRY_CLR.push_back ("0.0 0.0 0.0");
-	RGB_CLR.push_back ("1.0 0.0 0.0");
-	TITLE.push_back ("/s1_iter_axis {");
-	GRY_CLR.push_back ("0.0 0.0 0.0");
-	RGB_CLR.push_back ("1.0 0.0 0.0");
-
-	TITLE.push_back ("/s2_axis {");
-	GRY_CLR.push_back ("0.5 0.5 0.5");
-	RGB_CLR.push_back ("0.0 1.0 0.0");
-	TITLE.push_back ("/s2_iter_axis {");
-	GRY_CLR.push_back ("0.5 0.5 0.5");
-	RGB_CLR.push_back ("0.0 1.0 0.0");
-
-	TITLE.push_back ("/s3_axis {");
-	GRY_CLR.push_back ("1.0 1.0 1.0");
-	RGB_CLR.push_back ("0.0 0.0 1.0");
-	TITLE.push_back ("/s3_iter_axis {");
-	GRY_CLR.push_back ("1.0 1.0 1.0");
-	RGB_CLR.push_back ("0.0 0.0 1.0");
-
-	for (size_t i = 0; i < TITLE.size(); i++) {
-
-		const bool ITER = (i == 1 || i == 3 || i== 5);
-
-		text_PS (o, TITLE.at(i));
-		newpath_PS (o);
-		moveto_PS (o,  -2.0,  0.0, 3);
-		rlineto_PS (o,  4.0,  4.0, 3);
-		rlineto_PS (o, -4.0,  4.0, 3);
-		rlineto_PS (o, -4.0, -4.0, 3);
-		closepath_PS (o);
-		if (!ITER) color_PS (o, "1.0 1.0 1.0");
-		linewidth_PS (o, 1.0, 1);
-		if (!ITER) stroke_PS (o);
-		if (i == 0 || i == 2 || i== 4) {
-
-			moveto_PS (o,  -2.0,  0.0, 3);
-			rlineto_PS (o,  4.0,  4.0, 3);
-			rlineto_PS (o, -4.0,  4.0, 3);
-			rlineto_PS (o, -4.0, -4.0, 3);
-		}
-		if (is_GRAYSCALE_USE())	color_PS (o, GRY_CLR.at(i));
-		else 					color_PS (o, RGB_CLR.at(i));
-		if (!ITER) fill_PS (o);
-		stroke_PS(o);
-		text_PS (o, "} def");
-	}
+	if (!FRACTURE_TO_PROCESS && !IS_STRIAE) return;
 
 	text_PS (o, "/normalarrow {");
-	color_PS(o, "0.0 0.0 0.0");
+	//color_PS(o, "0.0 0.0 0.0");
 	newpath_PS (o);
 	linewidth_PS (o, 1.0, 1);
 	moveto_PS (o, 0.0, -6.0, 3);
@@ -190,7 +214,7 @@ void PS_stereonet_header (ofstream& o) {
 	fill_PS (o);
 	stroke_PS (o);
 
-	color_PS (o, "0.0 0.0 0.0");
+	//color_PS (o, "0.0 0.0 0.0");
 	linewidth_PS (o, 2, 1);
 	arc_PS (o, 0.0, 0.0, 1.0, 0.0, 360.0, 3);
 	stroke_PS (o);
@@ -203,7 +227,7 @@ void PS_stereonet_header (ofstream& o) {
 
 	text_PS (o, "/dextralarrow {");
 	newpath_PS (o);
-	color_PS(o, "0.0 0.0 0.0");
+	//color_PS(o, "0.0 0.0 0.0");
 	moveto_PS (o, 0.0, -1.5, 3);
 	lineto_PS (o, -6.0, -1.5, 3);
 	linewidth_PS(o, 1.0, 1);
@@ -227,7 +251,7 @@ void PS_stereonet_header (ofstream& o) {
 	fill_PS (o);
 	stroke_PS (o);
 
-	color_PS (o, "0.0 0.0 0.0");
+	//color_PS (o, "0.0 0.0 0.0");
 	linewidth_PS (o, 2, 1);
 	arc_PS (o, 0.0, 0.0, 1.0, 0.0, 360.0, 3);
 	stroke_PS (o);
@@ -240,7 +264,7 @@ void PS_stereonet_header (ofstream& o) {
 
 	text_PS (o, "/sinistralarrow {");
 	newpath_PS(o);
-	color_PS(o, "0.0 0.0 0.0");
+	//color_PS(o, "0.0 0.0 0.0");
 	moveto_PS(o, 0.0, 1.5, 3);
 	lineto_PS(o, -6.0, 1.5, 3);
 	linewidth_PS(o, 1.0, 1);
@@ -263,7 +287,7 @@ void PS_stereonet_header (ofstream& o) {
 	lineto_PS(o, 11.0, -1.2, 3);
 	fill_PS(o);
 	stroke_PS(o);
-	color_PS (o, "0.0 0.0 0.0");
+	//color_PS (o, "0.0 0.0 0.0");
 	linewidth_PS (o, 2, 1);
 	arc_PS (o, 0.0, 0.0, 1.0, 0.0, 360.0, 3);
 	stroke_PS (o);
@@ -289,10 +313,6 @@ void PS_stereonet_header (ofstream& o) {
 	stroke_PS(o);
 	text_PS (o, "} def");
 
-	TITLE.clear();
-	RGB_CLR.clear();
-	GRY_CLR.clear();
-
 	return;
 }
 
@@ -307,8 +327,7 @@ void PS_border (const vector <GDB>& inGDB, ofstream& o) {
 
 	const bool STRIAE = is_allowed_striae_datatype (DT);
 
-	const bool asked_KMEANS = !is_CLUSTERING_NONE();
-	const bool asked_RUPANG = !is_RUP_CLUSTERING_NONE();
+	const bool asked_FM = is_FORMATION_USE();
 
 	const bool by_GROUPCODE = is_GROUPSEPARATION_GROUPCODE ();
 	const bool by_KMEANS = is_GROUPSEPARATION_KMEANS ();
@@ -357,9 +376,7 @@ void PS_border (const vector <GDB>& inGDB, ofstream& o) {
 
 	string T = DT + " FROM LOCATION " + LOC;
 
-	if (asked_KMEANS) T = T + " - K-MEANS CLUSTERING USED";
-
-	if (asked_RUPANG && STRIAE) T = T + " - RUP/ANG CLUSTERING USED";
+	if (asked_FM && FM.size() > 0) T = T + ", " + FM + " FORMATION";
 
 	if (by_GROUPCODE) 	T = T + ", GROUP '" + GC.at(0) + "' USING ORIGINAL GROUPCODE" ;
 	else if (by_KMEANS) T = T + ", GROUP '" + GC.at(1) + "' USING CLUSTERING RESULT" ;
@@ -373,11 +390,11 @@ void PS_border (const vector <GDB>& inGDB, ofstream& o) {
 
 			if (is_RUP_CLUSTERING_ANG()) {
 
-				if (ENOUGH_STRIAE) T = T + ", GROUP '" + GC.at(2) + "' USING ANG CLUSTERING RESULT" ;
+				if (ENOUGH_STRIAE) T = T + ", GROUP '" + GC.at(2) + "' USING 'ANG' CLUSTERING RESULT" ;
 			}
 			else if (is_RUP_CLUSTERING_ANG()) {
 
-				if (ENOUGH_STRIAE) T = T + ", GROUP '" + GC.at(2) + "' USING RUP CLUSTERING RESULT" ;
+				if (ENOUGH_STRIAE) T = T + ", GROUP '" + GC.at(2) + "' USING 'RUP' CLUSTERING RESULT" ;
 			}
 			else {};
 		}
@@ -475,7 +492,7 @@ void PS_dump_ps_path (ofstream& o) {
 
 	font_PS (o, "ArialNarrow", 8);
 
-	text_PS (o, 20.0 * P.A, P.A + 5.0 * P.D, 3, TXT);
+	text_PS (o, P.O3X - P.R, P.O4Y - P.R - 20*P.D, 3, TXT);
 }
 
 void PS_net (ofstream& o) {
@@ -589,7 +606,9 @@ void PS_net (ofstream& o) {
 	}
 	font_PS(o, "ArialNarrow", 8);
 
-	text_PS (o, 12.0 * P.A, P.A + 5.0 * P.D, 3, "Plotted by SG2PS (version: " + version() + ") - for reference see www.sg2ps.eu webpage.");
+	const string TXT = "Plotted by SG2PS (version: " + version() + ") - for reference see www.sg2ps.eu webpage.";
+
+	text_PS (o, P.O3X - P.R, P.O4Y - P.R - 28*P.D, 3, TXT);
 
 	PS_eof (o);
 
@@ -602,14 +621,13 @@ void PS_eof (ofstream& o) {
 	o << "%%EOF" << '\n';
 }
 
-void PS_stressdata (const vector <GDB>& inGDB, ofstream& o, const CENTER& center, const STRESSFIELD& sf) {
+void PS_dump_inversion_method (const vector <GDB>& inGDB, ofstream& o, const CENTER& center) {
 
 	const PAPER P = RETURN_PAPER();
 
 	const bool FRACTURE = inGDB.at(0).DATATYPE == "FRACTURE" && is_BINGHAM_USE();
 
 	string METHOD = "";
-	string RESULT = "";
 
 	font_PS (o, "ArialNarrow", 8);
 	color_PS (o, "0.0 0.0 0.0");
@@ -629,7 +647,16 @@ void PS_stressdata (const vector <GDB>& inGDB, ofstream& o, const CENTER& center
 
 	text_PS (o, 0.0, 0.0, 3, METHOD);
 
-	vector <string> stress_DIPDIR;
+	translate_PS(o, - center.X - (center.radius / 2.0) + P.A, - center.Y + center.radius + 20.0 * P.D, 3);
+}
+
+string PS_stressdata (const vector <GDB>& inGDB, ofstream& o, const CENTER& center) {
+
+	const STRESSFIELD sf = inGDB.at(0).SFV.at(inGDB.at(0).SFV.size() - 1);
+
+	string RESULT = "";
+
+	vector <string> stress_DIPDIR, stress_DIP, eigenvector;
 
 	stress_DIPDIR.push_back (double_to_string (sf.S_1.DIPDIR, 0));
 	stress_DIPDIR.push_back (double_to_string (sf.S_2.DIPDIR, 0));
@@ -644,8 +671,6 @@ void PS_stressdata (const vector <GDB>& inGDB, ofstream& o, const CENTER& center
 		else 									  stress_DIPDIR.at(i) = "00" + stress_DIPDIR.at(i);
 	}
 
-	vector <string> stress_DIP;
-
 	stress_DIP.push_back (double_to_string (sf.S_1.DIP, 0));
 	stress_DIP.push_back (double_to_string (sf.S_2.DIP, 0));
 	stress_DIP.push_back (double_to_string (sf.S_3.DIP, 0));
@@ -656,41 +681,20 @@ void PS_stressdata (const vector <GDB>& inGDB, ofstream& o, const CENTER& center
 
 		if (stress_DIP.at(i).size() == 1) stress_DIP.at(i) = "0" + stress_DIP.at(i);
 	}
-
-	string stress_NAME = "S";
-	if (FRACTURE) stress_NAME = "e";
+	const string RESULT2 = "R': " + double_to_string (sf.delvaux_str, 3);
 
 	for (size_t i = 0; i < stress_DIPDIR.size(); i++) {
 
-		RESULT = RESULT + stress_NAME + size_t_to_string(i+1) + ": " + stress_DIPDIR.at(i) + "/" + stress_DIP.at(i);
+		RESULT = RESULT + stress_DIPDIR.at(i) + "/" + stress_DIP.at(i);
 		if (i < 2) RESULT = RESULT + ", ";
 	}
-
-	text_PS (o, 0.0, -8.0, 3, RESULT);
-
-	RESULT = "";
-
-	if (FRACTURE)  {
-
-		RESULT =
-				"E1: " + double_to_string (sf.EIGENVALUE.X * 100.0, 1) + "%, " +
-				"E2: " + double_to_string (sf.EIGENVALUE.Y * 100.0, 1) + "%, " +
-				"E3: " + double_to_string (sf.EIGENVALUE.Z * 100.0, 1) + "% ";
-	}
-	else {
-
-		RESULT =
-				"R: " + double_to_string (sf.stressratio, 3) + ", " +
-				"R': " + double_to_string (sf.delvaux_str, 3);
-
-	}
-
-	text_PS (o, 0.0, -16.0, 3, RESULT);
-
-	translate_PS(o, - center.X - (center.radius / 2.0) + P.A, - center.Y + center.radius + 20.0 * P.D, 3);
+	return RESULT;
 }
 
-void PS_stressarrows (ofstream& o, const CENTER& center, const STRESSFIELD& sf) {
+void PS_stressarrows (ofstream& o, const vector <GDB>& inGDB, const CENTER& center) {
+
+	const STRESSFIELD sf = inGDB.at(0).SFV.at(inGDB.at(0).SFV.size() - 1);
+	const string COLOR = inGDB.at(0).PSCOLOR;
 
 	const PAPER P = RETURN_PAPER();
 
@@ -700,14 +704,15 @@ void PS_stressarrows (ofstream& o, const CENTER& center, const STRESSFIELD& sf) 
 
 		rotate_PS (o, -sf.shmax, 3);
 		translate_PS (o, 0.0, center.radius + (0.2 * P.B), 3);
-		text_PS (o, "newpath compression_arrow");
+		PS_compression_arrow (o, COLOR);
+
 		translate_PS (o, 0.0, -center.radius - (0.2 * P.B), 3);
 		rotate_PS(o, sf.shmax, 3);
 		rotate_PS(o, 180.0, 1);
 
 		rotate_PS(o, -sf.shmax, 3);
 		translate_PS (o, 0.0, center.radius + (0.2 * P.B), 3);
-		text_PS (o, "newpath compression_arrow");
+		PS_compression_arrow (o, COLOR);
 		translate_PS (o, 0.0, -center.radius - (0.2 * P.B), 3);
 		rotate_PS(o, sf.shmax, 3);
 		rotate_PS(o, 180.0, 1);
@@ -721,14 +726,14 @@ void PS_stressarrows (ofstream& o, const CENTER& center, const STRESSFIELD& sf) 
 
 		rotate_PS(o, - sf.shmin, 3);
 		translate_PS (o, 0.0, center.radius + (0.2 * P.B), 3);
-		text_PS (o, "newpath extension_arrow");
+		PS_extension_arrow (o, COLOR);
 		translate_PS (o, 0.0, -center.radius - (0.2 * P.B), 3);
 		rotate_PS(o, sf.shmin, 3);
 		rotate_PS(o, 180.0, 1);
 
 		rotate_PS(o, - sf.shmin, 3);
 		translate_PS (o, 0.0, center.radius + (0.2 * P.B), 3);
-		text_PS (o, "newpath extension_arrow");
+		PS_extension_arrow (o, COLOR);
 		translate_PS (o, 0.0, -center.radius - (0.2 * P.B), 3);
 		rotate_PS(o, sf.shmin, 3);
 		rotate_PS(o, 180.0, 1);
@@ -736,6 +741,13 @@ void PS_stressarrows (ofstream& o, const CENTER& center, const STRESSFIELD& sf) 
 		translate_PS(o, -center.X, -center.Y, 3);
 	}
 	return;
+}
+
+void PS_mohr_arcs (ofstream& o, const CENTER& mohrcenter, const double CNTR, const double RAD) {
+
+	newpath_PS (o);
+	arc_PS (o, CNTR, mohrcenter.Y, RAD, 0.0, 180.0, 3);
+	stroke_PS (o);
 }
 
 void PS_mohr_circle (const vector <GDB>& inGDB, ofstream& o, const CENTER& mohrcenter) {
@@ -758,10 +770,8 @@ void PS_mohr_circle (const vector <GDB>& inGDB, ofstream& o, const CENTER& mohrc
 	ASSERT_GE (fi, 0);
 	ASSERT_LE (fi, 1);
 
-	string CLR = generate_stress_colors (SF.delvaux_str);
+	const string GR_CLR = inGDB.at(0).PSCOLOR;
 
-	color_PS(o, CLR);
-	linewidth_PS (o, 3.0, 1);
 
 	const double S1_S3_center = mohrcenter.X + 2.5 * P.A;
 	const double S1_S3_radius = 2.5 * P.A;
@@ -770,17 +780,11 @@ void PS_mohr_circle (const vector <GDB>& inGDB, ofstream& o, const CENTER& mohrc
 	const double S1_S2_center = mohrcenter.X + 2.5 * P.A + (0.5 * fi * X);
 	const double S1_S2_radius = 2.5 * P.A - (0.5 * fi * X);
 
-	newpath_PS (o);
-	arc_PS (o, S1_S3_center, mohrcenter.Y, S1_S3_radius, 0.0, 180.0, 3);
-	stroke_PS (o);
-
-	newpath_PS (o);
-	arc_PS (o, S2_S3_center, mohrcenter.Y, S2_S3_radius, 0.0, 180.0, 3);
-	stroke_PS (o);
-
-	newpath_PS (o);
-	arc_PS (o, S1_S2_center, mohrcenter.Y, S1_S2_radius, 0.0, 180.0, 3);
-	stroke_PS (o);
+	color_PS (o, GR_CLR);
+	linewidth_PS (o, 1.5, 1);
+	PS_mohr_arcs (o, mohrcenter, S1_S3_center, S1_S3_radius);
+	PS_mohr_arcs (o, mohrcenter, S2_S3_center, S2_S3_radius);
+	PS_mohr_arcs (o, mohrcenter, S1_S2_center, S1_S2_radius);
 
 	const double PLOT_S1_X = S1_S3_center + S1_S3_radius;
 	const double PLOT_S2_X = S2_S3_center + S2_S3_radius;
@@ -797,11 +801,13 @@ void PS_mohr_circle (const vector <GDB>& inGDB, ofstream& o, const CENTER& mohrc
 	font_PS (o, "ArialNarrow-Bold", 8);
 	text_PS (o, mohrcenter.X - 4.0 * P.D, mohrcenter.Y - 10.0 * P.D, 3, "S3");
 	text_PS (o, mohrcenter.X + X - 4.0 * P.D, mohrcenter.Y - 10.0 * P.D, 3, "S1");
-	text_PS (o, mohrcenter.X + (fi * X) - 4.0 * P.D, mohrcenter.Y - 10.0 * P.D, 3, "S2");
+	if (is_MULTIPLE_GROUPS()) text_PS (o, mohrcenter.X + (fi * X) - 4.0 * P.D, mohrcenter.Y - 10.0 * P.D, 3, "S2");
 
 	for (size_t i = 0; i < inGDB.size(); i++) {
 
 		if (inGDB.at(i).RUP > 0.0 && inGDB.at(i).ANG > 0.0) {
+
+			const string DT_CLR = inGDB.at(i).PSCOLOR;
 
 			const VCTR stressvector = return_stressvector (ST, inGDB.at(i).N);
 
@@ -859,13 +865,13 @@ void PS_mohr_circle (const vector <GDB>& inGDB, ofstream& o, const CENTER& mohrc
 			}
 			newpath_PS(o);
 			color_PS(o, "1.0 1.0 1.0");
-			linewidth_PS (o, 3.0, 1);
+			linewidth_PS (o, 2.0, 1);
 			arc_PS (o, PLOT_X, PLOT_Y, 0.7, 0.0, 360.0, 3);
 			stroke_PS(o);
 
 			newpath_PS(o);
-			color_PS(o, "0.0 0.0 0.0");
-			linewidth_PS (o, 2.0, 1);
+			color_PS(o, DT_CLR);
+			linewidth_PS (o, 1.5, 1);
 			arc_PS (o, PLOT_X, PLOT_Y, 0.7, 0.0, 360.0, 3);
 			stroke_PS(o);
 		}
@@ -880,7 +886,6 @@ void PS_RUP_ANG_distribution (const vector <GDB>& inGDB, ofstream& o, const CENT
 
 	const bool RUP = method == "RUP";
 	const bool ANG = method == "ANG";
-
 	ASSERT_EXACTLY_ONE_TRUE (RUP, ANG);
 
 	if (RUP && !is_INVERSION_ANGELIER() && !is_INVERSION_MOSTAFA() && !is_INVERSION_SHAN() && !is_INVERSION_FRY()) return;
@@ -912,9 +917,15 @@ void PS_RUP_ANG_distribution (const vector <GDB>& inGDB, ofstream& o, const CENT
 	ps_percentage (o, center, P, method, DATA_max);
 
 	ps_percentage_max (o, center, P, method, DATA_max);
+
+	return;
 }
 
-void PS_stress_state (ofstream& o, const CENTER& center, const STRESSFIELD& sf) {
+void PS_stress_state (ofstream& o, const vector <GDB>& inGDB, const CENTER& center) {
+
+	const STRESSFIELD sf = inGDB.at(0).SFV.at(inGDB.at(0).SFV.size() - 1);
+
+	const string COLOR = inGDB.at(0).PSCOLOR;
 
 	const PAPER P = RETURN_PAPER();
 
@@ -923,8 +934,15 @@ void PS_stress_state (ofstream& o, const CENTER& center, const STRESSFIELD& sf) 
 	color_PS(o, "1.0 1.0 1.0");
 	linewidth_PS (o, 5.0, 1);
 	newpath_PS (o);
-	moveto_PS (o, center.X + P.R + 0.9 * P.B, center.Y - P.R + (0.666 * P.R * value), 3);
-	lineto_PS (o, center.X + P.R + 1.6 * P.B, center.Y - P.R + (0.666 * P.R * value), 3);
+	moveto_PS (o, center.X + P.R + 0.99 * P.B, center.Y - P.R + (0.666 * P.R * value), 3);
+	lineto_PS (o, center.X + P.R + 1.51 * P.B, center.Y - P.R + (0.666 * P.R * value), 3);
+	stroke_PS(o);
+
+	color_PS(o, COLOR);
+	linewidth_PS (o, 3.0, 1);
+	newpath_PS (o);
+	moveto_PS (o, center.X + P.R + 1.0 * P.B, center.Y - P.R + (0.666 * P.R * value), 3);
+	lineto_PS (o, center.X + P.R + 1.5 * P.B, center.Y - P.R + (0.666 * P.R * value), 3);
 	stroke_PS(o);
 }
 
@@ -961,43 +979,30 @@ void PS_lineation (const GDB& i, ofstream& o, const CENTER& center, const STRESS
 	VCTR L;
 	string T = "";
 
+	const string CLR = i.PSCOLOR;
+
 	bool OTHER = false;
 
-	if (type == "S1") {
-
-		L = sf.EIGENVECTOR1;
-		T = " newpath s1_axis";
-	}
-	else if (type == "S1_ITER") {
-
-		L = sf.EIGENVECTOR1;
-		T = "  newpath s1_iter_axis";
-	}
-	else if (type == "S2") {
-
-		L = sf.EIGENVECTOR2;
-		T = " newpath s2_axis";
-	}
-	else if (type == "S2_ITER") {
-
-		L = sf.EIGENVECTOR2;
-		T = "  newpath s2_iter_axis";
-	}
-	else if (type == "S3") {
-
-		L = sf.EIGENVECTOR3;
-		T = " newpath s3_axis";
-	}
-	else if (type == "S3_ITER") {
-
-		L = sf.EIGENVECTOR3;
-		T = "  newpath s3_iter_axis";
-	}
+	if (type == "S1") 			L = sf.EIGENVECTOR1;
+	else if (type == "S1_ITER") L = sf.EIGENVECTOR1;
+	else if (type == "S2") 		L = sf.EIGENVECTOR2;
+	else if (type == "S2_ITER")	L = sf.EIGENVECTOR2;
+	else if (type == "S3") 		L = sf.EIGENVECTOR3;
+	else if (type == "S3_ITER") L = sf.EIGENVECTOR3;
 	else {
 
 		L = i.D;
 		OTHER = true;
 	}
+
+	string AXIS;
+
+	if (type == "S1" || type == "S1_ITER") AXIS = "S1";
+	if (type == "S2" || type == "S2_ITER") AXIS = "S2";
+	if (type == "S3" || type == "S3_ITER") AXIS = "S3";
+
+	const bool ITER = (type == "S1_ITER" || type == "S2_ITER" || type == "S3_ITER");
+
 	ASSERT (!(is_D_up (L)));
 
 	double X = 0.0;
@@ -1063,7 +1068,7 @@ void PS_lineation (const GDB& i, ofstream& o, const CENTER& center, const STRESS
 	else {
 
 		translate_PS (o, X, Y, 3);
-		text_PS (o, T);
+		PS_s1s2s3 (o, CLR, ITER, AXIS);
 		translate_PS (o, -X, -Y, 3);
 	}
 
@@ -1579,7 +1584,10 @@ void PS_striaearrow (const GDB& i, ofstream& o, const CENTER& center) {
 
 	translate_PS (o, X, Y, 3);
 	rotate_PS (o, ANGLE, 1);
+
+	color_PS(o, i.PSCOLOR);
 	text_PS (o, TEXT);
+	color_PS(o, "1 1 1");
 	rotate_PS (o, -ANGLE, 1);
 	translate_PS (o, -X, -Y, 3);
 
@@ -1600,6 +1608,7 @@ void PS_striaearrow (const GDB& i, ofstream& o, const CENTER& center) {
 }
 
 void PS_datanumber_averagebedding (const GDB& i, ofstream& o, const size_t datanumber) {
+
 
 	const PAPER P = RETURN_PAPER();
 
@@ -1692,7 +1701,49 @@ void PS_GDB_DATA (const vector <GDB>& inGDB, ofstream& o, const CENTER& center) 
 	return;
 }
 
-void PS_GDB (const vector <GDB>& inGDB, ofstream& o, bool TILT) {
+void ROSE (const vector <vector <GDB> >& inGDB_G , ofstream& o, const CENTER& rosecenter, const CENTER& vrosecenter, const bool TILT) {
+
+	PS_draw_rose_DIPDIR_DIP (inGDB_G, o, rosecenter, "DIPDIR", TILT);
+	PS_draw_rose_DIPDIR_DIP (inGDB_G, o, vrosecenter, "DIP", TILT);
+
+	return;
+}
+
+void ps_dump_stress_state (ofstream& o, const CENTER& center, const string DATATYPE_TO_DUMP, const vector <string>& INV, const vector <string>& CLR) {
+
+	ASSERT_EQ (INV.size(), CLR.size());
+
+	const PAPER P = RETURN_PAPER();
+
+	moveto_PS(o, center.X - P.R - 0.2 * P.B, center.Y - P.R - 36.0 * P.D, 3);
+
+	font_PS (o, "ArialNarrow", 8);
+	color_PS (o, "0.0 0.0 0.0");
+
+	text_to_PS (o, DATATYPE_TO_DUMP);
+
+	for (size_t i = 0; i < INV.size(); i++) {
+
+		if (INV.at(i).size() > 0) {
+
+			color_PS (o, CLR.at(i));
+			text_to_PS (o, INV.at(i));
+			if (i < INV.size() - 1 && INV.at(i+1).size() > 0) text_to_PS (o, "; ");
+		}
+	}
+	stroke_PS(o);
+}
+
+void PS_GDB (const vector <vector <GDB> >& inGDB_G, ofstream& o, bool TILT) {
+
+	const bool STRIAE = is_allowed_striae_datatype(inGDB_G.at(0).at(0).DATATYPE);
+	const bool FRACTURE = inGDB_G.at(0).at(0).DATATYPE == "FRACTURE";
+
+	const bool no_INVERSION = is_INVERSION_NONE();
+	const bool no_BINGHAM = is_BINGHAM_NONE();
+
+	const bool dump_STR = STRIAE && !no_INVERSION;
+	const bool dump_BNG = FRACTURE && !no_BINGHAM;
 
 	const PAPER P = RETURN_PAPER();
 
@@ -1726,21 +1777,42 @@ void PS_GDB (const vector <GDB>& inGDB, ofstream& o, bool TILT) {
 		mohrcenter.Y = P.O8Y;
 	}
 
-	CONTOURING (inGDB, o, center, TILT);
+	const vector <GDB> to_dump = MERGE_GROUPS_TO_GDB (inGDB_G);
 
-	PS_draw_rose_DIPDIR_DIP (inGDB, o, rosecenter, "DIPDIR", TILT);
-	PS_draw_rose_DIPDIR_DIP (inGDB, o, vrosecenter, "DIP", TILT);
+	CONTOURING (to_dump, o, center, TILT);
 
-	PS_GDB_DATA (inGDB, o, center);
+	ROSE (inGDB_G, o, rosecenter, vrosecenter, TILT);
 
-	PS_FOLD_GREAT_CIRCLE (inGDB, o, center);
+	PS_GDB_DATA (to_dump, o, center);
 
-	PS_INVERSION_RESULTS (inGDB, o, center, mohrcenter);
+	PS_FOLD_GREAT_CIRCLE (to_dump, o, center);
+
+	if (!dump_STR && !dump_BNG) return;
+
+	vector <string> INV;
+	vector <string> CLR;
+
+	for (size_t i = 0; i < inGDB_G.size(); i++) {
+
+		INV.push_back (PS_INVERSION_RESULTS (inGDB_G.at(i), o, center, mohrcenter));
+		CLR.push_back(inGDB_G.at(i).at(0).PSCOLOR);
+	}
+	string DATATYPE_TO_DUMP = "Stress state";
+	if (dump_BNG) DATATYPE_TO_DUMP = "Weight point";
+
+	if (INV.size() > 1) DATATYPE_TO_DUMP = DATATYPE_TO_DUMP + "s";
+
+	if (dump_BNG) DATATYPE_TO_DUMP = DATATYPE_TO_DUMP + " (e1>e2>e3): ";
+	else DATATYPE_TO_DUMP = DATATYPE_TO_DUMP + " (s1>s2>s3): ";
+
+	ps_dump_stress_state (o, center, DATATYPE_TO_DUMP, INV, CLR);
+
+	PS_dump_inversion_method (inGDB_G.at(0), o, center);
 
 	return;
 }
 
-void PS_rosesegment (ofstream& o, const CENTER center, const double percentage, const double degree, const bool c_plane) {
+void PS_rosesegment (ofstream& o, const CENTER center, const double percentage, const double degree, const bool c_plane, const string COLOR) {
 
 	double 						step_angle =  2.5;
 	if (is_ROSEBINSIZE_5_00()) 	step_angle =  5.0;
@@ -1751,36 +1823,8 @@ void PS_rosesegment (ofstream& o, const CENTER center, const double percentage, 
 
 	const double radius = center.radius * percentage;
 
-	translate_PS (o, center.X, center.Y, 3);
-	rotate_PS (o, -degree, 3);
-
-	if (is_GRAYSCALE_USE()) {
-
-		if (c_plane){
-
-			linewidth_PS (o, 1.0, 3);
-			color_PS (o, "0.0 0.0 0.0");
-		}
-		else {
-
-			linewidth_PS (o, 0.7, 3);
-			color_PS (o, "0.5 0.5 0.5");
-		}
-	}
-	else {
-		if (c_plane) {
-
-			linewidth_PS (o, 1.0, 3);
-			color_PS (o, "0.0 0.0 1.0");
-		}
-		else {
-
-			linewidth_PS (o, 0.7, 3);
-			color_PS (o, "0.0 0.5 0.0");
-		}
-	}
-
 	const VCTR POINT = declare_vector (radius * SIN (step_angle), radius * COS(step_angle), 0);
+
 	const VCTR ORIGO = declare_vector (0, 0, 0);
 
 	ASSERT_LE (POINT.X, 0 + center.radius + 1);
@@ -1793,23 +1837,39 @@ void PS_rosesegment (ofstream& o, const CENTER center, const double percentage, 
 
 	ASSERT_LE (D, center.radius+1);
 
+	translate_PS (o, center.X, center.Y, 3);
+	rotate_PS (o, -degree, 3);
+
+	if (!c_plane)	{
+		newpath_PS (o);
+		color_PS (o, COLOR);
+		moveto_PS (o, 0.0, 0.0, 3);
+		lineto_PS (o, POINT.X, POINT.Y, 3);
+		arc_PS (o, 0.0, 0.0, radius, angle, 90.0, 3);
+		moveto_PS (o, 0.0, 0.0, 3);
+		lineto_PS (o, 0.0, radius, 3);
+		fill_PS (o);
+		closepath_PS (o);
+	}
+
 	newpath_PS (o);
+
+	if (c_plane) {
+
+		linewidth_PS (o, 1.5, 3);
+		color_PS (o, pastel (COLOR));
+	}
+	else {
+
+		linewidth_PS (o, 0.5, 3);
+		color_PS (o, "1 1 1");
+	}
 	moveto_PS (o, 0.0, 0.0, 3);
 	lineto_PS (o, POINT.X, POINT.Y, 3);
 	arc_PS (o, 0.0, 0.0, radius, angle, 90.0, 3);
 	moveto_PS (o, 0.0, 0.0, 3);
 	lineto_PS (o, 0.0, radius, 3);
 	closepath_PS (o);
-
-	if (!c_plane)	{
-
-		text_PS(o, " gsave");
-
-		if (is_GRAYSCALE_USE()) color_PS (o, "0.8 0.8 0.8");
-		else 					color_PS (o, "0.0 1.0 0.0");
-
-		text_PS(o, " fill grestore");
-	}
 	stroke_PS(o);
 
 	rotate_PS(o, degree, 1);
@@ -1926,7 +1986,6 @@ void PS_idealmovement (const vector <GDB>& inGDB, ofstream& o, const CENTER& cen
 
 	for (size_t i = 0; i < inGDB.size(); i++) {
 
-		//if (vectorlength (inGDB.at(i).SHEAR_S) > 10e-5) {
 		if (vectorlength (inGDB.at(i).SHEAR_S) > return_SMALL_NUMBER()) {
 
 			PS_polepoint (inGDB.at(i), o, center.X, center.Y, center.radius, "IDEAL");
@@ -1947,8 +2006,7 @@ void PS_FOLD_GREAT_CIRCLE (const vector <GDB>& inGDB, ofstream& o, const CENTER&
 	return;
 }
 
-
-void PS_INVERSION_RESULTS (const vector <GDB>& inGDB, ofstream& o, const CENTER& center, const CENTER& mohr_center) {
+string PS_INVERSION_RESULTS (const vector <GDB>& inGDB, ofstream& o, const CENTER& center, const CENTER& mohr_center) {
 
 	const bool STRIAE = is_allowed_striae_datatype(inGDB.at(0).DATATYPE);
 	const bool FRACTURE = inGDB.at(0).DATATYPE == "FRACTURE";
@@ -1956,33 +2014,42 @@ void PS_INVERSION_RESULTS (const vector <GDB>& inGDB, ofstream& o, const CENTER&
 	const bool no_INVERSION = is_INVERSION_NONE();
 	const bool no_BINGHAM = is_BINGHAM_NONE();
 
-	if ((STRIAE && no_INVERSION) || (FRACTURE && no_BINGHAM)) return;
+	const bool dump_STR = STRIAE && !no_INVERSION;
+	const bool dump_BNG = FRACTURE && !no_BINGHAM;
+
+	string sd = "";
+
+	if ((STRIAE && no_INVERSION) || (FRACTURE && no_BINGHAM)) return sd;
 
 	const vector <STRESSTENSOR> STV = inGDB.at(0).STV;
 	const vector <STRESSFIELD> SFV = inGDB.at(0).SFV;
 
-	if (STV.size() == 0 || SFV.size() == 0) return;
+	if (STV.size() == 0 || SFV.size() == 0) return sd;
 
-	ASSERT_EXACTLY_ONE_TRUE (STRIAE && !no_INVERSION, FRACTURE && !no_BINGHAM);
+	ASSERT_EXACTLY_ONE_TRUE (dump_STR, dump_BNG);
+
+	sd = PS_stressdata (inGDB, o, center);
 
 	if (STRIAE && !no_INVERSION) {
 
-		PS_stressdata (inGDB, o, center, SFV.at(SFV.size() - 1));
-
-		PS_stressarrows (o, center, SFV.at(SFV.size() - 1));
+		PS_stressarrows (o, inGDB, center);
 
 		PS_mohr_circle (inGDB, o, mohr_center);
 
-		PS_RUP_ANG_distribution (inGDB, o, center, "RUP");
-		PS_RUP_ANG_distribution (inGDB, o, center, "ANG");
+		if (! is_MULTIPLE_GROUPS()) {
 
-		PS_stress_state (o, center, SFV.at(SFV.size() - 1));
+			PS_RUP_ANG_distribution (inGDB, o, center, "RUP");
+			PS_RUP_ANG_distribution (inGDB, o, center, "ANG");
+		}
+		PS_stress_state (o, inGDB, center);
 
 		PS_idealmovement (inGDB, o, center);
 
 		PS_stress_axes (inGDB, o, center);
 	}
 	else PS_stress_axes (inGDB, o, center);
+
+	return sd;
 }
 
 void PS_stress_axes (const vector <GDB>& inGDB, ofstream& o, const CENTER& center) {
@@ -1999,21 +2066,21 @@ void PS_stress_axes (const vector <GDB>& inGDB, ofstream& o, const CENTER& cente
 	if (MOSTAFA) 	SF = inGDB.at(0).SFV;
 	else 			SF.push_back (inGDB.at(0).SFV.at (SFV_size - 1));
 
-	const GDB dummy;
+	const GDB to_axes = inGDB.at(0);
 
 	for (size_t i = 0; i < SF.size(); i++) {
 
 		if (STRIAE && MOSTAFA && i < SF.size()) {
 
-			PS_lineation (dummy, o, center, SF.at(i), false, "S1_ITER");
-			PS_lineation (dummy, o, center, SF.at(i), false, "S2_ITER");
-			PS_lineation (dummy, o, center, SF.at(i), false, "S3_ITER");
+			PS_lineation (to_axes, o, center, SF.at(i), false, "S1_ITER");
+			PS_lineation (to_axes, o, center, SF.at(i), false, "S2_ITER");
+			PS_lineation (to_axes, o, center, SF.at(i), false, "S3_ITER");
 		}
 		else {
 
-			PS_lineation (dummy, o, center, SF.at(i), false, "S1");
-			PS_lineation (dummy, o, center, SF.at(i), false, "S2");
-			PS_lineation (dummy, o, center, SF.at(i), false, "S3");
+			PS_lineation (to_axes, o, center, SF.at(i), false, "S1");
+			PS_lineation (to_axes, o, center, SF.at(i), false, "S2");
+			PS_lineation (to_axes, o, center, SF.at(i), false, "S3");
 		}
 	}
 	return;
@@ -2025,8 +2092,8 @@ void PS_SYMBOLS_border (ofstream& o) {
 
 	newpath_PS (o);
 
-	moveto_PS (o, P.A, 					(P.Y / 2.0) - 0.15 * P.A, 	3);
-	lineto_PS (o, P.X - (10.0 * P.A), 	 (P.Y / 2.0) - 0.15 * P.A, 		3);
+	moveto_PS (o, P.A, 					(P.Y / 2.0) - 0.15 * P.A, 3);
+	lineto_PS (o, P.X - (10.0 * P.A), 	(P.Y / 2.0) - 0.15 * P.A, 3);
 
 	moveto_PS (o, P.S2X, P.S2Y, 3);
 	lineto_PS (o, P.S6X, P.S6Y, 3);
@@ -2092,7 +2159,7 @@ void PS_SYMBOL_draw_plane (ofstream& o, const double X, const double Y, const st
 
 		PS_COLOR = generate_PSCOLOR_from_GC (TYPE);
 		if (is_GRAYSCALE_USE()) DASH = generate_DASH (TYPE);
-		LINEWIDTH = 1.0;
+		LINEWIDTH = 2.0;
 	}
 	else if (AV) {
 
@@ -2309,7 +2376,7 @@ void PS_SYMBOLS_LINEATION (const string& DATATYPE, ofstream& o) {
 	stroke_PS(o);
 }
 
-void PS_SYMBOLS_GROUPS (ofstream& o) {
+void PS_SYMBOLS_GROUPS (ofstream& o, const vector <GDB>& inGDB) {
 
 	const PAPER P = RETURN_PAPER();
 
@@ -2322,26 +2389,34 @@ void PS_SYMBOLS_GROUPS (ofstream& o) {
 
 	if (GROUPS || KMEANS || RUP) {
 
-		for (size_t i = 1; i < allowed_basic_groupcode_str_vector().size(); i++) {
+		size_t existence_counter = 0;
+
+		for (size_t i = 0; i < allowed_basic_groupcode_str_vector().size(); i++) {
 
 			const string GROUP = allowed_basic_groupcode_str_vector().at(i);
 
-			PS_SYMBOL_draw_plane (o, X, Y + (i-1)*0.18*P.A - 10.0*P.D, GROUP);
+			if (existence_of_groupcode (GROUP, inGDB)) {
 
-			color_PS (o, "0.0 0.0 0.0");
+				PS_SYMBOL_draw_plane (o, X, Y + (existence_counter)*0.18*P.A - 13.5*P.D, GROUP);
 
-			text_PS(o, P.S1X + 7.5 * P.A + 8.0 * P.D, P.S1Y - 0.855 * P.A - 0.63*(i-1)*P.A - 20.0 * P.D, 3, "Group '" + GROUP + "'");
+				color_PS (o, "0.0 0.0 0.0");
+
+				if (i == 0) text_PS(o, P.S1X + 7.5 * P.A + 8.0 * P.D, P.S1Y - 0.855 * P.A - 0.63*(existence_counter)*P.A - 10.0 * P.D, 3, "Default group");
+				else text_PS(o, P.S1X + 7.5 * P.A + 8.0 * P.D, P.S1Y - 0.855 * P.A - 0.63*(existence_counter)*P.A - 10.0 * P.D, 3, "Group '" + GROUP + "'");
+
+				existence_counter = existence_counter + 1;
+			}
 		}
 	}
 	else {
 
 		const string GROUP = allowed_basic_groupcode_str_vector().at(0);
 
-		PS_SYMBOL_draw_plane (o, X, Y, GROUP);
+		PS_SYMBOL_draw_plane (o, X, Y - 13.5*P.D, GROUP);
 
 		color_PS (o, "0.0 0.0 0.0");
 
-		text_PS(o, P.S1X + 7.5 * P.A + + 8.0 * P.D, P.S1Y - 0.855 * P.A - 20.0 * P.D, 3, "Default group");
+		text_PS(o, P.S1X + 7.5 * P.A + 8.0 * P.D, P.S1Y - 0.855 * P.A - 10.0 * P.D, 3, "Default group");
 	}
 	return;
 }
@@ -2351,19 +2426,19 @@ void PS_SYMBOLS_INVERSION (ofstream& o) {
 	const PAPER P = RETURN_PAPER();
 
 	translate_PS (o, P.S1X + 3.4 * P.A, P.S1Y - 1.255 * P.A, 3);
-	text_PS (o, " newpath s1_axis");
+	PS_s1s2s3(o, "1 1 1", false, "S1");
 	translate_PS (o, - P.S1X - 3.4 * P.A, - P.S1Y + 1.255 * P.A, 3);
 	color_PS(o, "0.0 0.0 0.0");
 	text_PS(o, P.S1X + 3.1 * P.A, P.S1Y - 1.555 * P.A, 3, "S1 axis");
 
 	translate_PS (o, P.S1X + 3.4 * P.A, P.S1Y - 1.955 * P.A, 3);
-	text_PS (o, " newpath s2_axis");
+	PS_s1s2s3(o, "1 1 1", false, "S2");
 	translate_PS (o, - P.S1X - 3.4 * P.A, - P.S1Y + 1.955 * P.A, 3);
 	color_PS(o, "0.0 0.0 0.0");
 	text_PS(o, P.S1X + 3.1 * P.A, P.S1Y - 2.255 * P.A, 3, "S2 axis");
 
 	translate_PS (o, P.S1X + 3.4 * P.A, P.S1Y - 2.655 * P.A, 3);
-	text_PS (o, " newpath s3_axis");
+	PS_s1s2s3(o, "1 1 1", false, "S3");
 	translate_PS (o, - P.S1X - 3.4 * P.A, - P.S1Y + 2.655 * P.A, 3);
 	color_PS(o, "0.0 0.0 0.0");
 	text_PS(o, P.S1X + 3.1 * P.A, P.S1Y - 2.955 * P.A, 3, "S3 axis");
@@ -2371,11 +2446,13 @@ void PS_SYMBOLS_INVERSION (ofstream& o) {
 	translate_PS(o, P.S1X + 3.4 * P.A, P.S1Y - 3.955 * P.A, 3);
 	rotate_PS(o, 90.0, 1);
 	translate_PS(o, 0.0, 10.0, 3);
-	text_PS(o, " newpath compression_arrow");
+	PS_compression_arrow (o, "0 0 0");
+
 	translate_PS(o, 0.0, -10.0, 3);
 	rotate_PS(o, 180.0, 1);
 	translate_PS(o, 0.0, 10.0, 3);
-	text_PS(o, " newpath compression_arrow");
+	PS_compression_arrow (o, "0 0 0");
+
 	translate_PS(o, 0.0, -10.0, 3);
 	rotate_PS(o, 180.0, 1);
 	rotate_PS(o, -90.0, 1);
@@ -2385,11 +2462,11 @@ void PS_SYMBOLS_INVERSION (ofstream& o) {
 	translate_PS(o, P.S1X + 3.4 * P.A, P.S1Y - 5.355 * P.A, 3);
 	rotate_PS(o, 90.0, 1);
 	translate_PS(o, 0.0, 10.0, 3);
-	text_PS(o, " newpath extension_arrow");
+	PS_extension_arrow (o, "0 0 0");
 	translate_PS(o, 0.0, -10.0, 3);
 	rotate_PS(o, 180.0, 1);
 	translate_PS(o, 0.0, 10.0, 3);
-	text_PS(o, " newpath extension_arrow");
+	PS_extension_arrow (o, "0 0 0");
 	translate_PS(o, 0.0, -10.0, 3);
 	rotate_PS(o, 180.0, 1);
 	rotate_PS(o, -90.0, 1);
@@ -2401,21 +2478,20 @@ void PS_SYMBOLS_BINGHAM (ofstream& o) {
 
 	const PAPER P = RETURN_PAPER();
 
-	color_PS (o, "0.0 0.0 0.0");
 	translate_PS (o, P.S1X + 3.4 * P.A, P.S1Y - 1.255 * P.A, 3);
-	text_PS (o, "newpath s1_axis");
+	PS_s1s2s3 (o, "1 1 1", false, "S1");
 	translate_PS (o, -P.S1X - 3.4 * P.A, -P.S1Y + 1.255 * P.A, 3);
 	color_PS (o, "0.0 0.0 0.0");
 	text_PS (o, P.S1X + 2.6 * P.A, P.S1Y - 1.555 * P.A, 3, "Maximum weight point");
 
 	translate_PS (o, P.S1X + 3.4 * P.A, P.S1Y - 1.955 * P.A, 3);
-	text_PS (o, "newpath s2_axis");
+	PS_s1s2s3 (o, "1 1 1", false, "S2");
 	translate_PS (o, - P.S1X - 3.4 * P.A, - P.S1Y + 1.955 * P.A, 3);
 	color_PS (o, "0.0 0.0 0.0");
 	text_PS (o, P.S1X + 2.5 * P.A, P.S1Y - 2.255 * P.A, 3, "Intermediate weight point");
 
 	translate_PS (o, P.S1X + 3.4 * P.A, P.S1Y - 2.655 * P.A, 3);
-	text_PS (o, "newpath s3_axis");
+	PS_s1s2s3 (o, "1 1 1", false, "S3");
 	translate_PS (o, - P.S1X - 3.4 * P.A, - P.S1Y + 2.655 * P.A, 3);
 	color_PS (o, "0.0 0.0 0.0");
 	text_PS (o, P.S1X + 2.6 * P.A, P.S1Y - 2.955 * P.A, 3, "Minimum weight point");
@@ -2424,6 +2500,8 @@ void PS_SYMBOLS_BINGHAM (ofstream& o) {
 void PS_SYMBOLS_ROSE (const vector <GDB>& inGDB, ofstream& o) {
 
 	const PAPER P = RETURN_PAPER();
+
+	const string COLOR = inGDB.at(0).PSCOLOR;
 
 	const double angle = 80.0;
 	const double radius = 80.0 * P.D;
@@ -2435,33 +2513,29 @@ void PS_SYMBOLS_ROSE (const vector <GDB>& inGDB, ofstream& o) {
 	const bool SC = is_allowed_SC_datatype (DATAGROUP);
 	const bool STRIAE = is_allowed_striae_datatype (DATAGROUP);
 
+	string WHAT = "strike";
+	if (is_ROSEDIRECTION_DIP()) WHAT = "dip";
+
 	string outtext1 = "";
 
 	if (LINEATION) 	 outtext1 = "Lineation direction";
-	else if (SC) 	 outtext1 = "Schistosity dip";
-	else if (STRIAE) outtext1 = "Plane dip direction";
-	else 			 outtext1 = "Plane dip direction";
+	else if (SC) 	 outtext1 = "Schistosity " + WHAT;
+	else if (STRIAE) outtext1 = "Plane " + WHAT + " direction";
+	else 			 outtext1 = "Plane " + WHAT + " direction";
 
 	translate_PS (o, P.S1X + 4.9 * P.A, P.S1Y - 2.955 * P.A, 3);
 	rotate_PS (o, -30, 1);
 
-	linewidth_PS (o, 0.7, 1);
-	color_PS (o, "0.5 0.5 0.5");
+	color_PS (o, COLOR);
 	newpath_PS (o);
 	moveto_PS (o, 0.0, 0.0, 1);
 	lineto_PS (o, radius * SIN (10.0), radius * COS (10.0), 3);
-
 	arc_PS (o, 0.0, 0.0, radius, angle, 90.0, 3);
 
 	moveto_PS (o, 0.0, 0.0, 3);
 	lineto_PS (o, 0.0, radius, 3);
 	closepath_PS (o);
-
-	gsave_PS (o);
-	if (is_GRAYSCALE_USE()) color_PS (o, "0.8 0.8 0.8");
-	else 					color_PS (o, "0.0 1.0 0.0");
 	fill_PS (o);
-	grestore_PS (o);
 	stroke_PS (o);
 
 	rotate_PS (o, 30.0, 1);
@@ -2471,15 +2545,14 @@ void PS_SYMBOLS_ROSE (const vector <GDB>& inGDB, ofstream& o) {
 
 	if (LINEATION || PLANE) return;
 
-	string 	outtext2 = "Lineation dip direction";
-	if (SC) outtext2 = "Cleavage dip";
+	string 	outtext2 = "Lineation " + WHAT + " direction";
+	if (SC) outtext2 = "Cleavage " + WHAT;
 
 	translate_PS (o, P.S1X + 4.9 * P.A, P.S1Y - 5.755 * P.A, 3);
 	rotate_PS (o, -30, 1);
 
-	linewidth_PS (o, 1.0, 1);
-	if (is_GRAYSCALE_USE()) color_PS(o, "0.0 0.0 0.0");
-	else 					color_PS(o, "0.0 0.0 1.0");
+	linewidth_PS (o, 1.5, 1);
+	color_PS(o, pastel (COLOR));
 
 	newpath_PS (o);
 	moveto_PS (o, 0.0, 0.0, 3);
@@ -2531,12 +2604,12 @@ void PS_SYMBOLS_LABEL (ofstream& o) {
 	return;
 }
 
-void PS_STEREONET_SYMBOLS (const vector <GDB>& inGDB, ofstream& o) {
+void PS_STEREONET_SYMBOLS (ofstream& o, const vector <vector <GDB> >& inGDB_G) {
 
 	const PAPER P = RETURN_PAPER();
 
-	const string DATAGROUP = inGDB.at(0).DATAGROUP;
-	const string DATATYPE = inGDB.at(0).DATATYPE;
+	const string DATAGROUP = inGDB_G.at(0).at(0).DATAGROUP;
+	const string DATATYPE = inGDB_G.at(0).at(0).DATATYPE;
 
 	string DATAGROUP_TEXT = "";
 
@@ -2547,6 +2620,9 @@ void PS_STEREONET_SYMBOLS (const vector <GDB>& inGDB, ofstream& o) {
 	ASSERT_EXACTLY_ONE_TRUE (LINEATION, PLANE, SC, STRIAE);
 
 	PS_SYMBOLS_border (o);
+
+	const vector <GDB> to_labels = MERGE_GROUPS_TO_GDB (inGDB_G);
+
 	PS_SYMBOLS_LABEL (o);
 
 	font_PS (o, "ArialNarrow", 8);
@@ -2556,9 +2632,9 @@ void PS_STEREONET_SYMBOLS (const vector <GDB>& inGDB, ofstream& o) {
 	color_PS (o, "0.0 0.0 0.0");
 	text_PS(o, P.S1X + 7.4 * P.A, P.S1Y - 0.3 * P.A, 3, "GROUPS");
 
-	PS_SYMBOLS_ROSE (inGDB, o);
+	PS_SYMBOLS_ROSE (inGDB_G.at(0), o);
 
-	PS_SYMBOLS_GROUPS (o);
+	PS_SYMBOLS_GROUPS (o, to_labels);
 
 	color_PS (o, "0.0 0.0 0.0");
 
@@ -2593,7 +2669,7 @@ void PS_STEREONET_SYMBOLS (const vector <GDB>& inGDB, ofstream& o) {
 		color_PS (o, "0.0 0.0 0.0");
 		text_PS (o, P.S1X + 2.6 * P.A, P.S1Y - 0.3 * P.A, 3, "STRESS INVERSION");
 
-		//PS_SYMBOLS_INVERSION (o);
+		PS_SYMBOLS_INVERSION (o);
 	}
 }
 
@@ -2603,21 +2679,27 @@ void newpath_PS (ofstream& o) {
 }
 
 bool is_valid_color(const string& s) {
-    stringstream ss(s);
-    double r=-1, g=-1, b=-1;
-    string rest;
-    ss >> r >> g >> b >> rest;
-    if (r < 0 || r > 1 || g < 0 || g > 1 || b < 0 || b > 1)
-        return false;
-    double colors[] = {r, g, b};
-    if (has_nan_or_inf(colors))
-        return false;
-    return rest.empty();
+	stringstream ss(s);
+	double r=-1, g=-1, b=-1;
+	string rest;
+	ss >> r >> g >> b >> rest;
+	if (r < 0 || r > 1 || g < 0 || g > 1 || b < 0 || b > 1) return false;
+	double colors[] = {r, g, b};
+	if (has_nan_or_inf(colors))
+		return false;
+	return rest.empty();
 }
 
 void color_PS (ofstream& o, const string& RGB) {
-    ASSERT2(is_valid_color(RGB), RGB);
+
+	ASSERT2(is_valid_color(RGB), RGB);
+
 	o << " " << RGB << " setrgbcolor" << '\n';
+}
+
+void text_to_PS (ofstream& o, const string text) {
+
+	o << " (" << text << ") show" << '\n';
 }
 
 void text_PS (ofstream& o, const double X, const double Y, const int decimals, const string text) {
@@ -2677,7 +2759,7 @@ void rotate_PS (ofstream& o, const double ANG, const int decimals) {
 void linewidth_PS (ofstream& o, const double LW, const int decimals) {
 
 	o << fixed << setprecision (decimals) << flush;
-    ASSERT_FINITE(LW);
+    ASSERT_FINITE (LW);
 	o << "  " << LW << " setlinewidth" << '\n';
 }
 
@@ -2723,20 +2805,130 @@ void setdash_PS (ofstream& o, const string DASH) {
 	o << " [" << DASH << "] 0 setdash" << '\n';
 }
 
-size_t anything_to_plot_on_ps (const vector <vector <GDB> >& inGDB_G) {
+size_t anything_to_plot_on_ps (const vector <vector <vector <GDB> > >& inGDB_G) {
 
 	size_t counter = 0;
 
 	for (size_t i = 0; i < inGDB_G.size(); i++) {
 
-		const string DT = inGDB_G.at(i).at(0).DATATYPE;
+		for (size_t j = 0; j < inGDB_G.at(i).size(); j++) {
 
-		if (!is_allowed_lithology_datatype (DT)) counter++;
+			for (size_t k = 0; k < inGDB_G.at(i).at(j).size(); k++) {
+
+				const string DT = inGDB_G.at(i).at(j).at(0).DATATYPE;
+
+				if (!is_allowed_lithology_datatype (DT)) counter++;
+			}
+		}
 	}
 	return counter;
 }
 
+vector <vector < vector <GDB> > > prepare_GDB_G_for_NO_multiple_groups (const vector <vector <GDB> >& in_GDB_G) {
+
+	vector <vector < vector <GDB> > > OUT;
+
+	for (size_t i = 0; i < in_GDB_G.size(); i++) {
+
+		vector < vector <GDB> > buf;
+
+		buf.push_back (in_GDB_G.at(i));
+
+		OUT.push_back (buf);
+	}
+	ASSERT_EQ (in_GDB_G.size(), OUT.size());
+
+	return OUT;
+}
+
+vector <vector < vector <GDB> > > prepare_GDB_G_for_multiple_groups (const vector <vector <GDB> >& in_GDB_G) {
+
+	vector <GDB> temp = MERGE_GROUPS_TO_GDB (in_GDB_G);
+
+	const bool G = is_GROUPS_USE();
+	const bool K = ! is_CLUSTERING_NONE();
+	const bool RA = ! is_RUP_CLUSTERING_NONE();
+	const bool R = is_RUP_CLUSTERING_ANG ();
+	const bool A = is_RUP_CLUSTERING_RUP ();
+	if (RA) ASSERT_EXACTLY_ONE_TRUE (R, A);
+
+	const bool GS = is_GROUPSEPARATION_GROUPCODE();
+	const bool KS = is_GROUPSEPARATION_KMEANS();
+	const bool RS = is_GROUPSEPARATION_RUPANG();
+
+	const bool HG = existence_of_more_than_one_specific_groupcode (temp, true, false, false);
+	const bool HK = existence_of_more_than_one_specific_groupcode (temp, false, true, false);
+	const bool HR = existence_of_more_than_one_specific_groupcode (temp, false, false, true);
+
+	vector < vector <GDB> > temp2;
+
+	temp2.push_back (temp);
+
+	temp2 = SEPARATE_DATASET (temp2, "LOCATION", "LOCATION");
+	temp2 = SEPARATE_DATASET (temp2, "DATATYPE", "DATATYPE");
+
+	if (is_FORMATION_USE()) temp2 = SEPARATE_DATASET (temp2, "FORMATION", "FORMATION");
+	if (G && HG && GS) temp2 = SEPARATE_DATASET (temp2, "GROUPS", "GROUPCODE");
+	if (K && HK && KS) temp2 = SEPARATE_DATASET (temp2, "CLUSTER", "CLUSTER");
+	if (RA && HR && RS && R) temp2 = SEPARATE_DATASET (temp2, "RUP_ANG", "RUP");
+	if (RA && HR && RS && A) temp2 = SEPARATE_DATASET (temp2, "RUP_ANG", "ANG");
+
+	vector <vector < vector <GDB> > > OUT;
+
+	for (size_t i = 0; i < temp2.size(); i++) {
+
+		vector < vector <GDB> > buf;
+
+		ASSERT_GE (temp2.at(i).size(), 1);
+
+		buf.push_back (temp2.at(i));
+
+		OUT.push_back (buf);
+	}
+	ASSERT_GE (OUT.size(), 1);
+
+	//itt aszerint kell valogatni, hjogy hogyan ertekelte ki a juzer,
+	//az exportalasra torteno valogatas NEM itt tortenik!!!
+
+	for (size_t i = 0; i < OUT.size(); i++) {
+
+		if (G && HG && !GS) {
+			OUT.at(i) = SEPARATE_DATASET (OUT.at(i), "GROUPS", "GROUPCODE");
+		}
+
+		if (K && HK && !KS) {
+			OUT.at(i) = SEPARATE_DATASET (OUT.at(i), "CLUSTER", "CLUSTER");
+		}
+
+		if (RA && HR && !RS && R) {
+			OUT.at(i) = SEPARATE_DATASET (OUT.at(i), "RUP_ANG", "RUP");
+		}
+
+		if (RA && HR && !RS && A) {
+			OUT.at(i) = SEPARATE_DATASET (OUT.at(i), "RUP_ANG", "ANG");
+		}
+	}
+	return OUT;
+}
+
 void OUTPUT_TO_PS (const vector <vector <GDB> >& in_GDB_G, const vector <vector <GDB> >& t_GDB_G) {
+
+	vector <vector < vector <GDB> > > n_to_dump, t_to_dump;
+
+	if (is_MULTIPLE_GROUPS ()) {
+
+		n_to_dump = prepare_GDB_G_for_multiple_groups (in_GDB_G);
+		t_to_dump = prepare_GDB_G_for_multiple_groups (t_GDB_G);
+	}
+	else {
+
+		n_to_dump = prepare_GDB_G_for_NO_multiple_groups (in_GDB_G);
+		t_to_dump = prepare_GDB_G_for_NO_multiple_groups (t_GDB_G);
+	}
+	DUMP_TO_PS (n_to_dump, t_to_dump);
+}
+
+void DUMP_TO_PS (const vector <vector <vector <GDB> > >& in_GDB_G, const vector <vector <vector <GDB> > >& t_GDB_G) {
 
 	if (in_GDB_G.size() != t_GDB_G.size()) {
 
@@ -2763,21 +2955,20 @@ void OUTPUT_TO_PS (const vector <vector <GDB> >& in_GDB_G, const vector <vector 
 
 	for (size_t i = 0; i < in_GDB_G.size(); i++) {
 
-		setup_ACTUAL_DATATYPE 	(in_GDB_G.at(i).at(0).DATATYPE);
-		setup_ACTUAL_LOCATION 	(in_GDB_G.at(i).at(0).LOC);
-		setup_ACTUAL_GROUPCODE 	(in_GDB_G.at(i).at(0).GC);
+		const GDB F = in_GDB_G.at(i).at(0).at(0);
 
-		setup_ACTUAL_FORMATION 	(in_GDB_G.at(i).at(0).FORMATION);
+		if (! is_MULTIPLE_GROUPS()) ASSERT_EQ (in_GDB_G.at(i).size(), 1);
 
-		const string DT = return_ACTUAL_DATATYPE();
+		setup_ACTUAL_DATATYPE (F.DATATYPE);
+		setup_ACTUAL_LOCATION (F.LOC);
+		setup_ACTUAL_GROUPCODE (F.GC);
+		setup_ACTUAL_FORMATION (F.FORMATION);
 
-		const bool LITHOLOGY = is_allowed_lithology_datatype (DT);
-
-		const bool SUCCESFULL = in_GDB_G.at(i).at(0).SFV.size() > 0;
+		const bool LITHOLOGY = is_allowed_lithology_datatype (F.DATATYPE);
 
 		if (!LITHOLOGY) {
 
-			const string DATA_FOLDER = return_PS_FOLDER() + path_separator + capslock (DT);
+			const string DATA_FOLDER = return_PS_FOLDER() + path_separator + capslock (F.DATATYPE);
 
 			if (! dir_exists(DATA_FOLDER)) make_dir (DATA_FOLDER);
 
@@ -2789,27 +2980,37 @@ void OUTPUT_TO_PS (const vector <vector <GDB> >& in_GDB_G, const vector <vector 
 
 			INIT_PAPER (false);
 
-			PS_STEREONET_SYMBOLS (in_GDB_G.at(i), OPS);
+			PS_STEREONET_SYMBOLS (OPS, in_GDB_G.at(i));
 
-			if (is_allowed_striae_datatype (DT) && ! is_INVERSION_NONE() && SUCCESFULL) {
+			bool SUCCESFULL = false;
+
+			for (size_t j = 0; j < in_GDB_G.at(i).size(); j++) {
+
+				if (in_GDB_G.at(i).at(j).at(0).SFV.size() > 0) SUCCESFULL = true;
+			}
+			if (is_allowed_striae_datatype (F.DATATYPE) && ! is_INVERSION_NONE() && SUCCESFULL) {
 
 				PS_stress_scale (OPS);
-
-				PS_SYMBOLS_INVERSION (OPS);
 			}
-
-			PS_border (in_GDB_G.at(i), OPS);
+			PS_border (in_GDB_G.at(i).at(0), OPS);
 
 			PS_GDB (in_GDB_G.at(i), OPS, false);
 			PS_GDB (t_GDB_G.at(i), OPS, true);
 
-			PS_datanumber_averagebedding (in_GDB_G.at(i).at(0), OPS, in_GDB_G.at(i).size());
+			size_t DATANUMBER = 0;
+
+			for (size_t j = 0; j < in_GDB_G.at(i).size(); j++) {
+
+				DATANUMBER = DATANUMBER + in_GDB_G.at(i).at(j).size();
+			}
+
+			counter = counter + DATANUMBER;
+
+			PS_datanumber_averagebedding (in_GDB_G.at(i).at(0).at(0), OPS, DATANUMBER);
 
 			PS_dump_ps_path (OPS);
 
 			PS_net (OPS);
-
-			counter++;
 		}
 	}
 	ASSERT_EQ (counter, DATA_TO_PLOT);

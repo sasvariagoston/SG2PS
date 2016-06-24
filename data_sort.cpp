@@ -165,6 +165,16 @@ bool byeigenvalue(const sort_jacobi& x, const sort_jacobi& y) {
 	return x.eigenvalue < y.eigenvalue;
 }
 
+bool by_PNL_NUM (const ROSE_DATA&x, const ROSE_DATA&y) {
+
+	return x.MAX.PLN_NUM > y.MAX.PLN_NUM;
+}
+
+bool by_LIN_NUM (const ROSE_DATA&x, const ROSE_DATA&y) {
+
+	return x.MAX.LIN_NUM > y.MAX.LIN_NUM;
+}
+
 bool by_DEPTH_trj (const TRJ& x, const TRJ& y) {
 
 	return x.DEPTH < y.DEPTH;
@@ -176,7 +186,7 @@ bool by_rev_DEPTH_trj (const TRJ& x, const TRJ& y) {
 
 vector <TRJ> SORT_TRJ (const vector <TRJ>& inTRJ, const string SORT) {
 
-	ASSERT_ONE_OF(SORT, "DEPTH", "rDEPTH");
+	ASSERT_ONE_OF (SORT, "DEPTH", "rDEPTH");
 
 	vector <TRJ> P = inTRJ;
 

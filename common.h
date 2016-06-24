@@ -74,13 +74,10 @@ int return_second_eigenvalue (const vector <vector <double> >& in);
 int return_first_eigenvalue (const vector <vector <double> >& in);
 
 vector <vector <double> > jacobi (const vector <vector <double> >& in);
-
 vector <vector <double> > gaussian_elimination (vector <vector <double> >& in);
-
 vector <vector <double> > LU_decomposition (const vector <vector <double> >& in);
 vector <vector <double> > compute_Z (const vector <vector <double> >& L, const vector <vector <double> >& c);
 vector <vector <double> > compute_X (const vector <vector <double> >& U, const vector <vector <double> >& Z);
-
 
 vector <vector <double> > row_division_diagonal (vector <vector <double> >& in, const size_t rownumber, const double value);
 vector <vector <double> > row_addition (vector <vector <double> >& in, const size_t actual_row_number, const size_t zero_row_number, const double value);
@@ -117,6 +114,8 @@ DIPDIR_DIP dipdir_dip_from_NXNYNZ (const VCTR& i);
 VCTR ROTATE (const VCTR& ax, const VCTR& torotate, const double& A);
 
 bool existence (const string& expression, const vector<GDB>& inGDB);
+bool existence_of_more_than_one_specific_groupcode (const vector<GDB>& inGDB, const bool GROUP, const bool KMEANS, const bool RUPANG);
+bool existence_of_groupcode (const string& expression, const vector<GDB>& inGDB);
 bool existence_of_group (const size_t group, const vector <size_t>& whichgroup);
 
 vector <GDB> merge_GDB (const vector <GDB>& source, const vector <GDB>& target);

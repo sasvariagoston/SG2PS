@@ -36,13 +36,10 @@ namespace {
 
 string INPUTFILENAME = "";
 
-//const double SN = 10e-8;
-
 bool PROCESS_AS_TILTED = false;
 bool PROCESS_AS_TRAJECTORY = false;
 
 vector <vector <vector <GDB> > > MASTER_GDB;
-
 }
 
 bool is_PROCESS_AS_TILTED () {
@@ -79,7 +76,6 @@ vector <GDB> competeRGFcontect (const string projectname) {
 
 		if (GC.size() == 0) outGDB.at(i).GC = "X";
 		else if (GC.size() == 1) {}
-		//else if (GC.size() == 3) {
 		else {
 
 			if (is_INPUTGROUP_FIRST()) 			outGDB.at(i).GC = char_to_string(GC.at(0));
@@ -87,11 +83,7 @@ vector <GDB> competeRGFcontect (const string projectname) {
 			else if (is_INPUTGROUP_THIRD()) 	outGDB.at(i).GC = char_to_string(GC.at(2));
 			else outGDB.at(i).GC = "X";
 		}
-		//else ASSERT_DEAD_END();
-
 		if (is_DATARULE_RIGHT_HAND_RULE()) outGDB.at(i).corr.DIPDIR = right_hand_rule_to_german (outGDB.at(i).corr.DIPDIR);
-
-		//if (capslock(inputxyfilename) != "NONE")  outGDB.at(i) = insertxy (outGDB.at(i));
 	}
 	return outGDB;
 }
@@ -149,7 +141,6 @@ vector <GDB> generate_NDS_vectors (const vector <GDB>& inGDB) {
 			const bool O = is_allowed_bedding_overturned_sense (OF);
 
 			ASSERT (!(O && !B));
-			//if (O && !B) ASSERT_DEAD_END();
 
 			const DIPDIR_DIP DDD = outGDB.at(i).corr;
 
@@ -631,8 +622,6 @@ vector <GDB>  PREPARE_GDB_FOR_PROCESSING (const vector <GDB>& inGDB, const bool 
 
 vector < vector <GDB> > PREPARE_GDB_VECTOR_FOR_PROCESSING (const vector < vector <GDB> >& inGDB_G, const bool TILT) {
 
-	if (!is_mode_DEBUG()) cout << "  - Geodatabase processing of the input file" << endl;
-
 	vector <vector <GDB> > outGDB_G = inGDB_G;
 
 	for (size_t i = 0; i < inGDB_G.size(); i++) {
@@ -693,14 +682,20 @@ vector <vector <GDB> > EVALUATE (const vector <vector <GDB> >& inGDB_G) {
 
 	p = GENERATE_PS_CODE (p);
 
+	INIT_MULTIPLE_GROUPS (p);
+
 	p = SORT_GDB (p, "IID");
 
-	P = SEPARATE_DATASET_GROUPS (p, false);//na ide nem kell
+	P.clear();
+	P.push_back(p);
+	P = SEPARATE_DATASET (P, "LOCATION", "LOCATION");
+	P = SEPARATE_DATASET (P, "DATATYPE", "DATATYPE");
+	if (is_FORMATION_USE()) P = SEPARATE_DATASET (P, "FORMATION", "DEPTH");
 
 	ASSERT_EXACTLY_ONE_TRUE (is_GROUPSEPARATION_IGNORE(), is_GROUPSEPARATION_GROUPCODE(), is_GROUPSEPARATION_KMEANS(), is_GROUPSEPARATION_RUPANG());
 
 	if (is_GROUPSEPARATION_IGNORE()) {}
-	else if (is_GROUPSEPARATION_GROUPCODE()) 	P = SEPARATE_DATASET (P, "GROUPS", "GROUPCODE");//ez nem kell az alapfugvenybe!
+	else if (is_GROUPSEPARATION_GROUPCODE()) 	P = SEPARATE_DATASET (P, "GROUPS", "GROUPCODE");
 	else if (is_GROUPSEPARATION_KMEANS()) 		P = SEPARATE_DATASET (P, "CLUSTER", "CLUSTER");
 	else 										P = SEPARATE_DATASET (P, "RUP_ANG", "RUP_ANG");
 
@@ -715,7 +710,7 @@ void PROCESS_RGF (const string inputfilename, const bool XY_OK, const bool TRJ_O
 
 	writeln ("");
 	writeln ("===========================");
-	writeln ("5) PROCESSING DATA FILE(S)");
+	writeln ("5) PROCESSING DATA FILE(S) ");
 	writeln ("===========================");
 	writeln ("");
 
@@ -735,8 +730,12 @@ void PROCESS_RGF (const string inputfilename, const bool XY_OK, const bool TRJ_O
 
 	if (!is_mode_DEBUG()) CREATE_PROJECT_FOLDERS (nGDB);
 
-	nGDB = SORT_GDB (nGDB, "LOC_GC_TYPE");
-	vector < vector <GDB> > nGDB_G = SEPARATE_DATASET_GROUPS (nGDB, true);//ok
+	vector < vector <GDB> > nGDB_G;
+	nGDB_G.push_back(nGDB);
+	nGDB_G = SEPARATE_DATASET (nGDB_G, "LOCATION", "LOCATION");
+	nGDB_G = SEPARATE_DATASET (nGDB_G, "DATATYPE", "DATATYPE");
+	if (is_FORMATION_USE()) nGDB_G = SEPARATE_DATASET (nGDB_G, "FORMATION", "DEPTH");
+	if (is_GROUPS_USE()) nGDB_G = SEPARATE_DATASET (nGDB_G, "GROUPS", "GROUPCODE");
 
 	nGDB_G = PREPARE_GDB_VECTOR_FOR_PROCESSING (nGDB_G, false);
 
@@ -745,8 +744,15 @@ void PROCESS_RGF (const string inputfilename, const bool XY_OK, const bool TRJ_O
 	nGDB_G = ASSOCIATE_AVERAGE_BEDDING_GROUPS (nGDB_G);
 
 	nGDB_G = clustering_GBD (nGDB_G);
+
 	nGDB = MERGE_GROUPS_TO_GDB (nGDB_G);
-	nGDB_G = SEPARATE_DATASET_GROUPS (nGDB, true);//ok
+
+	nGDB_G.clear();
+	nGDB_G.push_back(nGDB);
+	nGDB_G = SEPARATE_DATASET (nGDB_G, "LOCATION", "LOCATION");
+	nGDB_G = SEPARATE_DATASET (nGDB_G, "DATATYPE", "DATATYPE");
+	if (is_FORMATION_USE()) nGDB_G = SEPARATE_DATASET (nGDB_G, "FORMATION", "DEPTH");
+	if (is_GROUPS_USE()) nGDB_G = SEPARATE_DATASET (nGDB_G, "GROUPS", "GROUPCODE");
 
 	if (!is_mode_DEBUG()) cout << "DATA EVALUATION FROM '" << capslock(inputfilename) << ".RGF' DATABASE FILE" << endl;
 
@@ -820,7 +826,8 @@ void dbg_cout_GDB_vector (const vector <GDB>& inGDB) {
 	cout << "-------- START DUMPING GBD VECTOR --------" << endl;
 
 	cout
-	<< "ID" << '\t' << "iID" << '\t'
+	<< "ID" << '\t'
+	//<< "iID" << '\t'
 	//<< "N.X" << '\t' << "N.Y" << '\t' << "N.Z" << '\t'
 	//<< "D.X" << '\t' << "D.Y" << '\t'<< "D.Z" << '\t'
 	//<< "S.X" << '\t' << "S.Y" << '\t'<< "S.Z" << '\t'
@@ -901,7 +908,8 @@ void dbg_cout_GDB_vector (const vector <GDB>& inGDB) {
 		cout
 
 		<< fixed << setprecision(0)
-		//<< T.ID << '\t' << T.iID << '\t'
+		<< T.ID << '\t'
+		//<< T.iID << '\t'
 
 		<< fixed << setprecision(6)
 		//<< T.N.X << '\t' << T.N.Y << '\t' << T.N.Z << '\t'

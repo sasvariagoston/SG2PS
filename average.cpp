@@ -210,11 +210,9 @@ size_t has_relevant_bedding (const size_t i, const vector <vector <GDB> >& inGDB
 
 		if (FIT) EQ.push_back(j);
 	}
-	if (EQ.size() == 0) return 99999;
+	if (EQ.size() == 1) return EQ.at(0);
 
-	ASSERT (EQ.size() == 1);
-
-	return EQ.at(0);
+	return 99999;
 }
 
 vector <GDB> change_has_bedding (const vector <GDB>& inGDB, const size_t FLAG) {

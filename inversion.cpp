@@ -78,21 +78,17 @@ vector <GDB> generate_virtual_striae (const vector <GDB>& inGDB) {
 
 void cout_inversion_results (const vector <GDB>& inGDB, const vector <STRESSFIELD>& SF_V) {
 
+	ASSERT_GT (SF_V.size(), 0);
+
 	if (is_mode_DEBUG()) return;
 
 	const bool IS_STRIAE = is_allowed_striae_datatype(inGDB.at(0).DATATYPE);
-
-	if (SF_V.size() < 1) {
-
-		cout << "no stress field was computed for the input data set." << endl;
-		return;
-	}
 
 	const STRESSFIELD MSF = SF_V.at (SF_V.size() - 1);
 
 	if (is_BINGHAM_USE() && !IS_STRIAE) {
 
-		cout
+		cout << "    - "
 		<<  fixed << setprecision (0)
 		<< "e1: " << setfill ('0') << setw (3) << MSF.S_1.DIPDIR
 		<<  "/"   << setfill ('0') << setw (2) << MSF.S_1.DIP << flush;
@@ -122,7 +118,7 @@ void cout_inversion_results (const vector <GDB>& inGDB, const vector <STRESSFIEL
 	else {
 
 		cout << fixed << setprecision (0) << flush;
-		cout
+		cout << "    - "
 		<< "s1: "  	<< setfill ('0') << setw (3)  << MSF.S_1.DIPDIR
 		<<  "/"     << setfill ('0') << setw (2)  << MSF.S_1.DIP
 		<< ", s2: " << setfill ('0') << setw (3)  << MSF.S_2.DIPDIR

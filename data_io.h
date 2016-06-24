@@ -29,7 +29,6 @@ GDB return_dummy_GDB ();
 bool ACT_NXT_EQ (const GDB& ACT, const GDB& NXT, const string METHOD);
 vector <vector <GDB> > SEPARATE (const vector <GDB> & inGDB, const string METHOD);
 vector <vector <GDB> > SEPARATE_DATASET (const vector <vector <GDB> >& inGDB_G, const string METHOD, const string SORT);
-vector < vector <GDB> > SEPARATE_DATASET_GROUPS (const vector <GDB>& inGDB, const bool USE_GROUP);
 
 vector <GDB> MERGE_GROUPS_TO_GDB (const vector <vector <GDB> >& GDB_G);
 
@@ -47,7 +46,7 @@ void OUTPUT_TO_RGF (const vector <vector <GDB> >& inGDB_G);
 
 void cout_method_text (const vector <GDB>& inGDB);
 void cout_original_tilted_text (const bool tilt);
-void cout_less_than_required_text (const bool tilt);
+void cout_less_than_required_text (const vector <GDB>& inGD);
 
 void dbg_cout_RGF_colors (vector <GDB> inGDB);
 

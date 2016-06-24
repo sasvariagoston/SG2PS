@@ -9,6 +9,8 @@
 
 #include "structs.h"
 
+string pastel (const string COLOR);
+
 vector <GDB> attach_k_means_group_codes (const vector <size_t>& which_group, const vector <GDB>& inGDB);
 
 vector <vector <GDB> > associate_empty_clustercode (const vector <vector <GDB> >& inGDB_G, const size_t WHICH);

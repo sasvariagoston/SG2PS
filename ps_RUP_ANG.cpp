@@ -185,6 +185,22 @@ void ps_percentage (ofstream& o, const CENTER& center, const PAPER& P, const str
 
 	const size_t step = return_step (DATA_max);
 
+	double ml_X;
+
+	if (RUP)	ml_X = center.X + P.R + 2.0 * P.B;
+	else 		ml_X = center.X + P.R + 4.0 * P.B;
+
+	double ml_Y1 = center.Y - P.R;
+	double ml_Y2 = center.Y + P.R;
+
+	color_PS(o, "0.0 0.0 0.0");
+	linewidth_PS (o, 0.5, 1);
+
+	newpath_PS (o);
+	moveto_PS (o, ml_X, ml_Y1, 3);
+	lineto_PS (o, ml_X, ml_Y2, 3);
+	stroke_PS (o);
+
 	font_PS (o, "ArialNarrow-Bold", 6);
 
 	for (size_t counter = 0; counter < DATA_max; counter+=step) {

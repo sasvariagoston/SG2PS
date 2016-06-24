@@ -9,7 +9,6 @@
 #include <iostream>
 #include <sstream>
 #include <stdexcept>
-//#include <time.h>
 
 #if __linux__
 #include <fenv.h>
@@ -1240,6 +1239,63 @@ bool existence (const string& expression, const vector<GDB>& inGDB) { // TODO co
 	return false;
 }
 
+bool existence_of_more_than_one_specific_groupcode (const vector<GDB>& inGDB, const bool GROUP, const bool KMEANS, const bool RUPANG) {
+
+	ASSERT_EXACTLY_ONE_TRUE (GROUP, KMEANS, RUPANG);
+
+	const vector <string> GCV = allowed_basic_groupcode_str_vector();
+
+	size_t FIT = 0;
+
+	for (size_t i = 0; i < GCV.size(); i++) {
+
+		bool fit = false;
+
+		for (size_t j = 0; j < inGDB.size(); j++) {
+
+			const string GC = inGDB.at(j).GC;
+
+			ASSERT_EQ (GC.size(), 3);
+
+			string gc;
+
+			if (GROUP) 		 gc = GC.at(0);
+			else if (KMEANS) gc = GC.at(1);
+			else 			 gc = GC.at(2);
+
+			if (gc == GCV.at(i)) fit = true;
+		}
+		if (fit) FIT++;
+	}
+	return (FIT > 1);
+}
+
+bool existence_of_groupcode (const string& GC, const vector<GDB>& inGDB) {
+
+	//const bool I = is_GROUPSEPARATION_IGNORE();
+	//const bool G = is_GROUPSEPARATION_GROUPCODE();
+	//const bool K = is_GROUPSEPARATION_KMEANS();
+	//const bool R = is_GROUPSEPARATION_RUPANG();
+
+	const bool G = is_COLOURING_GROUPCODE();
+	const bool K = is_COLOURING_KMEANS();
+	const bool R = is_COLOURING_RUPANG();
+
+	//ASSERT_EXACTLY_ONE_TRUE (I, G, K, R);
+
+	for (size_t i = 0; i < inGDB.size(); i++) {
+
+		string GROUPCODE;
+
+		if (G) GROUPCODE = inGDB.at(i).GC.at(0);
+		if (K) GROUPCODE = inGDB.at(i).GC.at(1);
+		if (R) GROUPCODE = inGDB.at(i).GC.at(2);
+
+		if (GROUPCODE == GC) return true;
+	}
+	return false;
+}
+
 bool existence_of_group (const size_t group, const vector <size_t>& whichgroup) {
 
 	for (size_t i = 0; i < whichgroup.size(); i++) {
@@ -1267,7 +1323,6 @@ double average (const vector <double>& IN) {
 	const size_t S = IN.size();
 
 	ASSERT_GE (S, 1);
-	//if (S < 1) ASSERT_DEAD_END();
 
 	double CNT = 0.0;
 

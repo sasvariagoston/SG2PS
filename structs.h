@@ -153,6 +153,13 @@ struct ROSENUMBER {
 	double PLN_NUM, LIN_NUM;
 };
 
+struct ROSE_DATA {
+
+	vector <GDB> inGDB;
+	vector <ROSENUMBER> DATA;
+	ROSENUMBER MAX;
+};
+
 struct CENTR_VECT {
 
 	CENTR_VECT() { U=V=W=X=Y=Z=NaN(); }

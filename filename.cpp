@@ -205,10 +205,10 @@ string return_ACTUAL_FORMATION () {
 
 void check_dataseparation_mode () {
 
-	const bool IGNORE = is_GROUPSEPARATION_IGNORE ();
-	const bool by_GROUPCODE = is_GROUPSEPARATION_GROUPCODE ();
-	const bool by_KMEANS = is_GROUPSEPARATION_KMEANS ();
-	const bool by_RUPANG = is_GROUPSEPARATION_RUPANG ();
+	const bool IGNORE = 		is_GROUPSEPARATION_IGNORE ();
+	const bool by_GROUPCODE = 	is_GROUPSEPARATION_GROUPCODE ();
+	const bool by_KMEANS = 		is_GROUPSEPARATION_KMEANS ();
+	const bool by_RUPANG = 		is_GROUPSEPARATION_RUPANG ();
 
 	ASSERT_EXACTLY_ONE_TRUE (IGNORE, by_GROUPCODE, by_KMEANS, by_RUPANG);
 }
@@ -241,12 +241,15 @@ string generate_ACTUAL_PS_NAME () {
 	const string DT = return_ACTUAL_DATATYPE();
 	const string LOC = return_ACTUAL_LOCATION();
 	const string GC = return_ACTUAL_GROUPCODE();
+	const string FM = return_ACTUAL_FORMATION();
 
 	string PS_NAME = PS + BS + DT + BS + LOC + US + DT;
 
 	if (is_PROCESS_AS_TRAJECTORY()) PS_NAME = PS_NAME + "_TRAJECTORY_CORRECTED";
 
 	check_dataseparation_mode ();
+
+	if ((is_FORMATION_USE())) PS_NAME = PS_NAME + US + FM;
 
 	if (is_GROUPSEPARATION_GROUPCODE ())	PS_NAME = PS_NAME + US + GC.at(0);
 	if (is_GROUPSEPARATION_KMEANS ())		PS_NAME = PS_NAME + US + GC.at(1);
@@ -315,6 +318,8 @@ string generate_ACTUAL_WELL_PS_NAME () {
 
 	string FN = WELL_PS_FOLDER + BS + DT + BS + LOC + US + DT;
 
+	if ((is_FORMATION_USE())) FN = FN + US + FM;
+
 	if (is_GROUPSEPARATION_GROUPCODE ())	FN = FN + US + GC.at(0);
 	if (is_GROUPSEPARATION_KMEANS ()) 		FN = FN + US + GC.at(1);
 	if (is_GROUPSEPARATION_RUPANG ()) 		FN = FN + US + GC.at(2);
@@ -365,7 +370,6 @@ string generate_ACTUAL_WELL_TXT_NAME (const bool DIPDIR, const string METHOD, co
 	return FN;
 }
 
-
 string generate_ACTUAL_RGF_NAME_FOR_STANDARD () {
 
 	check_dataseparation_mode();
@@ -377,7 +381,7 @@ string generate_ACTUAL_RGF_NAME_FOR_STANDARD () {
 
 	string PS_NAME = LOC;
 
-	PS_NAME = PS_NAME + US + DT;
+	PS_NAME = PS_NAME + US + DT + US + FM;
 
 	if (is_GROUPSEPARATION_GROUPCODE ())	PS_NAME = PS_NAME + US + GC.at(0);
 	if (is_GROUPSEPARATION_KMEANS ()) 		PS_NAME = PS_NAME + US + GC.at(1);

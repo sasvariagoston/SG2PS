@@ -109,6 +109,9 @@ bool is_COLOURING_RUPANG ();
 bool is_GRAYSCALE_NONE ();
 bool is_GRAYSCALE_USE ();
 
+bool is_MULTIPLE_GROUPS ();
+void INIT_MULTIPLE_GROUPS (const vector <GDB> inGDB);
+
 void INIT_SETTINGS (const vector <vector <string> >& SET);
 
 #endif

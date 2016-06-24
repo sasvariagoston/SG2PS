@@ -15,17 +15,23 @@ using namespace std;
 void PS_folddata (GDB in, ofstream& o, CENTER center);
 
 PAPER PS_dimensions (const bool WELL);
+
+void PS_s1s2s3 (ofstream& o, const string COLOR, const bool ITER, const string AXIS);
+void PS_extension_arrow (ofstream& o, const string COLOR);
+void PS_compression_arrow (ofstream& o, const string COLOR);
 void PS_stereonet_header (ofstream& o);
 void PS_getstereonet (ofstream& o, CENTER center);
 void PS_stress_scale (ofstream& o);
 void PS_border (const vector <GDB>& inGDB, ofstream& o);
-void PS_stressdata (const vector <GDB>& inGDB, ofstream& o, const CENTER& center, const STRESSFIELD& sf);
-void PS_stressarrows (ofstream& o, const CENTER& center, const STRESSFIELD& sf);
+void PS_dump_inversion_method (const vector <GDB>& inGDB, ofstream& o, const CENTER& center);
+string PS_stressdata (const vector <GDB>& inGDB, ofstream& o, const CENTER& center);
+void PS_stressarrows (ofstream& o, const vector <GDB>& inGDB, const CENTER& center);
+void PS_mohr_arcs (ofstream& o, const CENTER& mohrcenter, const double CNTR, const double RAD);
 void PS_mohr_circle (const vector <GDB>& inGDB, ofstream& o, const CENTER& mohrcenter);
-void PS_RUP_ANG_distribution (const vector <GDB>& inGDB, ofstream& o, const CENTER& center, const string method);
+double PS_RUP_ANG_distribution (const vector <GDB>& inGDB, ofstream& o, const CENTER& center, const string method, const bool PERCENTAGE_ONLY, const bool TILT);
 void PS_stress_axes (const vector <GDB>& inGDB, ofstream& o, const CENTER& center);
 void PS_idealmovement (const vector <GDB>& inGDB, ofstream& o, const CENTER& center);
-void PS_INVERSION_RESULTS (const vector <GDB>& inGDB, ofstream& o, const CENTER& center, const CENTER& mohr_center);
+string PS_INVERSION_RESULTS (const vector <GDB>& inGDB, ofstream& o, const CENTER& center, const CENTER& mohr_center);
 
 void PS_FOLD_GREAT_CIRCLE (const vector <GDB>& inGDB, ofstream& o, const CENTER& center);
 
@@ -42,13 +48,15 @@ void PS_lineation (const GDB& i, ofstream& o, const CENTER& center, const STRESS
 void PS_plane (const GDB& i, ofstream& o, const double X, const double Y, const double R, const string TYPE);
 void PS_polepoint (const GDB& i, ofstream& o, const double X, const double Y, const double R, const string TYPE);
 void PS_striaearrow (const GDB& i, ofstream& o, const CENTER& center);
-void PS_stress_state (ofstream& o, const CENTER& center, const STRESSFIELD& sf);
+void PS_stress_state (ofstream& o, const vector <GDB>& inGDB, const CENTER& center);
 
-void PS_rosesegment (ofstream& o, const CENTER center, const double percentage, const double degree, const bool c_plane);
+void PS_rosesegment (ofstream& o, const CENTER center, const double percentage, const double degree, const bool c_plane, const string COLOR);
 void PS_draw_rose_circle (ofstream& o, const CENTER& center, const double percent, const bool VERTICAL);
 
 void newpath_PS (ofstream& o);
+bool is_valid_color(const string& s);
 void color_PS (ofstream& o, const string& RGB);
+void text_to_PS (ofstream& o, const string text);
 void text_PS (ofstream& o, const double X, const double Y, const int decimals, const string text);
 void text_PS (ofstream& o, const string text);
 void moveto_PS (ofstream& o, const double X, const double Y, const int decimals);
@@ -67,7 +75,7 @@ void fill_PS (ofstream& o);
 void grestore_PS (ofstream& o);
 void setdash_PS (ofstream& o, const string DASH);
 
-void PS_STEREONET_SYMBOLS (const vector <GDB>& inGDB, ofstream& o);
+void PS_STEREONET_SYMBOLS (ofstream& o, const vector <vector <GDB> >& inGDB_G);
 void PS_SYMBOLS_border (ofstream& o);
 void PS_SYMBOLS_ROSE (const vector <GDB>& inGDB, ofstream& o);
 void PS_SYMBOLS_LABEL (ofstream& o);
@@ -79,11 +87,16 @@ void PS_SYMBOLS_LINEATION (const string& DATATYPE, ofstream& o);
 void PS_SYMBOLS_STRIAE (ofstream& o);
 void PS_SYMBOLS_INVERSION (ofstream& o);
 
-void PS_GDB (const vector <GDB>& inGDB, ofstream& o, bool TILT);
+void ROSE (const vector <vector <GDB> >& inGDB_G, ofstream& o, const CENTER& rosecenter, const CENTER& vrosecenter, const bool TILT);
+void ps_dump_stress_state (ofstream& o, const CENTER& center, const string DATATYPE_TO_DUMP, const vector <string>& INV, const vector <string>& CLR);
+void PS_GDB (const vector <vector <GDB> >& inGDB, ofstream& o, bool TILT);
 void PS_GDB_DATA (const vector <GDB>& inGDB, ofstream& o, const CENTER& center);
 
-size_t anything_to_plot_on_ps (const vector <vector <GDB> >& inGDB_G);
+size_t anything_to_plot_on_ps (const vector <vector <vector <GDB> > >& inGDB_G);
 
+vector <vector < vector <GDB> > > prepare_GDB_G_for_NO_multiple_groups (const vector <vector <GDB> >& in_GDB_G);
+vector <vector < vector <GDB> > > prepare_GDB_G_for_multiple_groups (const vector <vector <GDB> >& in_GDB_G);
 void OUTPUT_TO_PS (const vector <vector <GDB> >& in_GDB_G, const vector <vector <GDB> >& t_GDB_G);
+void DUMP_TO_PS (const vector <vector <vector <GDB> > >& in_GDB_G, const vector <vector <vector <GDB> > >& t_GDB_G);
 
 #endif

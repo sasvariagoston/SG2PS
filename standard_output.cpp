@@ -585,6 +585,21 @@ void dump_VALLEY_to_file (const vector <VALLEY>& V, const string FN) {
 	return;
 }
 
+void standard_output_rose (const vector <ROSENUMBER>& N, const bool TILT) {
+
+	string T = return_ACTUAL_LOCATION();
+	T = T + "_" + return_ACTUAL_FORMATION();
+	T = T + "_" + return_ACTUAL_DATATYPE();
+	T = T + "_" + return_ACTUAL_GROUPCODE();
+
+	if (TILT) T = T + "_TLT";
+	else T = T + "_NRM";
+
+	if (is_PROCESS_AS_TRAJECTORY()) T = T + "_TRJ";
+
+	dump_ROSENUMBER_to_file (N, "ST_ROSE_"+T);
+}
+
 void dump_ROSENUMBER_to_file (const vector <ROSENUMBER>& R, const string FN) {
 
 	ofstream o;

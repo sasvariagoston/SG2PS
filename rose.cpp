@@ -7,6 +7,7 @@
 
 #include "assertions.hpp"
 #include "allowed_keys.hpp"
+#include "data_sort.hpp"
 #include "filename.hpp"
 #include "rgf.h"
 #include "rose.h"
@@ -97,16 +98,18 @@ void PS_draw_rose_DATATYPE (const vector <GDB>& inGBD, ofstream& o, const CENTER
 	bool DRAW_DIP = 	is_ROSEDIRECTION_DIP() || LINEATION;
 	ASSERT_EXACTLY_ONE_TRUE (DRAW_STRIKE, DRAW_DIP);
 
+	const string CLR = inGBD.at(0).PSCOLOR;
+
 	if (VERTICAL) {
 
-		if (PLANE) PS_rosesegment (o, center, P.PLN_NUM, 90.0 + begin_angle, false);
+		if (PLANE) PS_rosesegment (o, center, P.PLN_NUM, 90.0 + begin_angle, false, CLR);
 
-		else if (LINEATION) PS_rosesegment (o, center, P.LIN_NUM, 90.0 + begin_angle, false);
+		else if (LINEATION) PS_rosesegment (o, center, P.LIN_NUM, 90.0 + begin_angle, false, CLR);
 
 		else {
 
-			PS_rosesegment (o, center, P.PLN_NUM, 90.0 + begin_angle, false);
-			PS_rosesegment (o, center, P.LIN_NUM, 90.0 + begin_angle, true);
+			PS_rosesegment (o, center, P.PLN_NUM, 90.0 + begin_angle, false, CLR);
+			PS_rosesegment (o, center, P.LIN_NUM, 90.0 + begin_angle, true, CLR);
 		}
 		return;
 	}
@@ -115,25 +118,25 @@ void PS_draw_rose_DATATYPE (const vector <GDB>& inGBD, ofstream& o, const CENTER
 
 		if (PLANE) {
 
-			if (DRAW_DIP) 	PS_rosesegment (o, center, P.PLN_NUM, begin_angle, false);
-			else 			PS_rosesegment (o, center, P.PLN_NUM, begin_angle - 90.0, false);
+			if (DRAW_DIP) 	PS_rosesegment (o, center, P.PLN_NUM, begin_angle, false, CLR);
+			else 			PS_rosesegment (o, center, P.PLN_NUM, begin_angle - 90.0, false, CLR);
 		}
 		else if (LINEATION) {
 
-			if (DRAW_DIP)	PS_rosesegment (o, center, P.LIN_NUM, begin_angle, false);
-			else 			PS_rosesegment (o, center, P.LIN_NUM, begin_angle - 90.0, false);
+			if (DRAW_DIP)	PS_rosesegment (o, center, P.LIN_NUM, begin_angle, false, CLR);
+			else 			PS_rosesegment (o, center, P.LIN_NUM, begin_angle - 90.0, false, CLR);
 		}
 		else  {
 
 			if (DRAW_DIP) {
 
-				PS_rosesegment (o, center, P.PLN_NUM, begin_angle, false);
-				PS_rosesegment (o, center, P.LIN_NUM, begin_angle, true);
+				PS_rosesegment (o, center, P.PLN_NUM, begin_angle, false, CLR);
+				PS_rosesegment (o, center, P.LIN_NUM, begin_angle, true, CLR);
 			}
 			else {
 
-				PS_rosesegment (o, center, P.PLN_NUM, begin_angle - 90.0, false);
-				PS_rosesegment (o, center, P.LIN_NUM, begin_angle - 00.0, true);
+				PS_rosesegment (o, center, P.PLN_NUM, begin_angle - 90.0, false, CLR);
+				PS_rosesegment (o, center, P.LIN_NUM, begin_angle - 00.0, true, CLR);
 			}
 		}
 	}
@@ -143,76 +146,95 @@ void PS_draw_rose_DATATYPE (const vector <GDB>& inGBD, ofstream& o, const CENTER
 
 			if (DRAW_DIP) {
 
-				PS_rosesegment (o, center, P.PLN_NUM, begin_angle + 000.0, false);
-				PS_rosesegment (o, center, P.PLN_NUM, begin_angle + 180.0, false);
+				PS_rosesegment (o, center, P.PLN_NUM, begin_angle + 000.0, false, CLR);
+				PS_rosesegment (o, center, P.PLN_NUM, begin_angle + 180.0, false, CLR);
 			}
 			else {
 
-				PS_rosesegment (o, center, P.PLN_NUM, begin_angle + 000.0 - 90.0, false);
-				PS_rosesegment (o, center, P.PLN_NUM, begin_angle + 180.0 - 90.0, false);
+				PS_rosesegment (o, center, P.PLN_NUM, begin_angle + 000.0 - 90.0, false, CLR);
+				PS_rosesegment (o, center, P.PLN_NUM, begin_angle + 180.0 - 90.0, false, CLR);
 			}
 		}
 		else if (LINEATION) {
 
 			if (DRAW_DIP) {
 
-				PS_rosesegment (o, center, P.LIN_NUM, begin_angle + 000.0, false);
-				PS_rosesegment (o, center, P.LIN_NUM, begin_angle + 180.0, false);
+				PS_rosesegment (o, center, P.LIN_NUM, begin_angle + 000.0, false, CLR);
+				PS_rosesegment (o, center, P.LIN_NUM, begin_angle + 180.0, false, CLR);
 			}
 			else {
 
-				PS_rosesegment (o, center, P.LIN_NUM, begin_angle + 000.0 - 90.0, false);
-				PS_rosesegment (o, center, P.LIN_NUM, begin_angle + 180.0 - 90.0, false);
+				PS_rosesegment (o, center, P.LIN_NUM, begin_angle + 000.0 - 90.0, false, CLR);
+				PS_rosesegment (o, center, P.LIN_NUM, begin_angle + 180.0 - 90.0, false, CLR);
 			}
 		}
 		else {
 
 			if (DRAW_DIP) {
 
-				PS_rosesegment (o, center, P.PLN_NUM, begin_angle + 000.0, false);
-				PS_rosesegment (o, center, P.PLN_NUM, begin_angle + 180.0, false);
+				PS_rosesegment (o, center, P.PLN_NUM, begin_angle + 000.0, false, CLR);
+				PS_rosesegment (o, center, P.PLN_NUM, begin_angle + 180.0, false, CLR);
 
-				PS_rosesegment (o, center, P.LIN_NUM, begin_angle + 000.0, true);
-				PS_rosesegment (o, center, P.LIN_NUM, begin_angle + 180.0, true);
+				PS_rosesegment (o, center, P.LIN_NUM, begin_angle + 000.0, true, CLR);
+				PS_rosesegment (o, center, P.LIN_NUM, begin_angle + 180.0, true, CLR);
 			}
 			else {
 
-				PS_rosesegment (o, center, P.PLN_NUM, begin_angle + 000.0 - 90.0, false);
-				PS_rosesegment (o, center, P.PLN_NUM, begin_angle + 180.0 - 90.0, false);
+				PS_rosesegment (o, center, P.PLN_NUM, begin_angle + 000.0 - 90.0, false, CLR);
+				PS_rosesegment (o, center, P.PLN_NUM, begin_angle + 180.0 - 90.0, false, CLR);
 
-				PS_rosesegment (o, center, P.LIN_NUM, begin_angle + 000.0 - 00.0, true);
-				PS_rosesegment (o, center, P.LIN_NUM, begin_angle + 180.0 - 00.0, true);
+				PS_rosesegment (o, center, P.LIN_NUM, begin_angle + 000.0 - 00.0, true, CLR);
+				PS_rosesegment (o, center, P.LIN_NUM, begin_angle + 180.0 - 00.0, true, CLR);
 			}
 		}
 	}
 }
 
-void PS_draw_rose_DIPDIR_DIP (vector <GDB> inGDB, ofstream& o, CENTER center, const string MODE, const bool TILT) {
+bool process_as_lineation (const vector <GDB>& inGDB) {
 
-	ASSERT2 (inGDB.size() > 0, "Empty GDB in 'PS_draw_rose_DIPDIR_DIP' function.");
-
-	const bool LT = is_allowed_lithology_datatype(inGDB.at(0).DATATYPE);
-	const bool PL = is_allowed_plane_datatype(inGDB.at(0).DATATYPE);
 	const bool LN = is_allowed_lineation_datatype(inGDB.at(0).DATATYPE);
 	const bool SC = is_allowed_SC_datatype(inGDB.at(0).DATATYPE);
 	const bool ST = is_allowed_striae_datatype(inGDB.at(0).DATATYPE);
 
-	const bool PR_L = LN || SC || ST;
-	const bool PR_P = PL || SC || ST;
+	return (LN || SC || ST);
+}
 
-	ASSERT2 (PR_L || PR_P, "Neither plane nor lineation, nor SC nor striae data processed in 'PS_draw_rose_DIPDIR_DIP' function.");
-	ASSERT2 (!LT, "Lithology data processed in 'PS_draw_rose_DIPDIR_DIP' function.");
+bool process_as_plane (const vector <GDB>& inGDB) {
 
-	vector <ROSENUMBER> N;
-	ROSENUMBER MX;
+	const bool PL = is_allowed_plane_datatype(inGDB.at(0).DATATYPE);
+	const bool SC = is_allowed_SC_datatype(inGDB.at(0).DATATYPE);
+	const bool ST = is_allowed_striae_datatype(inGDB.at(0).DATATYPE);
 
-	MX.LIN_NUM = 0.0;
-	MX.PLN_NUM = 0.0;
+	return (PL || SC || ST);
+}
+
+size_t return_s () {
 
 	size_t 						S =  25;
 	if (is_ROSEBINSIZE_5_00()) 	S =  50;
 	if (is_ROSEBINSIZE_10_00()) S = 100;
 	if (is_ROSEBINSIZE_22_50()) S = 225;
+
+	return S;
+}
+
+ROSE_DATA return_rose_data (const vector <GDB>& inGDB, const string MODE) {
+
+	ROSE_DATA OUT;
+
+	ASSERT2 (inGDB.size() > 0, "Empty GDB in 'PS_draw_rose_DIPDIR_DIP' function.");
+
+	const bool PR_L = process_as_lineation (inGDB);
+	const bool PR_P = process_as_plane (inGDB);
+
+	ASSERT2 (PR_L || PR_P, "Neither plane nor lineation, nor SC nor striae data processed in 'PS_draw_rose_DIPDIR_DIP' function.");
+
+	const bool LT = is_allowed_lithology_datatype(inGDB.at(0).DATATYPE);
+	ASSERT2 (!LT, "Lithology data processed in 'PS_draw_rose_DIPDIR_DIP' function.");
+
+	vector <ROSENUMBER> N;
+
+	const size_t S = return_s ();
 
 	const bool DD = MODE == "DIPDIR";
 	const bool D = MODE == "DIP";
@@ -231,6 +253,10 @@ void PS_draw_rose_DIPDIR_DIP (vector <GDB> inGDB, ofstream& o, CENTER center, co
 		if (D) 	MAX_ANG = 900;
 		else 	MAX_ANG = 1800;
 	}
+
+	ROSENUMBER MX;
+	MX.LIN_NUM = 0.0;
+	MX.PLN_NUM = 0.0;
 
 	for (size_t i = 0; (i * S) < MAX_ANG; i++) {
 
@@ -252,8 +278,8 @@ void PS_draw_rose_DIPDIR_DIP (vector <GDB> inGDB, ofstream& o, CENTER center, co
 
 			ROSENUMBER TEMP;
 
-			if (PR_L) TEMP.LIN_NUM = T1.LIN_NUM + T2.LIN_NUM;
-			if (PR_P) TEMP.PLN_NUM = T1.PLN_NUM + T2.PLN_NUM;
+			if (PR_L) 	TEMP.LIN_NUM = T1.LIN_NUM + T2.LIN_NUM;
+			if (PR_P)	TEMP.PLN_NUM = T1.PLN_NUM + T2.PLN_NUM;
 
 			N.push_back(TEMP);
 		}
@@ -264,49 +290,97 @@ void PS_draw_rose_DIPDIR_DIP (vector <GDB> inGDB, ofstream& o, CENTER center, co
 		if (PR_L && N.at(i).LIN_NUM > MX.LIN_NUM) MX.LIN_NUM = N.at(i).LIN_NUM;
 		if (PR_P && N.at(i).PLN_NUM > MX.PLN_NUM) MX.PLN_NUM = N.at(i).PLN_NUM;
 	}
+	ASSERT_FINITE (MX.LIN_NUM, MX.PLN_NUM);
 
-	if (is_mode_DEBUG() && is_CHK_ROSE()) {
+	OUT.DATA = N;
+	OUT.MAX = MX;
+	OUT.inGDB = inGDB;
 
-		string T = return_ACTUAL_LOCATION();
-		T = T + "_" + return_ACTUAL_FORMATION();
-		T = T + "_" + return_ACTUAL_DATATYPE();
-		T = T + "_" + return_ACTUAL_GROUPCODE();
+	return OUT;
+}
 
-		if (TILT) T = T + "_TLT";
-		else T = T + "_NRM";
+void DRAW_ROSE (vector <GDB> inGDB, ofstream& o, CENTER center, const bool DIP, const vector <ROSENUMBER>& N) {
 
-		if (is_PROCESS_AS_TRAJECTORY()) T = T + "_TRJ";
+	vector <ROSENUMBER> to_plot = N;
 
-		dump_ROSENUMBER_to_file (N, "ST_ROSE_"+T);
+	const size_t S = return_s ();
+
+	ASSERT_GE (to_plot.size(), 1);
+
+	for (size_t i = 0; i < to_plot.size(); i++) PS_draw_rose_DATATYPE (inGDB, o, center, to_plot.at(i), (i*S) / 10.0, DIP);
+
+	return;
+}
+
+void PS_draw_rose_DIPDIR_DIP (const vector <vector <GDB> >& inGDB_G, ofstream& o, CENTER center, const string MODE, const bool TILT) {
+
+	const bool PR_L = process_as_lineation (inGDB_G.at(0));
+	const bool PR_P = process_as_plane (inGDB_G.at(0));
+
+	const bool DD = MODE == "DIPDIR";
+	const bool D = MODE == "DIP";
+
+	ASSERT_EXACTLY_ONE_TRUE (D, DD);
+	ASSERT_EXACTLY_ONE_TRUE (is_ROSETYPE_ASYMMETRICAL(), is_ROSETYPE_SYMMETRICAL());
+
+	vector <ROSE_DATA> R;
+
+	size_t data_number = 0;
+
+	for (size_t i = 0; i < inGDB_G.size(); i++) {
+
+		const ROSE_DATA r = return_rose_data (inGDB_G.at(i), MODE);
+
+		if (is_mode_DEBUG() && is_CHK_ROSE()) standard_output_rose (r.DATA, TILT);
+
+		R.push_back (r);
+
+		data_number = data_number + inGDB_G.at(i).size();
+	}
+	ASSERT_GE (R.size(), 1);
+	ASSERT_EQ (inGDB_G.size(), R.size());
+
+	ROSENUMBER MX;
+
+	MX.LIN_NUM = 0.0;
+	MX.PLN_NUM = 0.0;
+
+	for (size_t i = 0; i < R.size(); i++) {
+
+		if (R.at(i).MAX.LIN_NUM > MX.LIN_NUM)  MX.LIN_NUM  = R.at(i).MAX.LIN_NUM;
+		if (R.at(i).MAX.PLN_NUM > MX.PLN_NUM)  MX.PLN_NUM  = R.at(i).MAX.PLN_NUM;
 	}
 
-	for (size_t i = 0; i < N.size(); i++) {
+	if (MX.LIN_NUM < MX.PLN_NUM) stable_sort(R.begin(), R.end(), by_PNL_NUM);
+	else stable_sort(R.begin(), R.end(), by_LIN_NUM);
 
-	    if (PR_L) {
+	double MAX = MX.LIN_NUM;
+	if (MX.LIN_NUM < MX.PLN_NUM) MAX = MX.PLN_NUM;
 
-	    	ASSERT_NE (MX.LIN_NUM, 0.0);
+	ASSERT_FINITE (MAX);
+	ASSERT_GE (MAX, 0);
 
-	    	N.at(i).LIN_NUM = N.at(i).LIN_NUM / MX.LIN_NUM;
+	for (size_t i = 0; i < R.size(); i++) {
+		for (size_t j = 0; j < R.at(i).DATA.size(); j++) {
 
-	    	ASSERT_FINITE(N.at(i).LIN_NUM);
-	    }
+			if (PR_L) {
 
-	    if (PR_P) {
+				R.at(i).DATA.at(j).LIN_NUM = R.at(i).DATA.at(j).LIN_NUM / MAX;
+				ASSERT_FINITE (R.at(i).DATA.at(j).LIN_NUM);
+			}
 
-	    	ASSERT_NE (MX.PLN_NUM, 0.0);
+			if (PR_P) {
 
-	    	N.at(i).PLN_NUM = N.at(i).PLN_NUM / MX.PLN_NUM;
-
-	    	ASSERT_FINITE(N.at(i).PLN_NUM);
-	    }
-
-		if (DD) PS_draw_rose_DATATYPE (inGDB, o, center, N.at(i), (i*S) / 10.0, false);
-		else 	PS_draw_rose_DATATYPE (inGDB, o, center, N.at(i), (i*S) / 10.0, true);
-
+				R.at(i).DATA.at(j).PLN_NUM = R.at(i).DATA.at(j).PLN_NUM / MAX;
+				ASSERT_FINITE (R.at(i).DATA.at(j).PLN_NUM);
+			}
+		}
 	}
+	for (size_t i = 0; i < R.size(); i++) {
 
-	if (DD) PS_draw_rose_circle (o, center, MX.PLN_NUM / inGDB.size(), false);
-	else 	PS_draw_rose_circle (o, center, MX.PLN_NUM / inGDB.size(), true);
+		DRAW_ROSE (R.at(i).inGDB, o, center, D, R.at(i).DATA);
+	}
+	PS_draw_rose_circle (o, center, MAX / data_number, D);
 
 	return;
 }

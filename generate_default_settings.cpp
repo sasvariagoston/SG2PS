@@ -324,6 +324,18 @@ vector <vector < vector <string> > > RETURN_ALL_SETTINGS () {
 	DEF.push_back(defitem);
 
 	//15
+	pushbach_settings_item (defitem, "FORMATION:", "  - Groups by formation name:");
+	pushbach_settings_option (defitem,
+			"N",
+			"  - DO NOT USE FORMATION NAMES of the input file for grouping.",
+			"    - do not formation names of the input file..............[n]?  ");
+	pushbach_settings_option (defitem,
+			"Y",
+			"  - USE FORMATION NAMES of the input file for grouping.",
+			"    - use formation names of the input file.................[Y],  ");
+	DEF.push_back(defitem);
+
+	//16
 	pushbach_settings_item (defitem, "GROUP:", "  - Groups from input file:");
 	pushbach_settings_option (defitem,
 			"Y",
@@ -334,18 +346,6 @@ vector <vector < vector <string> > > RETURN_ALL_SETTINGS () {
 			"  - DO NOT USE initial (used defined) GROUP CODES of input file.",
 			"    - do not use initial groups of the input file...........[n]?  ");
 	DEF.push_back(defitem);
-
-	//16
-	//pushbach_settings_item (defitem, "FORMATION:", "  - Groups by formation name:");
-	//pushbach_settings_option (defitem,
-	//		"N",
-	//		"  - DO NOT USE FORMATION NAMES of the input file for grouping.",
-	//		"    - do not formation names of the input file..............[n]?  ");
-	//pushbach_settings_option (defitem,
-	//		"Y",
-	//		"  - USE FORMATION NAMES of the input file for grouping.",
-	//		"    - use formation names of the input file.................[Y],  ");
-	//DEF.push_back(defitem);
 
 	//17
 	pushbach_settings_item (defitem, "CLUSTERNUMBER:", "  - Groups from k-means clustering:");

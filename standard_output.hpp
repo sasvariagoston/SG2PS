@@ -52,6 +52,8 @@ void dump_DISTANCE_MATRIX_to_file (const vector <vector <double> >& DM, const st
 void dump_WHICH_GROUP_to_file (const vector <size_t>& WG, const string FN);
 void dump_HISTOGRAM_to_file (const vector <HISTOGRAM>& H, const string FN);
 void dump_VALLEY_to_file (const vector <VALLEY>& V, const string FN);
+
+void standard_output_rose (const vector <ROSENUMBER>& N, const bool TILT);
 void dump_ROSENUMBER_to_file (const vector <ROSENUMBER>& R, const string FN);
 
 void dump_INTERVAL_to_file (ofstream& o);
