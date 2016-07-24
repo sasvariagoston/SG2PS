@@ -54,7 +54,7 @@ struct STRESSTENSOR {
 
 struct GDB  {
 
-	GDB() { LOCX=LOCY=DIPDIR=DIP=LDIR=LDIP=PALEON=LPITCH=DEPTH=PITCHANGLE=MISFIT=lambda=ANG=RUP=AV_MISF=NaN();
+	GDB() { LOCX=LOCY=DIPDIR=DIP=LDIR=LDIP=PALEON=LPITCH=DEPTH=PITCHANGLE=MISFIT=lambda=ANG=RUP=AV_MISF=teta=N_rad=BBO_rad=SH=Sh=mu=delta_p=cohesion=sigma_r=sigma_teta=tau=NaN();
 			iID=numeric_limits<int>::min();
 			HAS_BEDDING = 2;
 		   }
@@ -113,6 +113,8 @@ struct GDB  {
 
 	vector <STRESSFIELD> SFV;
 	vector <STRESSTENSOR> STV;
+
+	double teta, N_rad, BBO_rad, SH, Sh, mu, delta_p, cohesion, sigma_r, sigma_teta, tau;
 };
 
 struct CORRECTSTRIAE {
@@ -348,6 +350,15 @@ struct PEAK_TO_PLOT {
 	double DEPTH;
 	double VALUE;
 	double COUNT;
+};
+
+struct WELL_TOPS {
+
+	WELL_TOPS() { DEPTH = NaN(); }
+
+	double DEPTH;
+	string FORMATION;
+	string LOCATION;
 };
 
 #endif

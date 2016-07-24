@@ -117,6 +117,12 @@ bool byLocFmType (const GDB& x, const GDB& y) {
 	return x.DATATYPE < y.DATATYPE;
 }
 
+bool byLocDepth (const GDB& x, const GDB& y) {
+
+	if (x.LOC != y.LOC) return x.LOC < y.LOC;
+	return x.DEPTH < y.DEPTH;
+}
+
 vector <GDB> SORT_GDB (const vector <GDB>& inGDB, const string SORT) {
 
 	vector <GDB> P = inGDB;
@@ -131,6 +137,8 @@ vector <GDB> SORT_GDB (const vector <GDB>& inGDB, const string SORT) {
 	else if (SORT == "rDEPTH")		stable_sort (P.begin(), P.end(), by_rev_DEPTH);
 
 	else if (SORT == "LOC_GC_TYPE")	stable_sort (P.begin(), P.end(), by_LocGcType);
+
+	else if (SORT == "LOC_DEPTH") 	stable_sort (P.begin(), P.end(), byLocDepth);
 
 	else if (SORT == "GROUPCODE")	stable_sort (P.begin(), P.end(), by_GC);
 	else if (SORT == "rGROUPCODE")	stable_sort (P.begin(), P.end(), by_rev_GC);

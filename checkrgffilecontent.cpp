@@ -120,7 +120,7 @@ void complete_rgf_to_check () {
 
 		if (rgf_to_check.at(i).at(FORMATION) == "") {
 
-			if (!W) rgf_to_check.at(i).at(FORMATION) = rgf_to_check.at(i-1).at(FORMATION);
+			rgf_to_check.at(i).at(FORMATION) = rgf_to_check.at(i-1).at(FORMATION);
 		}
 
 		if (rgf_to_check.at(i).at(DATATYPE) == "") {

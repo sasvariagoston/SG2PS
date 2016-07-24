@@ -26,12 +26,6 @@
 #include "well.hpp"
 #include "well_ps.hpp"
 
-struct WELL_TOPS {
-
-	double DEPTH;
-	string FORMATION;
-};
-
 namespace {
 
 vector <WELL_TOPS> WTP;
@@ -478,17 +472,61 @@ void PS_well_coordinate_axes_INTERVAL (ofstream& o, const double X, const double
 	return;
 }
 
+void INIT_WELL_TOPS (const vector <GDB>& inGDB) {
+
+	WTP.clear();
+
+	ASSERT_GE (inGDB.size(), 1);
+	if (inGDB.size() < 2) return;
+
+	vector <GDB> temp = SORT_GDB (inGDB, "LOC_DEPTH");
+	vector <vector <GDB>> temp_G;
+	temp_G.push_back (temp);
+
+	temp_G = SEPARATE_DATASET (temp_G, "LOCATION", "LOCATION");
+	temp_G = SEPARATE_DATASET (temp_G, "FORMATION", "FORMATION");
+
+	ASSERT_GE (temp_G.size(), 1);
+
+	for (size_t i = 0; i < temp_G.size(); i++) {
+
+		ASSERT_GE (temp_G.at(i).size(), 1);
+
+		WELL_TOPS buf;
+
+		vector <GDB> temp2 = SORT_GDB (temp_G.at(i), "DEPTH");
+
+		const double D1 = temp_G.at(i).at(0).DEPTH;
+		const double D2 = temp_G.at(i).at(temp_G.at(i).size() - 1).DEPTH;
+		ASSERT_LT (D1, D2);
+
+		const string L1 = temp_G.at(i).at(0).LOC;
+		const string L2 = temp_G.at(i).at(temp_G.at(i).size() - 1).LOC;
+		ASSERT_EQ (L1, L2)
+
+		buf.DEPTH = temp_G.at(i).at(0).DEPTH;
+		buf.FORMATION = temp_G.at(i).at(0).FORMATION;
+		buf.LOCATION = temp_G.at(i).at(0).LOC;
+
+		WTP.push_back (buf);
+	}
+}
+
 void ps_well_formation_tops (ofstream& o, const double X, const double LENGTH, const double MIN_VAL, const double MAX_VAL) {
 
-	font_PS(o, "ArialNarrow", 10);
+	const string LOC = return_ACTUAL_LOCATION();
+	const PAPER P = RETURN_PAPER();
+
+	font_PS(o, "ArialNarrow", 8);
 	color_PS (o, "0.5 0.5 1.0");
 	linewidth_PS (o, 2, 0);
 
-	const PAPER P = RETURN_PAPER();
-
 	for (size_t i = 0; i < WTP.size(); i++) {
 
-		if (is_in_range(MIN_VAL, MAX_VAL, WTP.at(i).DEPTH)) {
+		const bool SAME_LOC = WTP.at(i).LOCATION == LOC;
+		const bool FRML_HAS_TXT = WTP.at(i).FORMATION.size() > 0;
+
+		if (SAME_LOC && FRML_HAS_TXT) {
 
 			const double Y = LENGTH * ((WTP.at(i).DEPTH - MIN_VAL) / (MAX_VAL - MIN_VAL));
 
@@ -1549,9 +1587,10 @@ double return_plot_value (const WELL_INTERVAL ACT, const bool DIPDIR, const stri
 	}
 }
 
-void return_records_with_formation_names (const vector <vector <GDB> >& inGDB_G){
+/*
+void return_records_with_formation_names (const vector <GDB>& inGDB){
 
-	const vector <GDB> processGDB = SORT_GDB (MERGE_GROUPS_TO_GDB (inGDB_G), "DEPTH");
+	const vector <GDB> processGDB = SORT_GDB (inGDB, "DEPTH");
 
 	WTP.clear();
 
@@ -1578,6 +1617,7 @@ void return_records_with_formation_names (const vector <vector <GDB> >& inGDB_G)
 	}
 	return;
 }
+*/
 
 void plot_well_curve (const vector <WELL_INTERVAL>& IN, ofstream& o, const double X, const double LENGTH, const double MIN_VAL, const double MAX_VAL, const bool DIPDIR, const string TYPE) {
 
@@ -1895,6 +1935,8 @@ void WELL_PS_TXT (const vector <GDB>& inGDB, const vector <WELL_INTERVAL>& INT, 
 
 	ASSERT (inGDB.size() > 1);
 
+	//return_records_with_formation_names (inGDB);
+
 	const PAPER P = RETURN_PAPER();
 	SETUP_FAULT_POSITIONS (MIN_VAL, MAX_VAL);
 
@@ -2023,7 +2065,7 @@ void OUTPUT_TO_WELL_PS_TXT (const vector <vector <GDB> >& GDB_G) {
 	ASSERT_EQ (INTERVAL.size(), GDB_G.size());
 	ASSERT_EQ (FREQUENCY.size(), GDB_G.size());
 
-	return_records_with_formation_names (GDB_G);
+	//return_records_with_formation_names (GDB_G);
 
 	const size_t DATA_TO_PLOT = anything_to_plot_on_well_ps (GDB_G);
 

@@ -30,6 +30,7 @@ double return_MIN_value (const vector <GDB>& inGDB, const double STEP);
 double return_MAX_value (const vector <GDB>& inGDB, const double STEP);
 
 void ps_well_formation_tops (ofstream& o, const double X, const double LENGTH, const double MIN_VAL, const double MAX_VAL);
+void INIT_WELL_TOPS (const vector <GDB>& inGDB);
 
 void PS_well_coordinate_axes_INTERVAL (ofstream& o, const double X, const double LENGTH);
 void PS_well_coordinate_grid_INTERVAL (ofstream& o, const double X, const double LENGTH, const double MIN_VAL, const double MAX_VAL, const double STEP);
@@ -69,7 +70,7 @@ void plot_curve (const vector <double> DEPTH, const vector <double> VALUE, ofstr
 void plot_peaks (ofstream& o, const double X, const double LENGTH, const double MIN_VAL, const double MAX_VAL, const bool DIPDIR, const string TYPE);
 
 double return_plot_value (const WELL_INTERVAL ACT, const bool DIPDIR, const string TYPE);
-void return_records_with_formation_names (const vector <vector <GDB> >& inGDB_G);
+//void return_records_with_formation_names (const vector <GDB>& inGDB_G);
 
 void plot_well_curve (const vector <WELL_INTERVAL>& IN, ofstream& o, const double X, const double LENGTH, const double MIN_VAL, const double MAX_VAL, const bool DIPDIR, const string TYPE);
 void plot_well_measurements (const vector <GDB>& inGDB, ofstream& o, const double X, const double LENGTH, const double MIN_VAL, const double MAX_VAL, const bool DIPDIR);

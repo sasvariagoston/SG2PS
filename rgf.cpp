@@ -722,6 +722,8 @@ void PROCESS_RGF (const string inputfilename, const bool XY_OK, const bool TRJ_O
 
 	vector <GDB> nGDB = competeRGFcontect (inputfilename);
 
+	if (is_WELLDATA_USE ()) INIT_WELL_TOPS (nGDB);
+
 	const bool USE_XY = is_WELLDATA_NO() && XY_OK;
 	const bool USE_TRJ = is_WELLDATA_USE() && TRJ_OK;
 

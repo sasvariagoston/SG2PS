@@ -38,6 +38,7 @@ bool by_ANG(const GDB& x, const GDB& y);
 bool by_LocGcType (const GDB& x, const GDB& y);
 bool byLocTypeGc(const GDB& x, const GDB& y);
 bool byLocFmType (const GDB& x, const GDB& y);
+bool byLocDepth (const GDB& x, const GDB& y);
 
 bool byeigenvalue(const sort_jacobi& x, const sort_jacobi& y);
 
