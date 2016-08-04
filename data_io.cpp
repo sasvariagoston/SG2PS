@@ -228,7 +228,7 @@ void output_rgf_record (const GDB& i, ofstream& o, const bool AVERAGE) {
 	o
 	<< i.ID << '\t';
 
-	if (fabs (i.DEPTH) >= 0) o << i.DEPTH << '\t';
+	if (is_WELLDATA_USE()) o << i.DEPTH << '\t';
 	else o << '\t';
 
 	o
