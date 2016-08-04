@@ -87,7 +87,7 @@ bool by_RUP_ANG(const GDB& x, const GDB& y) {
 }
 
 bool by_RUP(const GDB& x, const GDB& y) {
-
+    ASSERT_FINITE(x.RUP);
 	return x.RUP < y.RUP;
 }
 
