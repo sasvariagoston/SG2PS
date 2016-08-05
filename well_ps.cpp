@@ -498,7 +498,12 @@ void INIT_WELL_TOPS (const vector <GDB>& inGDB) {
 
 		const double D1 = temp_G.at(i).at(0).DEPTH;
 		const double D2 = temp_G.at(i).at(temp_G.at(i).size() - 1).DEPTH;
-		ASSERT_LT (D1, D2);
+
+		if (temp_G.at(i).size() > 1) {
+
+			ASSERT_LE (D1, D2);
+		}
+		else ASSERT_LT (D1, D2);
 
 		const string L1 = temp_G.at(i).at(0).LOC;
 		const string L2 = temp_G.at(i).at(temp_G.at(i).size() - 1).LOC;
