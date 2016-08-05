@@ -613,7 +613,7 @@ void cout_less_than_required_text (const vector <GDB>& inGDB) {
 
 	const size_t MIN = minimum_independent_dataset();
 
-	ASSERT_GT (MIN, inGDB.size());
+	ASSERT_GE (MIN, inGDB.size());
 
 	cout << "    - less independent data (" << inGDB.size() << ") than required (" << MIN <<")." << endl;
 }
