@@ -890,6 +890,8 @@ void PS_RUP_ANG_distribution (const vector <GDB>& inGDB, ofstream& o, const CENT
 
 	if (RUP && !is_INVERSION_ANGELIER() && !is_INVERSION_MOSTAFA() && !is_INVERSION_SHAN() && !is_INVERSION_FRY()) return;
 
+	if (! has_GDB_RUP_ANG_values (inGDB, method)) return;
+
 	vector <VALLEY> V;
 
 	if (ANG) V = return_valleygraph_for_dataset (inGDB, "ANG");
@@ -2860,6 +2862,9 @@ vector <vector < vector <GDB> > > prepare_GDB_G_for_multiple_groups (const vecto
 	const bool HK = existence_of_more_than_one_specific_groupcode (temp, false, true, false);
 	const bool HR = existence_of_more_than_one_specific_groupcode (temp, false, false, true);
 
+	//bool RA_OK  = has_GDB_RUP_ANG_values (inGDB, "ANG");
+	//if (R) RA_OK = has_GDB_RUP_ANG_values (inGDB, "RUP");
+
 	vector < vector <GDB> > temp2;
 
 	temp2.push_back (temp);
@@ -2870,6 +2875,7 @@ vector <vector < vector <GDB> > > prepare_GDB_G_for_multiple_groups (const vecto
 	if (is_FORMATION_USE()) temp2 = SEPARATE_DATASET (temp2, "FORMATION", "FORMATION");
 	if (G && HG && GS) temp2 = SEPARATE_DATASET (temp2, "GROUPS", "GROUPCODE");
 	if (K && HK && KS) temp2 = SEPARATE_DATASET (temp2, "CLUSTER", "CLUSTER");
+
 	if (RA && HR && RS && R) temp2 = SEPARATE_DATASET (temp2, "RUP_ANG", "RUP");
 	if (RA && HR && RS && A) temp2 = SEPARATE_DATASET (temp2, "RUP_ANG", "ANG");
 
@@ -2901,10 +2907,12 @@ vector <vector < vector <GDB> > > prepare_GDB_G_for_multiple_groups (const vecto
 		}
 
 		if (RA && HR && !RS && R) {
+
 			OUT.at(i) = SEPARATE_DATASET (OUT.at(i), "RUP_ANG", "RUP");
 		}
 
 		if (RA && HR && !RS && A) {
+
 			OUT.at(i) = SEPARATE_DATASET (OUT.at(i), "RUP_ANG", "ANG");
 		}
 	}

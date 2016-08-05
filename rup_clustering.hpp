@@ -14,6 +14,8 @@
 
 using namespace std;
 
+bool has_GDB_RUP_ANG_values (const vector <GDB>& inGDB, const string METHOD);
+
 vector <double> GDB_to_table (const vector <GDB>& inGDB, const string field);
 
 size_t DATA_number_in_range (const vector <double>& in, const double range_min, const double range_max);

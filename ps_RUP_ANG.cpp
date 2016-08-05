@@ -107,8 +107,9 @@ void ps_draw_histogram_bars (const vector <GDB>& inGDB, const vector <line_RUP_A
 
 	const bool RUP_display = (method == "RUP");
 	const bool ANG_display = (method == "ANG");
-
 	ASSERT_EXACTLY_ONE_TRUE (RUP_display, ANG_display);
+
+	if (! has_GDB_RUP_ANG_values (inGDB, method)) return;
 
 	const bool BW1 = ((!is_RUP_CLUSTERING_RUP() && !is_RUP_CLUSTERING_ANG()) || (is_RUP_CLUSTERING_RUP() && ANG_display) || (is_RUP_CLUSTERING_ANG() && RUP_display));
 	const bool BW2 = !is_COLOURING_RUPANG();

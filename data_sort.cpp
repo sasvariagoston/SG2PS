@@ -7,6 +7,7 @@
 
 #include "assertions.hpp"
 #include "data_sort.hpp"
+#include "rup_clustering.hpp"
 #include "structs.h"
 
 bool by_ID(const GDB& x, const GDB& y) {
@@ -87,7 +88,7 @@ bool by_RUP_ANG(const GDB& x, const GDB& y) {
 }
 
 bool by_RUP(const GDB& x, const GDB& y) {
-    ASSERT_FINITE(x.RUP);
+
 	return x.RUP < y.RUP;
 }
 
@@ -157,8 +158,17 @@ vector <GDB> SORT_GDB (const vector <GDB>& inGDB, const string SORT) {
 
 	else if (SORT == "RUP_ANG")		stable_sort (P.begin(), P.end(), by_RUP_ANG);
 
-	else if (SORT == "RUP")			stable_sort (P.begin(), P.end(), by_RUP);
-	else if (SORT == "ANG")			stable_sort (P.begin(), P.end(), by_ANG);
+	else if (SORT == "RUP")	{
+
+		const bool RA_OK = has_GDB_RUP_ANG_values (inGDB, "RUP");
+
+		if (RA_OK) stable_sort (P.begin(), P.end(), by_RUP);
+	}
+	else if (SORT == "ANG") {
+
+		const bool RA_OK = has_GDB_RUP_ANG_values (inGDB, "ANG");
+		if (RA_OK) stable_sort (P.begin(), P.end(), by_ANG);
+	}
 
 	else {
 

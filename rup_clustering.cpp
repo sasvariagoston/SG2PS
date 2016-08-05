@@ -22,6 +22,24 @@
 
 using namespace std;
 
+bool has_GDB_RUP_ANG_values (const vector <GDB>& inGDB, const string METHOD) {
+
+	ASSERT_GT (inGDB.size(), 0);
+
+	const bool RUP = METHOD == "RUP";
+	const bool ANG = METHOD == "ANG";
+	ASSERT_EXACTLY_ONE_TRUE (RUP, ANG);
+
+	for (size_t i = 0; i < inGDB.size(); i++) {
+
+		double to_check = inGDB.at(i).ANG;
+		if (RUP) to_check = inGDB.at(i).RUP;
+
+		if (is_nan(to_check)) return false;
+	}
+	return true;
+}
+
 vector <double> GDB_to_table (const vector <GDB>& inGDB, const string field) {
 
 	vector <double> OUT;
@@ -30,7 +48,6 @@ vector <double> GDB_to_table (const vector <GDB>& inGDB, const string field) {
 
 	const bool RUP = field == "RUP";
 	const bool ANG = field == "ANG";
-
 	ASSERT_EXACTLY_ONE_TRUE (RUP, ANG);
 
 	if (ANG)	outGDB = SORT_GDB (inGDB, "ANG");

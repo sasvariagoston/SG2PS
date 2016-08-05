@@ -269,8 +269,8 @@ void INVERSION (const vector <GDB>& inGDB) {
 			SFV.push_back (TEST_SF);
 			STV.push_back (TEST);
 
-			cout_dbg_stressfield(TEST_SF);
-			cout_dbg_stresstensor(TEST);
+			//cout_dbg_stressfield(TEST_SF);
+			//cout_dbg_stresstensor(TEST);
 		}
 	}
 	else if (is_INVERSION_SHAN() && IS_STRIAE) {
