@@ -29,7 +29,7 @@ bool by_rev_iID(const GDB& x, const GDB& y) {
 }
 
 bool by_DEPTH (const GDB& x, const GDB& y) {
-
+    ASSERT_FINITE(x.DEPTH);
 	return x.DEPTH < y.DEPTH;
 }
 bool by_rev_DEPTH (const GDB& x, const GDB& y) {
