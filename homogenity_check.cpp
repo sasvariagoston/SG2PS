@@ -12,6 +12,7 @@
 #include "brute_force.hpp"
 #include "bingham.h"
 #include "common.h"
+#include "data_sort.hpp"
 #include "fry.h"
 #include "michael.h"
 #include "mostafa.h"
@@ -91,6 +92,30 @@ bool check_dataset_geometry_homogenity (const vector <GDB>& inGDB) {
 	ASSERT_FINITE (var1, var2);
 
 	return (var1 > 0.1 || var2 > 0.1);
+}
+
+bool check_dataset_DEPTH_homogenity (const vector <GDB>& inGDB) {
+
+	ASSERT_GT (inGDB.size(), 0);
+
+	vector <GDB> TEST = inGDB;
+
+	TEST = SORT_GDB (TEST, "DEPTH");
+
+	const size_t SIZE = TEST.size() - 1;
+
+	for (size_t i = 0; i < TEST.size(); i++) {
+
+		ASSERT_FINITE (TEST.at(i).DEPTH);
+	}
+
+	const double minDPT = TEST.at(0).DEPTH;
+	const double maxDPT = TEST.at(SIZE).DEPTH;
+	const double var1 = fabs(maxDPT - minDPT);
+
+	ASSERT_FINITE (var1);
+
+	return (var1 < 0.1);
 }
 
 bool check_dataset_homogenity (const vector <GDB>& inGDB) {

@@ -19,6 +19,7 @@
 #include "data_io.h"
 #include "data_sort.hpp"
 #include "filename.hpp"
+#include "homogenity_check.hpp"
 #include "ps.h"
 #include "rakhmanov.hpp"
 #include "random.hpp"
@@ -722,7 +723,12 @@ void PROCESS_RGF (const string inputfilename, const bool XY_OK, const bool TRJ_O
 
 	vector <GDB> nGDB = competeRGFcontect (inputfilename);
 
-	if (is_WELLDATA_USE ()) INIT_WELL_TOPS (nGDB);
+	if (is_WELLDATA_USE ()) {
+
+		const bool H = check_dataset_DEPTH_homogenity (nGDB);
+
+		if (H) INIT_WELL_TOPS (nGDB);
+	}
 
 	const bool USE_XY = is_WELLDATA_NO() && XY_OK;
 	const bool USE_TRJ = is_WELLDATA_USE() && TRJ_OK;

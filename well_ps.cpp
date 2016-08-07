@@ -15,6 +15,7 @@
 #include "data_io.h"
 #include "data_sort.hpp"
 #include "filename.hpp"
+#include "homogenity_check.hpp"
 #include "run_mode.h"
 #include "paper.hpp"
 #include "platform_dep.hpp"
@@ -2088,9 +2089,11 @@ void OUTPUT_TO_WELL_PS_TXT (const vector <vector <GDB> >& GDB_G) {
 
 		const vector <GDB> temp = SORT_GDB (GDB_G.at(i), "DEPTH");
 
+		const bool H =  check_dataset_DEPTH_homogenity (temp);
+
 		const string DT = temp.at(0).DATATYPE;
 
-		if (is_allowed_to_process_as_well (DT)) {
+		if (is_allowed_to_process_as_well (DT) && ! H) {
 
 			INIT_PAPER (true);
 

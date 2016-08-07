@@ -11,6 +11,8 @@ bool check_dataset_geometry_homogenity (const vector <GDB>& inGDB);
 
 bool check_dataset_offset_homogenity (const vector <GDB>& inGDB);
 
+bool check_dataset_DEPTH_homogenity (const vector <GDB>& inGDB);
+
 bool check_dataset_homogenity (const vector <GDB>& inGDB);
 
 vector <GDB> return_GDB_with_no_homogeneous_data (const vector <GDB>& inGDB);

@@ -16,6 +16,7 @@
 #include "common.h"
 #include "data_sort.hpp"
 #include "filename.hpp"
+#include "homogenity_check.hpp"
 #include "rgf.h"
 #include "settings.hpp"
 #include "standard_output.hpp"
@@ -439,6 +440,8 @@ void PROCESS_WELL_GROUPS (const vector <vector <GDB> >& inGDB_G) {
 
 		ASSERT (!inGDB_G.at(i).empty());
 
+		const bool H = check_dataset_DEPTH_homogenity (inGDB_G.at(i));
+
 		const string DT = inGDB_G.at(i).at(0).DATATYPE;
 
 		const bool AS_WELL = is_allowed_to_process_as_well (DT);
@@ -475,7 +478,7 @@ void PROCESS_WELL_GROUPS (const vector <vector <GDB> >& inGDB_G) {
 
 		if (p_GDB.size() <= 2) PROCESSABLE = false;
 
-		if (PROCESSABLE && AS_WELL) {
+		if (PROCESSABLE && AS_WELL && !H) {
 
 			if (is_M)	INTERVAL_buf = WELL_AVERAGE_M (p_GDB);//ok
 			else		INTERVAL_buf = WELL_AVERAGE_D (p_GDB);
@@ -486,6 +489,8 @@ void PROCESS_WELL_GROUPS (const vector <vector <GDB> >& inGDB_G) {
 		}
 		W_INTERVAL.push_back (INTERVAL_buf);
 		W_FREQUENCY.push_back (FREQUENCY_buf);
+
+		if (H)cout << "   - Data set taken from the same <0.1m range - nothing to process." << endl;
 	}
 	if (is_CHK_WELL()) STANDARD_OUTPUT_WELL_GROUPS ();
 
