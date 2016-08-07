@@ -691,7 +691,7 @@ vector <vector <GDB> > EVALUATE (const vector <vector <GDB> >& inGDB_G) {
 	P.push_back(p);
 	P = SEPARATE_DATASET (P, "LOCATION", "LOCATION");
 	P = SEPARATE_DATASET (P, "DATATYPE", "DATATYPE");
-	if (is_FORMATION_USE()) P = SEPARATE_DATASET (P, "FORMATION", "DEPTH");
+	if (is_FORMATION_USE()) P = SEPARATE_DATASET (P, "FORMATION", "FORMATION");
 
 	ASSERT_EXACTLY_ONE_TRUE (is_GROUPSEPARATION_IGNORE(), is_GROUPSEPARATION_GROUPCODE(), is_GROUPSEPARATION_KMEANS(), is_GROUPSEPARATION_RUPANG());
 
@@ -742,7 +742,7 @@ void PROCESS_RGF (const string inputfilename, const bool XY_OK, const bool TRJ_O
 	nGDB_G.push_back(nGDB);
 	nGDB_G = SEPARATE_DATASET (nGDB_G, "LOCATION", "LOCATION");
 	nGDB_G = SEPARATE_DATASET (nGDB_G, "DATATYPE", "DATATYPE");
-	if (is_FORMATION_USE()) nGDB_G = SEPARATE_DATASET (nGDB_G, "FORMATION", "DEPTH");
+	if (is_FORMATION_USE()) nGDB_G = SEPARATE_DATASET (nGDB_G, "FORMATION", "FORMATION");
 	if (is_GROUPS_USE()) nGDB_G = SEPARATE_DATASET (nGDB_G, "GROUPS", "GROUPCODE");
 
 	nGDB_G = PREPARE_GDB_VECTOR_FOR_PROCESSING (nGDB_G, false);
@@ -759,7 +759,7 @@ void PROCESS_RGF (const string inputfilename, const bool XY_OK, const bool TRJ_O
 	nGDB_G.push_back(nGDB);
 	nGDB_G = SEPARATE_DATASET (nGDB_G, "LOCATION", "LOCATION");
 	nGDB_G = SEPARATE_DATASET (nGDB_G, "DATATYPE", "DATATYPE");
-	if (is_FORMATION_USE()) nGDB_G = SEPARATE_DATASET (nGDB_G, "FORMATION", "DEPTH");
+	if (is_FORMATION_USE()) nGDB_G = SEPARATE_DATASET (nGDB_G, "FORMATION", "FORMATION");
 	if (is_GROUPS_USE()) nGDB_G = SEPARATE_DATASET (nGDB_G, "GROUPS", "GROUPCODE");
 
 	if (!is_mode_DEBUG()) cout << "DATA EVALUATION FROM '" << capslock(inputfilename) << ".RGF' DATABASE FILE" << endl;
@@ -850,23 +850,23 @@ void dbg_cout_GDB_vector (const vector <GDB>& inGDB) {
 	//<< "MISFIT" << '\t'
 	//<< "LINEATION" << '\t'
 	//<< "OFFSET" << '\t'
-	//<< "DEPTH" << '\t'
-	<< "GC" << '\t'
-	<< "COLOR" << '\t'
+	<< "DEPTH" << '\t'
+	//<< "GC" << '\t'
+	//<< "COLOR" << '\t'
 	//<< "LOC" << '\t'
 	//<< "LOCX" << '\t'
 	//<< "LOCY" << '\t'
 	//<< "FORMATION" << '\t'
-	//<< "DATATYPE" << '\t'
-	//<< "DIPDIR" << '\t'
-	//<< "DIP" << '\t'
-	//<< "LDIR" << '\t'
-	//<< "LDIP" << '\t'
+	<< "DATATYPE" << '\t'
+	<< "DIPDIR" << '\t'
+	<< "DIP" << '\t'
+	<< "LDIR" << '\t'
+	<< "LDIP" << '\t'
 
-	//<< "corr.DIPDIR" << '\t'
-	//<< "corr.DIP" << '\t'
-	//<< "corrL.DIPDIR" << '\t'
-	//<< "corrL.DIP" << '\t'
+	<< "corr.DIPDIR" << '\t'
+	<< "corr.DIP" << '\t'
+	<< "corrL.DIPDIR" << '\t'
+	<< "corrL.DIP" << '\t'
 
 	//<< "PALEON" << '\t'
 	//<< "COMMENT" << '\t'
@@ -935,27 +935,27 @@ void dbg_cout_GDB_vector (const vector <GDB>& inGDB) {
 		//<< T.MISFIT << '\t'
 		//<< T.LINEATION << '\t'
 		//<< T.OFFSET << '\t'
-		//<< T.DEPTH << '\t'
+		<< T.DEPTH << '\t'
 
 		<< fixed << setprecision(0)
-		<< T.GC << '\t'
-		<< T.COLOR << '\t'
+		//<< T.GC << '\t'
+		//<< T.COLOR << '\t'
 		//<< T.LOC << '\t'
 		//<< T.LOCX << '\t'
 		//<< T.LOCY << '\t'
 		//<< T.FORMATION << '\t'
-		//<< T.DATATYPE << '\t'
+		<< T.DATATYPE << '\t'
 
 		<< fixed << setprecision (6)
-		//<< T.DIPDIR << '\t'
-		//<< T.DIP << '\t'
-		//<< T.LDIR << '\t'
-		//<< T.LDIP << '\t'
+		<< T.DIPDIR << '\t'
+		<< T.DIP << '\t'
+		<< T.LDIR << '\t'
+		<< T.LDIP << '\t'
 
-		//<< T.corr.DIPDIR << '\t'
-		//<< T.corr.DIP << '\t'
-		//<< T.corrL.DIPDIR << '\t'
-		//<< T.corrL.DIP << '\t'
+		<< T.corr.DIPDIR << '\t'
+		<< T.corr.DIP << '\t'
+		<< T.corrL.DIPDIR << '\t'
+		<< T.corrL.DIP << '\t'
 
 		<< fixed << setprecision(0)
 		//<< T.PALEON << '\t'
