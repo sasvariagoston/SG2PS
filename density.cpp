@@ -318,124 +318,28 @@ vector <LINE> return_line_from_m_sq_number (const vector <vector <GRID_CENTER> >
 
 	ASSERT_LE (m_sq_id, 15);
 
-	if (m_sq_id == 1) {
-
-		//buf.A = return_U_W (AW, BW, AX, BX, AY, BY, isoline);
-		//buf.B = return_U_W (DW, AW, DX, AX, DY, AY, isoline);
-		//out.push_back(buf);
-		out.push_back (return_LINE (AW, BW, AX, BX, AY, BY, DW, AW, DX, AX, DY, AY, isoline));
-	}
-	else if (m_sq_id == 2) {
-
-		//buf.A = return_U_W (AW, BW, AX, BX, AY, BY, isoline);
-		//buf.B = return_U_W (BW, CW, BX, CX, BY, CY, isoline);
-		//out.push_back(buf);
-		out.push_back (return_LINE (AW, BW, AX, BX, AY, BY, BW, CW, BX, CX, BY, CY, isoline));
-
-	}
-	else if (m_sq_id == 3) {
-
-		//buf.A = return_U_W (BW, CW, BX, CX, BY, CY, isoline);
-		//buf.B = return_U_W (DW, AW, DX, AX, DY, AY, isoline);
-		//out.push_back(buf);
-		out.push_back (return_LINE (BW, CW, BX, CX, BY, CY, DW, AW, DX, AX, DY, AY, isoline));
-
-	}
-	else if (m_sq_id == 4) {
-
-		//buf.A = return_U_W (BW, CW, BX, CX, BY, CY, isoline);
-		//buf.B = return_U_W (CW, DW, CX, DX, CY, DY, isoline);
-		//out.push_back(buf);
-		out.push_back (return_LINE (BW, CW, BX, CX, BY, CY, CW, DW, CX, DX, CY, DY, isoline));
-
-	}
+	if (m_sq_id == 1) 		out.push_back (return_LINE (AW, BW, AX, BX, AY, BY, DW, AW, DX, AX, DY, AY, isoline));
+	else if (m_sq_id == 2) 	out.push_back (return_LINE (AW, BW, AX, BX, AY, BY, BW, CW, BX, CX, BY, CY, isoline));
+	else if (m_sq_id == 3) 	out.push_back (return_LINE (BW, CW, BX, CX, BY, CY, DW, AW, DX, AX, DY, AY, isoline));
+	else if (m_sq_id == 4) 	out.push_back (return_LINE (BW, CW, BX, CX, BY, CY, CW, DW, CX, DX, CY, DY, isoline));
 	else if (m_sq_id == 5) {
 
-		//buf.A = return_U_W (AW, BW, AX, BX, AY, BY, isoline);
-		//buf.B = return_U_W (BW, CW, BX, CX, BY, CY, isoline);
-		//out.push_back(buf);
 		out.push_back (return_LINE (AW, BW, AX, BX, AY, BY, BW, CW, BX, CX, BY, CY, isoline));
-
-		//buf.A = return_U_W (CW, DW, CX, DX, CY, DY, isoline);
-		//buf.B = return_U_W (DW, AW, DX, AX, DY, AY, isoline);
-		//out.push_back(buf);
 		out.push_back (return_LINE (CW, DW, CX, DX, CY, DY, DW, AW, DX, AX, DY, AY, isoline));
-
 	}
-	else if (m_sq_id == 6) {
-
-		//buf.A = return_U_W (AW, BW, AX, BX, AY, BY, isoline);
-		//buf.B = return_U_W (CW, DW, CX, DX, CY, DY, isoline);
-		//out.push_back(buf);
-		out.push_back (return_LINE (AW, BW, AX, BX, AY, BY, CW, DW, CX, DX, CY, DY, isoline));
-	}
-	else if (m_sq_id == 7) {
-
-		//buf.A = return_U_W (CW, DW, CX, DX, CY, DY, isoline);
-		//buf.B = return_U_W (DW, AW, DX, AX, DY, AY, isoline);
-		//out.push_back(buf);
-		out.push_back (return_LINE (CW, DW, CX, DX, CY, DY, DW, AW, DX, AX, DY, AY, isoline));
-
-	}
-	else if (m_sq_id == 8) {
-
-		//buf.A = return_U_W (CW, DW, CX, DX, CY, DY, isoline);
-		//buf.B = return_U_W (DW, AW, DX, AX, DY, AY, isoline);
-		//out.push_back(buf);
-		out.push_back (return_LINE (CW, DW, CX, DX, CY, DY, DW, AW, DX, AX, DY, AY, isoline));
-
-	}
-	else if (m_sq_id == 9) {
-
-		//buf.A = return_U_W (AW, BW, AX, BX, AY, BY, isoline);
-		//buf.B = return_U_W (CW, DW, CX, DX, CY, DY, isoline);
-		//out.push_back(buf);
-		out.push_back (return_LINE (AW, BW, AX, BX, AY, BY, CW, DW, CX, DX, CY, DY, isoline));
-
-	}
+	else if (m_sq_id == 6) 	out.push_back (return_LINE (AW, BW, AX, BX, AY, BY, CW, DW, CX, DX, CY, DY, isoline));
+	else if (m_sq_id == 7) 	out.push_back (return_LINE (CW, DW, CX, DX, CY, DY, DW, AW, DX, AX, DY, AY, isoline));
+	else if (m_sq_id == 8) 	out.push_back (return_LINE (CW, DW, CX, DX, CY, DY, DW, AW, DX, AX, DY, AY, isoline));
+	else if (m_sq_id == 9) 	out.push_back (return_LINE (AW, BW, AX, BX, AY, BY, CW, DW, CX, DX, CY, DY, isoline));
 	else if (m_sq_id == 10) {
 
-		//buf.A = return_U_W (AW, BW, AX, BX, AY, BY, isoline);
-		//buf.B = return_U_W (DW, AW, DX, AX, DY, AY, isoline);
-		//out.push_back(buf);
 		out.push_back (return_LINE (AW, BW, AX, BX, AY, BY, DW, AW, DX, AX, DY, AY, isoline));
-		//buf.A = return_U_W (BW, CW, BX, CX, BY, CY, isoline);
-		//buf.B = return_U_W (CW, DW, CX, DX, CY, DY, isoline);
-		//out.push_back(buf);
 		out.push_back (return_LINE (BW, CW, BX, CX, BY, CY, CW, DW, CX, DX, CY, DY, isoline));
-
 	}
-	else if (m_sq_id == 11) {
-
-		//buf.A = return_U_W (BW, CW, BX, CX, BY, CY, isoline);
-		//buf.B = return_U_W (CW, DW, CX, DX, CY, DY, isoline);
-		//out.push_back(buf);
-		out.push_back (return_LINE (BW, CW, BX, CX, BY, CY, CW, DW, CX, DX, CY, DY, isoline));
-
-	}
-	else if (m_sq_id == 12) {
-
-		//buf.A = return_U_W (BW, CW, BX, CX, BY, CY, isoline);
-		//buf.B = return_U_W (DW, AW, DX, AX, DY, AY, isoline);
-		//out.push_back(buf);
-		out.push_back (return_LINE (BW, CW, BX, CX, BY, CY, DW, AW, DX, AX, DY, AY, isoline));
-	}
-	else if (m_sq_id == 13) {
-
-		//buf.A = return_U_W (AW, BW, AX, BX, AY, BY, isoline);
-		//buf.B = return_U_W (BW, CW, BX, CX, BY, CY, isoline);
-		//out.push_back(buf);
-		out.push_back (return_LINE (AW, BW, AX, BX, AY, BY, BW, CW, BX, CX, BY, CY, isoline));
-
-	}
-	else if (m_sq_id == 14) {
-
-		//buf.A = return_U_W (AW, BW, AX, BX, AY, BY, isoline);
-		//buf.B = return_U_W (DW, AW, DX, AX, DY, AY, isoline);
-		//out.push_back(buf);
-		out.push_back (return_LINE (AW, BW, AX, BX, AY, BY, DW, AW, DX, AX, DY, AY, isoline));
-
-	}
+	else if (m_sq_id == 11) out.push_back (return_LINE (BW, CW, BX, CX, BY, CY, CW, DW, CX, DX, CY, DY, isoline));
+	else if (m_sq_id == 12) out.push_back (return_LINE (BW, CW, BX, CX, BY, CY, DW, AW, DX, AX, DY, AY, isoline));
+	else if (m_sq_id == 13) out.push_back (return_LINE (AW, BW, AX, BX, AY, BY, BW, CW, BX, CX, BY, CY, isoline));
+	else if (m_sq_id == 14) out.push_back (return_LINE (AW, BW, AX, BX, AY, BY, DW, AW, DX, AX, DY, AY, isoline));
 	else {}
 
 	return out;
