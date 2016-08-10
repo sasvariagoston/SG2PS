@@ -177,7 +177,6 @@ vector < vector <GRID_CENTER> > generate_binary_rect_grid (const vector < vector
 			else 					bin_grid.at(j).at(i).COUNT = 0;
 
 			bin_grid.at(j).at(i).CENTER = rect_grid.at(j).at(i).CENTER;
-
 		}
 	}
 	return bin_grid;
@@ -255,17 +254,43 @@ vector < vector <GRID_CENTER> > check_saddle (vector < vector <GRID_CENTER> >& m
 	return m_sq;
 }
 
-double return_U (const double AW, const size_t isoline, const double INTERVAL) {
+XY return_U_W (const double AW, const double BW, const double AX, const double BX, const double AY, const double BY, const double isoline) {
 
-	double U = fabs (AW - isoline) / INTERVAL;
+	XY OUT;
 
-	ASSERT_FINITE (U);
+	ASSERT_FINITE(AW, BW, AX, BX, AY, BY);
 
-	const double SN = 1e-4;
+	const double INTERVAL = fabs(AW - BW);
+	ASSERT_FINITE (INTERVAL);
 
-	if (U < SN) return SN;
-	else if (U > 1 - SN) return (1 - SN);
-	else return U;
+	const double SN = 10e-4;
+
+	double interval = NaN();
+
+	if (INTERVAL < SN) interval = SN;
+	else if (INTERVAL > (1 - SN)) interval = 1 - SN;
+	interval = INTERVAL;
+	ASSERT_FINITE (interval);
+
+	const double U = fabs((AW - isoline) / interval);
+	const double W = fabs((BW - isoline) / interval);
+	ASSERT_FINITE(U, W);
+
+	OUT.X = (AX * W + BX * U);
+	OUT.Y = (AY * W + BY * U);
+	ASSERT_FINITE(OUT.X, OUT.Y);
+
+	return OUT;
+}
+
+LINE return_LINE (const double AW, const double BW, const double AX, const double BX, const double AY, const double BY, const double CW, const double DW, const double CX, const double DX, const double CY, const double DY, const double isoline) {
+
+	LINE OUT;
+
+	OUT.A = return_U_W (AW, BW, AX, BX, AY, BY, isoline);
+	OUT.B = return_U_W (CW, DW, CX, DX, CY, DY, isoline);
+
+	return OUT;
 }
 
 vector <LINE> return_line_from_m_sq_number (const vector <vector <GRID_CENTER> >& m_sq, const vector <vector <GRID_CENTER> >& rect_grid, const size_t j, const size_t i, const size_t isoline) {
@@ -291,328 +316,125 @@ vector <LINE> return_line_from_m_sq_number (const vector <vector <GRID_CENTER> >
 	double CW = rect_grid.at(j + 0).at(i + 1).COUNT;
 	double DW = rect_grid.at(j + 0).at(i + 0).COUNT;
 
-	double W = 0.5;
-	double U = 0.5;
-	double INTERVAL = 0.0;
-
 	ASSERT_LE (m_sq_id, 15);
 
-	if (m_sq_id == 0) {}
-	else if (m_sq_id == 1) {
+	if (m_sq_id == 1) {
 
-		INTERVAL = fabs(AW - BW);
-		U = return_U (AW, isoline, INTERVAL);
-		W = return_U (BW, isoline, INTERVAL);
-		//U = fabs(AW - isoline) / INTERVAL;
-		//W = fabs(BW - isoline) / INTERVAL;
-		buf.A.X = (AX * W + BX * U);
-		buf.A.Y = (AY * W + BY * U);
-
-		INTERVAL = fabs(DW - AW);
-		U = return_U (DW, isoline, INTERVAL);
-		W = return_U (AW, isoline, INTERVAL);
-		//U = fabs(DW - isoline) / INTERVAL;
-		//W = fabs(AW - isoline) / INTERVAL;
-		buf.B.X = (DX * W + AX * U);
-		buf.B.Y = (DY * W + AY * U);
-
-		out.push_back(buf);
+		//buf.A = return_U_W (AW, BW, AX, BX, AY, BY, isoline);
+		//buf.B = return_U_W (DW, AW, DX, AX, DY, AY, isoline);
+		//out.push_back(buf);
+		out.push_back (return_LINE (AW, BW, AX, BX, AY, BY, DW, AW, DX, AX, DY, AY, isoline));
 	}
 	else if (m_sq_id == 2) {
 
-		INTERVAL = fabs(AW - BW);
-		U = return_U (AW, isoline, INTERVAL);
-		W = return_U (BW, isoline, INTERVAL);
-		//U = fabs(AW - isoline) / INTERVAL;
-		//W = fabs(BW - isoline) / INTERVAL;
-		buf.A.X = (AX * W + BX * U);
-		buf.A.Y = (AY * W + BY * U);
+		//buf.A = return_U_W (AW, BW, AX, BX, AY, BY, isoline);
+		//buf.B = return_U_W (BW, CW, BX, CX, BY, CY, isoline);
+		//out.push_back(buf);
+		out.push_back (return_LINE (AW, BW, AX, BX, AY, BY, BW, CW, BX, CX, BY, CY, isoline));
 
-		INTERVAL = fabs(BW - CW);
-		U = return_U (BW, isoline, INTERVAL);
-		W = return_U (CW, isoline, INTERVAL);
-		//U = fabs(BW - isoline) / INTERVAL;
-		//W = fabs(CW - isoline) / INTERVAL;
-		buf.B.X = (BX * W + CX * U);
-		buf.B.Y = (BY * W + CY * U);
-
-		out.push_back(buf);
 	}
 	else if (m_sq_id == 3) {
 
-		INTERVAL = fabs(BW - CW);
-		U = return_U (BW, isoline, INTERVAL);
-		W = return_U (CW, isoline, INTERVAL);
-		//U = fabs(BW - isoline) / INTERVAL;
-		//W = fabs(CW - isoline) / INTERVAL;
-		buf.A.X = (BX * W + CX * U);
-		buf.A.Y = (BY * W + CY * U);
+		//buf.A = return_U_W (BW, CW, BX, CX, BY, CY, isoline);
+		//buf.B = return_U_W (DW, AW, DX, AX, DY, AY, isoline);
+		//out.push_back(buf);
+		out.push_back (return_LINE (BW, CW, BX, CX, BY, CY, DW, AW, DX, AX, DY, AY, isoline));
 
-		INTERVAL = fabs(DW - AW);
-		U = return_U (DW, isoline, INTERVAL);
-		W = return_U (AW, isoline, INTERVAL);
-		//U = fabs(DW - isoline) / INTERVAL;
-		//W = fabs(AW - isoline) / INTERVAL;
-		buf.B.X = (DX * W + AX * U);
-		buf.B.Y = (DY * W + AY * U);
-
-		out.push_back(buf);
 	}
 	else if (m_sq_id == 4) {
 
-		INTERVAL = fabs(BW - CW);
-		U = return_U (BW, isoline, INTERVAL);
-		W = return_U (CW, isoline, INTERVAL);
-		//U = fabs(BW - isoline) / INTERVAL;
-		//W = fabs(CW - isoline) / INTERVAL;
-		buf.A.X = (BX * W + CX * U);
-		buf.A.Y = (BY * W + CY * U);
+		//buf.A = return_U_W (BW, CW, BX, CX, BY, CY, isoline);
+		//buf.B = return_U_W (CW, DW, CX, DX, CY, DY, isoline);
+		//out.push_back(buf);
+		out.push_back (return_LINE (BW, CW, BX, CX, BY, CY, CW, DW, CX, DX, CY, DY, isoline));
 
-		INTERVAL = fabs(CW - DW);
-		U = return_U (CW, isoline, INTERVAL);
-		W = return_U (DW, isoline, INTERVAL);
-		//U = fabs(CW - isoline) / INTERVAL;
-		//W = fabs(DW - isoline) / INTERVAL;
-		buf.B.X = (CX * W + DX * U);
-		buf.B.Y = (CY * W + DY * U);
-
-		out.push_back(buf);
 	}
 	else if (m_sq_id == 5) {
 
-		INTERVAL = fabs(AW - BW);
-		U = return_U (AW, isoline, INTERVAL);
-		W = return_U (BW, isoline, INTERVAL);
-		//U = fabs(AW - isoline) / INTERVAL;
-		//W = fabs(BW - isoline) / INTERVAL;
-		buf.A.X = (AX * W + BX * U);
-		buf.A.Y = (AY * W + BY * U);
+		//buf.A = return_U_W (AW, BW, AX, BX, AY, BY, isoline);
+		//buf.B = return_U_W (BW, CW, BX, CX, BY, CY, isoline);
+		//out.push_back(buf);
+		out.push_back (return_LINE (AW, BW, AX, BX, AY, BY, BW, CW, BX, CX, BY, CY, isoline));
 
-		INTERVAL = fabs(BW - CW);
-		U = return_U (BW, isoline, INTERVAL);
-		W = return_U (CW, isoline, INTERVAL);
-		//U = fabs(BW - isoline) / INTERVAL;
-		//W = fabs(CW - isoline) / INTERVAL;
-		buf.B.X = (BX * W + CX * U);
-		buf.B.Y = (BY * W + CY * U);
+		//buf.A = return_U_W (CW, DW, CX, DX, CY, DY, isoline);
+		//buf.B = return_U_W (DW, AW, DX, AX, DY, AY, isoline);
+		//out.push_back(buf);
+		out.push_back (return_LINE (CW, DW, CX, DX, CY, DY, DW, AW, DX, AX, DY, AY, isoline));
 
-		out.push_back(buf);
-
-		INTERVAL = fabs(CW - DW);
-		U = return_U (CW, isoline, INTERVAL);
-		W = return_U (DW, isoline, INTERVAL);
-		//U = fabs(CW - isoline) / INTERVAL;
-		//W = fabs(DW - isoline) / INTERVAL;
-		buf.A.X = (CX * W + DX * U);
-		buf.A.Y = (CY * W + DY * U);
-
-		INTERVAL = fabs(DW - AW);
-		U = return_U (DW, isoline, INTERVAL);
-		W = return_U (AW, isoline, INTERVAL);
-		//U = fabs(DW - isoline) / INTERVAL;
-		//W = fabs(AW - isoline) / INTERVAL;
-		buf.B.X = (DX * W + AX * U);
-		buf.B.Y = (DY * W + AY * U);
-
-		out.push_back(buf);
 	}
 	else if (m_sq_id == 6) {
 
-		INTERVAL = fabs(AW - BW);
-		U = return_U (AW, isoline, INTERVAL);
-		W = return_U (BW, isoline, INTERVAL);
-		//U = fabs(AW - isoline) / INTERVAL;
-		//W = fabs(BW - isoline) / INTERVAL;
-		buf.A.X = (AX * W + BX * U);
-		buf.A.Y = (AY * W + BY * U);
-
-		INTERVAL = fabs(CW - DW);
-		U = return_U (CW, isoline, INTERVAL);
-		W = return_U (DW, isoline, INTERVAL);
-		//U = fabs(CW - isoline) / INTERVAL;
-		//W = fabs(DW - isoline) / INTERVAL;
-		buf.B.X = (CX * W + DX * U);
-		buf.B.Y = (CY * W + DY * U);
-
-		out.push_back(buf);
+		//buf.A = return_U_W (AW, BW, AX, BX, AY, BY, isoline);
+		//buf.B = return_U_W (CW, DW, CX, DX, CY, DY, isoline);
+		//out.push_back(buf);
+		out.push_back (return_LINE (AW, BW, AX, BX, AY, BY, CW, DW, CX, DX, CY, DY, isoline));
 	}
 	else if (m_sq_id == 7) {
 
-		INTERVAL = fabs(CW - DW);
-		U = return_U (CW, isoline, INTERVAL);
-		W = return_U (DW, isoline, INTERVAL);
-		//U = fabs(CW - isoline) / INTERVAL;
-		//W = fabs(DW - isoline) / INTERVAL;
-		buf.A.X = (CX * W + DX * U);
-		buf.A.Y = (CY * W + DY * U);
+		//buf.A = return_U_W (CW, DW, CX, DX, CY, DY, isoline);
+		//buf.B = return_U_W (DW, AW, DX, AX, DY, AY, isoline);
+		//out.push_back(buf);
+		out.push_back (return_LINE (CW, DW, CX, DX, CY, DY, DW, AW, DX, AX, DY, AY, isoline));
 
-		INTERVAL = fabs(DW - AW);
-		U = return_U (DW, isoline, INTERVAL);
-		W = return_U (AW, isoline, INTERVAL);
-		//U = fabs(DW - isoline) / INTERVAL;
-		//W = fabs(AW - isoline) / INTERVAL;
-		buf.B.X = (DX * W + AX * U);
-		buf.B.Y = (DY * W + AY * U);
-
-		out.push_back(buf);
 	}
 	else if (m_sq_id == 8) {
 
-		INTERVAL = fabs(CW - DW);
-		U = return_U (CW, isoline, INTERVAL);
-		W = return_U (DW, isoline, INTERVAL);
-		//U = fabs(CW - isoline) / INTERVAL;
-		//W = fabs(DW - isoline) / INTERVAL;
-		buf.A.X = (CX * W + DX * U);
-		buf.A.Y = (CY * W + DY * U);
+		//buf.A = return_U_W (CW, DW, CX, DX, CY, DY, isoline);
+		//buf.B = return_U_W (DW, AW, DX, AX, DY, AY, isoline);
+		//out.push_back(buf);
+		out.push_back (return_LINE (CW, DW, CX, DX, CY, DY, DW, AW, DX, AX, DY, AY, isoline));
 
-		INTERVAL = fabs(DW - AW);
-		U = return_U (DW, isoline, INTERVAL);
-		W = return_U (AW, isoline, INTERVAL);
-		//U = fabs(DW - isoline) / INTERVAL;
-		//W = fabs(AW - isoline) / INTERVAL;
-		buf.B.X = (DX * W + AX * U);
-		buf.B.Y = (DY * W + AY * U);
-
-		out.push_back(buf);
 	}
 	else if (m_sq_id == 9) {
 
-		INTERVAL = fabs(AW - BW);
-		U = return_U (AW, isoline, INTERVAL);
-		W = return_U (BW, isoline, INTERVAL);
-		//U = fabs(AW - isoline) / INTERVAL;
-		//W = fabs(BW - isoline) / INTERVAL;
-		buf.A.X = (AX * W + BX * U);
-		buf.A.Y = (AY * W + BY * U);
+		//buf.A = return_U_W (AW, BW, AX, BX, AY, BY, isoline);
+		//buf.B = return_U_W (CW, DW, CX, DX, CY, DY, isoline);
+		//out.push_back(buf);
+		out.push_back (return_LINE (AW, BW, AX, BX, AY, BY, CW, DW, CX, DX, CY, DY, isoline));
 
-		INTERVAL = fabs(CW - DW);
-		U = return_U (CW, isoline, INTERVAL);
-		W = return_U (DW, isoline, INTERVAL);
-		//U = fabs(CW - isoline) / INTERVAL;
-		//W = fabs(DW - isoline) / INTERVAL;
-		buf.B.X = (CX * W + DX * U);
-		buf.B.Y = (CY * W + DY * U);
-
-		out.push_back(buf);
 	}
 	else if (m_sq_id == 10) {
 
-		INTERVAL = fabs(AW - BW);
-		U = return_U (AW, isoline, INTERVAL);
-		W = return_U (BW, isoline, INTERVAL);
-		//U = fabs(AW - isoline) / INTERVAL;
-		//W = fabs(BW - isoline) / INTERVAL;
-		buf.A.X = (AX * W + BX * U);
-		buf.A.Y = (AY * W + BY * U);
+		//buf.A = return_U_W (AW, BW, AX, BX, AY, BY, isoline);
+		//buf.B = return_U_W (DW, AW, DX, AX, DY, AY, isoline);
+		//out.push_back(buf);
+		out.push_back (return_LINE (AW, BW, AX, BX, AY, BY, DW, AW, DX, AX, DY, AY, isoline));
+		//buf.A = return_U_W (BW, CW, BX, CX, BY, CY, isoline);
+		//buf.B = return_U_W (CW, DW, CX, DX, CY, DY, isoline);
+		//out.push_back(buf);
+		out.push_back (return_LINE (BW, CW, BX, CX, BY, CY, CW, DW, CX, DX, CY, DY, isoline));
 
-		INTERVAL = fabs(DW - AW);
-		U = return_U (DW, isoline, INTERVAL);
-		W = return_U (AW, isoline, INTERVAL);
-		//U = fabs(DW - isoline) / INTERVAL;
-		//W = fabs(AW - isoline) / INTERVAL;
-		buf.B.X = (DX *  + AX * U);
-		buf.B.Y = (DY * W + AY * U);
-
-		out.push_back(buf);
-
-		INTERVAL = fabs(BW - CW);
-		U = return_U (BW, isoline, INTERVAL);
-		W = return_U (CW, isoline, INTERVAL);
-		//U = fabs(BW - isoline) / INTERVAL;
-		//W = fabs(CW - isoline) / INTERVAL;
-		buf.A.X = (BX * W + CX * U);
-		buf.A.Y = (BY * W + CY * U);
-
-		INTERVAL = fabs(CW - DW);
-		U = return_U (CW, isoline, INTERVAL);
-		W = return_U (DW, isoline, INTERVAL);
-		//U = fabs(CW - isoline) / INTERVAL;
-		//W = fabs(DW - isoline) / INTERVAL;
-		buf.B.X = (CX * W + DX * U);
-		buf.B.Y = (CY * W + DY * U);
-
-		out.push_back(buf);
 	}
 	else if (m_sq_id == 11) {
 
-		INTERVAL = fabs(BW - CW);
-		U = return_U (BW, isoline, INTERVAL);
-		W = return_U (CW, isoline, INTERVAL);
-		//U = fabs(BW - isoline) / INTERVAL;
-		//W = fabs(CW - isoline) / INTERVAL;
-		buf.A.X = (BX * W + CX * U);
-		buf.A.Y = (BY * W + CY * U);
+		//buf.A = return_U_W (BW, CW, BX, CX, BY, CY, isoline);
+		//buf.B = return_U_W (CW, DW, CX, DX, CY, DY, isoline);
+		//out.push_back(buf);
+		out.push_back (return_LINE (BW, CW, BX, CX, BY, CY, CW, DW, CX, DX, CY, DY, isoline));
 
-		INTERVAL = fabs(CW - DW);
-		U = return_U (CW, isoline, INTERVAL);
-		W = return_U (DW, isoline, INTERVAL);
-		//U = fabs(CW - isoline) / INTERVAL;
-		//W = fabs(DW - isoline) / INTERVAL;
-		buf.B.X = (CX * W + DX * U);
-		buf.B.Y = (CY * W + DY * U);
-
-		out.push_back(buf);
 	}
 	else if (m_sq_id == 12) {
 
-		INTERVAL = fabs(BW - CW);
-		U = return_U (BW, isoline, INTERVAL);
-		W = return_U (CW, isoline, INTERVAL);
-		//U = fabs(BW - isoline) / INTERVAL;
-		//W = fabs(CW - isoline) / INTERVAL;
-		buf.A.X = (BX * W + CX * U);
-		buf.A.Y = (BY * W + CY * U);
-
-		INTERVAL = fabs(DW - AW);
-		U = return_U (DW, isoline, INTERVAL);
-		W = return_U (AW, isoline, INTERVAL);
-		//U = fabs(DW - isoline) / INTERVAL;
-		//W = fabs(AW - isoline) / INTERVAL;
-		buf.B.X = (DX * W + AX * U);
-		buf.B.Y = (DY * W + AY * U);
-
-		out.push_back(buf);
+		//buf.A = return_U_W (BW, CW, BX, CX, BY, CY, isoline);
+		//buf.B = return_U_W (DW, AW, DX, AX, DY, AY, isoline);
+		//out.push_back(buf);
+		out.push_back (return_LINE (BW, CW, BX, CX, BY, CY, DW, AW, DX, AX, DY, AY, isoline));
 	}
 	else if (m_sq_id == 13) {
 
-		INTERVAL = fabs(AW - BW);
-		U = return_U (AW, isoline, INTERVAL);
-		W = return_U (BW, isoline, INTERVAL);
-		//U = fabs(AW - isoline) / INTERVAL;
-		//W = fabs(BW - isoline) / INTERVAL;
-		buf.A.X = (AX * W + BX * U);
-		buf.A.Y = (AY * W + BY * U);
+		//buf.A = return_U_W (AW, BW, AX, BX, AY, BY, isoline);
+		//buf.B = return_U_W (BW, CW, BX, CX, BY, CY, isoline);
+		//out.push_back(buf);
+		out.push_back (return_LINE (AW, BW, AX, BX, AY, BY, BW, CW, BX, CX, BY, CY, isoline));
 
-		INTERVAL = fabs(BW - CW);
-		U = return_U (BW, isoline, INTERVAL);
-		W = return_U (CW, isoline, INTERVAL);
-		//U = fabs(BW - isoline) / INTERVAL;
-		//W = fabs(CW - isoline) / INTERVAL;
-		buf.B.X = (BX * W + CX * U);
-		buf.B.Y = (BY * W + CY * U);
-
-		out.push_back(buf);
 	}
 	else if (m_sq_id == 14) {
 
-		INTERVAL = fabs(AW - BW);
-		U = return_U (AW, isoline, INTERVAL);
-		W = return_U (BW, isoline, INTERVAL);
-		//U = fabs(AW - isoline) / INTERVAL;
-		//W = fabs(BW - isoline) / INTERVAL;
-		buf.A.X = (AX * W + BX * U);
-		buf.A.Y = (AY * W + BY * U);
+		//buf.A = return_U_W (AW, BW, AX, BX, AY, BY, isoline);
+		//buf.B = return_U_W (DW, AW, DX, AX, DY, AY, isoline);
+		//out.push_back(buf);
+		out.push_back (return_LINE (AW, BW, AX, BX, AY, BY, DW, AW, DX, AX, DY, AY, isoline));
 
-		INTERVAL = fabs(DW - AW);
-		U = return_U (DW, isoline, INTERVAL);
-		W = return_U (AW, isoline, INTERVAL);
-		//U = fabs(DW - isoline) / INTERVAL;
-		//W = fabs(AW - isoline) / INTERVAL;
-		buf.B.X = (DX * W + AX * U);
-		buf.B.Y = (DY * W + AY * U);
-
-		out.push_back(buf);
 	}
 	else {}
 
@@ -622,9 +444,6 @@ vector <LINE> return_line_from_m_sq_number (const vector <vector <GRID_CENTER> >
 vector <LINE> manage_points_outside (const vector <LINE>& L) {
 
 	vector <LINE> OUT;
-
-	//fixme what's that?
-	//if (L.size() < 1 && L.size() > 2) ASSERT_DEAD_END();
 
 	for (size_t i = 0; i < L.size(); i++) {
 
@@ -782,16 +601,13 @@ vector <vector <LINE> > connect_vectors (vector <vector <LINE> >& LV) {
 					ASSERT_AT_LEAST_ONE_TRUE (FIRST_FIRST, FIRST_LAST, LAST_FIRST, LAST_LAST);
 
 					if (FIRST_FIRST) LV.at(j) = flip_line (LV.at(j));
-
 					else if (FIRST_LAST) {
 
 						LV.at(j) = 	flip_line (LV.at(j));
 						LV.at(k) = 	flip_line (LV.at(k));
 					}
-					else if (LAST_LAST) {}
-					else LV.at(k) = flip_line (LV.at(k));
-					//else if (LAST_LAST) LV.at(k) = flip_line (LV.at(k));
-					//FIXME Something wrong above!
+					else if (LAST_LAST) LV.at(k) = flip_line (LV.at(k));
+					else {}
 
 					LV.at(j).insert(LV.at(j).end(), LV.at(k).begin(), LV.at(k).end());
 
@@ -799,7 +615,7 @@ vector <vector <LINE> > connect_vectors (vector <vector <LINE> >& LV) {
 
 					change_counter++;
 				}
-				else LV.at(k) = flip_line (LV.at(k));
+			//	else LV.at(k) = flip_line (LV.at(k));
 			}
 		}
 
@@ -857,7 +673,6 @@ vector < vector <XY> > eliminate_short_distances (const vector < vector <XY> >& 
 				if (DST.at(j - 1) > 0.02) buf.push_back(BZ.at(i).at(j));
 			}
 		}
-
 		if (buf.size() > 5) out.push_back(buf);
 	}
 	return out;
@@ -931,7 +746,7 @@ XY interpolate_between_points (const XY& inA, const XY& inB) {
 
 	double m = (inA.Y - inB.Y) / (inA.X - inB.X);
 
-	ASSERT_FINITE(m);
+	ASSERT_FINITE (m);
 
 	double b = inA.Y - m * inA.X;
 
@@ -1029,14 +844,12 @@ vector < vector <XY> > extrapolate_to_circle (const vector < vector <XY> >& inBZ
 				FIRST = generate_new_start (FIRST);
 				OUT.at(i).at(0) = FIRST;
 			}
-			else {}
 
 			if (LAST_IN) {
 
 				LAST  = generate_new_start (LAST);
 				OUT.at(i).at(MAX - 1) = LAST;
 			}
-			else {}
 		}
 	}
 	return OUT;
@@ -1062,8 +875,6 @@ vector <XY> flip_line (const vector <XY>& I) {
 }
 
 vector <XY> flip_curve_to_CCW (const vector <XY>& BZ) {
-
-	//cout << "is_line_CCW (BZ): " << is_line_CCW (BZ) << endl;
 
 	if (!is_line_CCW (BZ)) return flip_line (BZ);
 	else return BZ;
@@ -1192,7 +1003,6 @@ bool is_point_inside_curve (const vector <XY>& I, const GRID_CENTER& GP) {
 	if (!CLOSED) temp.push_back(temp.at(0));
 	temp.push_back(temp.at(1));
 
-	//double DISTANCE = 10e9;
 	double DISTANCE = 1 / return_SMALL_NUMBER();
 
 	bool CLOSE_TO_VERTEX = false;
@@ -1325,7 +1135,6 @@ bool first_angle_less_than_last (const double START_ANGLE, const double END_ANGL
 	POINT.X = SIN (START_ANGLE);
 	POINT.Y = COS (START_ANGLE);
 	test.push_back (POINT);
-
 
 	POINT.X = SIN (END_ANGLE);
 	POINT.Y = COS (END_ANGLE);

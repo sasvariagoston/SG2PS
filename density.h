@@ -33,7 +33,11 @@ vector <LINE> manage_points_outside (const vector <LINE>& L);
 
 vector <LINE> generate_raw_lines (const vector <vector <GRID_CENTER> >& m_sq, const vector <vector <GRID_CENTER> >& rect_grid, const double isoline);
 
-double return_U (const double AW, const size_t isoline, const double INTERVAL);
+//double return_U (const double AW, const size_t isoline, const double INTERVAL);
+
+XY return_U_W (const double AW, const double BW, const double AX, const double BX, const double AY, const double BY, const double isoline);
+
+LINE return_LINE (const double AW, const double BW, const double AX, const double BX, const double AY, const double BY, const double CW, const double DW, const double CX, const double DX, const double CY, const double DY, const double isoline);
 
 vector <LINE> return_line_from_m_sq_number (const vector <vector <GRID_CENTER> >& m_sq, const vector <vector <GRID_CENTER> >& rect_grid, const size_t j, const size_t i, const size_t isoline);
 
