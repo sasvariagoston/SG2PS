@@ -160,11 +160,11 @@ void PS_well_border (ofstream& o) {
 	const bool by_RUPANG = is_GROUPSEPARATION_RUPANG ();
 	//const bool IGNORE = is_GROUPSEPARATION_IGNORE ();
 
-	const bool color_by_COLORCODE = is_COLOURING_COLORCODE();
-	const bool color_by_GROUPCODE = is_COLOURING_GROUPCODE();
-	//const bool color_by_KMEANS = is_COLOURING_KMEANS ();
-	const bool color_by_RUPANG = is_COLOURING_RUPANG ();
-	const bool color_IGNORE = is_COLOURING_IGNORE ();
+	//const bool color_by_COLORCODE = is_COLOURING_COLORCODE();
+	//const bool color_by_GROUPCODE = is_COLOURING_GROUPCODE();
+	////const bool color_by_KMEANS = is_COLOURING_KMEANS ();
+	//const bool color_by_RUPANG = is_COLOURING_RUPANG ();
+	//const bool color_IGNORE = is_COLOURING_IGNORE ();
 
 	const bool exists_GROUPCODE = 	GC.at(0) != 'X';
 	//const bool exists_KMEANS = 	GC.at(1) != 'X';
@@ -197,6 +197,7 @@ void PS_well_border (ofstream& o) {
 	else if (is_GROUPSEPARATION_IGNORE()) {}
 	else {}
 
+	/*
 	if (color_by_COLORCODE) {
 
 		T = T + ", COLOURED USING COLOUR CODE";
@@ -218,6 +219,7 @@ void PS_well_border (ofstream& o) {
 	}
 	else if (color_IGNORE) {}
 	else {}
+	*/
 
 	const bool TLT = is_PROCESS_AS_TILTED ();
 	const bool TRJ = is_PROCESS_AS_TRAJECTORY ();
