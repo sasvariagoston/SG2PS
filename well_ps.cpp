@@ -166,9 +166,9 @@ void PS_well_border (ofstream& o) {
 	//const bool color_by_RUPANG = is_COLOURING_RUPANG ();
 	//const bool color_IGNORE = is_COLOURING_IGNORE ();
 
-	const bool exists_GROUPCODE = 	GC.at(0) != 'X';
-	//const bool exists_KMEANS = 	GC.at(1) != 'X';
-	const bool exists_RUPANG = 		GC.at(2) != 'X';
+	//const bool exists_GROUPCODE = 	GC.at(0) != 'X';
+	////const bool exists_KMEANS = 	GC.at(1) != 'X';
+	//const bool exists_RUPANG = 		GC.at(2) != 'X';
 
 	ASSERT_AT_LEAST_ONE_FALSE (by_GROUPCODE, (GC.size() < 1));
 
@@ -477,6 +477,8 @@ void PS_well_coordinate_axes_INTERVAL (ofstream& o, const double X, const double
 
 void INIT_WELL_TOPS (const vector <GDB>& inGDB) {
 
+	cout << "INIT_WELL_TOPS" << endl;
+
 	WTP.clear();
 
 	ASSERT_GE (inGDB.size(), 1);
@@ -516,11 +518,15 @@ void INIT_WELL_TOPS (const vector <GDB>& inGDB) {
 		buf.FORMATION = temp_G.at(i).at(0).FORMATION;
 		buf.LOCATION = temp_G.at(i).at(0).LOC;
 
+		cout << buf.FORMATION << endl;
+
 		WTP.push_back (buf);
 	}
 }
 
 void ps_well_formation_tops (ofstream& o, const double X, const double LENGTH, const double MIN_VAL, const double MAX_VAL) {
+
+	cout << "ps_well_formation_tops" << endl;
 
 	const string LOC = return_ACTUAL_LOCATION();
 	const PAPER P = RETURN_PAPER();
