@@ -121,8 +121,8 @@ string generate_PSCOLOR_from_COLOR (const string CLR) {
 
 	for (size_t i = 0; i < CLR_STR_V.size(); i++) {
 
-		if (CLR_STR_V.at(i) == CLR) return PS_CLR_V.at(i+1);
-		if (CLR_NUM_V.at(i) == CLR) return PS_CLR_V.at(i+1);
+		if (CLR_STR_V.at(i) == CLR) return PS_CLR_V.at(i);
+		if (CLR_NUM_V.at(i) == CLR) return PS_CLR_V.at(i);
 	}
 	ASSERT_DEAD_END();
 	return PS_CLR_V.at(0);

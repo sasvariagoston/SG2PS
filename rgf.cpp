@@ -664,7 +664,6 @@ vector <vector <GDB> > EVALUATE (const vector <vector <GDB> >& inGDB_G) {
 
 		P = ASSOCIATE_AVERAGE_BEDDING_GROUPS (P);
 	}
-
 	if (TLT) {
 
 		P = RETILT (P, "BEDDING");
@@ -691,9 +690,8 @@ vector <vector <GDB> > EVALUATE (const vector <vector <GDB> >& inGDB_G) {
 	P.push_back(p);
 	P = SEPARATE_DATASET (P, "LOCATION", "LOCATION");
 	P = SEPARATE_DATASET (P, "DATATYPE", "DATATYPE");
-	if (is_FORMATION_USE()) P = SEPARATE_DATASET (P, "FORMATION", "FORMATION");
 
-	//dbg_cout_GDB_vector_vector(P);
+	if (is_FORMATION_USE()) P = SEPARATE_DATASET (P, "FORMATION", "FORMATION");
 
 	ASSERT_EXACTLY_ONE_TRUE (is_GROUPSEPARATION_IGNORE(), is_GROUPSEPARATION_GROUPCODE(), is_GROUPSEPARATION_KMEANS(), is_GROUPSEPARATION_RUPANG());
 
@@ -703,8 +701,6 @@ vector <vector <GDB> > EVALUATE (const vector <vector <GDB> >& inGDB_G) {
 	else 										P = SEPARATE_DATASET (P, "RUP_ANG", "RUP_ANG");
 
 	STANDARD_OUTPUT (p);
-
-	//dbg_cout_GDB_vector_vector(P);
 
 	PROCESS_WELL_GROUPS (P);
 

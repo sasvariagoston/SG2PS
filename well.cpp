@@ -136,7 +136,9 @@ vector <WELL_FREQUENCY> FREQUENCY (const vector <GDB>& inGDB) {
 	double MAX_DERIV = 0.0;
 
 	for (size_t i = 0; i < OUT.size() - 1; i++) {
-	    ASSERT_NE(OUT.size(), 0); // if out is empty, OUT.size()-1 == 18446744073709551615, not -1
+
+	    ASSERT_NE(OUT.size(), 0);
+
 		const WELL_FREQUENCY ACT = OUT.at(i);
 		const WELL_FREQUENCY NXT = OUT.at(i + 1);
 
@@ -318,7 +320,7 @@ WELL_INTERVAL interval_average (const vector <GDB>& inGDB, const size_t RUN) {
 
 	ASSERT (!inGDB.empty());
 
-	OUT.DEPTH = calculate_interval_depth (inGDB);//ok
+	OUT.DEPTH = calculate_interval_depth (inGDB);
 
 	WELL_PROCESSING_CALLS = true;
 
@@ -436,13 +438,7 @@ void PROCESS_WELL_GROUPS (const vector <vector <GDB> >& inGDB_G) {
 	W_INTERVAL.clear();
 	W_FREQUENCY.clear();
 
-	//dbg_cout_GDB_vector_vector (inGDB_G);
-
 	for (size_t i = 0; i < inGDB_G.size(); i++) {
-
-		//cout << " -------------------- " << endl;
-
-		//cout << inGDB_G.at(i).size() << endl;
 
 		ASSERT (!inGDB_G.at(i).empty());
 
@@ -487,12 +483,12 @@ void PROCESS_WELL_GROUPS (const vector <vector <GDB> >& inGDB_G) {
 		if (! PROCESSABLE || H) {
 
 			cout
-			<< "   - Less data / shorter interval in "
-			<< inGDB_G.at(i).at(0).LOC << " location " << flush;
+			<< "   - Less data/shorter interval in "
+			<< inGDB_G.at(i).at(0).LOC << " location" << flush;
 
 			if (inGDB_G.at(i).at(0).FORMATION.size() > 0) {
 
-				cout << ", " << inGDB_G.at(i).at(0).FORMATION << " formation " << flush;
+				cout << ", " << inGDB_G.at(i).at(0).FORMATION << " formation" << flush;
 			}
 			cout << ", " << DT << " data type" << flush;
 
@@ -513,18 +509,8 @@ void PROCESS_WELL_GROUPS (const vector <vector <GDB> >& inGDB_G) {
 
 			FREQUENCY_buf = FREQUENCY (p_GDB);
 		}
-		//cout << p_GDB.size() << endl;
-		//cout << "W_INTERVAL.push_back (INTERVAL_buf)" << endl;
-		//cout << INTERVAL_buf.size() << endl;
-		//cout << PROCESSABLE << "  -  " << AS_WELL << "  -  " << !H << endl;
-		//cout << p_GDB.at(0).LOC << endl;
-		//cout << p_GDB.at(0).FORMATION << endl;
-		//cout << p_GDB.at(0).DATATYPE << endl;
-
 		W_INTERVAL.push_back (INTERVAL_buf);
 		W_FREQUENCY.push_back (FREQUENCY_buf);
-
-		//if (H) cout << "   - Data set taken from the same <0.1m range - nothing to process." << endl;
 	}
 	if (is_CHK_WELL()) STANDARD_OUTPUT_WELL_GROUPS ();
 

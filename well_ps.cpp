@@ -153,6 +153,7 @@ void PS_well_border (ofstream& o) {
 	const string FM = return_ACTUAL_FORMATION();
 
 	const bool asked_KMEANS = !is_CLUSTERING_NONE();
+	const bool asked_FORMATION = is_FORMATION_USE();
 	//const bool asked_RUPANG = !is_RUP_CLUSTERING_NONE();
 
 	const bool by_GROUPCODE = is_GROUPSEPARATION_GROUPCODE ();
@@ -191,7 +192,9 @@ void PS_well_border (ofstream& o) {
 
 	string T = DT + " FROM LOCATION " + LOC;
 
-	if (asked_KMEANS) T = T + " - K-MEANS CLUSTERING USED";
+	if (asked_FORMATION) T = T + ", " + FM + " FORMATION";
+
+	if (asked_KMEANS) T =  T + ", CLUSTER '" + GC.at(0) + "' USING K-MEANS CLUSTERING" ;
 
 	if (by_GROUPCODE) 	T =  T + ", GROUP '" + GC.at(0) + "' USING ORIGINAL GROUPCODE" ;
 	else if (is_GROUPSEPARATION_IGNORE()) {}
@@ -1683,8 +1686,6 @@ void plot_well_curve (const vector <WELL_INTERVAL>& IN, ofstream& o, const doubl
 
 	if (PLOT_V.size() == 0) return;
 
-
-
 	for (size_t i = 0; i < PLOT_V.size(); i++) {
 
 		VALUE = generate_VALUE_from_XY_vector (PLOT_V.at(i));
@@ -2039,10 +2040,11 @@ size_t anything_to_plot_on_well_ps (const vector <vector <GDB> >& inGDB_G) {
 		if (is_allowed_to_process_as_well (DT)) {
 
 			const bool GDB_OK = temp.size() > 1;
-			const bool INT_OK = INTERVAL.at(i).size() > 0;
-			const bool FRQ_OK = FREQUENCY.at(i).size() > 0;
+			//const bool INT_OK = INTERVAL.at(i).size() > 0;
+			//const bool FRQ_OK = FREQUENCY.at(i).size() > 0;
 
-			if (GDB_OK && INT_OK && FRQ_OK) {
+			//if (GDB_OK && INT_OK && FRQ_OK) {
+			if (GDB_OK) {
 
 				const double MIN = temp.at(0).DEPTH;
 				const double MAX = temp.at(temp.size() - 1).DEPTH;
@@ -2095,15 +2097,6 @@ void OUTPUT_TO_WELL_PS_TXT (const vector <vector <GDB> >& GDB_G) {
 
 		const string DT = temp.at(0).DATATYPE;
 
-		//cout
-		//<< "is_allowed_to_process_as_well (DT): " << is_allowed_to_process_as_well (DT)
-		//<< "H: " << H << endl;
-
-		//cout
-		//<< temp.at(0).LOC << "  -  "
-		//<< DT << "  -  "
-		//<< temp.at(0).FORMATION << endl << endl << endl;
-
 		if (is_allowed_to_process_as_well (DT) && !H) {
 
 			INIT_PAPER (true);
@@ -2112,17 +2105,27 @@ void OUTPUT_TO_WELL_PS_TXT (const vector <vector <GDB> >& GDB_G) {
 			const bool INT_OK = INTERVAL.at(i).size() > 0;
 			const bool FRQ_OK = FREQUENCY.at(i).size() > 0;
 
-			//cout
-			//<< " GDB_OK: " << GDB_OK
-			//<< " INT_OK: " << INT_OK
-			//<< " FRQ_OK: " << FRQ_OK << endl;
+			//if (GDB_OK && INT_OK && FRQ_OK) {
+			if (GDB_OK) {
 
-			//cout
-			//<< temp.at(0).LOC << "  -  "
-			//<< DT << "  -  "
-			//<< temp.at(0).FORMATION << endl << endl << endl;
+				if (!INT_OK || !FRQ_OK) {
 
-			if (GDB_OK && INT_OK && FRQ_OK) {
+					cout
+					<< "   - Less data in "
+					<< temp.at(0).LOC << " location" << flush;
+
+					if (temp.at(0).FORMATION.size() > 0) {
+
+						cout << ", " << temp.at(0).FORMATION << " formation" << flush;
+					}
+					cout << ", " << DT << " data type" << flush;
+
+					if (is_GROUPS_USE()) {
+
+						cout << ", " << temp.at(0).GC << " group "<< flush;
+					}
+					cout << ", than required to average/frequency calculation." << endl;
+				}
 
 				const double MIN = temp.at(0).DEPTH;
 				const double MAX = temp.at(temp.size() - 1).DEPTH;
@@ -2135,8 +2138,6 @@ void OUTPUT_TO_WELL_PS_TXT (const vector <vector <GDB> >& GDB_G) {
 				const bool MIN_VAL_OK = MIN_VAL > 0.0;
 				ASSERT_FINITE (MAX_VAL, MIN_VAL);
 				const bool MAX_VAL_OK = MAX_VAL > MIN_VAL;
-
-				//cout << "MAX_VAL_OK: " << MAX_VAL_OK << endl;
 
 				if (MIN_VAL_OK && MAX_VAL_OK) {
 
@@ -2153,8 +2154,6 @@ void OUTPUT_TO_WELL_PS_TXT (const vector <vector <GDB> >& GDB_G) {
 
 					const string PS_NAME = generate_ACTUAL_WELL_PS_NAME ();
 					ofstream OPS (PS_NAME.c_str());
-
-					//cout << PS_NAME << endl;
 
 					PS_well_header (OPS);
 

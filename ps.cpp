@@ -1722,7 +1722,7 @@ void ps_dump_stress_state (ofstream& o, const CENTER& center, const string DATAT
 	font_PS (o, "ArialNarrow", 8);
 	color_PS (o, "0.0 0.0 0.0");
 
-	text_to_PS (o, DATATYPE_TO_DUMP);
+	if (INV.size() > 0) text_to_PS (o, DATATYPE_TO_DUMP);
 
 	for (size_t i = 0; i < INV.size(); i++) {
 
@@ -1796,21 +1796,31 @@ void PS_GDB (const vector <vector <GDB> >& inGDB_G, ofstream& o, bool TILT) {
 
 	for (size_t i = 0; i < inGDB_G.size(); i++) {
 
-		INV.push_back (PS_INVERSION_RESULTS (inGDB_G.at(i), o, center, mohrcenter));
-		CLR.push_back(inGDB_G.at(i).at(0).PSCOLOR);
+		const string RES = PS_INVERSION_RESULTS (inGDB_G.at(i), o, center, mohrcenter);
+
+		if (RES.size() > 18) {
+
+			INV.push_back (RES);
+			CLR.push_back (inGDB_G.at(i).at(0).PSCOLOR);
+		}
 	}
-	string DATATYPE_TO_DUMP = "Stress state";
-	if (dump_BNG) DATATYPE_TO_DUMP = "Weight point";
 
-	if (INV.size() > 1) DATATYPE_TO_DUMP = DATATYPE_TO_DUMP + "s";
+	string DATATYPE_TO_DUMP;
 
-	if (dump_BNG) DATATYPE_TO_DUMP = DATATYPE_TO_DUMP + " (e1>e2>e3): ";
-	else DATATYPE_TO_DUMP = DATATYPE_TO_DUMP + " (s1>s2>s3): ";
+	if (INV.size() > 0) {
 
-	ps_dump_stress_state (o, center, DATATYPE_TO_DUMP, INV, CLR);
+		DATATYPE_TO_DUMP = "Stress state";
+		if (dump_BNG) DATATYPE_TO_DUMP = "Weight point";
 
-	PS_dump_inversion_method (inGDB_G.at(0), o, center);
+		if (INV.size() > 1) DATATYPE_TO_DUMP = DATATYPE_TO_DUMP + "s";
 
+		if (dump_BNG) DATATYPE_TO_DUMP = DATATYPE_TO_DUMP + " (e1>e2>e3): ";
+		else DATATYPE_TO_DUMP = DATATYPE_TO_DUMP + " (s1>s2>s3): ";
+
+		ps_dump_stress_state (o, center, DATATYPE_TO_DUMP, INV, CLR);
+
+		PS_dump_inversion_method (inGDB_G.at(0), o, center);
+	}
 	return;
 }
 
@@ -2861,9 +2871,6 @@ vector <vector < vector <GDB> > > prepare_GDB_G_for_multiple_groups (const vecto
 	const bool HG = existence_of_more_than_one_specific_groupcode (temp, true, false, false);
 	const bool HK = existence_of_more_than_one_specific_groupcode (temp, false, true, false);
 	const bool HR = existence_of_more_than_one_specific_groupcode (temp, false, false, true);
-
-	//bool RA_OK  = has_GDB_RUP_ANG_values (inGDB, "ANG");
-	//if (R) RA_OK = has_GDB_RUP_ANG_values (inGDB, "RUP");
 
 	vector < vector <GDB> > temp2;
 
