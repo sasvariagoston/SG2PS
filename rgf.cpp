@@ -693,6 +693,8 @@ vector <vector <GDB> > EVALUATE (const vector <vector <GDB> >& inGDB_G) {
 	P = SEPARATE_DATASET (P, "DATATYPE", "DATATYPE");
 	if (is_FORMATION_USE()) P = SEPARATE_DATASET (P, "FORMATION", "FORMATION");
 
+	//dbg_cout_GDB_vector_vector(P);
+
 	ASSERT_EXACTLY_ONE_TRUE (is_GROUPSEPARATION_IGNORE(), is_GROUPSEPARATION_GROUPCODE(), is_GROUPSEPARATION_KMEANS(), is_GROUPSEPARATION_RUPANG());
 
 	if (is_GROUPSEPARATION_IGNORE()) {}
@@ -701,6 +703,8 @@ vector <vector <GDB> > EVALUATE (const vector <vector <GDB> >& inGDB_G) {
 	else 										P = SEPARATE_DATASET (P, "RUP_ANG", "RUP_ANG");
 
 	STANDARD_OUTPUT (p);
+
+	//dbg_cout_GDB_vector_vector(P);
 
 	PROCESS_WELL_GROUPS (P);
 
@@ -727,7 +731,7 @@ void PROCESS_RGF (const string inputfilename, const bool XY_OK, const bool TRJ_O
 
 		const bool H = check_dataset_DEPTH_homogenity (nGDB);
 
-		if (H) INIT_WELL_TOPS (nGDB);
+		if (!H) INIT_WELL_TOPS (nGDB);
 	}
 
 	const bool USE_XY = is_WELLDATA_NO() && XY_OK;
@@ -851,22 +855,22 @@ void dbg_cout_GDB_vector (const vector <GDB>& inGDB) {
 	//<< "LINEATION" << '\t'
 	//<< "OFFSET" << '\t'
 	<< "DEPTH" << '\t'
-	//<< "GC" << '\t'
+	<< "GC" << '\t'
 	//<< "COLOR" << '\t'
 	//<< "LOC" << '\t'
 	//<< "LOCX" << '\t'
 	//<< "LOCY" << '\t'
-	//<< "FORMATION" << '\t'
+	<< "FORMATION" << '\t'
 	<< "DATATYPE" << '\t'
-	<< "DIPDIR" << '\t'
-	<< "DIP" << '\t'
-	<< "LDIR" << '\t'
-	<< "LDIP" << '\t'
+	//<< "DIPDIR" << '\t'
+	//<< "DIP" << '\t'
+	//<< "LDIR" << '\t'
+	//<< "LDIP" << '\t'
 
-	<< "corr.DIPDIR" << '\t'
-	<< "corr.DIP" << '\t'
-	<< "corrL.DIPDIR" << '\t'
-	<< "corrL.DIP" << '\t'
+	//<< "corr.DIPDIR" << '\t'
+	//<< "corr.DIP" << '\t'
+	//<< "corrL.DIPDIR" << '\t'
+	//<< "corrL.DIP" << '\t'
 
 	//<< "PALEON" << '\t'
 	//<< "COMMENT" << '\t'
@@ -938,24 +942,24 @@ void dbg_cout_GDB_vector (const vector <GDB>& inGDB) {
 		<< T.DEPTH << '\t'
 
 		<< fixed << setprecision(0)
-		//<< T.GC << '\t'
+		<< T.GC << '\t'
 		//<< T.COLOR << '\t'
 		//<< T.LOC << '\t'
 		//<< T.LOCX << '\t'
 		//<< T.LOCY << '\t'
-		//<< T.FORMATION << '\t'
+		<< T.FORMATION << '\t'
 		<< T.DATATYPE << '\t'
 
 		<< fixed << setprecision (6)
-		<< T.DIPDIR << '\t'
-		<< T.DIP << '\t'
-		<< T.LDIR << '\t'
-		<< T.LDIP << '\t'
+		//<< T.DIPDIR << '\t'
+		//<< T.DIP << '\t'
+		//<< T.LDIR << '\t'
+		//<< T.LDIP << '\t'
 
-		<< T.corr.DIPDIR << '\t'
-		<< T.corr.DIP << '\t'
-		<< T.corrL.DIPDIR << '\t'
-		<< T.corrL.DIP << '\t'
+		//<< T.corr.DIPDIR << '\t'
+		//<< T.corr.DIP << '\t'
+		//<< T.corrL.DIPDIR << '\t'
+		//<< T.corrL.DIP << '\t'
 
 		<< fixed << setprecision(0)
 		//<< T.PALEON << '\t'

@@ -477,8 +477,6 @@ void PS_well_coordinate_axes_INTERVAL (ofstream& o, const double X, const double
 
 void INIT_WELL_TOPS (const vector <GDB>& inGDB) {
 
-	cout << "INIT_WELL_TOPS" << endl;
-
 	WTP.clear();
 
 	ASSERT_GE (inGDB.size(), 1);
@@ -518,15 +516,11 @@ void INIT_WELL_TOPS (const vector <GDB>& inGDB) {
 		buf.FORMATION = temp_G.at(i).at(0).FORMATION;
 		buf.LOCATION = temp_G.at(i).at(0).LOC;
 
-		cout << buf.FORMATION << endl;
-
 		WTP.push_back (buf);
 	}
 }
 
 void ps_well_formation_tops (ofstream& o, const double X, const double LENGTH, const double MIN_VAL, const double MAX_VAL) {
-
-	cout << "ps_well_formation_tops" << endl;
 
 	const string LOC = return_ACTUAL_LOCATION();
 	const PAPER P = RETURN_PAPER();
@@ -2101,13 +2095,32 @@ void OUTPUT_TO_WELL_PS_TXT (const vector <vector <GDB> >& GDB_G) {
 
 		const string DT = temp.at(0).DATATYPE;
 
-		if (is_allowed_to_process_as_well (DT) && ! H) {
+		//cout
+		//<< "is_allowed_to_process_as_well (DT): " << is_allowed_to_process_as_well (DT)
+		//<< "H: " << H << endl;
+
+		//cout
+		//<< temp.at(0).LOC << "  -  "
+		//<< DT << "  -  "
+		//<< temp.at(0).FORMATION << endl << endl << endl;
+
+		if (is_allowed_to_process_as_well (DT) && !H) {
 
 			INIT_PAPER (true);
 
 			const bool GDB_OK = temp.size() > 1;
 			const bool INT_OK = INTERVAL.at(i).size() > 0;
 			const bool FRQ_OK = FREQUENCY.at(i).size() > 0;
+
+			//cout
+			//<< " GDB_OK: " << GDB_OK
+			//<< " INT_OK: " << INT_OK
+			//<< " FRQ_OK: " << FRQ_OK << endl;
+
+			//cout
+			//<< temp.at(0).LOC << "  -  "
+			//<< DT << "  -  "
+			//<< temp.at(0).FORMATION << endl << endl << endl;
 
 			if (GDB_OK && INT_OK && FRQ_OK) {
 
@@ -2123,6 +2136,7 @@ void OUTPUT_TO_WELL_PS_TXT (const vector <vector <GDB> >& GDB_G) {
 				ASSERT_FINITE (MAX_VAL, MIN_VAL);
 				const bool MAX_VAL_OK = MAX_VAL > MIN_VAL;
 
+				//cout << "MAX_VAL_OK: " << MAX_VAL_OK << endl;
 
 				if (MIN_VAL_OK && MAX_VAL_OK) {
 
@@ -2137,9 +2151,10 @@ void OUTPUT_TO_WELL_PS_TXT (const vector <vector <GDB> >& GDB_G) {
 					const string TXT_FOLDER = return_WELL_TXT_FOLDER() + path_separator + capslock (DT);
 					if (! dir_exists (TXT_FOLDER)) make_dir (TXT_FOLDER);
 
-
 					const string PS_NAME = generate_ACTUAL_WELL_PS_NAME ();
 					ofstream OPS (PS_NAME.c_str());
+
+					//cout << PS_NAME << endl;
 
 					PS_well_header (OPS);
 

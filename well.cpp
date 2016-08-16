@@ -436,7 +436,13 @@ void PROCESS_WELL_GROUPS (const vector <vector <GDB> >& inGDB_G) {
 	W_INTERVAL.clear();
 	W_FREQUENCY.clear();
 
+	//dbg_cout_GDB_vector_vector (inGDB_G);
+
 	for (size_t i = 0; i < inGDB_G.size(); i++) {
+
+		//cout << " -------------------- " << endl;
+
+		//cout << inGDB_G.at(i).size() << endl;
 
 		ASSERT (!inGDB_G.at(i).empty());
 
@@ -478,6 +484,26 @@ void PROCESS_WELL_GROUPS (const vector <vector <GDB> >& inGDB_G) {
 
 		if (p_GDB.size() <= 2) PROCESSABLE = false;
 
+		if (! PROCESSABLE || H) {
+
+			cout
+			<< "   - Less data / shorter interval in "
+			<< inGDB_G.at(i).at(0).LOC << " location " << flush;
+
+			if (inGDB_G.at(i).at(0).FORMATION.size() > 0) {
+
+				cout << ", " << inGDB_G.at(i).at(0).FORMATION << " formation " << flush;
+			}
+			cout << ", " << DT << " data type" << flush;
+
+			if (is_GROUPS_USE()) {
+
+				cout << ", " << inGDB_G.at(i).at(0).GC << " group "<< flush;
+			}
+
+			cout << ", than required  to average/frequency calculation." << endl;
+		}
+
 		if (PROCESSABLE && AS_WELL && !H) {
 
 			if (is_M)	INTERVAL_buf = WELL_AVERAGE_M (p_GDB);//ok
@@ -487,10 +513,18 @@ void PROCESS_WELL_GROUPS (const vector <vector <GDB> >& inGDB_G) {
 
 			FREQUENCY_buf = FREQUENCY (p_GDB);
 		}
+		//cout << p_GDB.size() << endl;
+		//cout << "W_INTERVAL.push_back (INTERVAL_buf)" << endl;
+		//cout << INTERVAL_buf.size() << endl;
+		//cout << PROCESSABLE << "  -  " << AS_WELL << "  -  " << !H << endl;
+		//cout << p_GDB.at(0).LOC << endl;
+		//cout << p_GDB.at(0).FORMATION << endl;
+		//cout << p_GDB.at(0).DATATYPE << endl;
+
 		W_INTERVAL.push_back (INTERVAL_buf);
 		W_FREQUENCY.push_back (FREQUENCY_buf);
 
-		if (H)cout << "   - Data set taken from the same <0.1m range - nothing to process." << endl;
+		//if (H) cout << "   - Data set taken from the same <0.1m range - nothing to process." << endl;
 	}
 	if (is_CHK_WELL()) STANDARD_OUTPUT_WELL_GROUPS ();
 
