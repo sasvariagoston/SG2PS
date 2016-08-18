@@ -654,6 +654,10 @@ vector <vector <GDB> > EVALUATE (const vector <vector <GDB> >& inGDB_G) {
 
 	if (!is_mode_DEBUG()) writeln (msg);
 
+	const bool tA = is_TILTING_BEDDING_PALEONORTH();
+	const bool tB = is_TILTING_BEDDING();
+	const bool tP = is_TILTING_PALEONORTH();
+
 	if (TRJ) {
 
 		P = RETILT (P, "TRAJECTORY");
@@ -666,9 +670,9 @@ vector <vector <GDB> > EVALUATE (const vector <vector <GDB> >& inGDB_G) {
 	}
 	if (TLT) {
 
-		P = RETILT (P, "BEDDING");
+		if (tA || tB) P = RETILT (P, "BEDDING");
 
-		P = RETILT (P, "PALEONORTH");
+		if (tA || tP) P = RETILT (P, "PALEONORTH");
 
 		P = PREPARE_GDB_VECTOR_FOR_PROCESSING (P, true);
 
@@ -850,7 +854,7 @@ void dbg_cout_GDB_vector (const vector <GDB>& inGDB) {
 	//<< "MISFIT" << '\t'
 	//<< "LINEATION" << '\t'
 	//<< "OFFSET" << '\t'
-	<< "DEPTH" << '\t'
+	//<< "DEPTH" << '\t'
 	<< "GC" << '\t'
 	//<< "COLOR" << '\t'
 	//<< "LOC" << '\t'
@@ -905,8 +909,8 @@ void dbg_cout_GDB_vector (const vector <GDB>& inGDB) {
 	//<< "UPSILON.X" << '\t' << "UPSILON.Y" << '\t'<< "UPSILON.Z" << '\t'
 
 	//<< "lambda" << '\t'
-	//<< "ANG" << '\t'
-	//<< "RUP" << '\t'
+	<< "ANG" << '\t'
+	<< "RUP" << '\t'
 	<< endl;
 
 	for (size_t i = 0; i < inGDB.size(); i++) {
@@ -935,7 +939,7 @@ void dbg_cout_GDB_vector (const vector <GDB>& inGDB) {
 		//<< T.MISFIT << '\t'
 		//<< T.LINEATION << '\t'
 		//<< T.OFFSET << '\t'
-		<< T.DEPTH << '\t'
+		//<< T.DEPTH << '\t'
 
 		<< fixed << setprecision(0)
 		<< T.GC << '\t'
@@ -1000,8 +1004,8 @@ void dbg_cout_GDB_vector (const vector <GDB>& inGDB) {
 		//<< T.NORMAL_S.X << '\t' << T.NORMAL_S.Y << '\t'<< T.NORMAL_S.Z << '\t'
 
 		//<< T.lambda << '\t'
-		//<< T.ANG << '\t'
-		//<< T.RUP << '\t'
+		<< T.ANG << '\t'
+		<< T.RUP << '\t'
 
 		<< endl;
 	}

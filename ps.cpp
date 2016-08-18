@@ -1086,6 +1086,7 @@ void PS_lineation (const GDB& i, ofstream& o, const CENTER& center, const STRESS
 		text_PS(o, 10.0, 10.0, 3, i.ID);
 		text_PS (o, "%%--------1");
 		translate_PS (o, -X, -Y, 3);
+		stroke_PS(o);
 	}
 }
 
@@ -1472,6 +1473,7 @@ void PS_polepoint (const GDB& i, ofstream& o, const double X, const double Y, co
 		text_PS (o, "%%--------2");
 		const string T = double_to_string (i.avS0d.DIPDIR, 0) + "/" + double_to_string (i.avS0d.DIP, 0);
 		text_PS (o, O.X + 3.0, O.Y - 3.0, 3, T);
+		stroke_PS (o);
 	}
 }
 
@@ -1597,14 +1599,16 @@ void PS_striaearrow (const GDB& i, ofstream& o, const CENTER& center) {
 
 		font_PS (o, "ArialNarrow-Italic", 6);
 		text_PS (o, "%%--------3");
+		color_PS(o, "0.5 0.5 0.5");
 		linewidth_PS (o, 0.5, 1);
 		translate_PS (o, X, Y, 3);
 		moveto_PS (o, 0.0, 0.0, 3);
 		lineto_PS (o, 10.0, 10.0, 3);
-		stroke_PS (o);
-
 		text_PS(o, 10.0, 10.0, 3, i.ID);
 		translate_PS(o, -X, -Y, 3);
+		stroke_PS (o);
+
+
 	}
 	return;
 }
@@ -1804,7 +1808,6 @@ void PS_GDB (const vector <vector <GDB> >& inGDB_G, ofstream& o, bool TILT) {
 			CLR.push_back (inGDB_G.at(i).at(0).PSCOLOR);
 		}
 	}
-
 	string DATATYPE_TO_DUMP;
 
 	if (INV.size() > 0) {
@@ -2597,7 +2600,6 @@ void PS_SYMBOLS_LABEL (ofstream& o) {
 	linewidth_PS (o, 0.5, 1);
 	color_PS (o, "0.5 0.5 0.5");
 
-
 	translate_PS (o, P.S1X + 0.3 * P.A, P.S1Y - 1.55 * P.A, 3);
 	rotate_PS (o, 90.0, 1);
 
@@ -2612,6 +2614,7 @@ void PS_SYMBOLS_LABEL (ofstream& o) {
 
 	color_PS (o, "0.0 0.0 0.0");
 	text_PS (o, P.S1X + 0.6 * P.A + 5.0 * P.D, P.S1Y - 3.355 * P.A + 2.14 * P.A, 3, "with labeling");
+	stroke_PS (o);
 
 	return;
 }
@@ -2860,8 +2863,8 @@ vector <vector < vector <GDB> > > prepare_GDB_G_for_multiple_groups (const vecto
 	const bool G = is_GROUPS_USE();
 	const bool K = ! is_CLUSTERING_NONE();
 	const bool RA = ! is_RUP_CLUSTERING_NONE();
-	const bool R = is_RUP_CLUSTERING_ANG ();
-	const bool A = is_RUP_CLUSTERING_RUP ();
+	const bool A = is_RUP_CLUSTERING_ANG ();
+	const bool R = is_RUP_CLUSTERING_RUP ();
 	if (RA) ASSERT_EXACTLY_ONE_TRUE (R, A);
 
 	const bool GS = is_GROUPSEPARATION_GROUPCODE();
@@ -2880,10 +2883,13 @@ vector <vector < vector <GDB> > > prepare_GDB_G_for_multiple_groups (const vecto
 	temp2 = SEPARATE_DATASET (temp2, "DATATYPE", "DATATYPE");
 
 	if (is_FORMATION_USE()) temp2 = SEPARATE_DATASET (temp2, "FORMATION", "FORMATION");
+
 	if (G && HG && GS) temp2 = SEPARATE_DATASET (temp2, "GROUPS", "GROUPCODE");
+
 	if (K && HK && KS) temp2 = SEPARATE_DATASET (temp2, "CLUSTER", "CLUSTER");
 
 	if (RA && HR && RS && R) temp2 = SEPARATE_DATASET (temp2, "RUP_ANG", "RUP");
+
 	if (RA && HR && RS && A) temp2 = SEPARATE_DATASET (temp2, "RUP_ANG", "ANG");
 
 	vector <vector < vector <GDB> > > OUT;
@@ -2906,10 +2912,12 @@ vector <vector < vector <GDB> > > prepare_GDB_G_for_multiple_groups (const vecto
 	for (size_t i = 0; i < OUT.size(); i++) {
 
 		if (G && HG && !GS) {
+
 			OUT.at(i) = SEPARATE_DATASET (OUT.at(i), "GROUPS", "GROUPCODE");
 		}
 
 		if (K && HK && !KS) {
+
 			OUT.at(i) = SEPARATE_DATASET (OUT.at(i), "CLUSTER", "CLUSTER");
 		}
 
