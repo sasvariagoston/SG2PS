@@ -772,7 +772,6 @@ void PS_mohr_circle (const vector <GDB>& inGDB, ofstream& o, const CENTER& mohrc
 
 	const string GR_CLR = inGDB.at(0).PSCOLOR;
 
-
 	const double S1_S3_center = mohrcenter.X + 2.5 * P.A;
 	const double S1_S3_radius = 2.5 * P.A;
 	const double S2_S3_center = mohrcenter.X + (0.5 * fi * X);
