@@ -113,12 +113,18 @@ void PS_s1s2s3 (ofstream& o, const string COLOR, const bool ITER, const string A
 
 		if (is_GRAYSCALE_USE())	color_PS (o, GRY_CLR.at(i));
 		else 					color_PS (o, RGB_CLR.at(i));
+
+		//cout << RGB_CLR.at(i) << endl;
+
 		linewidth_PS (o, 1.0, 1);
 	}
 	else {
 
 		if (is_GRAYSCALE_USE())	color_PS (o, GRY_CLR.at(i));
 		else 					color_PS (o, RGB_CLR.at(i));
+
+		cout << RGB_CLR.at(i) << endl;
+
 		fill_PS (o);
 	}
 
@@ -2084,7 +2090,7 @@ void PS_stress_axes (const vector <GDB>& inGDB, ofstream& o, const CENTER& cente
 
 	for (size_t i = 0; i < SF.size(); i++) {
 
-		if (STRIAE && MOSTAFA && i < SF.size()) {
+		if (STRIAE && MOSTAFA && i < SF.size() - 1) {
 
 			PS_lineation (to_axes, o, center, SF.at(i), false, "S1_ITER");
 			PS_lineation (to_axes, o, center, SF.at(i), false, "S2_ITER");
