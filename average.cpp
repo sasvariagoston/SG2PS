@@ -208,8 +208,6 @@ size_t has_relevant_bedding (const size_t i, const vector <vector <GDB> >& inGDB
 
 		if (is_GROUPS_USE()) FIT = FIT && EQ_GC;
 
-		cout << FIT << inGDB_G.at(j).at(0).GC << endl;
-
 		if (FIT) EQ.push_back(j);
 	}
 	if (EQ.size() == 1) return EQ.at(0);

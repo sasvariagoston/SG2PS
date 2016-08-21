@@ -108,25 +108,13 @@ void PS_s1s2s3 (ofstream& o, const string COLOR, const bool ITER, const string A
 	rlineto_PS (o, -3.0,  3.0, 3);
 	rlineto_PS (o, -3.0, -3.0, 3);
 	closepath_PS (o);
-
-	if (ITER) {
-
-		if (is_GRAYSCALE_USE())	color_PS (o, GRY_CLR.at(i));
-		else 					color_PS (o, RGB_CLR.at(i));
-
-		//cout << RGB_CLR.at(i) << endl;
-
-		linewidth_PS (o, 1.0, 1);
-	}
-	else {
+	if (! ITER) {
 
 		if (is_GRAYSCALE_USE())	color_PS (o, GRY_CLR.at(i));
 		else 					color_PS (o, RGB_CLR.at(i));
-
-		cout << RGB_CLR.at(i) << endl;
-
 		fill_PS (o);
 	}
+	stroke_PS (o);
 
 	newpath_PS (o);
 	moveto_PS  (o,  0.0,  0.0, 3);
@@ -134,7 +122,12 @@ void PS_s1s2s3 (ofstream& o, const string COLOR, const bool ITER, const string A
 	rlineto_PS (o, -3.0,  3.0, 3);
 	rlineto_PS (o, -3.0, -3.0, 3);
 	closepath_PS (o);
-	color_PS (o, COLOR);
+	if (ITER) {
+
+		if (is_GRAYSCALE_USE())	color_PS (o, GRY_CLR.at(i));
+		else 					color_PS (o, RGB_CLR.at(i));
+	}
+	else color_PS (o, COLOR);
 	linewidth_PS (o, 1.5, 1);
 	stroke_PS (o);
 
@@ -147,6 +140,7 @@ void PS_s1s2s3 (ofstream& o, const string COLOR, const bool ITER, const string A
 	color_PS (o, "1 1 1");
 	linewidth_PS (o, 0.3, 1);
 	stroke_PS (o);
+
 
 	return;
 }
