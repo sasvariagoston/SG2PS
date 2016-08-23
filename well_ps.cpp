@@ -505,12 +505,6 @@ void INIT_WELL_TOPS (const vector <GDB>& inGDB) {
 		const double D1 = temp_G.at(i).at(0).DEPTH;
 		const double D2 = temp_G.at(i).at(temp_G.at(i).size() - 1).DEPTH;
 
-		if (temp_G.at(i).size() > 1) {
-
-			ASSERT_LE (D1, D2);
-		}
-		else ASSERT_LT (D1, D2);
-
 		const string L1 = temp_G.at(i).at(0).LOC;
 		const string L2 = temp_G.at(i).at(temp_G.at(i).size() - 1).LOC;
 		ASSERT_EQ (L1, L2)
@@ -2105,7 +2099,6 @@ void OUTPUT_TO_WELL_PS_TXT (const vector <vector <GDB> >& GDB_G) {
 			const bool INT_OK = INTERVAL.at(i).size() > 0;
 			const bool FRQ_OK = FREQUENCY.at(i).size() > 0;
 
-			//if (GDB_OK && INT_OK && FRQ_OK) {
 			if (GDB_OK) {
 
 				if (!INT_OK || !FRQ_OK) {
@@ -2170,8 +2163,6 @@ void OUTPUT_TO_WELL_PS_TXT (const vector <vector <GDB> >& GDB_G) {
 			}
 		}
 	}
-	ASSERT_EQ (DATA_TO_PLOT, counter);
-
 	return;
 }
 
