@@ -506,9 +506,9 @@ vector <vector <GDB> > PROCESS_GROUPS (const vector <vector <GDB> >& inGDB_G, co
 
 			const bool ENOUGH_STRIAE = hasoffset_GDB.size() >= minimum_independent_dataset ();
 
-			cout_method_text (hasoffset_GDB);
-
 			if (ENOUGH_HOMOGENEOUS && ENOUGH_STRIAE) {
+
+				cout_method_text (hasoffset_GDB);
 
 				vector <GDB> hasoffset_virtual_GDB;
 

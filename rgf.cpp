@@ -708,6 +708,8 @@ vector <vector <GDB> > EVALUATE (const vector <vector <GDB> >& inGDB_G) {
 
 	PROCESS_WELL_GROUPS (P);
 
+	cout << "EVALUATE END" << endl;
+
 	return P;
 }
 
