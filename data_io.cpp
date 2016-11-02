@@ -29,7 +29,6 @@
 #include "run_mode.h"
 #include "rup_clustering.hpp"
 #include "settings.hpp"
-#include "stdarg.h"
 #include "structs.h"
 
 vector <string> possible_folders_name () {
@@ -54,8 +53,8 @@ void make_dir (const string& dir_name) {
 
 
 bool dir_exists(const string& dir) {
-    struct __stat64 sb;
-    return __stat64(dir.c_str(), &sb) == 0 && S_ISDIR(sb.st_mode);
+    struct stat sb;
+    return stat(dir.c_str(), &sb) == 0 && S_ISDIR(sb.st_mode);
 }
 
 void create_required_folders (const vector <GDB>& inGDB) {
