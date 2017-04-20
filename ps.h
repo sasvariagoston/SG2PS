@@ -1,4 +1,4 @@
-// Copyright (C) 2012-2016, Ágoston Sasvári
+// Copyright (C) 2012-2017, Ágoston Sasvári
 // All rights reserved.
 // This code is published under the GNU Lesser General Public License.
 
@@ -21,7 +21,7 @@ void PS_extension_arrow (ofstream& o, const string COLOR);
 void PS_compression_arrow (ofstream& o, const string COLOR);
 void PS_stereonet_header (ofstream& o);
 void PS_getstereonet (ofstream& o, CENTER center);
-void PS_stress_scale (ofstream& o);
+void PS_stress_scale (ofstream& o, const bool TILT);
 void PS_border (const vector <GDB>& inGDB, ofstream& o);
 void PS_dump_inversion_method (const vector <GDB>& inGDB, ofstream& o, const CENTER& center);
 string PS_stressdata (const vector <GDB>& inGDB, ofstream& o, const CENTER& center);

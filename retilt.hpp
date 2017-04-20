@@ -1,4 +1,4 @@
-// Copyright (C) 2012-2016, Ágoston Sasvári
+// Copyright (C) 2012-2017, Ágoston Sasvári
 // All rights reserved.
 // This code is published under the GNU Lesser General Public License.
 
@@ -15,6 +15,7 @@ double return_tilting_angle (const GDB& in, const string METHOD);
 GDB tilt_lineation (const GDB& in, const VCTR& AXIS, const double ANGLE);
 GDB tilt_plane (const GDB& in, const VCTR& AXIS, const double ANGLE);
 GDB tilt_striae (const GDB& in, const VCTR& AXIS, const double ANGLE);
+GDB tilt_SC (const GDB& in, const VCTR& AXIS, const double ANGLE);
 
 GDB TILT_DATA (const GDB& in, const string METHOD);
 

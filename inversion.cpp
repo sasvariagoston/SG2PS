@@ -1,4 +1,4 @@
-// Copyright (C) 2012-2016, Ágoston Sasvári
+// Copyright (C) 2012-2017, Ágoston Sasvári
 // All rights reserved.
 // This code is published under the GNU Lesser General Public License.
 
@@ -21,6 +21,7 @@
 #include "nda.h"
 #include "ps.h"
 #include "ptn.h"
+#include "retilt.hpp"
 #include "rgf.h"
 #include "run_mode.h"
 #include "rup_clustering.hpp"
@@ -38,6 +39,46 @@ namespace {
 vector <STRESSTENSOR> STV;
 vector <STRESSFIELD> SFV;
 
+}
+
+GDB SC_to_striae (const GDB& in) {
+
+	GDB out = in;
+
+	const DIPDIR_DIP C_DDD = dipdir_dip_from_DXDYDZ(in.DC);
+
+	const VCTR tilting_axis = unitvector(declare_vector(SIN(C_DDD.DIPDIR + 90.0), COS(C_DDD.DIPDIR + 90.0), 0.0), true);
+
+	const double tilting_angle = C_DDD.DIP - 0.1;
+
+	const GDB dummy = tilt_SC(in, tilting_axis, tilting_angle);
+
+	const double slip_ang = dipdir_dip_from_DXDYDZ(dummy.DC).DIPDIR;
+
+	const double S_dd = dipdir_dip_from_DXDYDZ(dummy.D).DIPDIR;
+
+	const bool same = fabs(slip_ang - S_dd) < 90.0 || fabs(slip_ang - S_dd) > 270.0;
+
+	if (!same) out.OFFSET = "NORMAL";
+	else out.OFFSET = "INVERSE";
+
+	out.N = out.NC;
+	out.D = out.DC;
+	out.S = out.SC;
+	out.corr = out.corrL;
+
+	return out;
+}
+
+vector <GDB> convert_SC_to_striae_with_offset (const vector <GDB>& process_GDB){
+
+	vector <GDB> outGDB = process_GDB;
+
+	for (size_t i = 0; i < outGDB.size(); i++) {
+
+		outGDB.at(i) = SC_to_striae(outGDB.at(i));
+	}
+	return outGDB;
 }
 
 vector <GDB> return_striae_with_offset (const vector <GDB>& inGDB) {
@@ -78,15 +119,20 @@ vector <GDB> generate_virtual_striae (const vector <GDB>& inGDB) {
 
 void cout_inversion_results (const vector <GDB>& inGDB, const vector <STRESSFIELD>& SF_V) {
 
-	ASSERT_GT (SF_V.size(), 0);
-
 	if (is_mode_DEBUG()) return;
 
+	if (SF_V.size()==0) {
+
+		cout << "    - Inversion has been failed. " << endl;
+		return;
+	}
+
 	const bool IS_STRIAE = is_allowed_striae_datatype(inGDB.at(0).DATATYPE);
+	const bool IS_SC = is_allowed_SC_datatype(inGDB.at(0).DATATYPE);
 
 	const STRESSFIELD MSF = SF_V.at (SF_V.size() - 1);
 
-	if (is_BINGHAM_USE() && !IS_STRIAE) {
+	if (is_BINGHAM_USE() && !(IS_STRIAE || IS_SC)) {
 
 		cout << "    - "
 		<<  fixed << setprecision (0)
@@ -124,8 +170,14 @@ void cout_inversion_results (const vector <GDB>& inGDB, const vector <STRESSFIEL
 		<< ", s2: " << setfill ('0') << setw (3)  << MSF.S_2.DIPDIR
 		<<  "/"     << setfill ('0') << setw (2)  << MSF.S_2.DIP
 		<< ", s3: " << setfill ('0') << setw (3)  << MSF.S_3.DIPDIR
-		<<  "/"     << setfill ('0') << setw (2)  << MSF.S_3.DIP
-		<< ", " 	<< flush;
+		<<  "/"     << setfill ('0') << setw (2)  << MSF.S_3.DIP << flush;
+
+		if (IS_SC) {
+			cout << endl;
+			return;
+		}
+
+		cout << ", " << flush;
 
 		cout << setfill (' ') << setw (18) << MSF.delvaux_rgm << flush;
 
@@ -137,7 +189,8 @@ void cout_inversion_results (const vector <GDB>& inGDB, const vector <STRESSFIEL
 		cout << fixed << setprecision (1) << flush;
 		cout
 		<< ", av. misfit: " << setfill (' ') << setw (4)  << inGDB.at(0).AV_MISF
-		<< " deg." << endl;
+		<< " deg." << flush;
+
 	}
 }
 
@@ -187,8 +240,10 @@ void INVERSION (const vector <GDB>& inGDB) {
 	STRESSTENSOR TEST;
 
 	const bool IS_STRIAE = is_allowed_striae_datatype(inGDB.at(0).DATATYPE);
+	const bool IS_SC = is_allowed_SC_datatype(inGDB.at(0).DATATYPE);
 
-	if (is_INVERSION_ANGELIER() && IS_STRIAE) {
+
+	if (is_INVERSION_ANGELIER() && (IS_STRIAE || IS_SC)) {
 
 		TEST = st_ANGELIER (inGDB);
 
@@ -198,7 +253,7 @@ void INVERSION (const vector <GDB>& inGDB) {
 			SFV.push_back (sf_ANGELIER (STV.at(0)));
 		}
 	}
-	else if (is_BINGHAM_USE() && !IS_STRIAE) {
+	else if (is_BINGHAM_USE() && !(IS_STRIAE || IS_SC)) {
 		const vector <VCTR> BNG = generate_Bingham_dataset(inGDB);
 
 		TEST = st_BINGHAM (BNG);
@@ -209,7 +264,7 @@ void INVERSION (const vector <GDB>& inGDB) {
 			SFV.push_back (sf_BINGHAM (STV.at(0)));
 		}
 	}
-	else if (is_INVERSION_BRUTEFORCE() && IS_STRIAE) {
+	else if (is_INVERSION_BRUTEFORCE() && (IS_STRIAE || IS_SC)) {
 
 		TEST = st_BRUTEFORCE (inGDB);
 
@@ -219,7 +274,7 @@ void INVERSION (const vector <GDB>& inGDB) {
 			SFV.push_back (sf_BRUTEFORCE (STV.at(0)));
 		}
 	}
-	else if (is_INVERSION_FRY() && fry_correct (inGDB) && IS_STRIAE) {
+	else if (is_INVERSION_FRY() && fry_correct (inGDB) && (IS_STRIAE || IS_SC)) {
 
 		TEST = st_FRY (inGDB);
 
@@ -229,7 +284,10 @@ void INVERSION (const vector <GDB>& inGDB) {
 			SFV.push_back (sf_FRY (STV.at(0)));
 		}
 	}
-	else if (is_INVERSION_MICHAEL() && IS_STRIAE) {
+	else if (is_INVERSION_FRY() && !fry_correct (inGDB) && (IS_STRIAE || IS_SC)) {
+
+	}
+	else if (is_INVERSION_MICHAEL() && (IS_STRIAE || IS_SC)) {
 
 		TEST = st_MICHAEL (inGDB);
 
@@ -239,11 +297,11 @@ void INVERSION (const vector <GDB>& inGDB) {
 			SFV.push_back (sf_MICHAEL(STV.at(0)));
 		}
 	}
-	else if (is_INVERSION_MOSTAFA() && IS_STRIAE) {
+	else if (is_INVERSION_MOSTAFA() && (IS_STRIAE || IS_SC)) {
 		SFV = sfv_MOSTAFA (inGDB);
 		STV = stv_MOSTAFA ();
 	}
-	else if (is_INVERSION_SPRANG() && IS_STRIAE) {
+	else if (is_INVERSION_SPRANG() && (IS_STRIAE || IS_SC)) {
 
 		TEST = st_NDA (inGDB);
 
@@ -253,12 +311,12 @@ void INVERSION (const vector <GDB>& inGDB) {
 			SFV.push_back (sf_NDA (STV.at(0)));
 		}
 	}
-	else if (is_INVERSION_YAMAJI() && IS_STRIAE) {
+	else if (is_INVERSION_YAMAJI() && (IS_STRIAE || IS_SC)) {
 		//STV.push_back (st_YAMAJI (inGDB));
 		//SFV has to be coded
 		ASSERT_DEAD_END ();
 	}
-	else if (is_INVERSION_TURNER() && IS_STRIAE) {
+	else if (is_INVERSION_TURNER() && (IS_STRIAE || IS_SC)) {
 
 		const STRESSFIELD TEST_SF = sf_PTN (inGDB);
 
@@ -268,12 +326,9 @@ void INVERSION (const vector <GDB>& inGDB) {
 
 			SFV.push_back (TEST_SF);
 			STV.push_back (TEST);
-
-			//cout_dbg_stressfield(TEST_SF);
-			//cout_dbg_stresstensor(TEST);
 		}
 	}
-	else if (is_INVERSION_SHAN() && IS_STRIAE) {
+	else if (is_INVERSION_SHAN() && (IS_STRIAE || IS_SC)) {
 
 		TEST = st_SHAN (inGDB);
 

@@ -1,4 +1,4 @@
-// Copyright (C) 2012-2016, Ágoston Sasvári
+// Copyright (C) 2012-2017, Ágoston Sasvári
 // All rights reserved.
 // This code is published under the GNU Lesser General Public License.
 
@@ -544,8 +544,9 @@ vector <GDB> generate_LAMBDA_STRESSVECTOR_ESTIMATORS (const vector <GDB>& inGDB)
 	for (size_t i = 0; i < outGDB.size(); i++) {
 
 		const bool STRIAE = is_allowed_striae_datatype (outGDB.at(i).DATATYPE);
+		const bool SC = is_allowed_SC_datatype(outGDB.at(i).DATATYPE);
 
-		if (STRIAE) outGDB.at(i).lambda = sqrt(3.0) / 2.0;
+		if (STRIAE || SC) outGDB.at(i).lambda = sqrt(3.0) / 2.0;
 	}
 	return outGDB;
 }
@@ -708,8 +709,6 @@ vector <vector <GDB> > EVALUATE (const vector <vector <GDB> >& inGDB_G) {
 
 	PROCESS_WELL_GROUPS (P);
 
-	cout << "EVALUATE END" << endl;
-
 	return P;
 }
 
@@ -789,7 +788,9 @@ void PROCESS_RGF (const string inputfilename, const bool XY_OK, const bool TRJ_O
 
 		if (PROCESS_AS_TILTED) OUTPUT_TO_PS (MASTER_GDB.at(i-1), MASTER_GDB.at(i));
 
+
 		OUTPUT_TO_WELL_PS_TXT (MASTER_GDB.at(i));
+
 	}
 	if (!is_mode_DEBUG()) cout << endl << endl << "EXPORT FROM '" << capslock(inputfilename) << ".RGF' DATABASE FILE" << endl;
 
@@ -855,24 +856,24 @@ void dbg_cout_GDB_vector (const vector <GDB>& inGDB) {
 
 	//<< "MISFIT" << '\t'
 	//<< "LINEATION" << '\t'
-	//<< "OFFSET" << '\t'
+	<< "OFFSET" << '\t'
 	//<< "DEPTH" << '\t'
-	<< "GC" << '\t'
+	//<< "GC" << '\t'
 	//<< "COLOR" << '\t'
 	//<< "LOC" << '\t'
 	//<< "LOCX" << '\t'
 	//<< "LOCY" << '\t'
-	<< "FORMATION" << '\t'
+	//<< "FORMATION" << '\t'
 	<< "DATATYPE" << '\t'
 	//<< "DIPDIR" << '\t'
 	//<< "DIP" << '\t'
 	//<< "LDIR" << '\t'
 	//<< "LDIP" << '\t'
 
-	//<< "corr.DIPDIR" << '\t'
-	//<< "corr.DIP" << '\t'
-	//<< "corrL.DIPDIR" << '\t'
-	//<< "corrL.DIP" << '\t'
+	<< "corr.DIPDIR" << '\t'
+	<< "corr.DIP" << '\t'
+	<< "corrL.DIPDIR" << '\t'
+	<< "corrL.DIP" << '\t'
 
 	//<< "PALEON" << '\t'
 	//<< "COMMENT" << '\t'
@@ -880,12 +881,12 @@ void dbg_cout_GDB_vector (const vector <GDB>& inGDB) {
 	//<< "PSCOLOR" << '\t'
 	//<< "DASHED" << '\t'
 
-	//<< "ptnP.X" << '\t' << "ptnP.Y" << '\t'<< "ptnP.Z" << '\t'
+	<< "ptnP.X" << '\t' << "ptnP.Y" << '\t'<< "ptnP.Z" << '\t'
 	//<< "ptnT.X" << '\t' << "ptnT.Y" << '\t'<< "ptnT.Z" << '\t'
 	//<< "ptnN.X" << '\t' << "ptnN.Y" << '\t'<< "ptnN.Z" << '\t'
 
-	//<< "ptnPd.DIPDIR" << '\t'
-	//<< "ptnPd.DIP" << '\t'
+	////<< "ptnPd.DIPDIR" << '\t'
+	////<< "ptnPd.DIP" << '\t'
 	//<< "ptnTd.DIPDIR" << '\t'
 	//<< "ptnTd.DIP" << '\t'
 	//<< "ptnNd.DIPDIR" << '\t'
@@ -911,8 +912,8 @@ void dbg_cout_GDB_vector (const vector <GDB>& inGDB) {
 	//<< "UPSILON.X" << '\t' << "UPSILON.Y" << '\t'<< "UPSILON.Z" << '\t'
 
 	//<< "lambda" << '\t'
-	<< "ANG" << '\t'
-	<< "RUP" << '\t'
+	//<< "ANG" << '\t'
+	//<< "RUP" << '\t'
 	<< endl;
 
 	for (size_t i = 0; i < inGDB.size(); i++) {
@@ -940,16 +941,16 @@ void dbg_cout_GDB_vector (const vector <GDB>& inGDB) {
 		<< fixed << setprecision(8)
 		//<< T.MISFIT << '\t'
 		//<< T.LINEATION << '\t'
-		//<< T.OFFSET << '\t'
+		<< T.OFFSET << '\t'
 		//<< T.DEPTH << '\t'
 
 		<< fixed << setprecision(0)
-		<< T.GC << '\t'
+		//<< T.GC << '\t'
 		//<< T.COLOR << '\t'
 		//<< T.LOC << '\t'
 		//<< T.LOCX << '\t'
 		//<< T.LOCY << '\t'
-		<< T.FORMATION << '\t'
+		//<< T.FORMATION << '\t'
 		<< T.DATATYPE << '\t'
 
 		<< fixed << setprecision (6)
@@ -958,10 +959,10 @@ void dbg_cout_GDB_vector (const vector <GDB>& inGDB) {
 		//<< T.LDIR << '\t'
 		//<< T.LDIP << '\t'
 
-		//<< T.corr.DIPDIR << '\t'
-		//<< T.corr.DIP << '\t'
-		//<< T.corrL.DIPDIR << '\t'
-		//<< T.corrL.DIP << '\t'
+		<< T.corr.DIPDIR << '\t'
+		<< T.corr.DIP << '\t'
+		<< T.corrL.DIPDIR << '\t'
+		<< T.corrL.DIP << '\t'
 
 		<< fixed << setprecision(0)
 		//<< T.PALEON << '\t'
@@ -970,8 +971,8 @@ void dbg_cout_GDB_vector (const vector <GDB>& inGDB) {
 		//<< T.PSCOLOR << '\t'
 		//<< T.DASHED << '\t'
 
-		//<< fixed << setprecision(6)
-		//<< T.ptnP.X << '\t' << T.ptnP.Y << '\t'<< T.ptnP.Z << '\t'
+		<< fixed << setprecision(6)
+		<< T.ptnP.X << '\t' << T.ptnP.Y << '\t'<< T.ptnP.Z << '\t'
 		//<< T.ptnT.X << '\t' << T.ptnT.Y << '\t'<< T.ptnT.Z << '\t'
 		//<< T.ptnN.X << '\t' << T.ptnN.Y << '\t'<< T.ptnN.Z << '\t'
 
@@ -1006,8 +1007,8 @@ void dbg_cout_GDB_vector (const vector <GDB>& inGDB) {
 		//<< T.NORMAL_S.X << '\t' << T.NORMAL_S.Y << '\t'<< T.NORMAL_S.Z << '\t'
 
 		//<< T.lambda << '\t'
-		<< T.ANG << '\t'
-		<< T.RUP << '\t'
+		//<< T.ANG << '\t'
+		//<< T.RUP << '\t'
 
 		<< endl;
 	}

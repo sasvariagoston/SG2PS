@@ -1,4 +1,4 @@
-// Copyright (C) 2012-2016, Ágoston Sasvári
+// Copyright (C) 2012-2017, Ágoston Sasvári
 // All rights reserved.
 // This code is published under the GNU Lesser General Public License.
 
@@ -1284,7 +1284,10 @@ void CONTOURING (const vector <GDB>& inGDB, ofstream& o, const CENTER center, co
 
 	if (is_allowed_lithology_datatype (DT)) return;
 
-	if (is_CONTOURING_STRIAE_BEARING_BEARING() && !is_allowed_striae_datatype(DT)) return;
+	const bool is_STRIAE = is_allowed_striae_datatype(DT);
+	const bool is_SC = is_allowed_SC_datatype(DT);
+
+	if (is_CONTOURING_STRIAE_BEARING_BEARING() && !is_STRIAE && !is_SC) return;
 
 	vector <vector <vector <VCTR> > > NET = generate_net (9);
 

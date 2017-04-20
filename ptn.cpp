@@ -1,4 +1,4 @@
-// Copyright (C) 2012-2016, Ágoston Sasvári
+// Copyright (C) 2012-2017, Ágoston Sasvári
 // All rights reserved.
 // This code is published under the GNU Lesser General Public License.
 
@@ -42,9 +42,10 @@ vector <GDB> ptn (const vector <GDB>& inGDB) {
 		const string O = inGDB.at(i).OFFSET;
 
 		const bool STRIAE = is_allowed_striae_datatype(DT);
+		const bool SC = is_allowed_SC_datatype(DT);
 		const bool HAS_OFFSET = !is_allowed_striae_none_sense(O);
 
-		if (STRIAE && HAS_OFFSET) {
+		if ((STRIAE || SC) && HAS_OFFSET) {
 
 			outGDB.at(i).ptnT = unitvector(declare_vector (
 					q * inGDB.at(i).N.X + r * inGDB.at(i).DC.X,

@@ -1,4 +1,4 @@
-// Copyright (C) 2012-2016, Ali Baharev
+// Copyright (C) 2012-2017, Ali Baharev
 // All rights reserved.
 // This code is published under the GNU Lesser General Public License.
 

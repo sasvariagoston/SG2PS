@@ -1,4 +1,4 @@
-// Copyright (C) 2012-2016, Ágoston Sasvári
+// Copyright (C) 2012-2017, Ágoston Sasvári
 // All rights reserved.
 // This code is published under the GNU Lesser General Public License.
 
@@ -16,6 +16,7 @@
 #include "density.h"
 #include "filename.hpp"
 #include "homogenity_check.hpp"
+#include "inversion.h"
 #include "kaalsbeek.hpp"
 #include "paper.hpp"
 #include "platform_dep.hpp"
@@ -42,8 +43,8 @@ const string OTB_GRY_CLR = "0.00 0.00 0.00";
 const string OTB_RGB_CLR = "0.00 0.00 0.00";
 const string FLD_GRY_CLR = "0.60 0.60 0.60";
 const string FLD_RGB_CLR = "0.00 0.00 1.00";
-const string C_GRY_CLR = "0.80 0.80 0.80";
-const string C_RGB_CLR = "0.80 0.80 0.80";
+const string C_GRY_CLR = "0.60 0.60 0.60";
+const string C_RGB_CLR = "0.60 0.60 0.60";
 
 const double AV_GRY_LNW = 2;
 const double AV_RGB_LNW = 2;
@@ -65,7 +66,7 @@ const string OTB_RGB_DSH = "6 6";
 const string FLD_GRY_DSH = "6 6";
 const string FLD_RGB_DSH = "6 6";
 const string C_GRY_DSH =   "6 6";
-const string C_RGB_DSH =   "6 6";
+const string C_RGB_DSH =   "  ";
 }
 
 void PS_s1s2s3 (ofstream& o, const string COLOR, const bool ITER, const string AXIS) {
@@ -194,8 +195,9 @@ void PS_stereonet_header (ofstream& o) {
 
 	const bool FRACTURE_TO_PROCESS = is_BINGHAM_USE() && return_ACTUAL_DATATYPE() == "FRACTURE";
 	const bool IS_STRIAE = is_allowed_striae_datatype (return_ACTUAL_DATATYPE());
+	const bool IS_SC = is_allowed_SC_datatype(return_ACTUAL_DATATYPE());
 
-	if (!FRACTURE_TO_PROCESS && !IS_STRIAE) return;
+	if (!FRACTURE_TO_PROCESS && !IS_STRIAE && !IS_SC) return;
 
 	text_PS (o, "/normalarrow {");
 	//color_PS(o, "0.0 0.0 0.0");
@@ -261,6 +263,8 @@ void PS_stereonet_header (ofstream& o) {
 	arc_PS (o, 0.0, 0.0, 0.5, 0.0, 360.0, 3);
 	stroke_PS (o);
 	text_PS (o, "} def");
+
+	if (IS_SC) return;
 
 	text_PS (o, "/sinistralarrow {");
 	newpath_PS(o);
@@ -431,9 +435,18 @@ void PS_border (const vector <GDB>& inGDB, ofstream& o) {
 	text_PS(o, "%%-----end PSborder");
 }
 
-void PS_stress_scale (ofstream& o) {
+void PS_stress_scale (ofstream& o, const bool TILT) {
 
 	const PAPER P = RETURN_PAPER();
+
+	double X = P.O1X + P.R;
+	double Y = P.O1Y - P.R;
+
+	if (TILT) {
+		X = P.O2X + P.R;
+		Y = P.O2Y - P.R;
+	}
+
 
 	double value = 0.0;
 
@@ -447,37 +460,24 @@ void PS_stress_scale (ofstream& o) {
 		linewidth_PS (o, 2.0, 1);
 
 		newpath_PS (o);
-		moveto_PS (o, P.O1X + P.R + 1.0 * P.B, P.O1Y - P.R + 0.666 * P.R * value, 3);
-		lineto_PS (o, P.O1X + P.R + 1.5 * P.B, P.O1Y - P.R + 0.666 * P.R * value, 3);
-		stroke_PS (o);
-
-		newpath_PS (o);
-		moveto_PS (o, P.O2X + P.R + 1.0 * P.B, P.O2Y - P.R + 0.666 * P.R * value, 3);
-		lineto_PS (o, P.O2X + P.R + 1.5 * P.B, P.O2Y - P.R + 0.666 * P.R * value, 3);
+		moveto_PS (o, X + 1.0 * P.B, Y + 0.666 * P.R * value, 3);
+		lineto_PS (o, X + 1.5 * P.B, Y + 0.666 * P.R * value, 3);
 		stroke_PS (o);
 	}
 
 	font_PS (o, "ArialNarrow-Bold", 6);
 	color_PS(o, "0.0 0.0 0.0");
-	moveto_PS (o, P.O1X + 1.0 * P.R + 0.9 * P.B, P.O1Y - 1.0 * P.R, 3);
+	moveto_PS (o, X + 0.9 * P.B, Y, 3);
 	rotate_PS(o, 90.0, 1);
 	text_PS(o, " (EXTENSION) show");
 	rotate_PS(o, 270.0, 1);
 
-	moveto_PS (o, P.O1X + 1.0 * P.R + 0.9 * P.B, P.O1Y + 1.0 * P.R - 0.92 * P.A , 3);
+	moveto_PS (o, X + 0.9 * P.B, Y + 2.0 * P.R - 0.92 * P.A , 3);
 	rotate_PS(o, 90.0, 1);
 	text_PS(o, " (COMPRESSION) show");
 	rotate_PS(o, 270.0, 1);
 
-	moveto_PS (o, P.O2X + 1.0 * P.R + 0.9 * P.B, P.O2Y - 1.0 * P.R, 3);
-	rotate_PS(o, 90.0, 1);
-	text_PS(o, " (EXTENSION) show");
-	rotate_PS(o, 270.0, 1);
 
-	moveto_PS (o, P.O2X + 1.0 * P.R + 0.9 * P.B, P.O2Y + 1.0 * P.R - 0.92 * P.A , 3);
-	rotate_PS(o, 90.0, 1);
-	text_PS(o, " (COMPRESSION) show");
-	rotate_PS(o, 270.0, 1);
 
 	return;
 }
@@ -625,7 +625,8 @@ void PS_dump_inversion_method (const vector <GDB>& inGDB, ofstream& o, const CEN
 
 	const PAPER P = RETURN_PAPER();
 
-	const bool FRACTURE = inGDB.at(0).DATATYPE == "FRACTURE" && is_BINGHAM_USE();
+	const bool IS_STRIAE = is_allowed_striae_datatype(inGDB.at(0).DATATYPE);
+	const bool IS_SC = is_allowed_SC_datatype(inGDB.at(0).DATATYPE);
 
 	string METHOD = "";
 
@@ -633,16 +634,16 @@ void PS_dump_inversion_method (const vector <GDB>& inGDB, ofstream& o, const CEN
 	color_PS (o, "0.0 0.0 0.0");
 	translate_PS (o, center.X + (center.radius / 2.0) - P.A, center.Y - center.radius - 20.0 * P.D, 3);
 
-	if 		(FRACTURE) 					METHOD = "Fracture statistics after Bingham (1964)";
-	else if (is_INVERSION_SPRANG())  	METHOD = "Regression after Sprang (1972)";
-	else if (is_INVERSION_FRY()) 		METHOD = "Regression after Fry (1999)";
-	else if (is_INVERSION_SHAN()) 		METHOD = "Regression after Shan et al. (2003)";
-	else if (is_INVERSION_ANGELIER()) 	METHOD = "Inversion after Angelier (1990)";
-	else if (is_INVERSION_TURNER()) 	METHOD = "Regression after Turner (1953)";
-	else if (is_INVERSION_BRUTEFORCE())	METHOD = "Brute force inversion";
-	else if (is_INVERSION_MICHAEL()) 	METHOD = "Inversion after Michael (1984)";
-	else if (is_INVERSION_MOSTAFA()) 	METHOD = "Inversion after Mostafa (2005)";
-	else if (is_INVERSION_YAMAJI()) 	METHOD = "Inversion after Yamaji (2000)";
+	if (is_BINGHAM_USE() && !(IS_STRIAE || IS_SC))				METHOD = "Fracture statistics after Bingham (1964)";
+	else if (is_INVERSION_SPRANG() && (IS_STRIAE || IS_SC))  	METHOD = "Regression after Sprang (1972)";
+	else if (is_INVERSION_FRY() && (IS_STRIAE || IS_SC))		METHOD = "Regression after Fry (1999)";
+	else if (is_INVERSION_SHAN() && (IS_STRIAE || IS_SC)) 		METHOD = "Regression after Shan et al. (2003)";
+	else if (is_INVERSION_ANGELIER() && (IS_STRIAE || IS_SC)) 	METHOD = "Inversion after Angelier (1990)";
+	else if (is_INVERSION_TURNER() && (IS_STRIAE || IS_SC)) 	METHOD = "Regression after Turner (1953)";
+	else if (is_INVERSION_BRUTEFORCE() && (IS_STRIAE || IS_SC))	METHOD = "Brute force inversion";
+	else if (is_INVERSION_MICHAEL() && (IS_STRIAE || IS_SC)) 	METHOD = "Inversion after Michael (1984)";
+	else if (is_INVERSION_MOSTAFA() && (IS_STRIAE || IS_SC)) 	METHOD = "Inversion after Mostafa (2005)";
+	else if (is_INVERSION_YAMAJI() && (IS_STRIAE || IS_SC)) 	METHOD = "Inversion after Yamaji (2000)";
 	else ASSERT_DEAD_END();
 
 	text_PS (o, 0.0, 0.0, 3, METHOD);
@@ -754,7 +755,11 @@ void PS_mohr_circle (const vector <GDB>& inGDB, ofstream& o, const CENTER& mohrc
 
 	const PAPER P = RETURN_PAPER();
 
-	ASSERT (is_allowed_striae_datatype (inGDB.at(0).DATATYPE));
+	const bool SCd = is_allowed_SC_datatype (inGDB.at(0).DATATYPE);
+	const bool STd = is_allowed_striae_datatype (inGDB.at(0).DATATYPE);
+
+	ASSERT_EXACTLY_ONE_TRUE(SCd, STd);
+
 
 	if (inGDB.at(0).STV.size() < 1 || inGDB.at(0).SFV.size() < 1) return;
 
@@ -1701,7 +1706,7 @@ void PS_GDB_DATA (const vector <GDB>& inGDB, ofstream& o, const CENTER& center) 
 		else if (is_allowed_plane_datatype (DG)) 	PS_DRAW_plane (inGDB.at(i), o, center);
 		else if (is_allowed_striae_datatype(DG)) 	PS_DRAW_striae (inGDB.at(i), o, center);
 		else if (is_allowed_SC_datatype (DG)) 		PS_DRAW_sc (inGDB.at(i), o, center);
-		else 										PS_DRAW_sc (inGDB.at(i), o, center);
+		else 										ASSERT_DEAD_END()
 	}
 	return;
 }
@@ -1743,12 +1748,14 @@ void PS_GDB (const vector <vector <GDB> >& inGDB_G, ofstream& o, bool TILT) {
 
 	const bool STRIAE = is_allowed_striae_datatype(inGDB_G.at(0).at(0).DATATYPE);
 	const bool FRACTURE = inGDB_G.at(0).at(0).DATATYPE == "FRACTURE";
+	const bool SC = is_allowed_SC_datatype(inGDB_G.at(0).at(0).DATATYPE);
 
 	const bool no_INVERSION = is_INVERSION_NONE();
 	const bool no_BINGHAM = is_BINGHAM_NONE();
 
 	const bool dump_STR = STRIAE && !no_INVERSION;
 	const bool dump_BNG = FRACTURE && !no_BINGHAM;
+	const bool dump_SC  = SC && !no_INVERSION;
 
 	const PAPER P = RETURN_PAPER();
 
@@ -1792,7 +1799,7 @@ void PS_GDB (const vector <vector <GDB> >& inGDB_G, ofstream& o, bool TILT) {
 
 	PS_FOLD_GREAT_CIRCLE (to_dump, o, center);
 
-	if (!dump_STR && !dump_BNG) return;
+	if (!dump_STR && !dump_BNG && !dump_SC) return;
 
 	vector <string> INV;
 	vector <string> CLR;
@@ -1980,15 +1987,20 @@ void PS_DRAW_sc (const GDB& i, ofstream& o, const CENTER& center) {
 
 	const bool H = is_PLOT_HOEPPENER();
 
+	GDB d = SC_to_striae(i);
+	d.PSCOLOR = C_RGB_CLR;
 	if (H) {
 
 		PS_polepoint (i, o, X, Y, R, "C");
 		PS_polepoint (i, o, X, Y, R, "");
+
+		PS_striaearrow (d, o, center);
 	}
 	else {
 
 		PS_plane (i, o, X, Y, R, "C");
 		PS_plane (i, o, X, Y, R, "");
+		PS_striaearrow (d, o, center);
 	}
 	return;
 }
@@ -2023,12 +2035,14 @@ void PS_FOLD_GREAT_CIRCLE (const vector <GDB>& inGDB, ofstream& o, const CENTER&
 string PS_INVERSION_RESULTS (const vector <GDB>& inGDB, ofstream& o, const CENTER& center, const CENTER& mohr_center) {
 
 	const bool STRIAE = is_allowed_striae_datatype(inGDB.at(0).DATATYPE);
+	const bool SC = is_allowed_SC_datatype(inGDB.at(0).DATATYPE);
 	const bool FRACTURE = inGDB.at(0).DATATYPE == "FRACTURE";
 
 	const bool no_INVERSION = is_INVERSION_NONE();
 	const bool no_BINGHAM = is_BINGHAM_NONE();
 
 	const bool dump_STR = STRIAE && !no_INVERSION;
+	const bool dump_SC  = SC && !no_INVERSION;
 	const bool dump_BNG = FRACTURE && !no_BINGHAM;
 
 	string sd = "";
@@ -2040,24 +2054,24 @@ string PS_INVERSION_RESULTS (const vector <GDB>& inGDB, ofstream& o, const CENTE
 
 	if (STV.size() == 0 || SFV.size() == 0) return sd;
 
-	ASSERT_EXACTLY_ONE_TRUE (dump_STR, dump_BNG);
+	ASSERT_EXACTLY_ONE_TRUE (dump_STR, dump_BNG, dump_SC);
 
 	sd = PS_stressdata (inGDB, o, center);
 
-	if (STRIAE && !no_INVERSION) {
+	if ((STRIAE || SC) && !no_INVERSION) {
 
 		PS_stressarrows (o, inGDB, center);
 
-		PS_mohr_circle (inGDB, o, mohr_center);
+		if (!SC) PS_mohr_circle (inGDB, o, mohr_center);
 
-		if (! is_MULTIPLE_GROUPS()) {
+		if (!is_MULTIPLE_GROUPS() && !SC) {
 
 			PS_RUP_ANG_distribution (inGDB, o, center, "RUP");
 			PS_RUP_ANG_distribution (inGDB, o, center, "ANG");
 		}
 		PS_stress_state (o, inGDB, center);
 
-		PS_idealmovement (inGDB, o, center);
+		if (!SC) PS_idealmovement (inGDB, o, center);
 
 		PS_stress_axes (inGDB, o, center);
 	}
@@ -2218,24 +2232,24 @@ void PS_SYMBOL_draw_plane (ofstream& o, const double X, const double Y, const st
 
 		if (is_GRAYSCALE_USE()) {
 			PS_COLOR = FLD_GRY_CLR;
-			DASH = "6 6";
+			DASH = FLD_GRY_DSH;
 			LINEWIDTH = FLD_GRY_LNW;
 		}
 		else {
-			PS_COLOR = "0.00 0.00 1.00";
-			DASH = "6 6";
+			PS_COLOR = FLD_RGB_CLR;
+			DASH = FLD_RGB_DSH;
 			LINEWIDTH = 1.0;
 		}
 	}
 	else if (SC) {
 
 		if (is_GRAYSCALE_USE()) {
-			PS_COLOR = "0.80 0.80 0.80";
+			PS_COLOR = C_GRY_CLR;
 			LINEWIDTH = 2.0;
 		}
 		else {
-			PS_COLOR = "0.80 0.80 0.80";
-			LINEWIDTH = 1.0;
+			PS_COLOR = C_RGB_CLR;
+			LINEWIDTH = 2.0;
 		}
 	}
 	else {}
@@ -2673,6 +2687,11 @@ void PS_STEREONET_SYMBOLS (ofstream& o, const vector <vector <GDB> >& inGDB_G) {
 
 		text_PS(o, P.S1X + 0.1 * P.A, P.S1Y - 0.3 * P.A, 3, "SCHISTOSITY, CLEAVEGE");
 		PS_SYMBOLS_PLANE (DATATYPE, o);
+		//PS_SYMBOLS_STRIAE (o);
+
+		color_PS (o, "0.0 0.0 0.0");
+		text_PS (o, P.S1X + 2.6 * P.A, P.S1Y - 0.3 * P.A, 3, "STRESS INVERSION");
+		PS_SYMBOLS_INVERSION (o);
 	}
 	else {
 
@@ -2682,7 +2701,6 @@ void PS_STEREONET_SYMBOLS (ofstream& o, const vector <vector <GDB> >& inGDB_G) {
 
 		color_PS (o, "0.0 0.0 0.0");
 		text_PS (o, P.S1X + 2.6 * P.A, P.S1Y - 0.3 * P.A, 3, "STRESS INVERSION");
-
 		PS_SYMBOLS_INVERSION (o);
 	}
 }
@@ -3004,16 +3022,25 @@ void DUMP_TO_PS (const vector <vector <vector <GDB> > >& in_GDB_G, const vector 
 
 			PS_STEREONET_SYMBOLS (OPS, in_GDB_G.at(i));
 
-			bool SUCCESFULL = false;
+			bool SUCCESFULL_normal = false;
+			bool SUCCESFULL_tilt = false;
 
 			for (size_t j = 0; j < in_GDB_G.at(i).size(); j++) {
 
-				if (in_GDB_G.at(i).at(j).at(0).SFV.size() > 0) SUCCESFULL = true;
-			}
-			if (is_allowed_striae_datatype (F.DATATYPE) && ! is_INVERSION_NONE() && SUCCESFULL) {
+				if (in_GDB_G.at(i).at(j).at(0).SFV.size() > 0) SUCCESFULL_normal = true;
+				if (t_GDB_G.at(i).at(j).at(0).SFV.size() > 0) SUCCESFULL_tilt = true;
 
-				PS_stress_scale (OPS);
 			}
+			if ((is_allowed_striae_datatype (F.DATATYPE) || is_allowed_SC_datatype (F.DATATYPE)) && ! is_INVERSION_NONE() && SUCCESFULL_normal) {
+
+				PS_stress_scale (OPS, false);
+			}
+
+			if ((is_allowed_striae_datatype (F.DATATYPE) || is_allowed_SC_datatype (F.DATATYPE)) && ! is_INVERSION_NONE() && SUCCESFULL_tilt) {
+
+				PS_stress_scale (OPS, true);
+			}
+
 			PS_border (in_GDB_G.at(i).at(0), OPS);
 
 			PS_GDB (in_GDB_G.at(i), OPS, false);

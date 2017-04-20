@@ -1,4 +1,4 @@
-// Copyright (C) 2012-2016, Ágoston Sasvári
+// Copyright (C) 2012-2017, Ágoston Sasvári
 // All rights reserved.
 // This code is published under the GNU Lesser General Public License.
 
@@ -73,7 +73,7 @@ void print_banner () {
     writeln("|                                                                  |");
     writeln("|                       Data processing software                   |");
     writeln("|                                                                  |");
-    writeln("|            Copyright (C) 2012-2016, Agoston Sasvari.             |");
+    writeln("|            Copyright (C) 2012-2017, Agoston Sasvari.             |");
     writeln("|                        All rights reserved.                      |");
     writeln("|             This a free software, license: GNU LGPL.             |");
     writeln("|                                                                  |");
@@ -1629,6 +1629,8 @@ void output_elapsed_time (const clock_t& start_t, const clock_t& finish_t) {
 
 string build_date () {
 
+	return __DATE__;
+/*
 	vector <char> date (11, ' ');
 
 	string DATE  = __DATE__;
@@ -1650,6 +1652,7 @@ string build_date () {
 	for (size_t i = 0; i < 11; i++) DATE.at(i) = date.at(i);
 
 	return DATE;
+*/
 }
 
 string build_time () {

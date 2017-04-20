@@ -1,4 +1,4 @@
-// Copyright (C) 2012-2016, Ágoston Sasvári
+// Copyright (C) 2012-2017, Ágoston Sasvári
 // All rights reserved.
 // This code is published under the GNU Lesser General Public License.
 
@@ -9,6 +9,7 @@
 #include <iomanip>
 #include <iostream>
 #include <stdexcept>
+#include <sys/types.h>
 #include <sys/stat.h>
 
 #include "allowed_keys.hpp"
@@ -464,19 +465,111 @@ vector <GDB> combine_inversion_for_none_offset (const vector <GDB>& process_GDB,
 
 	vector <GDB> OUT = process_GDB;
 
+	const bool IS_STRIAE = is_allowed_striae_datatype(process_GDB.at(0).DATATYPE);
+	const bool IS_SC = is_allowed_SC_datatype(process_GDB.at(0).DATATYPE);
+
+	ASSERT_EXACTLY_ONE_TRUE(IS_STRIAE, IS_SC);
+
 	for (size_t i = 0; i < OUT.size(); i++) {
 		for (size_t j = 0; j < hasoffset_GDB.size(); j++) {
 
 			const string P_ID = OUT.at(i).ID;
 			const string H_ID = hasoffset_GDB.at(j).ID;
 
-			if (P_ID == H_ID) OUT.at(i) = hasoffset_GDB.at(j);
+			if (P_ID == H_ID && IS_STRIAE) OUT.at(i) = hasoffset_GDB.at(j);
+			if (P_ID == H_ID && IS_SC){
+
+				OUT.at(i).SFV = hasoffset_GDB.at(j).SFV;
+				OUT.at(i).STV = hasoffset_GDB.at(j).STV;
+			}
 		}
 	}
 	return OUT;
 }
 
 vector <vector <GDB> > PROCESS_GROUPS (const vector <vector <GDB> >& inGDB_G, const bool TILT) {
+
+	vector <vector <GDB> > outGDB_G = inGDB_G;
+
+	outGDB_G = associate_empty_clustercode (outGDB_G, 2);
+
+	for (size_t i = 0; i < outGDB_G.size(); i++) {
+
+		vector <GDB> process_GDB = outGDB_G.at(i);
+
+		const string DT = process_GDB.at(0).DATATYPE;
+		const bool IS_STRIAE = is_allowed_striae_datatype(DT);
+		const bool IS_SC = is_allowed_SC_datatype(DT);
+		const bool FOLD_TO_PROCESS = is_allowed_foldsurface_processing(DT);
+
+		const bool FRACTURE_TO_PROCESS = is_BINGHAM_USE() && DT == "FRACTURE";
+		const bool SC_TO_PROCESS = !is_INVERSION_NONE() && IS_SC;
+		const bool STRIAE_TO_PROCESS = !is_INVERSION_NONE() && IS_STRIAE;
+
+		const bool ENOUGH_HOMOGENEOUS = has_inhomogeneous_enough(process_GDB);
+
+		if (FRACTURE_TO_PROCESS || STRIAE_TO_PROCESS || SC_TO_PROCESS) {
+
+			vector <GDB> hasoffset_GDB = process_GDB;
+
+			if (IS_SC) hasoffset_GDB = convert_SC_to_striae_with_offset(process_GDB);
+			if (IS_STRIAE) hasoffset_GDB = return_striae_with_offset (process_GDB);//was testGDB
+
+			ASSERT_LE (hasoffset_GDB.size(), process_GDB.size());
+
+			const bool ENOUGH_DATA = hasoffset_GDB.size() >= minimum_independent_dataset();
+
+			if (ENOUGH_HOMOGENEOUS && ENOUGH_DATA) {
+
+				cout_method_text (hasoffset_GDB);
+
+				vector <GDB> hasoffset_virtual_GDB;
+
+				if (is_VIRTUAL_USE() && (STRIAE_TO_PROCESS || SC_TO_PROCESS)) {
+
+					hasoffset_virtual_GDB = generate_virtual_striae (hasoffset_GDB);
+				}
+
+				if (is_VIRTUAL_USE()) 	INVERSION (hasoffset_virtual_GDB);
+				else 					INVERSION (hasoffset_GDB);
+
+				const vector <STRESSTENSOR> STV = return_STV ();
+				const vector <STRESSFIELD> SFV = return_SFV ();
+
+				ASSERT_EQ (SFV.size(), STV.size());
+
+				hasoffset_GDB = ASSOCIATE_STV_SFV (hasoffset_GDB, STV, SFV);
+
+				const bool SUCCESSFULL = (STV.size() > 0 && SFV.size() > 0);
+
+				const bool SUCC_STR = SUCCESSFULL && (STRIAE_TO_PROCESS || SC_TO_PROCESS);
+
+				if (SUCC_STR) {
+
+					const size_t MX = STV.size() - 1;
+
+					hasoffset_GDB = apply_inversion_result (hasoffset_GDB, STV.at(MX));
+
+					if (STRIAE_TO_PROCESS) hasoffset_GDB = apply_RUP_ANG_CLUSTERING_result (hasoffset_GDB);
+				}
+				cout_inversion_results (hasoffset_GDB, SFV);
+
+				process_GDB = combine_inversion_for_none_offset (process_GDB, hasoffset_GDB);
+			}
+			else cout_less_than_required_text (hasoffset_GDB);
+		}
+		else if (FOLD_TO_PROCESS) process_GDB = CALCULATE_FOLDSURFACE_NORMAL (process_GDB);
+		else {}
+
+		outGDB_G.at(i) = process_GDB;
+	}
+	return outGDB_G;
+}
+
+
+/*
+ *
+ * vector <vector <GDB> > PROCESS_GROUPS (const vector <vector <GDB> >& inGDB_G, const bool TILT) {
 
 	vector <vector <GDB> > outGDB_G = inGDB_G;
 
@@ -552,7 +645,7 @@ vector <vector <GDB> > PROCESS_GROUPS (const vector <vector <GDB> >& inGDB_G, co
 	}
 	return outGDB_G;
 }
-
+ */
 void cout_method_text (const vector <GDB>& inGDB) {
 
 	if (is_mode_DEBUG()) return;
@@ -566,6 +659,7 @@ void cout_method_text (const vector <GDB>& inGDB) {
 	const bool CLUSTER = !is_CLUSTERING_NONE();
 	const bool RUP = !is_RUP_CLUSTERING_NONE();
 	const bool IS_STRIAE = is_allowed_striae_datatype (inGDB.at(0).DATATYPE);
+	const bool IS_SC = is_allowed_SC_datatype(inGDB.at(0).DATATYPE);
 
 	string OUT = "  - For '" + LOC + "' location";
 
@@ -580,16 +674,16 @@ void cout_method_text (const vector <GDB>& inGDB) {
 
 	string M = "";
 
-	if (is_INVERSION_ANGELIER() && IS_STRIAE)			M = "inversion after Angelier (1990): ";
-	else if (is_BINGHAM_USE() && !IS_STRIAE) 			M = "fracture statistics after Bingham (1964): ";
-	else if (is_INVERSION_BRUTEFORCE() && IS_STRIAE)	M = "brute force inversion: ";
-	else if (is_INVERSION_FRY() && IS_STRIAE)			M = "regression after Fry (1999): ";
-	else if (is_INVERSION_MICHAEL() && IS_STRIAE)		M = "regression after Michael (1984): ";
-	else if (is_INVERSION_MOSTAFA() && IS_STRIAE) 		M = "inversion after Mostafa (2005): ";
-	else if (is_INVERSION_SPRANG() && IS_STRIAE)		M = "regression after Sprang (1972): ";
-	else if (is_INVERSION_TURNER() && IS_STRIAE) 		M = "regression after Turner (1953): ";
-	else if (is_INVERSION_SHAN() && IS_STRIAE)			M = "regression after Shan et al. (2003): ";
-	else if (is_INVERSION_YAMAJI() && IS_STRIAE)		M = "iteration after Yamaji (2xxx): ";
+	if (is_INVERSION_ANGELIER() && (IS_STRIAE || IS_SC))		M = "inversion after Angelier (1990): ";
+	else if (is_BINGHAM_USE() && !(IS_STRIAE || IS_SC)) 		M = "fracture statistics after Bingham (1964): ";
+	else if (is_INVERSION_BRUTEFORCE() && (IS_STRIAE || IS_SC))	M = "brute force inversion: ";
+	else if (is_INVERSION_FRY() && (IS_STRIAE || IS_SC))		M = "regression after Fry (1999): ";
+	else if (is_INVERSION_MICHAEL() && (IS_STRIAE || IS_SC))	M = "regression after Michael (1984): ";
+	else if (is_INVERSION_MOSTAFA() && (IS_STRIAE || IS_SC)) 	M = "inversion after Mostafa (2005): ";
+	else if (is_INVERSION_SPRANG() && (IS_STRIAE || IS_SC))		M = "regression after Sprang (1972): ";
+	else if (is_INVERSION_TURNER() && (IS_STRIAE || IS_SC)) 	M = "regression after Turner (1953): ";
+	else if (is_INVERSION_SHAN() && (IS_STRIAE || IS_SC))		M = "regression after Shan et al. (2003): ";
+	else if (is_INVERSION_YAMAJI() && (IS_STRIAE || IS_SC))		M = "iteration after Yamaji (2xxx): ";
 	else if (is_allowed_foldsurface_processing(inGDB.at(0).DATATYPE)) {
 		M = " fold axis calculation: ";
 	}

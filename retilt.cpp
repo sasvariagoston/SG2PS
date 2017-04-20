@@ -1,4 +1,4 @@
-// Copyright (C) 2012-2016, Ágoston Sasvári
+// Copyright (C) 2012-2017, Ágoston Sasvári
 // All rights reserved.
 // This code is published under the GNU Lesser General Public License.
 
@@ -154,7 +154,7 @@ GDB tilt_striae (const GDB& in, const VCTR& AXIS, const double ANGLE) {
 
 GDB tilt_SC (const GDB& in, const VCTR& AXIS, const double ANGLE) {
 
-	const double ANG_IN = fabs (vector_angle (in.N, in.NC));
+	const double ANG_IN = fabs(vector_angle (in.N, in.NC));
 
 	GDB OUT = in;
 
@@ -172,9 +172,9 @@ GDB tilt_SC (const GDB& in, const VCTR& AXIS, const double ANGLE) {
 
 	OUT.corrL = dipdir_dip_from_DXDYDZ (OUT.DC);
 
-	const double ANG_OUT = fabs (vector_angle (OUT.N, OUT.NC));
+	const double ANG_OUT = fabs(vector_angle (OUT.N, OUT.NC));
 
-	ASSERT (is_in_range(ANG_IN, ANG_IN, ANG_OUT));
+	//ASSERT (is_in_range(ANG_IN, ANG_IN, ANG_OUT));
 
 	return OUT;
 }

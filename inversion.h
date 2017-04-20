@@ -1,4 +1,4 @@
-// Copyright (C) 2012-2016, Ágoston Sasvári
+// Copyright (C) 2012-2017, Ágoston Sasvári
 // All rights reserved.
 // This code is published under the GNU Lesser General Public License.
 
@@ -9,6 +9,9 @@
 #include "structs.h"
 
 using namespace std;
+
+GDB SC_to_striae (const GDB& in);
+vector <GDB> convert_SC_to_striae_with_offset (const vector <GDB>& process_GDB);
 
 vector <GDB> return_striae_with_offset (const vector <GDB>& inGDB);
 

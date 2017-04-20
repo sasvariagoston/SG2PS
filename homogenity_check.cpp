@@ -1,4 +1,4 @@
-// Copyright (C) 2012-2016, Ágoston Sasvári
+// Copyright (C) 2012-2017, Ágoston Sasvári
 // All rights reserved.
 // This code is published under the GNU Lesser General Public License.
 
@@ -164,9 +164,10 @@ vector <GDB> return_GDB_with_no_homogeneous_data (const vector <GDB>& inGDB) {
 
 bool has_inhomogeneous_enough (const vector <GDB>& inGDB) {
 
-	const bool STRIAE = is_allowed_striae_datatype(inGDB.at(0).DATATYPE);
+	const bool is_STRIAE = is_allowed_striae_datatype(inGDB.at(0).DATATYPE);
+	const bool is_SC = is_allowed_SC_datatype(inGDB.at(0).DATATYPE);
 
-	if (is_INVERSION_NONE() && STRIAE) return true;
+	if (is_INVERSION_NONE() && (is_STRIAE || is_SC)) return true;
 
 	if (!(check_dataset_homogenity (inGDB))) return false;
 

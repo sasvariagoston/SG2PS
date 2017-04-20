@@ -1,11 +1,6 @@
-/*
- * bbo.cpp
-
-
- *
- *  Created on: 6 Jul 2016
- *      Author: sasvariagoston_admin
- */
+// Copyright (C) 2012-2017 Ágoston Sasvári
+// All rights reserved.
+// This code is published under the GNU Lesser General Public License.
 
 #include "assertions.hpp"
 #include "bbo.hpp"

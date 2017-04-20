@@ -1,4 +1,4 @@
-// Copyright (C) 2012-2016, Ágoston Sasvári
+// Copyright (C) 2012-2017, Ágoston Sasvári
 // All rights reserved.
 // This code is published under the GNU Lesser General Public License.
 
@@ -88,7 +88,6 @@ void PS_well_header (ofstream& o) {
 	o << '\n';
 	o << "%%EndComments" << '\n' << '\n';
 	o << "<</PageSize [ 842 1191 ]>> setpagedevice " << '\n';
-
 	text_PS (o, "/measurement {");
 	newpath_PS (o);
 	moveto_PS (o,  -1.0,  0.0, 3);
@@ -99,7 +98,6 @@ void PS_well_header (ofstream& o) {
 	color_PS (o, "0.00 0.00 0.00");
 	fill_PS (o);
 	stroke_PS(o);
-
 	linewidth_PS(o, 0.5, 1);
 
 	color_PS (o, "1.00 1.00 1.00");
@@ -113,7 +111,6 @@ void PS_well_header (ofstream& o) {
 	stroke_PS(o);
 
 	text_PS (o, "} def");
-
 
 	text_PS (o, "/overturned_measurement {");
 		newpath_PS (o);
@@ -2107,11 +2104,13 @@ void OUTPUT_TO_WELL_PS_TXT (const vector <vector <GDB> >& GDB_G) {
 					<< "   - Less data in "
 					<< temp.at(0).LOC << " location" << flush;
 
+
 					if (temp.at(0).FORMATION.size() > 0) {
 
 						cout << ", " << temp.at(0).FORMATION << " formation" << flush;
 					}
 					cout << ", " << DT << " data type" << flush;
+
 
 					if (is_GROUPS_USE()) {
 
@@ -2131,6 +2130,7 @@ void OUTPUT_TO_WELL_PS_TXT (const vector <vector <GDB> >& GDB_G) {
 				const bool MIN_VAL_OK = MIN_VAL > 0.0;
 				ASSERT_FINITE (MAX_VAL, MIN_VAL);
 				const bool MAX_VAL_OK = MAX_VAL > MIN_VAL;
+
 
 				if (MIN_VAL_OK && MAX_VAL_OK) {
 
