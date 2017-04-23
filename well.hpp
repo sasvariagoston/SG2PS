@@ -26,7 +26,7 @@ double calculate_interval_depth (const vector <GDB>& inGDB);//ok
 
 vector <GDB> return_GDB_for_data_interval (const vector <GDB>& inGDB, const double MIN, const double MAX); //ok
 
-double stdev_for_interval (const vector <GDB>& inGDB, const bool DIPDIR, const size_t RUN);//ok
+double stdev_for_interval (const vector <GDB>& inGDB, const bool DIPDIR);//ok
 WELL_INTERVAL interval_average (const vector <GDB>& inGDB, const size_t RUN);
 
 vector <WELL_INTERVAL> WELL_AVERAGE_M (const vector <GDB>& p_GDB);

@@ -651,7 +651,7 @@ void PS_dump_inversion_method (const vector <GDB>& inGDB, ofstream& o, const CEN
 	translate_PS(o, - center.X - (center.radius / 2.0) + P.A, - center.Y + center.radius + 20.0 * P.D, 3);
 }
 
-string PS_stressdata (const vector <GDB>& inGDB, ofstream& o, const CENTER& center) {
+string PS_stressdata (const vector <GDB>& inGDB, ofstream& o) {
 
 	const STRESSFIELD sf = inGDB.at(0).SFV.at(inGDB.at(0).SFV.size() - 1);
 
@@ -2056,7 +2056,7 @@ string PS_INVERSION_RESULTS (const vector <GDB>& inGDB, ofstream& o, const CENTE
 
 	ASSERT_EXACTLY_ONE_TRUE (dump_STR, dump_BNG, dump_SC);
 
-	sd = PS_stressdata (inGDB, o, center);
+	sd = PS_stressdata (inGDB, o);
 
 	if ((STRIAE || SC) && !no_INVERSION) {
 

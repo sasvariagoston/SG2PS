@@ -485,7 +485,7 @@ vector <GDB> combine_inversion_for_none_offset (const vector <GDB>& process_GDB,
 	return OUT;
 }
 
-vector <vector <GDB> > PROCESS_GROUPS (const vector <vector <GDB> >& inGDB_G, const bool TILT) {
+vector <vector <GDB> > PROCESS_GROUPS (const vector <vector <GDB> >& inGDB_G) {
 
 	vector <vector <GDB> > outGDB_G = inGDB_G;
 

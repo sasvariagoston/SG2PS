@@ -15,7 +15,7 @@ bool is_PROCESS_AS_TRAJECTORY ();
 string return_inputfilename ();
 void set_inputfilename (const string filename);
 
-vector <GDB> competeRGFcontect (const string projectname);
+vector <GDB> competeRGFcontect ();
 
 double right_hand_rule_to_german (const double corrDIPDIR);
 double german_to_right_hand_rule (const double corrDIPDIR);

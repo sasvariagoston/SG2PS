@@ -34,7 +34,7 @@ vector <GDB> MERGE_GROUPS_TO_GDB (const vector <vector <GDB> >& GDB_G);
 
 vector <GDB> combine_inversion_for_none_offset (const vector <GDB>& process_GDB, const vector <GDB>& hasoffset_GDB);
 
-vector <vector <GDB> > PROCESS_GROUPS (const vector <vector <GDB> >& inGDB_G, const bool TILT);
+vector <vector <GDB> > PROCESS_GROUPS (const vector <vector <GDB> >& inGDB_G);
 
 void output_rgf_header (ofstream& o, const bool AVERAGE);
 void output_rgf_record (const GDB& i, ofstream& o, const bool AVERAGE);

@@ -24,7 +24,7 @@ void PS_getstereonet (ofstream& o, CENTER center);
 void PS_stress_scale (ofstream& o, const bool TILT);
 void PS_border (const vector <GDB>& inGDB, ofstream& o);
 void PS_dump_inversion_method (const vector <GDB>& inGDB, ofstream& o, const CENTER& center);
-string PS_stressdata (const vector <GDB>& inGDB, ofstream& o, const CENTER& center);
+string PS_stressdata (const vector <GDB>& inGDB, ofstream& o);
 void PS_stressarrows (ofstream& o, const vector <GDB>& inGDB, const CENTER& center);
 void PS_mohr_arcs (ofstream& o, const CENTER& mohrcenter, const double CNTR, const double RAD);
 void PS_mohr_circle (const vector <GDB>& inGDB, ofstream& o, const CENTER& mohrcenter);

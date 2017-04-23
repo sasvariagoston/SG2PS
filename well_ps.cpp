@@ -499,9 +499,6 @@ void INIT_WELL_TOPS (const vector <GDB>& inGDB) {
 
 		vector <GDB> temp2 = SORT_GDB (temp_G.at(i), "DEPTH");
 
-		const double D1 = temp_G.at(i).at(0).DEPTH;
-		const double D2 = temp_G.at(i).at(temp_G.at(i).size() - 1).DEPTH;
-
 		const string L1 = temp_G.at(i).at(0).LOC;
 		const string L2 = temp_G.at(i).at(temp_G.at(i).size() - 1).LOC;
 		ASSERT_EQ (L1, L2)

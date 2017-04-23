@@ -258,7 +258,7 @@ vector <GDB> return_GDB_for_data_interval (const vector <GDB>& inGDB, const doub
 	return OUT;
 }
 
-double stdev_for_interval (const vector <GDB>& inGDB, const bool DIPDIR, const size_t RUN) {
+double stdev_for_interval (const vector <GDB>& inGDB, const bool DIPDIR) {
 
 	ASSERT (inGDB.size() != 0);
 	if (inGDB.size() == 1) return 0.0;
@@ -350,8 +350,8 @@ WELL_INTERVAL interval_average (const vector <GDB>& inGDB, const size_t RUN) {
 
 	OUT.INT_AV_DD = dipdir_dip_from_DXDYDZ (OUT.INT_AV_D);
 
-	OUT.INT_AV_DD_STDEV = stdev_for_interval (dummy, true, RUN);//should be inGDB!
-	OUT.INT_AV_D_STDEV = stdev_for_interval (dummy, false, RUN);//should be inGDB!
+	OUT.INT_AV_DD_STDEV = stdev_for_interval (dummy, true);//should be inGDB!
+	OUT.INT_AV_D_STDEV = stdev_for_interval (dummy, false);//should be inGDB!
 
 	return OUT;
 }

@@ -65,7 +65,7 @@ void set_inputfilename (const string filename) {
 	return;
 }
 
-vector <GDB> competeRGFcontect (const string projectname) {
+vector <GDB> competeRGFcontect() {
 
 	vector <GDB> outGDB = create_GDB_from_rgf ();
 
@@ -681,7 +681,7 @@ vector <vector <GDB> > EVALUATE (const vector <vector <GDB> >& inGDB_G) {
 
 		P = ASSOCIATE_AVERAGE_BEDDING_GROUPS (P);
 	}
-	P = PROCESS_GROUPS (P, TLT);
+	P = PROCESS_GROUPS (P);
 
 	vector <GDB> p = MERGE_GROUPS_TO_GDB (P);
 
@@ -726,7 +726,7 @@ void PROCESS_RGF (const string inputfilename, const bool XY_OK, const bool TRJ_O
 
 	GENERATE_FOLDER_NAMES (inputfilename);
 
-	vector <GDB> nGDB = competeRGFcontect (inputfilename);
+	vector <GDB> nGDB = competeRGFcontect ();
 
 	if (is_WELLDATA_USE ()) {
 

@@ -154,8 +154,6 @@ GDB tilt_striae (const GDB& in, const VCTR& AXIS, const double ANGLE) {
 
 GDB tilt_SC (const GDB& in, const VCTR& AXIS, const double ANGLE) {
 
-	const double ANG_IN = fabs(vector_angle (in.N, in.NC));
-
 	GDB OUT = in;
 
 	OUT = tilt_plane (OUT, AXIS, ANGLE);
@@ -171,10 +169,6 @@ GDB tilt_SC (const GDB& in, const VCTR& AXIS, const double ANGLE) {
 	OUT.SC = crossproduct(OUT.NC, OUT.DC);
 
 	OUT.corrL = dipdir_dip_from_DXDYDZ (OUT.DC);
-
-	const double ANG_OUT = fabs(vector_angle (OUT.N, OUT.NC));
-
-	//ASSERT (is_in_range(ANG_IN, ANG_IN, ANG_OUT));
 
 	return OUT;
 }
