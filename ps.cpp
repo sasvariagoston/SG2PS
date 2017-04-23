@@ -2961,7 +2961,6 @@ void OUTPUT_TO_PS (const vector <vector <GDB> >& in_GDB_G, const vector <vector 
 		t_to_dump = prepare_GDB_G_for_multiple_groups (t_GDB_G);
 	}
 	else {
-
 		n_to_dump = prepare_GDB_G_for_NO_multiple_groups (in_GDB_G);
 		t_to_dump = prepare_GDB_G_for_NO_multiple_groups (t_GDB_G);
 	}
@@ -3013,7 +3012,6 @@ void DUMP_TO_PS (const vector <vector <vector <GDB> > >& in_GDB_G, const vector 
 			if (! dir_exists(DATA_FOLDER)) make_dir (DATA_FOLDER);
 
 			const string PS_NAME = generate_ACTUAL_PS_NAME();
-
 			ofstream OPS (PS_NAME.c_str());
 
 			PS_stereonet_header (OPS);
@@ -3023,21 +3021,20 @@ void DUMP_TO_PS (const vector <vector <vector <GDB> > >& in_GDB_G, const vector 
 			PS_STEREONET_SYMBOLS (OPS, in_GDB_G.at(i));
 
 			bool SUCCESFULL_normal = false;
-			bool SUCCESFULL_tilt = false;
-
 			for (size_t j = 0; j < in_GDB_G.at(i).size(); j++) {
-
 				if (in_GDB_G.at(i).at(j).at(0).SFV.size() > 0) SUCCESFULL_normal = true;
-				if (t_GDB_G.at(i).at(j).at(0).SFV.size() > 0) SUCCESFULL_tilt = true;
-
 			}
-			if ((is_allowed_striae_datatype (F.DATATYPE) || is_allowed_SC_datatype (F.DATATYPE)) && ! is_INVERSION_NONE() && SUCCESFULL_normal) {
 
+			bool SUCCESFULL_tilt = false;
+			for (size_t j = 0; j < t_GDB_G.at(i).size(); j++) {
+				if (t_GDB_G.at(i).at(j).at(0).SFV.size() > 0) SUCCESFULL_tilt = true;
+			}
+
+			if ((is_allowed_striae_datatype (F.DATATYPE) || is_allowed_SC_datatype (F.DATATYPE)) && ! is_INVERSION_NONE() && SUCCESFULL_normal) {
 				PS_stress_scale (OPS, false);
 			}
 
 			if ((is_allowed_striae_datatype (F.DATATYPE) || is_allowed_SC_datatype (F.DATATYPE)) && ! is_INVERSION_NONE() && SUCCESFULL_tilt) {
-
 				PS_stress_scale (OPS, true);
 			}
 
@@ -3052,7 +3049,6 @@ void DUMP_TO_PS (const vector <vector <vector <GDB> > >& in_GDB_G, const vector 
 
 				DATANUMBER = DATANUMBER + in_GDB_G.at(i).at(j).size();
 			}
-
 			counter = counter + DATANUMBER;
 
 			PS_datanumber_averagebedding (in_GDB_G.at(i).at(0).at(0), OPS, DATANUMBER);
@@ -3063,6 +3059,5 @@ void DUMP_TO_PS (const vector <vector <vector <GDB> > >& in_GDB_G, const vector 
 		}
 	}
 	ASSERT_EQ (counter, DATA_TO_PLOT);
-
 	return;
 }

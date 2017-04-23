@@ -750,11 +750,13 @@ void PROCESS_RGF (const string inputfilename, const bool XY_OK, const bool TRJ_O
 	if (is_FORMATION_USE()) nGDB_G = SEPARATE_DATASET (nGDB_G, "FORMATION", "FORMATION");
 	if (is_GROUPS_USE()) nGDB_G = SEPARATE_DATASET (nGDB_G, "GROUPS", "GROUPCODE");
 
+
 	nGDB_G = PREPARE_GDB_VECTOR_FOR_PROCESSING (nGDB_G, false);
 
 	nGDB_G = AVERAGE (nGDB_G);
 
 	nGDB_G = ASSOCIATE_AVERAGE_BEDDING_GROUPS (nGDB_G);
+
 
 	nGDB_G = clustering_GBD (nGDB_G);
 
@@ -768,6 +770,7 @@ void PROCESS_RGF (const string inputfilename, const bool XY_OK, const bool TRJ_O
 	if (is_GROUPS_USE()) nGDB_G = SEPARATE_DATASET (nGDB_G, "GROUPS", "GROUPCODE");
 
 	if (!is_mode_DEBUG()) cout << "DATA EVALUATION FROM '" << capslock(inputfilename) << ".RGF' DATABASE FILE" << endl;
+
 
 	size_t LOOPS_NUMBER = 2;
 	if (USE_TRJ) LOOPS_NUMBER = 4;
@@ -787,7 +790,6 @@ void PROCESS_RGF (const string inputfilename, const bool XY_OK, const bool TRJ_O
 		if (!is_mode_DEBUG()) OUTPUT_TO_RGF (MASTER_GDB.at(i));
 
 		if (PROCESS_AS_TILTED) OUTPUT_TO_PS (MASTER_GDB.at(i-1), MASTER_GDB.at(i));
-
 
 		OUTPUT_TO_WELL_PS_TXT (MASTER_GDB.at(i));
 

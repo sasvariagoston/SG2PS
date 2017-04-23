@@ -468,8 +468,6 @@ vector <GDB> combine_inversion_for_none_offset (const vector <GDB>& process_GDB,
 	const bool IS_STRIAE = is_allowed_striae_datatype(process_GDB.at(0).DATATYPE);
 	const bool IS_SC = is_allowed_SC_datatype(process_GDB.at(0).DATATYPE);
 
-	ASSERT_EXACTLY_ONE_TRUE(IS_STRIAE, IS_SC);
-
 	for (size_t i = 0; i < OUT.size(); i++) {
 		for (size_t j = 0; j < hasoffset_GDB.size(); j++) {
 
