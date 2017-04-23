@@ -80,7 +80,7 @@ void PS_SYMBOLS_border (ofstream& o);
 void PS_SYMBOLS_ROSE (const vector <GDB>& inGDB, ofstream& o);
 void PS_SYMBOLS_LABEL (ofstream& o);
 void PS_SYMBOLS_GROUPS (ofstream& o);
-void PS_SYMBOL_draw_plane (ofstream& o, const double X, const double Y, const string& TYPE);
+void PS_SYMBOL_draw_plane (ofstream& o, const double X, const double Y, const string& TYPE, const bool is_SC);
 void PS_SYMBOLS_PLANE (const string& DATATYPE, ofstream& o);
 void PS_SYMBOLS_BINGHAM (ofstream& o);
 void PS_SYMBOLS_LINEATION (const string& DATATYPE, ofstream& o);

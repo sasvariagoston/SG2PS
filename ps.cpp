@@ -43,19 +43,15 @@ const string OTB_GRY_CLR = "0.00 0.00 0.00";
 const string OTB_RGB_CLR = "0.00 0.00 0.00";
 const string FLD_GRY_CLR = "0.60 0.60 0.60";
 const string FLD_RGB_CLR = "0.00 0.00 1.00";
-const string C_GRY_CLR = "0.60 0.60 0.60";
-const string C_RGB_CLR = "0.60 0.60 0.60";
 
-const double AV_GRY_LNW = 2;
-const double AV_RGB_LNW = 2;
-const double AVO_GRY_LNW = 2;
-const double AVO_RGB_LNW = 2;
-const double OTB_GRY_LNW = 2;
-const double OTB_RGB_LNW = 2;
-const double FLD_GRY_LNW = 2;
-const double FLD_RGB_LNW = 2;
-const double C_GRY_LNW = 2;
-const double C_RGB_LNW = 2;
+const double AV_GRY_LNW = 2.0;
+const double AV_RGB_LNW = 2.0;
+const double AVO_GRY_LNW = 2.0;
+const double AVO_RGB_LNW = 2.0;
+const double OTB_GRY_LNW = 2.0;
+const double OTB_RGB_LNW = 2.0;
+const double FLD_GRY_LNW = 2.0;
+const double FLD_RGB_LNW = 2.0;
 
 const string AV_GRY_DSH =  "  ";
 const string AV_RGB_DSH =  "  ";
@@ -65,8 +61,8 @@ const string OTB_GRY_DSH = "6 6";
 const string OTB_RGB_DSH = "6 6";
 const string FLD_GRY_DSH = "6 6";
 const string FLD_RGB_DSH = "6 6";
-const string C_GRY_DSH =   "6 6";
-const string C_RGB_DSH =   "  ";
+const string C_GRY_DSH =   "12 12";
+const string C_RGB_DSH =   "12 12";
 }
 
 void PS_s1s2s3 (ofstream& o, const string COLOR, const bool ITER, const string AXIS) {
@@ -1327,17 +1323,18 @@ void PS_plane (const GDB& i, ofstream& o, const double X, const double Y, const 
 			DSH = FLD_RGB_DSH;
 		}
 	}
+
 	else if (C) {
 		if (is_GRAYSCALE_USE()) {
 
-			CLR = C_GRY_CLR;
-			LWD = C_GRY_LNW;
+			CLR = i.PSCOLOR;
+			LWD = is_LINEWIDTH();
 			DSH = C_GRY_DSH;
 		}
 		else {
 
-			CLR = C_RGB_CLR;
-			LWD = C_RGB_LNW;
+			CLR = i.PSCOLOR;
+			LWD = is_LINEWIDTH();
 			DSH = C_RGB_DSH;
 		}
 	}
@@ -1452,11 +1449,13 @@ void PS_polepoint (const GDB& i, ofstream& o, const double X, const double Y, co
 		if (G) 	CLR = FLD_GRY_CLR;
 		else 	CLR = FLD_RGB_CLR;
 	}
+	/*
 	else if (C) {
 
 		if (G) 	CLR = C_GRY_CLR;
 		else 	CLR = C_RGB_CLR;
 	}
+	*/
 	else if (ID) {
 
 		if (G) 	CLR = "0.0 0.0 0.0";
@@ -1872,7 +1871,6 @@ void PS_rosesegment (ofstream& o, const CENTER center, const double percentage, 
 		fill_PS (o);
 		closepath_PS (o);
 	}
-
 	newpath_PS (o);
 
 	if (c_plane) {
@@ -1988,16 +1986,14 @@ void PS_DRAW_sc (const GDB& i, ofstream& o, const CENTER& center) {
 	const bool H = is_PLOT_HOEPPENER();
 
 	GDB d = SC_to_striae(i);
-	d.PSCOLOR = C_RGB_CLR;
-	if (H) {
 
+	if (H) {
 		PS_polepoint (i, o, X, Y, R, "C");
 		PS_polepoint (i, o, X, Y, R, "");
 
 		PS_striaearrow (d, o, center);
 	}
 	else {
-
 		PS_plane (i, o, X, Y, R, "C");
 		PS_plane (i, o, X, Y, R, "");
 		PS_striaearrow (d, o, center);
@@ -2154,7 +2150,7 @@ void PS_SYMBOLS_border (ofstream& o) {
 	text_PS (o, P.X - (6.1 * P.A), P.Y / 2.0 + 3.5 * P.A, 3, "SYMBOLS");
 }
 
-void PS_SYMBOL_draw_plane (ofstream& o, const double X, const double Y, const string& TYPE) {
+void PS_SYMBOL_draw_plane (ofstream& o, const double X, const double Y, const string& TYPE, const bool is_SC) {
 
 	const PAPER P = RETURN_PAPER();
 
@@ -2187,6 +2183,7 @@ void PS_SYMBOL_draw_plane (ofstream& o, const double X, const double Y, const st
 
 		PS_COLOR = generate_PSCOLOR_from_GC (TYPE);
 		if (is_GRAYSCALE_USE()) DASH = generate_DASH (TYPE);
+		if (is_SC) DASH = C_RGB_DSH;
 		LINEWIDTH = 2.0;
 	}
 	else if (AV) {
@@ -2241,17 +2238,19 @@ void PS_SYMBOL_draw_plane (ofstream& o, const double X, const double Y, const st
 			LINEWIDTH = 1.0;
 		}
 	}
+	/*
 	else if (SC) {
 
 		if (is_GRAYSCALE_USE()) {
-			PS_COLOR = C_GRY_CLR;
+			DASH = C_GRY_DSH;
 			LINEWIDTH = 2.0;
 		}
 		else {
-			PS_COLOR = C_RGB_CLR;
+			DASH = C_RGB_DSH;
 			LINEWIDTH = 2.0;
 		}
 	}
+	*/
 	else {}
 
 	ASSERT (LINEWIDTH > 0.0);
@@ -2275,7 +2274,7 @@ void PS_SYMBOLS_STRIAE (ofstream& o) {
 
 	color_PS (o, "0.0 0.0 0.0");
 
-	if (A) PS_SYMBOL_draw_plane (o, 1.0 * P.A, 1.80 * P.A, "X");
+	if (A) PS_SYMBOL_draw_plane (o, 1.0 * P.A, 1.80 * P.A, "X", false);
 	translate_PS (o, P.S1X + 0.6 * P.A, P.S1Y - 3.355 * P.A, 3);
 	rotate_PS (o, 20.0, 1);
 	text_PS(o, " newpath normalarrow");
@@ -2284,7 +2283,7 @@ void PS_SYMBOLS_STRIAE (ofstream& o) {
 	color_PS (o, "0.0 0.0 0.0");
 	text_PS (o, P.S1X + 0.6 * P.A + 5.0 * P.D, P.S1Y - 3.655 * P.A, 3, "Normal offset");
 
-	if (A) PS_SYMBOL_draw_plane (o, 1.0 * P.A, 1.97 * P.A, "X");
+	if (A) PS_SYMBOL_draw_plane (o, 1.0 * P.A, 1.97 * P.A, "X", false);
 	translate_PS (o, P.S1X + 0.6 * P.A, P.S1Y - 3.955 * P.A, 3);
 	rotate_PS (o, 160.0, 1);
 	text_PS(o, " newpath normalarrow");
@@ -2293,7 +2292,7 @@ void PS_SYMBOLS_STRIAE (ofstream& o) {
 	color_PS (o, "0.0 0.0 0.0");
 	text_PS (o, P.S1X + 0.6 * P.A + 5.0 * P.D, P.S1Y - 4.255 * P.A, 3, "Reverse offset");
 
-	if (A) PS_SYMBOL_draw_plane (o, 1.0 * P.A, 2.14 * P.A, "X");
+	if (A) PS_SYMBOL_draw_plane (o, 1.0 * P.A, 2.14 * P.A, "X", false);
 	translate_PS (o, P.S1X + 0.6 * P.A, P.S1Y - 4.555 * P.A, 3);
 	rotate_PS (o, 60.0, 1);
 	text_PS(o, " newpath dextralarrow");
@@ -2302,7 +2301,7 @@ void PS_SYMBOLS_STRIAE (ofstream& o) {
 	color_PS (o, "0.0 0.0 0.0");
 	text_PS (o, P.S1X + 0.6 * P.A + 5.0 * P.D, P.S1Y - 4.855 * P.A, 3, "Dextral offset");
 
-	if (A) PS_SYMBOL_draw_plane (o, 1.0 * P.A, 2.31 * P.A, "X");
+	if (A) PS_SYMBOL_draw_plane (o, 1.0 * P.A, 2.31 * P.A, "X", false);
 	translate_PS (o, P.S1X + 0.6 * P.A, P.S1Y - 5.155 * P.A, 3);
 	rotate_PS (o, 60.0, 1);
 	text_PS(o, " newpath sinistralarrow");
@@ -2311,7 +2310,7 @@ void PS_SYMBOLS_STRIAE (ofstream& o) {
 	color_PS (o, "0.0 0.0 0.0");
 	text_PS (o, P.S1X + 0.6 * P.A + 5.0 * P.D, P.S1Y - 5.455 * P.A, 3, "Sinistral offset");
 
-	if (A) PS_SYMBOL_draw_plane (o, 1.0 * P.A, 2.48 * P.A, "X");
+	if (A) PS_SYMBOL_draw_plane (o, 1.0 * P.A, 2.48 * P.A, "X", false);
 	translate_PS (o, P.S1X + 0.6 * P.A, P.S1Y - 5.755 * P.A, 3);
 	rotate_PS (o, 20.0, 1);
 	text_PS(o, " newpath nonearrow");
@@ -2320,7 +2319,7 @@ void PS_SYMBOLS_STRIAE (ofstream& o) {
 	color_PS (o, "0.0 0.0 0.0");
 	text_PS (o, P.S1X + 0.6 * P.A + 5.0 * P.D, P.S1Y - 6.055 * P.A, 3, "Unknown offset");
 
-	if (A && I) PS_SYMBOL_draw_plane (o, 1.0 * P.A, 2.65 * P.A, "X");
+	if (A && I) PS_SYMBOL_draw_plane (o, 1.0 * P.A, 2.65 * P.A, "X", false);
 	color_PS (o, "0.0 0.0 0.0");
 	if (I) text_PS (o, P.S1X + 0.6 * P.A + 5.0 * P.D, P.S1Y - 6.655 * P.A, 3, "Ideal movement");
 
@@ -2368,15 +2367,15 @@ void PS_SYMBOLS_PLANE (const string& DATATYPE, ofstream& o) {
 	text_PS (o, X + 5.0 * P.D, Y + 0.40 * P.A, 3, "Average bedding");
 	text_PS (o, X + 5.0 * P.D, Y + 0.22 * P.A, 3, "Overturned");
 
-	PS_SYMBOL_draw_plane (o, P.A, 1.00 * P.A, "X");
-	if (C) PS_SYMBOL_draw_plane (o, P.A, 1.20 * P.A, "SC");
-	if (BEDDING) PS_SYMBOL_draw_plane (o, P.A, 1.20 * P.A, "O");
-	PS_SYMBOL_draw_plane (o, P.A, 1.40 * P.A, "AV");
-	PS_SYMBOL_draw_plane (o, P.A, 1.60 * P.A, "AV_O");
+	PS_SYMBOL_draw_plane (o, P.A, 1.00 * P.A, "X", false);
+	if (C) PS_SYMBOL_draw_plane (o, P.A, 1.20 * P.A, "X", true);
+	if (BEDDING) PS_SYMBOL_draw_plane (o, P.A, 1.20 * P.A, "O", false);
+	PS_SYMBOL_draw_plane (o, P.A, 1.40 * P.A, "AV", false);
+	PS_SYMBOL_draw_plane (o, P.A, 1.60 * P.A, "AV_O", false);
 
 	if (FOLDSURFACE) {
 
-		PS_SYMBOL_draw_plane (o, P.A, 1.80 * P.A, "FOLD");
+		PS_SYMBOL_draw_plane (o, P.A, 1.80 * P.A, "FOLD", false);
 		color_PS (o, "0.0 0.0 0.0");
 		text_PS (o, X + 5.0 * P.D, Y - (0.3 * P.A), 3, "Fold great circle");
 	}
@@ -2394,8 +2393,8 @@ void PS_SYMBOLS_LINEATION (const string& DATATYPE, ofstream& o) {
 	text_PS (o, P.S1X + 0.6 * P.A + 10.0 * P.D, P.S1Y - 3.355 * P.A + 0.40 * P.A, 3, "Average bedding");
 	text_PS (o, P.S1X + 0.6 * P.A + 10.0 * P.D, P.S1Y - 3.355 * P.A + 0.22 * P.A, 3, "Overturned");
 
-	PS_SYMBOL_draw_plane (o, 1.0 * P.A, 1.40 * P.A, "AV");
-	PS_SYMBOL_draw_plane (o, 1.0 * P.A, 1.60 * P.A, "AV_O");
+	PS_SYMBOL_draw_plane (o, 1.0 * P.A, 1.40 * P.A, "AV", false);
+	PS_SYMBOL_draw_plane (o, 1.0 * P.A, 1.60 * P.A, "AV_O", false);
 
 	color_PS (o, "0.0 0.0 0.0");
 	newpath_PS(o);
@@ -2425,7 +2424,7 @@ void PS_SYMBOLS_GROUPS (ofstream& o, const vector <GDB>& inGDB) {
 
 			if (existence_of_groupcode (GROUP, inGDB)) {
 
-				PS_SYMBOL_draw_plane (o, X, Y + (existence_counter)*0.18*P.A - 13.5*P.D, GROUP);
+				PS_SYMBOL_draw_plane (o, X, Y + (existence_counter)*0.18*P.A - 13.5*P.D, GROUP, false);
 
 				color_PS (o, "0.0 0.0 0.0");
 
@@ -2440,7 +2439,7 @@ void PS_SYMBOLS_GROUPS (ofstream& o, const vector <GDB>& inGDB) {
 
 		const string GROUP = allowed_basic_groupcode_str_vector().at(0);
 
-		PS_SYMBOL_draw_plane (o, X, Y - 13.5*P.D, GROUP);
+		PS_SYMBOL_draw_plane (o, X, Y - 13.5*P.D, GROUP, false);
 
 		color_PS (o, "0.0 0.0 0.0");
 

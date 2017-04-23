@@ -382,6 +382,5 @@ void PS_draw_rose_DIPDIR_DIP (const vector <vector <GDB> >& inGDB_G, ofstream& o
 		DRAW_ROSE (R.at(i).inGDB, o, center, D, R.at(i).DATA);
 	}
 	PS_draw_rose_circle (o, center, MAX / data_number, D);
-
 	return;
 }
