@@ -19,6 +19,7 @@ EIGENVALUES: 0.967683, -0.397449, -0.570234
 #include <iomanip>
 #include <iostream>
 
+#include "assertions.hpp"
 #include "common.h"
 #include "rgf.h"
 #include "shan.h"
@@ -26,14 +27,28 @@ EIGENVALUES: 0.967683, -0.397449, -0.570234
 
 using namespace std;
 
-vector < vector <double> > shan_matrix_from_GDB (const GDB& inGDB)  {
+VCTR add_rnd_noise (const VCTR& in, const string AX) {
 
-	vector <double>  o = init_vector (5);
+	VCTR out = in;
+
+	if      (AX=="X") out.X =+ 1e-4;
+	else if (AX=="Y") out.Y =+ 1e-4;
+	else if (AX=="Z") out.Z =+ 1e-4;
+	else ASSERT_DEAD_END();
+
+	return unitvector(out, true);
+}
+
+vector <vector <double> > shan_matrix_from_GDB (const GDB& inGDB)  {
+
+	vector <double> o = init_vector(5);
 
 	const VCTR n = inGDB.N;
 	const VCTR s = inGDB.DC;
 
-	const VCTR t = unitvector (crossproduct (s, n), true);
+	VCTR t = unitvector (crossproduct (s, n), true);
+
+	if (is_in_range(0.0, 0.0, t.Z)) t = add_rnd_noise(t, "Z");
 
 	o.at(0) = n.X * t.X - n.Z * t.Z;
 	o.at(1) = n.Y * t.Y - n.Z * t.Z;

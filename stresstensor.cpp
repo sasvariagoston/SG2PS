@@ -59,11 +59,73 @@ STRESSTENSOR fix_stress_tensor_singularity(STRESSTENSOR& st) {
 }
 */
 
-STRESSFIELD eigenvalue_eigenvector (STRESSTENSOR st) {
+bool is_stresstensor_diagonal (const STRESSTENSOR st) {
+
+	return st._13 < 1.0e-20 && st._23 < 1.0e-20 && st._12 < 1.0e-20;
+}
+
+STRESSFIELD eigenvalue_eigenvector_diagonal (STRESSTENSOR st) {
 
 	STRESSFIELD sf;
 
-	vector < double > X;
+	if (st._11 > st._22 && st._11 > st._33) {
+
+		if (st._22 > st._33) {
+
+			sf.EIGENVALUE = declare_vector(st._11, st._22, st._33);
+			sf.EIGENVECTOR1 = declare_vector(1.0, 0.0, 0.0);
+			sf.EIGENVECTOR2 = declare_vector(0.0, 1.0, 0.0);
+			sf.EIGENVECTOR3 = declare_vector(0.0, 0.0, 1.0);
+		}
+		else{
+			sf.EIGENVALUE = declare_vector(st._11, st._33, st._22);
+			sf.EIGENVECTOR1 = declare_vector(1.0, 0.0, 0.0);
+			sf.EIGENVECTOR3 = declare_vector(0.0, 1.0, 0.0);
+			sf.EIGENVECTOR2 = declare_vector(0.0, 0.0, 1.0);
+		}
+	}
+	else if (st._22 > st._11 && st._22 > st._33) {
+
+		if (st._11 > st._33) {
+
+			sf.EIGENVALUE = declare_vector(st._22, st._11, st._33);
+			sf.EIGENVECTOR2 = declare_vector(1.0, 0.0, 0.0);
+			sf.EIGENVECTOR1 = declare_vector(0.0, 1.0, 0.0);
+			sf.EIGENVECTOR3 = declare_vector(0.0, 0.0, 1.0);
+		}
+		else{
+			sf.EIGENVALUE = declare_vector(st._22, st._33, st._11);
+			sf.EIGENVECTOR2 = declare_vector(1.0, 0.0, 0.0);
+			sf.EIGENVECTOR3 = declare_vector(0.0, 1.0, 0.0);
+			sf.EIGENVECTOR1 = declare_vector(0.0, 0.0, 1.0);
+		}
+	}
+	else if (st._33 > st._11 && st._33 > st._22) {
+
+		if (st._11 > st._22) {
+
+			sf.EIGENVALUE = declare_vector(st._33, st._11, st._22);
+			sf.EIGENVECTOR3 = declare_vector(1.0, 0.0, 0.0);
+			sf.EIGENVECTOR1 = declare_vector(0.0, 1.0, 0.0);
+			sf.EIGENVECTOR2 = declare_vector(0.0, 0.0, 1.0);
+		}
+		else{
+			sf.EIGENVALUE = declare_vector(st._33, st._22, st._11);
+			sf.EIGENVECTOR3 = declare_vector(1.0, 0.0, 0.0);
+			sf.EIGENVECTOR2 = declare_vector(0.0, 1.0, 0.0);
+			sf.EIGENVECTOR1 = declare_vector(0.0, 0.0, 1.0);
+		}
+	}
+	else ASSERT_DEAD_END();
+
+	return sf;
+}
+
+STRESSFIELD eigenvalue_eigenvector (STRESSTENSOR st) {
+
+	//if (is_stresstensor_diagonal(st)) return eigenvalue_eigenvector_diagonal(st);
+
+	STRESSFIELD sf;
 
 	const double A =   1.0;
 
@@ -73,7 +135,7 @@ STRESSFIELD eigenvalue_eigenvector (STRESSTENSOR st) {
 
 	const double D = - ((st._11 * st._22 * st._33) + (2.0 * st._12 * st._23 * st._13) - (st._12 * st._12 * st._33) - (st._23 * st._23 * st._11) - (st._13 * st._13 * st._22));
 
-	X = cubic_solution (A, B, C, D);
+	vector <double> X = cubic_solution (A, B, C, D);
 
 	stable_sort (X.begin(), X.begin()+3);
 
