@@ -25,6 +25,7 @@ vector <GDB> generate_NDS_vectors (const vector <GDB>& inGDB);
 vector <GDB> generate_NCDCSC_vectors (const vector <GDB>& inGDB);
 GDB generate_NCDCSC_LINEATION_SC (const GDB& inGDB);
 GDB generate_NCDCSC_PITCH (const GDB& inGDB);
+VCTR manipulate_vctr (const VCTR in);
 vector <GDB> manipulate_N (const vector <GDB>& inGDB);
 vector <GDB> generate_MISFIT (const vector <GDB>& inGDB);
 

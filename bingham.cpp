@@ -21,8 +21,13 @@ vector <VCTR> generate_Bingham_dataset (const vector <GDB>& inGDB) {
 
 	vector <VCTR> T;
 
-	for (size_t i = 0; i < inGDB.size(); i++) T.push_back(inGDB.at(i).N);
+	const bool is_SC = is_allowed_SC_datatype(inGDB.at(0).DATATYPE);
 
+	for (size_t i = 0; i < inGDB.size(); i++) {
+
+		if (is_SC) 	T.push_back(inGDB.at(i).DC);
+		else 		T.push_back(inGDB.at(i).N);
+	}
 	return T;
 }
 

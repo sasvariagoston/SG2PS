@@ -190,10 +190,10 @@ void PS_stereonet_header (ofstream& o) {
 	o << "<</PageSize [ 1191 842 ]>> setpagedevice " << '\n';
 
 	const bool FRACTURE_TO_PROCESS = is_BINGHAM_USE() && return_ACTUAL_DATATYPE() == "FRACTURE";
-	const bool IS_STRIAE = is_allowed_striae_datatype (return_ACTUAL_DATATYPE());
-	const bool IS_SC = is_allowed_SC_datatype(return_ACTUAL_DATATYPE());
+	const bool IS_STRIAE = is_allowed_striae_datatype (return_ACTUAL_DATATYPE()) && !is_INVERSION_NONE();
+	const bool is_SC = is_allowed_SC_datatype(return_ACTUAL_DATATYPE()) && is_BINGHAM_USE();
 
-	if (!FRACTURE_TO_PROCESS && !IS_STRIAE && !IS_SC) return;
+	if (!FRACTURE_TO_PROCESS && !IS_STRIAE && !is_SC) return;
 
 	text_PS (o, "/normalarrow {");
 	//color_PS(o, "0.0 0.0 0.0");
@@ -259,8 +259,6 @@ void PS_stereonet_header (ofstream& o) {
 	arc_PS (o, 0.0, 0.0, 0.5, 0.0, 360.0, 3);
 	stroke_PS (o);
 	text_PS (o, "} def");
-
-	if (IS_SC) return;
 
 	text_PS (o, "/sinistralarrow {");
 	newpath_PS(o);
@@ -630,16 +628,17 @@ void PS_dump_inversion_method (const vector <GDB>& inGDB, ofstream& o, const CEN
 	color_PS (o, "0.0 0.0 0.0");
 	translate_PS (o, center.X + (center.radius / 2.0) - P.A, center.Y - center.radius - 20.0 * P.D, 3);
 
-	if (is_BINGHAM_USE() && !(IS_STRIAE || IS_SC))				METHOD = "Fracture statistics after Bingham (1964)";
-	else if (is_INVERSION_SPRANG() && (IS_STRIAE || IS_SC))  	METHOD = "Regression after Sprang (1972)";
-	else if (is_INVERSION_FRY() && (IS_STRIAE || IS_SC))		METHOD = "Regression after Fry (1999)";
-	else if (is_INVERSION_SHAN() && (IS_STRIAE || IS_SC)) 		METHOD = "Regression after Shan et al. (2003)";
-	else if (is_INVERSION_ANGELIER() && (IS_STRIAE || IS_SC)) 	METHOD = "Inversion after Angelier (1990)";
-	else if (is_INVERSION_TURNER() && (IS_STRIAE || IS_SC)) 	METHOD = "Regression after Turner (1953)";
-	else if (is_INVERSION_BRUTEFORCE() && (IS_STRIAE || IS_SC))	METHOD = "Brute force inversion";
-	else if (is_INVERSION_MICHAEL() && (IS_STRIAE || IS_SC)) 	METHOD = "Inversion after Michael (1984)";
-	else if (is_INVERSION_MOSTAFA() && (IS_STRIAE || IS_SC)) 	METHOD = "Inversion after Mostafa (2005)";
-	else if (is_INVERSION_YAMAJI() && (IS_STRIAE || IS_SC)) 	METHOD = "Inversion after Yamaji (2000)";
+	if (is_BINGHAM_USE() && !(IS_STRIAE || IS_SC))	METHOD = "Fracture statistics after Bingham (1964)";
+	else if (is_BINGHAM_USE() && IS_SC)				METHOD = "Transport direction calculation after Bingham (1964)";
+	else if (is_INVERSION_SPRANG() && IS_STRIAE)  	METHOD = "Regression after Sprang (1972)";
+	else if (is_INVERSION_FRY() && IS_STRIAE)		METHOD = "Regression after Fry (1999)";
+	else if (is_INVERSION_SHAN() && IS_STRIAE) 		METHOD = "Regression after Shan et al. (2003)";
+	else if (is_INVERSION_ANGELIER() && IS_STRIAE) 	METHOD = "Inversion after Angelier (1990)";
+	else if (is_INVERSION_TURNER() && IS_STRIAE) 	METHOD = "Regression after Turner (1953)";
+	else if (is_INVERSION_BRUTEFORCE() && IS_STRIAE)METHOD = "Brute force inversion";
+	else if (is_INVERSION_MICHAEL() && IS_STRIAE) 	METHOD = "Inversion after Michael (1984)";
+	else if (is_INVERSION_MOSTAFA() && IS_STRIAE) 	METHOD = "Inversion after Mostafa (2005)";
+	else if (is_INVERSION_YAMAJI() && IS_STRIAE) 	METHOD = "Inversion after Yamaji (2000)";
 	else ASSERT_DEAD_END();
 
 	text_PS (o, 0.0, 0.0, 3, METHOD);
@@ -750,12 +749,6 @@ void PS_mohr_arcs (ofstream& o, const CENTER& mohrcenter, const double CNTR, con
 void PS_mohr_circle (const vector <GDB>& inGDB, ofstream& o, const CENTER& mohrcenter) {
 
 	const PAPER P = RETURN_PAPER();
-
-	const bool SCd = is_allowed_SC_datatype (inGDB.at(0).DATATYPE);
-	const bool STd = is_allowed_striae_datatype (inGDB.at(0).DATATYPE);
-
-	ASSERT_EXACTLY_ONE_TRUE(SCd, STd);
-
 
 	if (inGDB.at(0).STV.size() < 1 || inGDB.at(0).SFV.size() < 1) return;
 
@@ -1990,7 +1983,6 @@ void PS_DRAW_sc (const GDB& i, ofstream& o, const CENTER& center) {
 	if (H) {
 		PS_polepoint (i, o, X, Y, R, "C");
 		PS_polepoint (i, o, X, Y, R, "");
-
 		PS_striaearrow (d, o, center);
 	}
 	else {
@@ -2038,12 +2030,12 @@ string PS_INVERSION_RESULTS (const vector <GDB>& inGDB, ofstream& o, const CENTE
 	const bool no_BINGHAM = is_BINGHAM_NONE();
 
 	const bool dump_STR = STRIAE && !no_INVERSION;
-	const bool dump_SC  = SC && !no_INVERSION;
+	const bool dump_SC  = SC && !no_BINGHAM;
 	const bool dump_BNG = FRACTURE && !no_BINGHAM;
 
 	string sd = "";
 
-	if ((STRIAE && no_INVERSION) || (FRACTURE && no_BINGHAM)) return sd;
+	if ((STRIAE && no_INVERSION) || (FRACTURE && no_BINGHAM) || (SC && no_BINGHAM)) return sd;
 
 	const vector <STRESSTENSOR> STV = inGDB.at(0).STV;
 	const vector <STRESSFIELD> SFV = inGDB.at(0).SFV;
@@ -2054,24 +2046,22 @@ string PS_INVERSION_RESULTS (const vector <GDB>& inGDB, ofstream& o, const CENTE
 
 	sd = PS_stressdata (inGDB, o);
 
-	if ((STRIAE || SC) && !no_INVERSION) {
+	if (STRIAE && !no_INVERSION) {
 
 		PS_stressarrows (o, inGDB, center);
 
-		if (!SC) PS_mohr_circle (inGDB, o, mohr_center);
+		PS_mohr_circle (inGDB, o, mohr_center);
 
-		if (!is_MULTIPLE_GROUPS() && !SC) {
+		if (!is_MULTIPLE_GROUPS()) {
 
 			PS_RUP_ANG_distribution (inGDB, o, center, "RUP");
 			PS_RUP_ANG_distribution (inGDB, o, center, "ANG");
 		}
 		PS_stress_state (o, inGDB, center);
 
-		if (!SC) PS_idealmovement (inGDB, o, center);
-
-		PS_stress_axes (inGDB, o, center);
+		PS_idealmovement (inGDB, o, center);
 	}
-	else PS_stress_axes (inGDB, o, center);
+	PS_stress_axes (inGDB, o, center);
 
 	return sd;
 }
@@ -2686,11 +2676,11 @@ void PS_STEREONET_SYMBOLS (ofstream& o, const vector <vector <GDB> >& inGDB_G) {
 
 		text_PS(o, P.S1X + 0.1 * P.A, P.S1Y - 0.3 * P.A, 3, "SCHISTOSITY, CLEAVEGE");
 		PS_SYMBOLS_PLANE (DATATYPE, o);
-		//PS_SYMBOLS_STRIAE (o);
 
 		color_PS (o, "0.0 0.0 0.0");
-		text_PS (o, P.S1X + 2.6 * P.A, P.S1Y - 0.3 * P.A, 3, "STRESS INVERSION");
-		PS_SYMBOLS_INVERSION (o);
+		text_PS (o, P.S1X + 2.5 * P.A, P.S1Y - 0.3 * P.A, 3, "BINGHAM STATISTICS");
+
+		if (is_BINGHAM_USE()) PS_SYMBOLS_BINGHAM (o);
 	}
 	else {
 
@@ -3008,7 +2998,7 @@ void DUMP_TO_PS (const vector <vector <vector <GDB> > >& in_GDB_G, const vector 
 
 			const string DATA_FOLDER = return_PS_FOLDER() + path_separator + capslock (F.DATATYPE);
 
-			if (! dir_exists(DATA_FOLDER)) make_dir (DATA_FOLDER);
+			if (! dir_exists(DATA_FOLDER)) make_dir(DATA_FOLDER);
 
 			const string PS_NAME = generate_ACTUAL_PS_NAME();
 			ofstream OPS (PS_NAME.c_str());
@@ -3029,11 +3019,11 @@ void DUMP_TO_PS (const vector <vector <vector <GDB> > >& in_GDB_G, const vector 
 				if (t_GDB_G.at(i).at(j).at(0).SFV.size() > 0) SUCCESFULL_tilt = true;
 			}
 
-			if ((is_allowed_striae_datatype (F.DATATYPE) || is_allowed_SC_datatype (F.DATATYPE)) && ! is_INVERSION_NONE() && SUCCESFULL_normal) {
+			if (is_allowed_striae_datatype (F.DATATYPE) && ! is_INVERSION_NONE() && SUCCESFULL_normal) {
 				PS_stress_scale (OPS, false);
 			}
 
-			if ((is_allowed_striae_datatype (F.DATATYPE) || is_allowed_SC_datatype (F.DATATYPE)) && ! is_INVERSION_NONE() && SUCCESFULL_tilt) {
+			if (is_allowed_striae_datatype (F.DATATYPE) && ! is_INVERSION_NONE() && SUCCESFULL_tilt) {
 				PS_stress_scale (OPS, true);
 			}
 

@@ -126,13 +126,11 @@ void cout_inversion_results (const vector <GDB>& inGDB, const vector <STRESSFIEL
 		cout << "    - Inversion has been failed. " << endl;
 		return;
 	}
-
 	const bool IS_STRIAE = is_allowed_striae_datatype(inGDB.at(0).DATATYPE);
-	const bool IS_SC = is_allowed_SC_datatype(inGDB.at(0).DATATYPE);
 
 	const STRESSFIELD MSF = SF_V.at (SF_V.size() - 1);
 
-	if (is_BINGHAM_USE() && !(IS_STRIAE || IS_SC)) {
+	if (is_BINGHAM_USE() && !IS_STRIAE) {
 
 		cout << "    - "
 		<<  fixed << setprecision (0)
@@ -170,14 +168,8 @@ void cout_inversion_results (const vector <GDB>& inGDB, const vector <STRESSFIEL
 		<< ", s2: " << setfill ('0') << setw (3)  << MSF.S_2.DIPDIR
 		<<  "/"     << setfill ('0') << setw (2)  << MSF.S_2.DIP
 		<< ", s3: " << setfill ('0') << setw (3)  << MSF.S_3.DIPDIR
-		<<  "/"     << setfill ('0') << setw (2)  << MSF.S_3.DIP << flush;
-
-		if (IS_SC) {
-			cout << endl;
-			return;
-		}
-
-		cout << ", " << flush;
+		<<  "/"     << setfill ('0') << setw (2)  << MSF.S_3.DIP
+		<< ", " << flush;
 
 		cout << setfill (' ') << setw (18) << MSF.delvaux_rgm << flush;
 
@@ -240,10 +232,8 @@ void INVERSION (const vector <GDB>& inGDB) {
 	STRESSTENSOR TEST;
 
 	const bool IS_STRIAE = is_allowed_striae_datatype(inGDB.at(0).DATATYPE);
-	const bool IS_SC = is_allowed_SC_datatype(inGDB.at(0).DATATYPE);
 
-
-	if (is_INVERSION_ANGELIER() && (IS_STRIAE || IS_SC)) {
+	if (is_INVERSION_ANGELIER() && IS_STRIAE) {
 
 		TEST = st_ANGELIER (inGDB);
 
@@ -253,7 +243,8 @@ void INVERSION (const vector <GDB>& inGDB) {
 			SFV.push_back (sf_ANGELIER (STV.at(0)));
 		}
 	}
-	else if (is_BINGHAM_USE() && !(IS_STRIAE || IS_SC)) {
+	else if (is_BINGHAM_USE() && !IS_STRIAE) {
+
 		const vector <VCTR> BNG = generate_Bingham_dataset(inGDB);
 
 		TEST = st_BINGHAM (BNG);
@@ -264,7 +255,7 @@ void INVERSION (const vector <GDB>& inGDB) {
 			SFV.push_back (sf_BINGHAM (STV.at(0)));
 		}
 	}
-	else if (is_INVERSION_BRUTEFORCE() && (IS_STRIAE || IS_SC)) {
+	else if (is_INVERSION_BRUTEFORCE() && IS_STRIAE) {
 
 		TEST = st_BRUTEFORCE (inGDB);
 
@@ -274,7 +265,7 @@ void INVERSION (const vector <GDB>& inGDB) {
 			SFV.push_back (sf_BRUTEFORCE (STV.at(0)));
 		}
 	}
-	else if (is_INVERSION_FRY() && fry_correct (inGDB) && (IS_STRIAE || IS_SC)) {
+	else if (is_INVERSION_FRY() && fry_correct(inGDB) && IS_STRIAE) {
 
 		TEST = st_FRY (inGDB);
 
@@ -284,10 +275,10 @@ void INVERSION (const vector <GDB>& inGDB) {
 			SFV.push_back (sf_FRY (STV.at(0)));
 		}
 	}
-	else if (is_INVERSION_FRY() && !fry_correct (inGDB) && (IS_STRIAE || IS_SC)) {
+	else if (is_INVERSION_FRY() && !fry_correct(inGDB) && IS_STRIAE) {
 
 	}
-	else if (is_INVERSION_MICHAEL() && (IS_STRIAE || IS_SC)) {
+	else if (is_INVERSION_MICHAEL() && IS_STRIAE) {
 
 		TEST = st_MICHAEL (inGDB);
 
@@ -297,11 +288,12 @@ void INVERSION (const vector <GDB>& inGDB) {
 			SFV.push_back (sf_MICHAEL(STV.at(0)));
 		}
 	}
-	else if (is_INVERSION_MOSTAFA() && (IS_STRIAE || IS_SC)) {
+	else if (is_INVERSION_MOSTAFA() && IS_STRIAE) {
+
 		SFV = sfv_MOSTAFA (inGDB);
 		STV = stv_MOSTAFA ();
 	}
-	else if (is_INVERSION_SPRANG() && (IS_STRIAE || IS_SC)) {
+	else if (is_INVERSION_SPRANG() && IS_STRIAE) {
 
 		TEST = st_NDA (inGDB);
 
@@ -311,12 +303,13 @@ void INVERSION (const vector <GDB>& inGDB) {
 			SFV.push_back (sf_NDA (STV.at(0)));
 		}
 	}
-	else if (is_INVERSION_YAMAJI() && (IS_STRIAE || IS_SC)) {
+	else if (is_INVERSION_YAMAJI() && IS_STRIAE) {
+
 		//STV.push_back (st_YAMAJI (inGDB));
 		//SFV has to be coded
 		ASSERT_DEAD_END ();
 	}
-	else if (is_INVERSION_TURNER() && (IS_STRIAE || IS_SC)) {
+	else if (is_INVERSION_TURNER() && IS_STRIAE) {
 
 		const STRESSFIELD TEST_SF = sf_PTN (inGDB);
 
@@ -328,7 +321,7 @@ void INVERSION (const vector <GDB>& inGDB) {
 			STV.push_back (TEST);
 		}
 	}
-	else if (is_INVERSION_SHAN() && (IS_STRIAE || IS_SC)) {
+	else if (is_INVERSION_SHAN() && IS_STRIAE) {
 
 		TEST = st_SHAN (inGDB);
 
@@ -338,7 +331,10 @@ void INVERSION (const vector <GDB>& inGDB) {
 			SFV.push_back (sf_SHAN(STV.at(0)));
 		}
 	}
-	else ASSERT_DEAD_END();
+	else {
+
+		ASSERT_DEAD_END();
+	}
 
 	for (size_t i = 0; i < SFV.size(); i++) {
 
@@ -397,16 +393,16 @@ void cout_dbg_stressfield (const STRESSFIELD& sf) {
 
 	cout << fixed << setprecision(0) << flush;
 	cout << "S1: " << sf.S_1.DIPDIR << "/" << sf.S_1.DIP << flush;
-	cout << fixed << setprecision(6) << flush;
-	cout << " ("   << sf.EIGENVECTOR1.X << ", " << sf.EIGENVECTOR1.Y << ", " << sf.EIGENVECTOR1.Z << ")" << endl;
+	cout << fixed << setprecision(10) << flush;
+	cout << " ("   << sf.EIGENVECTOR1.X << '\t' << sf.EIGENVECTOR1.Y << '\t' << sf.EIGENVECTOR1.Z << ")" << endl;
 	cout << fixed << setprecision(0) << flush;
 	cout << "S2: " << sf.S_2.DIPDIR << "/" << sf.S_2.DIP << flush;
-	cout << fixed << setprecision(6) << flush;
-	cout << " ("   << sf.EIGENVECTOR2.X << ", " << sf.EIGENVECTOR2.Y << ", " << sf.EIGENVECTOR2.Z << ")" << endl;
+	cout << fixed << setprecision(10) << flush;
+	cout << " ("   << sf.EIGENVECTOR2.X << '\t' << sf.EIGENVECTOR2.Y << '\t' << sf.EIGENVECTOR2.Z << ")" << endl;
 	cout << fixed << setprecision(0) << flush;
 	cout << "S3: " << sf.S_3.DIPDIR << "/" << sf.S_3.DIP << flush;
-	cout << fixed << setprecision(6) << flush;
-	cout << " ("   << sf.EIGENVECTOR3.X << ", " << sf.EIGENVECTOR3.Y << ", " << sf.EIGENVECTOR3.Z << ")" << endl;
+	cout << fixed << setprecision(10) << flush;
+	cout << " ("   << sf.EIGENVECTOR3.X << '\t' << sf.EIGENVECTOR3.Y << '\t' << sf.EIGENVECTOR3.Z << ")" << endl;
 
 	cout << "EIGENVALUES: " << sf.EIGENVALUE.X << ", " << sf.EIGENVALUE.Y << ", " << sf.EIGENVALUE.Z << endl << endl;
 
@@ -439,9 +435,9 @@ void cout_dbg_stresstensor (const STRESSTENSOR& in) {
 
 	cout << scientific  << setprecision (16) << endl;
 
-	cout << in._11 << "    " << in._12  << "    " << in._13 << endl;
-	cout << in._12 << "    " << in._22  << "    " << in._23 << endl;
-	cout << in._13 << "    " << in._23  << "    " << in._33 << endl;
+	cout << in._11 << '\t' << in._12  << '\t' << in._13 << endl;
+	cout << in._12 << '\t' << in._22  << '\t' << in._23 << endl;
+	cout << in._13 << '\t' << in._23  << '\t' << in._33 << endl;
 
 	return;
 }

@@ -243,6 +243,31 @@ GDB generate_NCDCSC_PITCH (const GDB& inGDB) {
 	return outGDB;
 }
 
+VCTR manipulate_vctr (const VCTR in) {
+
+	VCTR out = in;
+
+	const double a = uniform_0_1();
+	const double S = a * 0.01;
+
+	if (a <= 0.33333) {
+
+		if (out.X > 0.5)	out.X = out.X - S;
+		else 				out.X = out.X + S;
+	}
+	else if  (a >= 0.6666) {
+
+		if (out.Z > 0.5) 	out.Z = out.Z - S;
+		else 				out.Z = out.Z + S;
+	}
+	else {
+
+		if (out.Y > 0.5) 	out.Y = out.Y - S;
+		else 				out.Y = out.Y + S;
+	}
+	return out;
+}
+
 vector <GDB> manipulate_N (const vector <GDB>& inGDB) {
 
 	vector <GDB> outGDB = inGDB;
@@ -261,6 +286,10 @@ vector <GDB> manipulate_N (const vector <GDB>& inGDB) {
 
 		ASSERT_EXACTLY_ONE_TRUE (LITHOLOGY, PLANE, LINEATION, STRIAE, SC);
 
+		//outGDB.at(i).N = manipulate_vctr(outGDB.at(i).N);
+		//outGDB.at(i).NC = manipulate_vctr(outGDB.at(i).NC);
+
+		/*
 		const double a = uniform_0_1();
 		const double S = a * 0.01;
 
@@ -288,12 +317,20 @@ vector <GDB> manipulate_N (const vector <GDB>& inGDB) {
 			if (outGDB.at(i).NC.Y > 0.5) 	outGDB.at(i).NC.Y = outGDB.at(i).NC.Y - S;
 			else 							outGDB.at(i).NC.Y = outGDB.at(i).NC.Y + S;
 		}
+		*/
 
 		if (!LITHOLOGY) {
 
-			outGDB.at(i).N = unitvector (outGDB.at(i).N, true);
+			outGDB.at(i).N = unitvector(manipulate_vctr(outGDB.at(i).N), true);
 
-			if (SC || STRIAE) outGDB.at(i).NC = unitvector (outGDB.at(i).NC, true);
+			//outGDB.at(i).N = unitvector (outGDB.at(i).N, true);
+
+			if (SC || STRIAE) {
+
+				outGDB.at(i).NC = unitvector(manipulate_vctr(outGDB.at(i).NC), true);
+
+				//outGDB.at(i).NC = unitvector (outGDB.at(i).NC, true);
+			}
 		}
 	}
 	return outGDB;
@@ -544,9 +581,8 @@ vector <GDB> generate_LAMBDA_STRESSVECTOR_ESTIMATORS (const vector <GDB>& inGDB)
 	for (size_t i = 0; i < outGDB.size(); i++) {
 
 		const bool STRIAE = is_allowed_striae_datatype (outGDB.at(i).DATATYPE);
-		const bool SC = is_allowed_SC_datatype(outGDB.at(i).DATATYPE);
 
-		if (STRIAE || SC) outGDB.at(i).lambda = sqrt(3.0) / 2.0;
+		if (STRIAE) outGDB.at(i).lambda = sqrt(3.0) / 2.0;
 	}
 	return outGDB;
 }
@@ -884,8 +920,8 @@ void dbg_cout_GDB_vector (const vector <GDB>& inGDB) {
 	//<< "DASHED" << '\t'
 
 	<< "ptnP.X" << '\t' << "ptnP.Y" << '\t'<< "ptnP.Z" << '\t'
-	//<< "ptnT.X" << '\t' << "ptnT.Y" << '\t'<< "ptnT.Z" << '\t'
-	//<< "ptnN.X" << '\t' << "ptnN.Y" << '\t'<< "ptnN.Z" << '\t'
+	<< "ptnT.X" << '\t' << "ptnT.Y" << '\t'<< "ptnT.Z" << '\t'
+	<< "ptnN.X" << '\t' << "ptnN.Y" << '\t'<< "ptnN.Z" << '\t'
 
 	////<< "ptnPd.DIPDIR" << '\t'
 	////<< "ptnPd.DIP" << '\t'
@@ -975,8 +1011,8 @@ void dbg_cout_GDB_vector (const vector <GDB>& inGDB) {
 
 		<< fixed << setprecision(6)
 		<< T.ptnP.X << '\t' << T.ptnP.Y << '\t'<< T.ptnP.Z << '\t'
-		//<< T.ptnT.X << '\t' << T.ptnT.Y << '\t'<< T.ptnT.Z << '\t'
-		//<< T.ptnN.X << '\t' << T.ptnN.Y << '\t'<< T.ptnN.Z << '\t'
+		<< T.ptnT.X << '\t' << T.ptnT.Y << '\t'<< T.ptnT.Z << '\t'
+		<< T.ptnN.X << '\t' << T.ptnN.Y << '\t'<< T.ptnN.Z << '\t'
 
 		////<< fixed << setprecision(3)
 		////<< T.ptnPd.DIPDIR << '\t'

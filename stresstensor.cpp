@@ -123,8 +123,6 @@ STRESSFIELD eigenvalue_eigenvector_diagonal (STRESSTENSOR st) {
 
 STRESSFIELD eigenvalue_eigenvector (STRESSTENSOR st) {
 
-	//if (is_stresstensor_diagonal(st)) return eigenvalue_eigenvector_diagonal(st);
-
 	STRESSFIELD sf;
 
 	const double A =   1.0;
