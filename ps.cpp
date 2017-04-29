@@ -189,11 +189,10 @@ void PS_stereonet_header (ofstream& o) {
 	o << "%%EndComments" << '\n' << '\n';
 	o << "<</PageSize [ 1191 842 ]>> setpagedevice " << '\n';
 
-	const bool FRACTURE_TO_PROCESS = is_BINGHAM_USE() && return_ACTUAL_DATATYPE() == "FRACTURE";
-	const bool IS_STRIAE = is_allowed_striae_datatype (return_ACTUAL_DATATYPE()) && !is_INVERSION_NONE();
+	const bool IS_STRIAE = is_allowed_striae_datatype (return_ACTUAL_DATATYPE());
 	const bool is_SC = is_allowed_SC_datatype(return_ACTUAL_DATATYPE()) && is_BINGHAM_USE();
 
-	if (!FRACTURE_TO_PROCESS && !IS_STRIAE && !is_SC) return;
+	if (!IS_STRIAE && !is_SC) return;
 
 	text_PS (o, "/normalarrow {");
 	//color_PS(o, "0.0 0.0 0.0");
@@ -1978,17 +1977,19 @@ void PS_DRAW_sc (const GDB& i, ofstream& o, const CENTER& center) {
 
 	const bool H = is_PLOT_HOEPPENER();
 
+	const bool is_INV = is_BINGHAM_USE();
+
 	GDB d = SC_to_striae(i);
 
 	if (H) {
 		PS_polepoint (i, o, X, Y, R, "C");
 		PS_polepoint (i, o, X, Y, R, "");
-		PS_striaearrow (d, o, center);
+		if (is_INV) PS_striaearrow (d, o, center);
 	}
 	else {
 		PS_plane (i, o, X, Y, R, "C");
 		PS_plane (i, o, X, Y, R, "");
-		PS_striaearrow (d, o, center);
+		if (is_INV) PS_striaearrow (d, o, center);
 	}
 	return;
 }
