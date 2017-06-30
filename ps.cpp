@@ -676,6 +676,7 @@ string PS_stressdata (const vector <GDB>& inGDB, ofstream& o) {
 
 		if (stress_DIP.at(i).size() == 1) stress_DIP.at(i) = "0" + stress_DIP.at(i);
 	}
+	ASSERT_FINITE(sf.delvaux_str);
 	const string RESULT2 = "R': " + double_to_string (sf.delvaux_str, 3);
 
 	for (size_t i = 0; i < stress_DIPDIR.size(); i++) {
