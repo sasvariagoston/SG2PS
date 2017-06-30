@@ -181,7 +181,7 @@ void cout_inversion_results (const vector <GDB>& inGDB, const vector <STRESSFIEL
 		cout << fixed << setprecision (1) << flush;
 		cout
 		<< ", av. misfit: " << setfill (' ') << setw (4)  << inGDB.at(0).AV_MISF
-		<< " deg." << flush;
+		<< " deg." << endl;
 
 	}
 }

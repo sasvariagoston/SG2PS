@@ -523,11 +523,13 @@ vector <vector <GDB> > PROCESS_GROUPS (const vector <vector <GDB> >& inGDB_G) {
 
 		const bool ENOUGH_HOMOGENEOUS = has_inhomogeneous_enough(process_GDB);
 
+
 		if (FRACTURE_TO_PROCESS || STRIAE_TO_PROCESS || SC_TO_PROCESS) {
 
 			vector <GDB> hasoffset_GDB = process_GDB;
 
 			if (IS_SC) hasoffset_GDB = convert_SC_to_striae_with_offset(process_GDB);
+
 			if (IS_STRIAE) hasoffset_GDB = return_striae_with_offset (process_GDB);//was testGDB
 
 			ASSERT_LE (hasoffset_GDB.size(), process_GDB.size());
@@ -566,7 +568,6 @@ vector <vector <GDB> > PROCESS_GROUPS (const vector <vector <GDB> >& inGDB_G) {
 
 					hasoffset_GDB = apply_RUP_ANG_CLUSTERING_result (hasoffset_GDB);
 				}
-
 				cout_inversion_results (hasoffset_GDB, SFV);
 
 				process_GDB = combine_inversion_for_none_offset (process_GDB, hasoffset_GDB);
@@ -722,12 +723,7 @@ void cout_less_than_required_text (const vector <GDB>& inGDB) {
 
 	const size_t MIN = minimum_independent_dataset();
 
-	const vector <GDB> test = return_GDB_with_no_homogeneous_data (inGDB);
-
-	if (inGDB.size() < MIN) {
-		cout << "    - less independent data (" << inGDB.size() << ") than required (" << MIN <<")." << endl;
-	}
-	else cout << "    - less inhomogeneous data (" << test.size() << ") than required (" << MIN <<")." << endl;
+	cout << "    - less independent data (" << inGDB.size() << ") than required (" << MIN <<")." << endl;
 
 	return;
 }

@@ -139,11 +139,9 @@ vector <GDB> return_GDB_with_no_homogeneous_data (const vector <GDB>& inGDB) {
 
 	const bool STRIAE = 	(is_allowed_striae_datatype(processGDB.at(0).DATATYPE));
 	const bool SC = 		(is_allowed_SC_datatype(processGDB.at(0).DATATYPE));
-
 	check_RGF_for_NAN_INF (processGDB);
 
 	if (SC || STRIAE) stable_sort (processGDB.begin(), processGDB.end(), bycorrDIPDIRcorrDIPcorrLDIPDIRcorrLDIP);
-
 	else stable_sort (processGDB.begin(), processGDB.end(), bycorrDIPDIRcorrDIP);
 
 	for (size_t i = 0; i < processGDB.size() - 1; i++) {
