@@ -676,9 +676,6 @@ string PS_stressdata (const vector <GDB>& inGDB, ofstream& o) {
 
 		if (stress_DIP.at(i).size() == 1) stress_DIP.at(i) = "0" + stress_DIP.at(i);
 	}
-	ASSERT_FINITE(sf.delvaux_str);
-	const string RESULT2 = "R': " + double_to_string (sf.delvaux_str, 3);
-
 	for (size_t i = 0; i < stress_DIPDIR.size(); i++) {
 
 		RESULT = RESULT + stress_DIPDIR.at(i) + "/" + stress_DIP.at(i);
@@ -2042,11 +2039,15 @@ string PS_INVERSION_RESULTS (const vector <GDB>& inGDB, ofstream& o, const CENTE
 	const vector <STRESSTENSOR> STV = inGDB.at(0).STV;
 	const vector <STRESSFIELD> SFV = inGDB.at(0).SFV;
 
+	//cout_dbg_sf(inGDB);
+
 	if (STV.size() == 0 || SFV.size() == 0) return sd;
 
 	ASSERT_EXACTLY_ONE_TRUE (dump_STR, dump_BNG, dump_SC);
 
 	sd = PS_stressdata (inGDB, o);
+
+	cout << sd << endl;
 
 	if (STRIAE && !no_INVERSION) {
 
